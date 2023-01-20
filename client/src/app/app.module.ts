@@ -11,8 +11,10 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
-import { GameTimerComponent } from './components/game-timer/game-timer.component';
+import { CardComponent } from '@app/pages/selection-page/card/card.component';
+import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { GameChatComponent } from './components/game-chat/game-chat.component';
+import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
 
 /**
@@ -22,7 +24,19 @@ import { ImageDifferenceComponent } from './components/image-difference/image-di
  * Otherwise Angular Cli will not know in which module to put new component
  */
 @NgModule({
-    declarations: [AppComponent, GamePageComponent, MainPageComponent, MaterialPageComponent, PlayAreaComponent, SidebarComponent, GameTimerComponent, GameChatComponent, ImageDifferenceComponent],
+    declarations: [
+        AppComponent,
+        GamePageComponent,
+        MainPageComponent,
+        MaterialPageComponent,
+        PlayAreaComponent,
+        SidebarComponent,
+        GameTimerComponent,
+        GameChatComponent,
+        ImageDifferenceComponent,
+        SelectionPageComponent,
+        CardComponent,
+    ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
