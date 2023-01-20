@@ -11,10 +11,10 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
-import { CardComponent } from '@app/pages/selection-page/card/card.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
-import { GameChatComponent } from './components/game-chat/game-chat.component';
+import { CardComponent } from '@app/components/card/card.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
+import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
 
 /**
