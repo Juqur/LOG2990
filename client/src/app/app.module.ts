@@ -31,11 +31,19 @@ import { ImageDifferenceComponent } from './components/image-difference/image-di
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
+<<<<<<< HEAD
         GameTimerComponent,
         GameChatComponent,
         ImageDifferenceComponent,
         SelectionPageComponent,
         CardComponent,
+=======
+        SelectionPageComponent,
+        CardComponent,
+        GameTimerComponent,
+        GameChatComponent,
+        ImageDifferenceComponent,
+>>>>>>> 1d63a976bfcae12fac53b29cbf81b3fc92a23e40
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
