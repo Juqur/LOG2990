@@ -11,6 +11,7 @@ const routes: Routes = [
     { path: 'game', component: GamePageComponent },
     { path: 'material', component: MaterialPageComponent },
     { path: 'selection', component: SelectionPageComponent },
+    { path: 'card', component: SelectionPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

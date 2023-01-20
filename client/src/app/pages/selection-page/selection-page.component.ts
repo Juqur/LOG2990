@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+// import { CardComponent } from '@app/pages/selection-page/card/card.component';
 
 @Component({
   selector: 'app-selection-page',
