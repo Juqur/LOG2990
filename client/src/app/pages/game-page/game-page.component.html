@@ -1,6 +1,16 @@
 <div class="container">
-    <app-sidebar></app-sidebar>
-    <section class="play-area-container">
-        <app-play-area class="play-area" tabindex="0"></app-play-area>
+    <section class="top-area">
+        <button>a quoi je sers frl??</button>
+        <app-game-timer></app-game-timer>
+        <button>Abandonner</button>
     </section>
+    <section class="play-area-container">
+        <app-play-area></app-play-area>
+        <div class="between-images">
+            <button>LOUPE</button>
+            <p> yo il te reste * différences</p>
+        </div>
+        <app-play-area></app-play-area>
+    </section>
+    <app-game-chat></app-game-chat>
 </div>
