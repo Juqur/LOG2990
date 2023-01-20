@@ -9,18 +9,24 @@
 .image {
     grid-row: 2;
     grid-column: 2;
+    width: 100%;
 }
-.buttons {
+.buttons-container {
     grid-row: 2;
     grid-column: 1;
     display: flex;
-    flex-direction: column;
     justify-content: center;
+}
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: space-evenly;
+    justify-content: space-evenly;
 }
 .grid-container {
     display: grid;
     grid-auto-columns: 50vw;
-    grid-auto-rows: 45vh;
+    grid-template-rows: 40vh;
 }
 
 .container {
@@ -36,11 +42,7 @@
 }
 
 .button {
-    margin-top: 10px;
     text-align: center;
-    width: 50%;
-    display: table;
-    margin: 0 auto;
 }
 
 .team-name {
