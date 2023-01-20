@@ -11,21 +11,21 @@ export interface Level {
       image: 'assets/images/spinningSkull.gif',
       name: 'Le jambon de gertrude',
       player: ["Guylaine Tremblay", "Gaston G. Marcotte", "Gontrand Gone"],
-      temps: ["1:00", "1:05", "1:09"]
+      time: ["1:00", "1:05", "1:09"]
     },
     {
       id: 2,
       image: 'assets/images/spinningSkull.gif',
       name: '现在我有冰淇淋',
       player: ["Guylaine Tremblay", "Gaston G. Marcotte", "Gontrand Gone"],
-      temps: ["1:00", "1:05", "1:09"]
+      time: ["1:00", "1:05", "1:09"]
     },
     {
       id: 3,
       image: 'assets/images/spinningSkull.gif',
       name: 'Le flibuster mysogine',
       player: ["Guylaine Tremblay", "Gaston G. Marcotte", "Gontrand Gone"],
-      temps: ["1:00", "1:05", "1:09"]
+      time: ["1:00", "1:05", "1:09"]
     },
     
     {
@@ -33,7 +33,7 @@ export interface Level {
       image: 'assets/images/spinningSkull.gif',
       name: 'Figma rouleau de printemps',
       player: ["Guylaine Tremblay", "Gaston G. Marcotte", "Gontrand Gone"],
-      temps: ["1:00", "1:05", "1:09"]
+      time: ["1:00", "1:05", "1:09"]
     },
     
     {
@@ -41,10 +41,10 @@ export interface Level {
       image: 'assets/images/spinningSkull.gif',
       name: 'Yuheng of Liyue Qixing',
       player: ["Guylaine Tremblay", "Gaston G. Marcotte", "Gontrand Gone"],
-      temps: ["1:00", "1:05", "1:09"]
+      time: ["1:00", "1:05", "1:09"]
     }
   ];
-  
+
   
   /*
   Copyright Google LLC. All Rights Reserved.
