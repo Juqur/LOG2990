@@ -1,9 +1,13 @@
-<img>
-<p>This is the title</p>
-<p> Top 3</p>
-<p> Jean Guy Lesage </p>
-<p> Jean Philippe Legault </p>
-<p> Jean Guy Tremblay </p>
-<button>difficulte icon</button>
-<button>jouer</button>
-<button>creer</button>
+<div *ngFor="let level of levels">
+    <img src="../../../assets/images/spinningSkull.gif">
+    <p>{{ level.name }}</p>
+    <p> Top 3</p>
+    <p> {{ level.player[0] }} </p>
+    <p> {{ level.player[1] }} </p>
+    <p> {{ level.player[2] }} </p>
+    
+    <button>difficulte icon</button>
+    <button>jouer</button>
+    <button>creer</button>
+    <hr>
+</div>

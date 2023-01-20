@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-// import { CardComponent } from '@app/pages/selection-page/card/card.component';
 
 @Component({
     selector: 'app-selection-page',
@@ -7,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./selection-page.component.scss'],
 })
 export class SelectionPageComponent implements OnInit {
+
     constructor() {}
 
     ngOnInit(): void {}
