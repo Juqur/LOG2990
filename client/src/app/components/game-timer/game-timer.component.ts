@@ -12,7 +12,9 @@ export class GameTimerComponent implements OnInit {
     startTime: number;
     gameTime: number = 1;
     interval: ReturnType<typeof setTimeout>;
-    readonly waitTimeMs: number = 1000;
+    readonly waitTime: number = 1000; // ms
+
+    gameTimeFormatted: string;
 
     timer() {
         if (this.isCountDown) {
@@ -31,7 +33,7 @@ export class GameTimerComponent implements OnInit {
                 // TODO
                 // Send message that timer has ended.
             }
-        }, this.waitTimeMs);
+        }, this.waitTime);
     }
 
     upTimer() {
@@ -43,8 +45,11 @@ export class GameTimerComponent implements OnInit {
                 // TODO
                 // Send message that timer has ended.
             }
-        }, this.waitTimeMs);
+        }, this.waitTime);
     }
+
+    // TODO
+    // Add a time formatter so time shows in HH:MM:SS format.
 
     ngOnInit(): void {
         this.startTime = new Date().getSeconds();
