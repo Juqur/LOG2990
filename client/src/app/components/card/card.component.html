@@ -1,13 +1,14 @@
-<div *ngFor="let level of levels">
-    <img src="../../../assets/images/spinningSkull.gif">
+<div *ngIf="level">
+    <img src="{{ level.image }}" />
     <p>{{ level.name }}</p>
-    <p> Top 3</p>
-    <p> {{ level.player[0] }} </p>
-    <p> {{ level.player[1] }} </p>
-    <p> {{ level.player[2] }} </p>
-    
+    <p>Top 3</p>
+    <p>{{ level.player[0] }}</p>
+    <p>{{ level.player[1] }}</p>
+    <p>{{ level.player[2] }}</p>
+
     <button>difficulte icon</button>
     <button>jouer</button>
     <button>creer</button>
-    <hr>
+    <hr />
 </div>
+<!--*ngFor="let level of levels"-->

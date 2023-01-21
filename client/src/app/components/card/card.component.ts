@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { levels } from '../../levels';
+import { Component, Input, OnInit } from '@angular/core';
+import { Level } from '../../levels';
 
 @Component({
     selector: 'app-card',
@@ -7,9 +7,8 @@ import { levels } from '../../levels';
     styleUrls: ['./card.component.scss'],
 })
 export class CardComponent implements OnInit {
-
-    levels = levels;
-    constructor() {}
+    // constructor() {}
+    @Input() level: Level | undefined;
 
     ngOnInit(): void {}
 }
