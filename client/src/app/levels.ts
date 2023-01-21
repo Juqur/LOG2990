@@ -10,20 +10,20 @@ export const levels = [
     {
         id: 1,
         image: 'assets/images/spinningSkull.gif',
-        name: 'Le jambon de gertrude',
+        name: ':skull:',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
     },
     {
         id: 2,
-        image: 'assets/images/spinningSkull.gif',
+        image: 'assets/images/bing-chilling.png',
         name: '现在我有冰淇淋',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
     },
     {
         id: 3,
-        image: 'assets/images/spinningSkull.gif',
+        image: 'assets/images/flibustier.png',
         name: 'Le flibuster mysogine',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
@@ -31,7 +31,7 @@ export const levels = [
 
     {
         id: 4,
-        image: 'assets/images/spinningSkull.gif',
+        image: 'assets/images/figma.png',
         name: 'Figma rouleau de printemps',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
@@ -39,7 +39,7 @@ export const levels = [
 
     {
         id: 5,
-        image: 'assets/images/spinningSkull.gif',
+        image: 'assets/images/kekqing.png',
         name: 'Yuheng of Liyue Qixing',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
