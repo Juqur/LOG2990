@@ -12,6 +12,7 @@ export class GameTimerComponent implements OnInit {
     startTime: number;
     gameTime: number = 1;
     interval: ReturnType<typeof setTimeout>;
+    readonly waitTimeMs: number = 1000;
 
     timer() {
         if (this.isCountDown) {
@@ -30,7 +31,7 @@ export class GameTimerComponent implements OnInit {
                 // TODO
                 // Send message that timer has ended.
             }
-        }, 1000);
+        }, this.waitTimeMs);
     }
 
     upTimer() {
@@ -42,7 +43,7 @@ export class GameTimerComponent implements OnInit {
                 // TODO
                 // Send message that timer has ended.
             }
-        }, 1000);
+        }, this.waitTimeMs);
     }
 
     ngOnInit(): void {
