@@ -16,6 +16,6 @@ export class MainPageComponent {
         if (!credits) {
             return;
         }
-        credits.style.display = credits.style.display === 'none' ? 'block' : 'none';
+        credits.style.display = credits.style.display === 'block' ? 'none' : 'block';
     }
 }
