@@ -1,7 +1,6 @@
 .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     height: 100vh;
 }
 
@@ -67,9 +66,15 @@ h1 {
     text-align: center;
 }
 .header-item {
-    text-align: center;
+    text-align: right;
 }
 
+.button-frame {
+    background-color: #eaac8b;
+    padding: 20px;
+    border-radius: 50%;
+    color: white;
+}
 .footer-item p :nth-child(even) {
     color: orange;
 }
