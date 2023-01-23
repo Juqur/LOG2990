@@ -26,6 +26,11 @@ h1 {
     color: #eaac8b;
 }
 
+p {
+    font-family: Trebuchet MS, sans-serif;
+    color: black;
+    margin: 0 0 0;
+}
 .title-container {
     align-self: left;
     font-size: 5rem;
@@ -92,14 +97,6 @@ h1 {
     padding: 10px;
 }
 
-.footer-item p :nth-child(even) {
-    color: orange;
-}
-
-.footer-item p :nth-child(odd) {
-    color: blue;
-}
-
 .picture {
     position: absolute;
     top: 50%;
@@ -116,6 +113,7 @@ h1 {
 
 /* Components */
 .side-button {
+    position: relative;
     width: 50px;
     height: 50px;
     border-color: transparent;
@@ -123,6 +121,7 @@ h1 {
     padding: 5px;
     border-radius: 50%;
     color: white;
+    z-index: 11;
 }
 
 .side-button:hover {
@@ -141,15 +140,22 @@ h1 {
 }
 
 .credit-container {
-    border: 10px solid #eaac8b;
-    border-radius: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     position: absolute;
-    bottom: 20%;
+    bottom: 0;
     right: 0;
-    padding-top: 20vh;
-    padding-right: 10vh;
+    background-color: #f9d7c0;
+    border-top: 4px solid #eaac8b;
+    border-left: 4px solid #eaac8b;
+    border-radius: 15px 0 0 0px;
+    padding: 1.5vh;
+    padding-bottom: 8vh;
+    z-index: 10;
     display: none;
 }
+
 /* Properties */
 .prevent-select {
     -webkit-user-select: none; /* Safari */
