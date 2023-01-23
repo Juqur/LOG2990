@@ -144,10 +144,11 @@ h1 {
     border: 10px solid #eaac8b;
     border-radius: 15%;
     position: absolute;
-    bottom: 0%;
+    bottom: 20%;
     right: 0;
     padding-top: 20vh;
     padding-right: 10vh;
+    display: none;
 }
 /* Properties */
 .prevent-select {

@@ -6,7 +6,16 @@ import { Component } from '@angular/core';
 })
 export class MainPageComponent {
     icon: string = 'volume_up';
+    isCreditsClosed: boolean = true;
     volumeOnClick() {
         this.icon = this.icon === 'volume_up' ? 'volume_off' : 'volume_up';
+    }
+
+    creditsOnClick() {
+        const credits = document.getElementById('credits');
+        if (!credits) {
+            return;
+        }
+        credits.style.display = credits.style.display === 'none' ? 'block' : 'none';
     }
 }
