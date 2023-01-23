@@ -95,3 +95,9 @@ h1 {
     width: 20%;
     min-width: min-content;
 }
+
+.prevent-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
