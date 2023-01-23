@@ -58,15 +58,25 @@ h1 {
 }
 
 .menu-button {
-    background-color: #eaac8b;
+    background-color: #eaac8b00;
     padding: 5px;
     text-align: center;
     width: 10rem;
+    border: 2px #eaac8b !important;
+}
+
+.menu-button span {
+    color: #eaac8b;
 }
 
 .menu-button:hover {
-    transition: 0.2s;
-    background-color: #fcc5a7;
+    transition: 0.3s;
+    background-color: #eaac8b;
+}
+
+.menu-button:hover span {
+    transition: 0.3s;
+    color: #355070;
 }
 
 /* Footer */
