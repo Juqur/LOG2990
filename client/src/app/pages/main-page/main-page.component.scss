@@ -7,7 +7,7 @@
 .title-container {
     align-self: center;
     font-size: 5rem;
-    margin-top: 15vh;
+    margin-top: 5vh;
 }
 .title-top {
     align-self: center;
@@ -23,10 +23,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    padding-left: 47%;
+    margin-top: 5vh;
+
     button + button {
         margin-top: 3rem;
     }
@@ -71,7 +69,7 @@ h1 {
     padding: 10px;
 }
 
-.button-frame {
+.side-button {
     background-color: #eaac8b;
     padding: 5px;
     border-radius: 50%;
