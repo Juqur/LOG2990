@@ -109,12 +109,17 @@ h1 {
 
 /* Components */
 .side-button {
+    border-color: transparent;
     background-color: #eaac8b;
     padding: 5px;
     border-radius: 50%;
     color: white;
 }
 
+.side-button:hover {
+    transition: 0.1s;
+    border-color: white;
+}
 .mat-icon {
     color: white;
     vertical-align: middle;
