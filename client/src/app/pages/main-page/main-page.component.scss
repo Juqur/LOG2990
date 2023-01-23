@@ -1,49 +1,60 @@
+.background {
+    background-color: #355070;
+}
+
 .container {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
 
-.title-container {
-    align-self: center;
-    font-size: 5rem;
-    margin-top: 5vh;
-}
-.title-top {
-    align-self: center;
-    font-size: 2rem;
-}
-.title-bottom {
-    align-self: center;
-    font-size: 5rem;
+/* Header */
+.header-item {
+    text-align: right;
+    padding: 10px;
 }
 
-.button-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5vh;
-
-    button + button {
-        margin-top: 3rem;
-    }
+/* Body */
+.body-item {
+    padding-left: 20vh;
+    align-self: left;
 }
 
-.picture {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    padding-right: 50vh;
-}
 h1 {
     text-transform: uppercase;
     font-family: Trebuchet MS, sans-serif;
     color: #eaac8b;
 }
 
-.background {
-    background-color: #355070;
+.title-container {
+    align-self: left;
+    font-size: 5rem;
+    // margin-top: 5vh;
+}
+
+.title-top {
+    align-self: right;
+    font-size: 3rem;
+    margin-left: 1.5vh;
+}
+
+.title-bottom {
+    align-self: right;
+    margin-top: 8vh;
+    font-size: 8rem;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    // align-items: center;
+    margin-top: 10vh;
+    margin-left: 2vh;
+
+    button + button {
+        margin-top: 3rem;
+    }
 }
 
 .menu-button {
@@ -53,22 +64,40 @@ h1 {
     width: 10rem;
 }
 
+.menu-button:hover {
+    transition: 0.2s;
+    background-color: #fcc5a7;
+}
+
+/* Footer */
+.footer-item {
+    margin-top: auto;
+    text-align: right;
+    padding: 10px;
+}
+
+.footer-item p :nth-child(even) {
+    color: orange;
+}
+
+.footer-item p :nth-child(odd) {
+    color: blue;
+}
+
+.picture {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    padding-right: 50vh;
+}
+
 .team-name {
     margin-top: 0.25em;
     margin-bottom: 0.25em;
     color: green;
 }
 
-.footer-item {
-    margin-top: auto;
-    text-align: right;
-    padding: 10px;
-}
-.header-item {
-    text-align: right;
-    padding: 10px;
-}
-
+/* Components */
 .side-button {
     background-color: #eaac8b;
     padding: 5px;
@@ -81,19 +110,13 @@ h1 {
     vertical-align: middle;
 }
 
-.footer-item p :nth-child(even) {
-    color: orange;
-}
-.footer-item p :nth-child(odd) {
-    color: blue;
-}
-
 .server-message {
     justify-content: center;
     width: 20%;
     min-width: min-content;
 }
 
+/* Properties */
 .prevent-select {
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
