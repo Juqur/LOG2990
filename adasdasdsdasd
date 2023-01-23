@@ -1,0 +1,39 @@
+[33mcommit e53a9f14d455f0b4586454b12080b202968c206c[m[33m ([m[1;36mHEAD -> [m[1;32mfeature/VueDeJeuEnSolo/ConstructionPageJeu[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/feature/VueDeJeuEnSolo/game-timer[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 7eb60c9 7a96088
+Author: XxshimxX <simon-4.gagne@polymtl.ca>
+Date:   Fri Jan 20 19:32:41 2023 +0000
+
+    Merge branch 'feature/VueDeJeuEnSolo/Initialisation' into 'master'
+    
+    feature/VueDeJeuEnSolo/Création components game-chat, game-timer, image-difference
+    
+    See merge request polytechnique-montr-al/log2990/20231/equipe-304/LOG2990-304!2
+
+[33mcommit 7a96088a397ef09dc18197fdade2d7e8345f2f0b[m
+Author: A123wq123 <charles.degrandpre@polymtl.ca>
+Date:   Fri Jan 20 14:24:51 2023 -0500
+
+    feature/VueDeJeuEnSolo/Création components game-chat, game-timer, image-difference
+
+[33mcommit 7eb60c935880e334c5bee6b92d89d36681608f29[m[33m ([m[1;31morigin/feature/VueDeJeuEnSolo/Initialisation[m[33m, [m[1;32mfeature/VueDeJeuEnSolo/Initialisation[m[33m)[m
+Merge: 74bf192 f634870
+Author: Primexus <pierre.tran@ymail.com>
+Date:   Thu Jan 19 00:25:17 2023 +0000
+
+    Merge branch 'feature/changement-noms' into 'master'
+    
+    Ajouté les noms des cooéquipiers
+    
+    See merge request polytechnique-montr-al/log2990/20231/equipe-304/LOG2990-304!1
+
+[33mcommit f634870d68f655893e301d5ca07f65ad72f325b6[m
+Author: Lfsta <76858115+Lfsta@users.noreply.github.com>
+Date:   Wed Jan 18 19:09:20 2023 -0500
+
+    Ajouté les noms des cooéquipiers
+
+[33mcommit 74bf192dbcbfa6a477004ffa384dc0c1a87bc37a[m
+Author: Nikolay Radoev <nikolay.radoev@polymtl.ca>
+Date:   Mon Jan 9 17:39:21 2023 -0500
+
+    Commit initial
