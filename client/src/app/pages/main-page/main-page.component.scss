@@ -62,19 +62,23 @@ h1 {
     padding: 5px;
     text-align: center;
     width: 10rem;
-    border: 2px #eaac8b !important;
+    border: 2px solid #eaac8b !important;
     transition: 0.2s;
+    width: 25vh;
+    height: 8vh;
 }
 
 .menu-button span {
     color: #eaac8b;
+    border: none !important;
     transition: 0.2s;
+    font-size: 1.5rem;
 }
 
 .menu-button:hover {
     transition: 0.3s;
     background-color: #eaac8b;
-    transform: rotate(5deg);
+    transform: rotate(3deg) scale(1.1);
 }
 
 .menu-button:hover span {
