@@ -137,6 +137,11 @@ h1 {
     min-width: min-content;
 }
 
+.credit-container {
+    margin-top: auto;
+    text-align: right;
+    padding: 10px;
+}
 /* Properties */
 .prevent-select {
     -webkit-user-select: none; /* Safari */
