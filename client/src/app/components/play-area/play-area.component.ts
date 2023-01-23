@@ -26,6 +26,7 @@ export class PlayAreaComponent implements AfterViewInit {
     mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
 
+
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
     constructor(private readonly drawService: DrawService) {}
 
@@ -44,8 +45,10 @@ export class PlayAreaComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.drawService.drawGrid();
-        this.drawService.drawWord('Différence');
+        var ctx = this.drawService.context;
+        const currentImage = new Image();
+        currentImage.src = './assets/un_regal.bmp';
+        currentImage.onload = () => { ctx.drawImage(currentImage, 0, 0,this.width,this.height); };
         this.canvas.nativeElement.focus();
     }
 
