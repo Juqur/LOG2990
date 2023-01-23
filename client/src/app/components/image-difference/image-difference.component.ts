@@ -1,15 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-image-difference',
-  templateUrl: './image-difference.component.html',
-  styleUrls: ['./image-difference.component.scss']
+    selector: 'app-image-difference',
+    templateUrl: './image-difference.component.html',
+    styleUrls: ['./image-difference.component.scss'],
 })
 export class ImageDifferenceComponent implements OnInit {
+    constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+    ngOnInit(): void {}
 }
