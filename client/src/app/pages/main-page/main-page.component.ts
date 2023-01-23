@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 export class MainPageComponent {
     icon: string = 'volume_up';
     volumeOnClick() {
-        this.icon = this.icon === 'volume_up' ? 'volume_mute' : 'volume_up';
+        this.icon = this.icon === 'volume_up' ? 'volume_off' : 'volume_up';
     }
 }
