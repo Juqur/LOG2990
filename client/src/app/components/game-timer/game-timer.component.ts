@@ -25,10 +25,12 @@ export class GameTimerComponent implements OnInit {
 
     downTimer() {
         this.gameTime = this.gameLength;
+        this.formatTime();
         this.interval = setInterval(() => {
-            if (this.gameTime >= 0) {
+            if (this.gameTime > 0) {
                 this.gameTime--;
             } else {
+                clearInterval(this.interval);
                 // TODO
                 // Send message that timer has ended.
             }
@@ -38,10 +40,12 @@ export class GameTimerComponent implements OnInit {
 
     upTimer() {
         this.gameTime = 0;
+        this.formatTime();
         this.interval = setInterval(() => {
             if (this.gameTime < this.gameLength) {
                 this.gameTime++;
             } else {
+                clearInterval(this.interval);
                 // TODO
                 // Send message that timer has ended.
             }
