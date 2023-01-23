@@ -5,10 +5,18 @@
     height: 100vh;
 }
 
-.title {
+.title-container {
     align-self: center;
     font-size: 5rem;
     margin-top: 15vh;
+}
+.title-top {
+    align-self: center;
+    font-size: 2rem;
+}
+.title-bottom {
+    align-self: center;
+    font-size: 5rem;
 }
 
 .button-container {
