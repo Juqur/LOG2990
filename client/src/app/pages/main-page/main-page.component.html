@@ -1,7 +1,7 @@
 <div class="container background">
     <header class="header-item">
         <button class="side-button">
-            <mat-icon fontIcon="volume_up"></mat-icon>
+            <i class="material-icons" (click)="volumeOnClick()">{{ icon }}</i>
         </button>
     </header>
 
@@ -12,7 +12,7 @@
         </div>
 
         <div class="button-container">
-            <button mat-button class="menu-button"><span>Classique</span></button>
+            <button mat-button class="menu-button" routerLink="/game"><span>Classique</span></button>
             <button mat-button class="menu-button"><span>Temps limité</span></button>
             <button mat-button class="menu-button"><span>Configurations</span></button>
         </div>
@@ -24,7 +24,7 @@
         </div>
 
     </body>
-    <!-- <img class="picture" src="https://bit.ly/3QofL1J" alt="Logo Projet" /> -->
+    <img class="picture" src="https://bit.ly/3QofL1J" alt="Logo Projet" />
     <footer class="footer-item">
         <!-- <div class="credit-container">
 
