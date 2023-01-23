@@ -6,11 +6,6 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./game-timer.component.scss'],
 })
 export class GameTimerComponent implements OnInit {
-<<<<<<< HEAD
-    constructor() {}
-
-    ngOnInit(): void {}
-=======
     @Input() isCountDown: boolean;
     @Input() gameLength: number;
 
@@ -57,11 +52,13 @@ export class GameTimerComponent implements OnInit {
     formatTime() {
         const minutes: number = Math.floor(this.gameTime / 60);
         const seconds: number = this.gameTime - minutes * 60;
-        this.gameTimeFormatted = 'Time: ' + minutes + ':' + seconds;
+
+        const minutesString: string = minutes < 10 ? '0' + minutes : minutes.toString();
+        const secondsString: string = seconds < 10 ? '0' + seconds : seconds.toString();
+        this.gameTimeFormatted = 'Time: ' + minutesString + ':' + secondsString;
     }
 
     ngOnInit(): void {
         this.timer();
     }
->>>>>>> feature/VueDeJeuEnSolo/game-timer
 }
