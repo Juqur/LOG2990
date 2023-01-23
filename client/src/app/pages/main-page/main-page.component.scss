@@ -63,18 +63,25 @@ h1 {
 
 .footer-item {
     margin-top: auto;
-    text-align: center;
+    text-align: right;
+    padding: 10px;
 }
 .header-item {
     text-align: right;
+    padding: 10px;
 }
 
 .button-frame {
     background-color: #eaac8b;
-    padding: 20px;
+    padding: 5px;
     border-radius: 50%;
     color: white;
 }
+
+.mat-icon {
+    color: white;
+}
+
 .footer-item p :nth-child(even) {
     color: orange;
 }
