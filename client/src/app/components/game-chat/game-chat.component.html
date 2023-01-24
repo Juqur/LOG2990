@@ -1,1 +1,16 @@
-<p>game-chat works!</p>
+<!--
+Inspired by https://dribbble.com/supahfunk
+-->
+<section class="avenue-messenger">
+    <div class="chat">
+        <div class="chat-title"></div>
+        <div class="messages">
+            <!-- Add une for loop for every message? -->
+            <div *ngFor="let message of messages">{{ message.message }}</div>
+        </div>
+        <div class="message-box">
+            <textarea type="text" class="message-input" placeholder="Type message..."></textarea>
+            <button type="submit" class="message-submit">Send</button>
+        </div>
+    </div>
+</section>

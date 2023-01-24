@@ -14,6 +14,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
+import { ChatMessageComponent } from './chat-message/chat-message.component';
 
 /**
  * Main module that is used in main.ts.
@@ -32,6 +33,7 @@ import { ImageDifferenceComponent } from './components/image-difference/image-di
         GameTimerComponent,
         GameChatComponent,
         ImageDifferenceComponent,
+        ChatMessageComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
