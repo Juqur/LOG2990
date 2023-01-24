@@ -4,6 +4,7 @@ export interface Level {
     name: string;
     player: string[];
     time: string[];
+    difficulty: string;
 }
 
 export const levels = [
@@ -13,6 +14,7 @@ export const levels = [
         name: ':skull:',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
+        difficulty: 'assets/images/easy.png',
     },
     {
         id: 2,
@@ -20,6 +22,7 @@ export const levels = [
         name: '现在我有冰淇淋',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
+        difficulty: 'assets/images/hard.png',
     },
     {
         id: 3,
@@ -27,6 +30,7 @@ export const levels = [
         name: 'Le flibuster mysogine',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
+        difficulty: 'assets/images/easy.png',
     },
 
     {
@@ -35,6 +39,7 @@ export const levels = [
         name: 'Figma rouleau de printemps',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
+        difficulty: 'assets/images/easy.png',
     },
 
     {
@@ -43,6 +48,7 @@ export const levels = [
         name: 'Yuheng of Liyue Qixing',
         player: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
         time: ['1:00', '1:05', '1:09'],
+        difficulty: 'assets/images/easy.png',
     },
 ];
 

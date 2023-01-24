@@ -1,12 +1,13 @@
-<div *ngIf="level">
-    <img src="{{ level.image }}" />
+<div *ngIf="level" class="card">
+    <img src="{{ level.image }}" class="thumbnail"/>
     <p>{{ level.name }}</p>
     <p>Top 3</p>
     <p>{{ level.player[0] }} {{ level.time[0] }}</p>
     <p>{{ level.player[1] }} {{ level.time[1] }}</p>
     <p>{{ level.player[2] }} {{ level.time[2] }}</p>
 
-    <button>difficulte icon</button>
+    <img src="{{ level.difficulty }}" class="difficulty">
+    <br />
     <button>jouer</button>
     <button>creer</button>
     <hr />
