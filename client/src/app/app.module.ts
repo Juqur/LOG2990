@@ -11,10 +11,10 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { ChatMessageComponent } from './components/chat-message/chat-message.component';
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
-import { ChatMessageComponent } from './chat-message/chat-message.component';
 
 /**
  * Main module that is used in main.ts.

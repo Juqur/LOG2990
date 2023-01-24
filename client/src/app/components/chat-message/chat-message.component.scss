@@ -1,0 +1,29 @@
+#message-outer-box {
+    max-width: 70%;
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+#content {
+    display: flex;
+}
+
+#sender {
+    flex-basis: 25%;
+    max-width: 10ch;
+    text-overflow: ellipsis;
+}
+
+#sender > p {
+    display: inline-block;
+}
+
+#message-text {
+    flex-basis: 75%;
+    /*
+    flex-grow: 4;
+    padding-right: 5%;
+    padding-left: 5%;
+    text-align: left;
+    */
+}
