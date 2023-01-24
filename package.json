@@ -1,5 +1,8 @@
 {
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  },
   "dependencies": {
-    "tslib": "^2.4.1"
+    "@types/mocha": "^10.0.1"
   }
 }

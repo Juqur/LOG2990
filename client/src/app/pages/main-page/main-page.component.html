@@ -1,17 +1,21 @@
-<div class="container justified">
-    <h1 class="header-item">Bienvenue au cours {{ title }}</h1>
-    <img src="https://bit.ly/3QofL1J" alt="Logo Projet" />
-    <section id="server-message" class="justified">
-        <p>Petit message du serveur : {{ message.getValue() }}</p>
-        <div class="justified">
-            <button class="button" (click)="getMessagesFromServer()">Récupérer un message du serveur</button>
-            <button class="button" (click)="sendTimeToServer()">Envoyer un message au serveur</button>
-            <button class="button" routerLink="/material">Voir la page démo Angular Material</button>
-            <button class="button" routerLink="/selection">Aller à la vue de sélection</button>
-        </div>
-    </section>
+<div class="container background">
+    <header class="header-item">
+        <mat-icon fontIcon="home"></mat-icon>
+    </header>
 
-    <button class="button" routerLink="/game">Jouer!</button>
+    <div class="grid-container">
+        <h1 class="title">Jeu de différences</h1>
+
+        <img class="image" src="https://bit.ly/3QofL1J" alt="Logo Projet" />
+        <div class="buttons-container">
+            <div class="buttons">
+                <button class="button" (click)="getMessagesFromServer()">Classique</button>
+                <button class="button" (click)="sendTimeToServer()">Temps limite</button>
+                <button class="button" routerLink="/material">Configuration</button>
+                <button class="button" routerLink="/selection">Aller à la vue de sélection</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer-item">
         <h4 class="team-name">Équipe Poly</h4>
