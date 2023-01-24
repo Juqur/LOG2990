@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { levels } from '@app/levels';
 
 @Component({
@@ -6,8 +6,6 @@ import { levels } from '@app/levels';
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
-export class SelectionPageComponent implements OnInit {
+export class SelectionPageComponent {
     levels = [...levels];
-
-    ngOnInit(): void {}
 }

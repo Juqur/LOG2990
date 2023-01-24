@@ -1,4 +1,4 @@
-<div class="flex-container" class="top-bar-container">
+<div class="top-bar-container">
     <button mat-fab color="primary" routerLink="/home">
         <mat-icon>arrow_back</mat-icon>
     </button>
@@ -6,15 +6,17 @@
     <button mat-fab routerLink="/selection">Selection</button>
 </div>
 
-<div class="flex-container" class="selection-card-container" *ngFor="let level of levels">
-    <app-card [level]="level"></app-card>
+<div class="selection-card-container">
+    <span *ngFor="let level of levels; let i = index"
+        ><!-- ou 0 devra être remplace par la variable incrémenté par next -->
+        <app-card *ngIf="i >= 0 && i < 0 + 4" [level]="level"></app-card>
+    </span>
 </div>
 
-<div class="flex-container" class="bottom-container">
+<div class="bottom-container">
     <button mat-fab color="primary" routerLink="/home">
         <mat-icon>arrow_back</mat-icon>
     </button>
     <app-game-timer></app-game-timer>
     <button mat-fab routerLink="/selection">Selection</button>
 </div>
-<!--<p *ngIf="level.title">Description: {{ level.title }}</p>-->
