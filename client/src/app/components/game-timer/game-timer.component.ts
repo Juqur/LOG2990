@@ -52,7 +52,10 @@ export class GameTimerComponent implements OnInit {
     formatTime() {
         const minutes: number = Math.floor(this.gameTime / 60);
         const seconds: number = this.gameTime - minutes * 60;
-        this.gameTimeFormatted = 'Time: ' + minutes + ':' + seconds;
+
+        const minutesString: string = minutes < 10 ? '0' + minutes : minutes.toString();
+        const secondsString: string = seconds < 10 ? '0' + seconds : seconds.toString();
+        this.gameTimeFormatted = 'Time: ' + minutesString + ':' + secondsString;
     }
 
     ngOnInit(): void {
