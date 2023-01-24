@@ -2,6 +2,7 @@
     max-width: 70%;
     margin-top: 2.5%;
     margin-bottom: 2.5%;
+    font-size: 100%;
 }
 
 #content {
@@ -9,6 +10,7 @@
 }
 
 #sender {
+    color: red;
     flex-basis: 25%;
     max-width: 10ch;
     text-overflow: ellipsis;
@@ -20,10 +22,4 @@
 
 #message-text {
     flex-basis: 75%;
-    /*
-    flex-grow: 4;
-    padding-right: 5%;
-    padding-left: 5%;
-    text-align: left;
-    */
 }
