@@ -8,11 +8,13 @@ import { Router } from '@angular/router';
 export class MainPageComponent implements OnInit {
     icon: string = 'volume_up';
     isCreditsClosed: boolean = true;
-    audio: HTMLAudioElement = new Audio('./assets/audio/click.mp3');
+    audio: HTMLAudioElement = new Audio('./assets/audio/soundtrack.mp3');
     constructor(private router: Router) {}
 
     ngOnInit(): void {
         this.audio.load();
+        this.audio.volume = 0.2;
+        this.audio.play();
     }
 
     startGameOnClick() {
@@ -20,12 +22,13 @@ export class MainPageComponent implements OnInit {
     }
 
     volumeOnClick() {
-        this.audio.play();
+        this.playAudio();
+        this.audio.muted = !this.audio.muted;
         this.icon = this.icon === 'volume_up' ? 'volume_off' : 'volume_up';
     }
 
     creditsOnClick() {
-        this.audio.play();
+        this.playAudio();
         const credits = document.getElementById('credits');
         if (!credits) {
             return;
@@ -33,10 +36,9 @@ export class MainPageComponent implements OnInit {
         credits.style.display = credits.style.display === 'block' ? 'none' : 'block';
     }
 
-    // playAudio() {
-    //     const audio = new Audio();
-    //     audio.src = './assets/audio/click.mp3';
-    //     audio.load();
-    //     audio.play();
-    // }
+    playAudio() {
+        const audio = new Audio('./assets/audio/click.mp3');
+        audio.load();
+        audio.play();
+    }
 }
