@@ -9,10 +9,9 @@
         <img class="image" src="https://bit.ly/3QofL1J" alt="Logo Projet" />
         <div class="buttons-container">
             <div class="buttons">
-                <button class="button" (click)="getMessagesFromServer()">Classique</button>
+                <button class="button" routerLink="/selection" (click)="getMessagesFromServer()">Classique</button>
                 <button class="button" (click)="sendTimeToServer()">Temps limite</button>
                 <button class="button" routerLink="/material">Configuration</button>
-                <button class="button" routerLink="/selection">Aller à la vue de sélection</button>
             </div>
         </div>
     </div>

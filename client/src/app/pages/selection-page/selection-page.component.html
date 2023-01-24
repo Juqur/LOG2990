@@ -1,22 +1,20 @@
-<div class="top-bar-container">
-    <button mat-fab color="primary" routerLink="/home">
-        <mat-icon>arrow_back</mat-icon>
-    </button>
-    <app-game-timer></app-game-timer>
-    <button mat-fab routerLink="/selection">Selection</button>
-</div>
-
+<div class="top-bar-container">page 1</div>
+<!-- la ppage devra être updaté dynamiquement -->
 <div class="selection-card-container">
-    <span *ngFor="let level of levels; let i = index"
-        ><!-- ou 0 devra être remplace par la variable incrémenté par next -->
+    <span *ngFor="let level of levels; let i = index">
+        <!-- ou 0 devra être remplace par la variable incrémenté par next -->
         <app-card *ngIf="i >= 0 && i < 0 + 4" [level]="level"></app-card>
     </span>
 </div>
 
 <div class="bottom-container">
-    <button mat-fab color="primary" routerLink="/home">
+    <button mat-fab color="orange" routerLink="/selection">
         <mat-icon>arrow_back</mat-icon>
     </button>
-    <app-game-timer></app-game-timer>
-    <button mat-fab routerLink="/selection">Selection</button>
+    <button mat-fab color="darkblue" routerLink="/home">
+        <mat-icon>home</mat-icon>
+    </button>
+    <button mat-fab color="orange" routerLink="/selection">
+        <mat-icon>arrow_forward</mat-icon>
+    </button>
 </div>
