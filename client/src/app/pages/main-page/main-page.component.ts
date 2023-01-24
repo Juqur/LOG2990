@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
     styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent implements OnInit {
+export class MainPageComponent implements OnInit, OnDestroy {
     icon: string = 'volume_up';
     isCreditsClosed: boolean = true;
     audio: HTMLAudioElement = new Audio('./assets/audio/soundtrack.mp3');
@@ -15,6 +15,10 @@ export class MainPageComponent implements OnInit {
         this.audio.load();
         this.audio.volume = 0.2;
         this.audio.play();
+    }
+
+    ngOnDestroy() {
+        this.audio.pause();
     }
 
     startGameOnClick() {
