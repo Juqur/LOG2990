@@ -10,15 +10,14 @@ import { Level } from '@app/levels';
 })
 export class CardComponent {
     @Input() level: Level;
-    
-    difficulty:string;
+
+    difficulty: string;
 
     displayDifficulty(): string {
-        if(this.level.isEasy == true) {
-            return "Easy";
-        }
-        else {
-            return "Hard";
+        if (this.level.isEasy === true) {
+            return 'Easy';
+        } else {
+            return 'Hard';
         }
     }
 
