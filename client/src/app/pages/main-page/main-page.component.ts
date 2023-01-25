@@ -9,7 +9,7 @@ export class MainPageComponent implements OnDestroy {
     icon: string = 'volume_up';
     isCreditsClosed: boolean = true;
     audio: HTMLAudioElement;
-    component: { muted: boolean; };
+    component: { muted: boolean };
     constructor(private router: Router) {
         this.audio = new Audio();
         this.audio.src = './assets/audio/soundtrack.mp3';
