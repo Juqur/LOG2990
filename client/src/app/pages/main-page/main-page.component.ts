@@ -1,25 +1,22 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
     styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent implements OnInit, OnDestroy {
+export class MainPageComponent implements OnDestroy {
     icon: string = 'volume_up';
     isCreditsClosed: boolean = true;
     audio: HTMLAudioElement;
-    constructor(private router: Router) {}
-
-    ngOnInit(): void {
-        this.audio = new Audio('./assets/audio/main.mp3');
-        if (this.audio) {
-            this.audio.loop = true;
-            this.audio.load();
+    component: { muted: boolean; };
+    constructor(private router: Router) {
+        this.audio = new Audio();
+        this.audio.src = './assets/audio/soundtrack.mp3';
+        this.audio.addEventListener('loadeddata', () => {
             this.audio.play();
-        }
+        });
     }
-
     ngOnDestroy() {
         this.audio.pause();
     }
@@ -46,6 +43,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
     playAudio() {
         const audio = new Audio('./assets/audio/click.mp3');
         audio.load();
-        audio.play();
+        if (audio.paused) {
+            audio.play();
+        }
     }
 }
