@@ -1,6 +1,6 @@
 <div class="container background">
     <div class="top-bar-container">
-        <p>Page {{ currentPage + 1 }}</p>
+        <p class="page-display">Page {{ currentPage + 1 }}</p>
     </div>
     <div class="selection-card-container">
         <app-card *ngFor="let level of levelToShow" [level]="level"></app-card>
