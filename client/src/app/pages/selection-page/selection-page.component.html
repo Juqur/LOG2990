@@ -1,4 +1,6 @@
-<div class="top-bar-container">page 1</div>
+<div class="top-bar-container">
+    <p>Page {{currentPage+1}}</p>
+</div>
 <!-- la page devra être updaté dynamiquement -->
 <div class="selection-card-container">
     <app-card *ngFor="let level of levelToShow" [level]="level"></app-card>
