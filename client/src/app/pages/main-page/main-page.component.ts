@@ -7,9 +7,7 @@ import { Router } from '@angular/router';
 })
 export class MainPageComponent implements OnDestroy {
     icon: string = 'volume_up';
-    isCreditsClosed: boolean = true;
     audio: HTMLAudioElement;
-    component: { muted: boolean };
     constructor(private router: Router) {
         this.audio = new Audio();
         this.audio.src = './assets/audio/soundtrack.mp3';
@@ -17,6 +15,7 @@ export class MainPageComponent implements OnDestroy {
             this.audio.play();
         });
     }
+
     ngOnDestroy() {
         this.audio.pause();
     }
