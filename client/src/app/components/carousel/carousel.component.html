@@ -1,12 +1,13 @@
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
 
+    <div class="action">
+        <button (click)='getPrev()' class="button-81">Prev</button>
+        <button (click)='getNext()' class="button-81">Next</button>
+    </div>
+   
     <div class="carousel-inner" role="listbox">
         <div [innerHTML]="getSlide()">
         </div>
     </div>
-  
-   <button (click)='getPrev()' mat-raised-button>Prev</button>
-  
-   <button (click)='getNext()' mat-raised-button>Next</button>
   
   </div>
