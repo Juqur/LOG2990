@@ -8,13 +8,16 @@ import { Router } from '@angular/router';
 export class MainPageComponent implements OnInit, OnDestroy {
     icon: string = 'volume_up';
     isCreditsClosed: boolean = true;
-    audio: HTMLAudioElement = new Audio('./assets/audio/soundtrack.mp3');
+    audio: HTMLAudioElement;
     constructor(private router: Router) {}
 
     ngOnInit(): void {
-        this.audio.load();
-        this.audio.volume = 0.2;
-        this.audio.play();
+        this.audio = new Audio('./assets/audio/main.mp3');
+        if (this.audio) {
+            this.audio.loop = true;
+            this.audio.load();
+            this.audio.play();
+        }
     }
 
     ngOnDestroy() {
