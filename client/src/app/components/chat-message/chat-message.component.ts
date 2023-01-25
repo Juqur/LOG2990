@@ -8,10 +8,38 @@ import { Message } from '@app/messages';
 })
 export class ChatMessageComponent implements OnInit {
     @Input() message: Message;
+    @Input() index: number;
 
-    ngOnInit(): void {
-        if (this.message.sender.length > 8) {
-            this.message.sender = this.message.sender.substring(0, 5) + '...';
+    displayName: string;
+
+    formatNameLength() {
+        if (this.message.sender.length > 11) {
+            this.displayName = this.message.sender.substring(0, 8) + '...';
+        } else {
+            this.displayName = this.message.sender;
         }
+    }
+
+    createMessageComponent() {
+        if (this.message.playerId === 1) {
+            this.createMessageComponentPlayer1();
+        } else {
+            this.createMessageComponentPlayer2();
+        }
+    }
+
+    createMessageComponentPlayer1() {
+        document.getElementsByClassName('sender').item(this.index)?.classList.add('player1');
+    }
+
+    createMessageComponentPlayer2() {
+        document.getElementsByClassName('sender').item(this.index)?.classList.add('player2');
+    }
+
+    // TODO dynamically generate the text component depending on if it's the opponent
+    // or the "ally"
+    ngOnInit(): void {
+        this.formatNameLength();
+        this.createMessageComponent();
     }
 }

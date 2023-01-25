@@ -5,8 +5,8 @@ Inspired by https://dribbble.com/supahfunk
     <div class="chat">
         <div class="messages">
             <!-- Add une for loop for every message? -->
-            <div *ngFor="let message of messages">
-                <app-chat-message [message]="message"></app-chat-message>
+            <div *ngFor="let message of messages; index as i">
+                <app-chat-message [message]="message" [index]="i"></app-chat-message>
             </div>
         </div>
         <div class="message-box">

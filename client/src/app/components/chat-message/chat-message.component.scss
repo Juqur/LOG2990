@@ -10,10 +10,17 @@
 }
 
 #sender {
-    color: red;
     flex-basis: 25%;
-    max-width: 10ch;
+    max-width: 13ch;
     text-overflow: ellipsis;
+}
+
+.player1 {
+    color: red;
+}
+
+.player2 {
+    color: blue;
 }
 
 #sender > p {
