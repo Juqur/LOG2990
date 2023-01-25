@@ -15,6 +15,7 @@ import { ChatMessageComponent } from './components/chat-message/chat-message.com
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
+import { MessageBoxComponent } from './components/message-box/message-box.component';
 
 /**
  * Main module that is used in main.ts.
@@ -34,6 +35,7 @@ import { ImageDifferenceComponent } from './components/image-difference/image-di
         GameChatComponent,
         ImageDifferenceComponent,
         ChatMessageComponent,
+        MessageBoxComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
