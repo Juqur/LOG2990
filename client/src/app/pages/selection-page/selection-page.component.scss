@@ -1,0 +1,26 @@
+.top-bar-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.selection-card-container {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+.bottom-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+}
+.mat-orange {
+    background-color: orange;
+    color: #fff;
+}
+.mat-darkblue {
+    background-color: rgb(21, 21, 132);
+    color: #fff;
+}

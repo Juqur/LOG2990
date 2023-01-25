@@ -1,0 +1,22 @@
+<div *ngIf="level" class="card">
+    <img src="{{ level.image }}" class="thumbnail"/>
+    <h3>{{ level.name }}</h3>
+    <p>Top 3</p>
+    <div>
+        <p>Best time - Solo</p>
+        <p>{{ level.playerSolo[0] }} - {{ level.timeSolo[0] }}s</p>
+        <p>{{ level.playerSolo[1] }} - {{ level.timeSolo[1] }}s</p>
+        <p>{{ level.playerSolo[2] }} - {{ level.timeSolo[2] }}s</p>
+    </div>
+    <div>
+        <p>Best time - 1vs1</p>
+        <p>{{ level.playerMulti[0] }} - {{ level.timeMulti[0] }}s</p>
+        <p>{{ level.playerMulti[1] }} - {{ level.timeMulti[1] }}s</p>
+        <p>{{ level.playerMulti[2] }} - {{ level.timeMulti[2] }}s</p>
+    </div>
+    <img src="{{ level.difficulty }}" class="difficulty">
+    <br />
+    <button>Solo</button>
+    <button>1v1</button>
+    <hr />
+</div>
