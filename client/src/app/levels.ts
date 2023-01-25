@@ -6,7 +6,7 @@ export interface Level {
     timeSolo: number[];
     playerMulti: string[];
     timeMulti: number[];
-    difficulty: string;
+    isEasy: boolean;
 }
 
 export const levels = [
@@ -18,7 +18,7 @@ export const levels = [
         timeSolo: [60,65,70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: [80,83,90],
-        difficulty: 'assets/images/easy.png',
+        isEasy: true,
     },
     {
         id: 2,
@@ -28,7 +28,7 @@ export const levels = [
         timeSolo: [60,65,70],
         playerMulti: ['Brother 郝', 'Hervé Harvey', 'Marcel Martel'],
         timeMulti: [80,83,90],
-        difficulty: 'assets/images/hard.png',
+        isEasy: false,
     },
     {
         id: 3,
@@ -38,7 +38,7 @@ export const levels = [
         timeSolo: [60,65,70],
         playerMulti: ['Eliza Vezina', 'Caillou Roche', 'Marcel Martel'],
         timeMulti: [80,83,90],
-        difficulty: 'assets/images/easy.png',
+        isEasy: true,
     },
 
     {
@@ -49,7 +49,7 @@ export const levels = [
         timeSolo: [60,65,70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: [80,83,90],
-        difficulty: 'assets/images/easy.png',
+        isEasy: true,
     },
 
     {
@@ -60,7 +60,7 @@ export const levels = [
         timeSolo: [60,65,70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: [80,83,90],
-        difficulty: 'assets/images/easy.png',
+        isEasy: true,
     },
     {
         id: 6,
@@ -70,7 +70,7 @@ export const levels = [
         timeSolo: [60,65,70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: [80,83,90],
-        difficulty: 'assets/images/easy.png',
+        isEasy: true,
 
     }
 ];

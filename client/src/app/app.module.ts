@@ -16,6 +16,7 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
+import { CarouselComponent } from './components/carousel/carousel.component';
 
 /**
  * Main module that is used in main.ts.
@@ -36,6 +37,7 @@ import { ImageDifferenceComponent } from './components/image-difference/image-di
         GameTimerComponent,
         GameChatComponent,
         ImageDifferenceComponent,
+        CarouselComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

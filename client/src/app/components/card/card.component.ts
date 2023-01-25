@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Level } from '../../levels';
+import { Level } from '@app/levels';
+// import { CarouselComponent } from '../carousel/carousel.component';
 
 @Component({
     selector: 'app-card',
@@ -7,5 +8,20 @@ import { Level } from '../../levels';
     styleUrls: ['./card.component.scss'],
 })
 export class CardComponent {
-    @Input() level: Level | undefined;
+    @Input() level: Level;
+    
+    difficulty:string;
+
+    displayDifficulty(): string {
+        if(this.level.isEasy == true) {
+            return "Easy";
+        }
+        else {
+            return "Hard";
+        }
+    }
+
+    ngOnInit(): void {
+        this.difficulty = this.displayDifficulty();
+    }
 }
