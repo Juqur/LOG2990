@@ -6,7 +6,6 @@
     margin-bottom: 20px;
 }
 .selection-card-container {
-    vertical-align: middle;
     display: flex;
     justify-content: space-evenly;
     flex-wrap: nowrap;
@@ -16,9 +15,8 @@
     justify-content: space-around;
     align-items: center;
     margin-top: 20px;
+    padding-bottom: 20px;
     width: 100%;
-    position: absolute;
-    bottom: 20px;
 }
 .page-display {
     display: flex;
@@ -41,7 +39,7 @@
 .container {
     display: flex;
     flex-direction: column;
-    justify-content: stretch;
+    justify-content: space-between;
     min-height: 100vh;
     background-color: #355070;
 }
