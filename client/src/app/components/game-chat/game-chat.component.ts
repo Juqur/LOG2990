@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { messages } from '@app/messages';
 
 @Component({
@@ -6,10 +6,6 @@ import { messages } from '@app/messages';
     templateUrl: './game-chat.component.html',
     styleUrls: ['./game-chat.component.scss'],
 })
-export class GameChatComponent implements OnInit {
+export class GameChatComponent {
     messages = messages;
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }
