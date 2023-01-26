@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Level } from '@app/levels';
 
-
 // import { CarouselComponent } from '../carousel/carousel.component';
 @Component({
     selector: 'app-card',
