@@ -22,12 +22,12 @@ describe('MainPageComponent', () => {
 
     it('should handle volume icon when calling volumeOnClick', () => {
         component.volumeOnClick();
-        expect(component.icon).toEqual('volume_up');
+        expect(component.icon).toEqual('volume_off');
     });
     it('should handle volume icon when calling volumeOnClick twice', () => {
         component.volumeOnClick();
         component.volumeOnClick();
-        expect(component.icon).toEqual('volume_off');
+        expect(component.icon).toEqual('volume_up');
     });
     it('should handle credits display when calling creditsOnClick', () => {
         const credits = document.getElementById('credits');
