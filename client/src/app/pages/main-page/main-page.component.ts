@@ -11,6 +11,7 @@ export class MainPageComponent implements OnDestroy {
     constructor(private router: Router) {
         this.audio = new Audio();
         this.audio.src = './assets/audio/soundtrack.mp3';
+        this.audio.setAttribute('autoplay', 'true');
         this.audio.addEventListener('loadeddata', () => {
             this.audio.play();
         });
@@ -42,8 +43,7 @@ export class MainPageComponent implements OnDestroy {
     playAudio() {
         const audio = new Audio('./assets/audio/click.mp3');
         audio.load();
-        if (audio.paused) {
-            audio.play();
-        }
+        audio.setAttribute('autoplay', 'true');
+        audio.play();
     }
 }
