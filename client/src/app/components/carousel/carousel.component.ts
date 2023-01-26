@@ -1,31 +1,29 @@
-import { Component, OnInit,Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Level } from '@app/levels';
 
 @Component({
-  selector: 'app-carousel',
-  templateUrl: './carousel.component.html',
-  styleUrls: ['./carousel.component.scss']
+    selector: 'app-carousel',
+    templateUrl: './carousel.component.html',
+    styleUrls: ['./carousel.component.scss'],
 })
-export class CarouselComponent implements OnInit {
 
+export class CarouselComponent implements OnInit {
   @Input() level: Level;
   @Input() index: number;
 
   soloClassList: string[] = ['button-81 solo selected'];
   oneVOneClassList: string[] = ['button-81 1v1'];
 
-  constructor() { }
+    ngOnInit(): void {
+        this.populateSlides();
+    }
 
-  ngOnInit(): void {
-    this.populateSlides();
-  }
+    temp: string;
+    slides: string[] = [];
+    i = 0;
 
-  temp:string;
-  slides: string [] = [];
-  i=0;
-
-  populateSlides() {
-    this.temp = `
+    populateSlides() {
+        this.temp = `
     <table width="100%">
     <thead>
       <tr>
@@ -49,9 +47,9 @@ export class CarouselComponent implements OnInit {
     </tbody>
     </table>`;
 
-    this.slides.push(this.temp);
+        this.slides.push(this.temp);
 
-    this.temp = `
+        this.temp = `
     <table width="100%">
     <thead>
       <tr>
@@ -75,7 +73,8 @@ export class CarouselComponent implements OnInit {
     </tbody>
     </table>`;
 
-    this.slides.push(this.temp);
+        this.slides.push(this.temp);
+    
 
   }
 
@@ -87,16 +86,24 @@ export class CarouselComponent implements OnInit {
       this.i = this.i===0 ? 0 : this.i - 1;
       document.getElementsByClassName(index.toString())[0].classList.add("selected");
       document.getElementsByClassName((index+1).toString())[0].classList.remove("selected");
-    
-      // this.oneVOneClassList.pop();
   }
 //edit here    
   getOneVOne(index: number) {
       this.i = this.i===this.slides.length-1 ? this.i : this.i + 1;
-      // this.oneVOneClassList.push("selected");
-      // this.soloClassList.pop();
       document.getElementsByClassName(index.toString())[0].classList.add("selected");
       document.getElementsByClassName((index-1).toString())[0].classList.remove("selected");
   }
+
+  getPrev() {
+      this.i = this.i === 0 ? 0 : this.i - 1;
+  }
+  
+  getNext() {
+      this.i = this.i === this.slides.length - 1 ? this.i : this.i + 1;
+  }
+
+  // function getSlide() {
+  //   throw new Error('Function not implemented.');
+  // }
 
 }

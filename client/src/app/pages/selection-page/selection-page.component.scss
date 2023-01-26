@@ -2,19 +2,31 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+    padding-top: 20px;
     margin-bottom: 20px;
 }
 .selection-card-container {
     display: flex;
     justify-content: space-evenly;
     flex-wrap: nowrap;
-    align-items: center;
 }
 .bottom-container {
     display: flex;
     justify-content: space-around;
     align-items: center;
     margin-top: 20px;
+    padding-bottom: 20px;
+    width: 100%;
+}
+.page-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 60px;
+    border: none;
+    color: #fff;
+    background: #3b7ff6;
 }
 .mat-orange {
     background-color: orange;
@@ -25,9 +37,9 @@
     color: #fff;
 }
 .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     min-height: 100vh;
-    height: auto;
-}
-.background {
     background-color: #355070;
 }
