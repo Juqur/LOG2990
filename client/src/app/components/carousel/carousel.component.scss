@@ -23,7 +23,7 @@ th {
   font-size: 1.1rem;
   font-weight: 600;
   line-height: 1;
-  padding: 1rem 1rem;
+  padding: 1rem 17%;
   text-align: center;
   text-decoration: none #0d172a solid;
   text-decoration-thickness: auto;
@@ -32,6 +32,11 @@ th {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+}
+
+.selected {
+  background-color: #41815c;
+  color: #fff;
 }
 
 .button-81:hover {

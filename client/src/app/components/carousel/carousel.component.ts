@@ -9,6 +9,10 @@ import { Level } from '@app/levels';
 export class CarouselComponent implements OnInit {
 
   @Input() level: Level;
+  @Input() index: number;
+
+  soloClassList: string[] = ['button-81 solo selected'];
+  oneVOneClassList: string[] = ['button-81 1v1'];
 
   constructor() { }
 
@@ -79,12 +83,20 @@ export class CarouselComponent implements OnInit {
       return this.slides[this.i];
   }
 
-  getPrev() {
+  getSolo(index: number) {
       this.i = this.i===0 ? 0 : this.i - 1;
+      document.getElementsByClassName(index.toString())[0].classList.add("selected");
+      document.getElementsByClassName((index+1).toString())[0].classList.remove("selected");
+    
+      // this.oneVOneClassList.pop();
   }
 //edit here    
-  getNext() {
+  getOneVOne(index: number) {
       this.i = this.i===this.slides.length-1 ? this.i : this.i + 1;
+      // this.oneVOneClassList.push("selected");
+      // this.soloClassList.pop();
+      document.getElementsByClassName(index.toString())[0].classList.add("selected");
+      document.getElementsByClassName((index-1).toString())[0].classList.remove("selected");
   }
 
 }
