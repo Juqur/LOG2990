@@ -1,28 +1,26 @@
 .message-box {
     background-color: #454545;
-    width: 95%;
-    padding: 0;
-    margin: 0;
     border-radius: 5px;
     display: flex;
-    align-items: center;
 }
 
 #message-input {
     resize: none;
     border: none;
-    display: block;
-    width: 100%;
-    height: 100%;
-    font-size: 13px;
-    background-color: #454545;
-    border-radius: 5px;
-    padding-top: 10px;
+    width: 80%;
+    background-color: inherit;
+    height: auto;
+}
+
+#send-icon {
+    margin-right: 10px;
 }
 
 #sender {
-    flex-basis: 25%;
-    max-width: 13ch;
-    text-overflow: ellipsis;
-    display: flex;
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+#sender > p {
+    display: inline-block;
 }
