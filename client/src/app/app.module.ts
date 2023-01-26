@@ -17,6 +17,7 @@ import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
+import { ConfigurationComponent } from './pages/configuration/configuration.component';
 
 /**
  * Main module that is used in main.ts.
@@ -38,6 +39,7 @@ import { CarouselComponent } from './components/carousel/carousel.component';
         GameChatComponent,
         ImageDifferenceComponent,
         CarouselComponent,
+        ConfigurationComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
