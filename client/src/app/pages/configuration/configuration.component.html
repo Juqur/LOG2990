@@ -1,11 +1,34 @@
 <div class="container">
     <header class="top-bar-container">
-        <h2 class="config-title">Configuration</h2>
+        <button mat-fab color="orange" [disabled]="isBeginningOfList()" (click)="previousPage()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <p class="page-display">Page {{ currentPage + 1 }}/{{ lastPage + 1 }}</p>
+        <button mat-fab color="orange" [disabled]="isEndOfList()" (click)="nextPage()">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
     </header>
 
-    <body class="config-container">
-        <p>Cry</p>
+    <body class="selection-card-container">
+        <app-card *ngFor="let level of levelToShow" [level]="level"></app-card>
+        <!--Il faudra passer en paramètre un booléean pour afficher supprimer et Réinitialiser-->
     </body>
 
-    <footer class="bottom-container"></footer>
+    <footer class="bottom-container">
+        <button class="button-settings" color="orange" >
+            Historique
+            <mat-icon>clear_all</mat-icon>
+        </button>
+        <button mat-fab color="darkblue" routerLink="/home">
+            <mat-icon>home</mat-icon>
+        </button>
+        <button class="button-settings" color="orange" >
+            Variables Globales
+            <mat-icon>settings</mat-icon>
+        </button>
+        <button class="button-settings" color="orange" >
+            Nouveau Jeu
+            <mat-icon>add</mat-icon>
+        </button>
+    </footer>
 </div>
