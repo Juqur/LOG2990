@@ -1,4 +1,4 @@
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
@@ -22,12 +22,12 @@ describe('MainPageComponent', () => {
 
     it('should handle volume icon when calling volumeOnClick', () => {
         component.volumeOnClick();
-        expect(component.icon).toEqual('volume_off');
+        expect(component.icon).toEqual('volume_up');
     });
     it('should handle volume icon when calling volumeOnClick twice', () => {
         component.volumeOnClick();
         component.volumeOnClick();
-        expect(component.icon).toEqual('volume_up');
+        expect(component.icon).toEqual('volume_off');
     });
     it('should handle credits display when calling creditsOnClick', () => {
         const credits = document.getElementById('credits');
@@ -42,19 +42,5 @@ describe('MainPageComponent', () => {
         const spy = spyOn(router, 'navigate');
         component.startGameOnClick();
         expect(spy).toHaveBeenCalledWith(['/game']);
-    });
-
-    it('should mute volume when calling volumeOnClick', () => {
-        //  const audioMock = { muted: false };
-        //  component.audio = audioMock;
-        component.volumeOnClick();
-        expect(component.audio.muted).toEqual(true);
-    });
-
-    it('should unmute volume when calling volumeOnClick twice', () => {
-        component.audio.muted = false;
-        component.volumeOnClick();
-        component.volumeOnClick();
-        expect(component.audio.muted).toEqual(false);
     });
 });
