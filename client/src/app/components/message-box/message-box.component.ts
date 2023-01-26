@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class MessageBoxComponent {
     displayName: string = 'Charles';
+    messageToSend: string = '';
+
+    sendMessage(messageInput: HTMLTextAreaElement) {
+        this.messageToSend = messageInput.value;
+        messageInput.value = '';
+    }
 }
