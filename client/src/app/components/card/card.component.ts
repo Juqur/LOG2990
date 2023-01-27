@@ -14,8 +14,10 @@ export class CardComponent {
 
     /**
      * Display the difficulty of the level
+     *
      * @returns the difficulty of the level
      */
+
     displayDifficulty(): string {
         try {
             if (this.level.isEasy === true) {
