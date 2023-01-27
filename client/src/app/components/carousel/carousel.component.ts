@@ -58,15 +58,15 @@ export class CarouselComponent implements OnInit {
     <tbody>
       <tr>
         <td width="70%" class="name-column">${this.level.playerSolo[0]}</td>
-        <td width="30%" class="time-column">${this.level.timeSolo[0]}</td>
+        <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[0])}</td>
       </tr>
       <tr>
         <td width="70%" class="name-column">${this.level.playerSolo[1]}</td>
-        <td width="30%" class="time-column">${this.level.timeSolo[1]}</td>
+        <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[1])}</td>
       </tr>
       <tr>
         <td width="70%" class="nameColumn">${this.level.playerSolo[2]}</td>
-        <td width="30%" class="time-column">${this.level.timeSolo[2]}</td>
+        <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[2])}</td>
       </tr>
     </tbody>
     </table>`;
@@ -84,15 +84,15 @@ export class CarouselComponent implements OnInit {
     <tbody>
         <tr>
             <td width="70%" class="name-column">${this.level.playerMulti[0]}</td>
-            <td width="30%" class="time-column">${this.level.timeMulti[0]}</td>
+            <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[0])}</td>
         </tr>
         <tr>
             <td width="70%" class="name-column">${this.level.playerMulti[1]}</td>
-            <td width="30%" class="time-column">${this.level.timeMulti[1]}</td>
+            <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[1])}</td>
         </tr>
         <tr>
             <td width="70%" class="nameColumn">${this.level.playerMulti[2]}</td>
-            <td width="30%" class="time-column">${this.level.timeMulti[2]}</td>
+            <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[2])}</td>
         </tr>
     </tbody>
     </table>`;
