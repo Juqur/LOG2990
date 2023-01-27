@@ -16,6 +16,10 @@ export class MainPageComponent {
         this.router.navigate(['/selection']);
     }
 
+    configPageOnClick() {
+        this.router.navigate(['/config']);
+    }
+
     volumeOnClick() {
         this.audioService.playSound('./assets/audio/click.mp3');
         this.audioService.mute();
