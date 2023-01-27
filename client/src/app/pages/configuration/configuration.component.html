@@ -1,11 +1,22 @@
 <div class="container">
-    <header class="top-bar-container">
-        <button mat-fab color="orange" [disabled]="isBeginningOfList()" (click)="previousPage()">
-            <mat-icon>arrow_back</mat-icon>
+    <span class="cornerButton">
+        <button mat-fab color="darkblue" routerLink="/home">
+            <mat-icon>home</mat-icon>
         </button>
-        <p class="page-display">Page {{ currentPage + 1 }}/{{ lastPage + 1 }}</p>
-        <button mat-fab color="orange" [disabled]="isEndOfList()" (click)="nextPage()">
-            <mat-icon>arrow_forward</mat-icon>
+    </span>
+
+    <header class="top-bar-container">
+        <button class="button-settings" color="orange">
+            Historique
+            <mat-icon>clear_all</mat-icon>
+        </button>
+        <button class="button-settings" color="orange">
+            Variables Globales
+            <mat-icon>settings</mat-icon>
+        </button>
+        <button class="button-settings" color="orange" routerLink="/creation">
+            Nouveau Jeu
+            <mat-icon>add</mat-icon>
         </button>
     </header>
 
@@ -15,20 +26,12 @@
     </body>
 
     <footer class="bottom-container">
-        <button class="button-settings" color="orange">
-            Historique
-            <mat-icon>clear_all</mat-icon>
+        <button mat-fab color="orange" [disabled]="isBeginningOfList()" (click)="previousPage()">
+            <mat-icon>arrow_back</mat-icon>
         </button>
-        <button mat-fab color="darkblue" routerLink="/home">
-            <mat-icon>home</mat-icon>
-        </button>
-        <button class="button-settings" color="orange">
-            Variables Globales
-            <mat-icon>settings</mat-icon>
-        </button>
-        <button class="button-settings" color="orange" routerLink="/creation">
-            Nouveau Jeu
-            <mat-icon>add</mat-icon>
+        <p class="page-display">Page {{ currentPage + 1 }}/{{ lastPage + 1 }}</p>
+        <button mat-fab color="orange" [disabled]="isEndOfList()" (click)="nextPage()">
+            <mat-icon>arrow_forward</mat-icon>
         </button>
     </footer>
 </div>

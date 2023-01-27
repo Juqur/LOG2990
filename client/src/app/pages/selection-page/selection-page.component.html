@@ -1,6 +1,8 @@
 <div class="container">
     <header class="top-bar-container">
-        <p class="page-display">Page {{ currentPage + 1 }}/{{ lastPage + 1 }}</p>
+        <button mat-fab color="darkblue" routerLink="/home">
+            <mat-icon>home</mat-icon>
+        </button>
     </header>
 
     <body class="selection-card-container">
@@ -11,9 +13,7 @@
         <button mat-fab color="orange" [disabled]="isBeginningOfList()" (click)="previousPage()">
             <mat-icon>arrow_back</mat-icon>
         </button>
-        <button mat-fab color="darkblue" routerLink="/home">
-            <mat-icon>home</mat-icon>
-        </button>
+        <p class="page-display">Page {{ currentPage + 1 }}/{{ lastPage + 1 }}</p>
         <button mat-fab color="orange" [disabled]="isEndOfList()" (click)="nextPage()">
             <mat-icon>arrow_forward</mat-icon>
         </button>
