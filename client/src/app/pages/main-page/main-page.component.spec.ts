@@ -1,27 +1,18 @@
-import { HttpClientModule, HttpResponse } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { CommunicationService } from '@app/services/communication.service';
-import { of, throwError } from 'rxjs';
-import SpyObj = jasmine.SpyObj;
 
 describe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
-    let communicationServiceSpy: SpyObj<CommunicationService>;
 
-    beforeEach(async () => {
-        communicationServiceSpy = jasmine.createSpyObj('ExampleService', ['basicGet', 'basicPost']);
-        communicationServiceSpy.basicGet.and.returnValue(of({ title: '', body: '' }));
-        communicationServiceSpy.basicPost.and.returnValue(of(new HttpResponse<string>({ status: 201, statusText: 'Created' })));
-
-        await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientModule],
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule],
             declarations: [MainPageComponent],
-            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
         }).compileComponents();
-    });
+    }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(MainPageComponent);
@@ -29,38 +20,35 @@ describe('MainPageComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('should handle volume icon when calling volumeOnClick', () => {
+        component.volumeOnClick();
+        expect(component.icon).toEqual('volume_off');
     });
-
-    it("should have as title 'LOG2990'", () => {
-        expect(component.title).toEqual('LOG2990');
+    it('should handle volume icon when calling volumeOnClick twice', () => {
+        component.volumeOnClick();
+        component.volumeOnClick();
+        expect(component.icon).toEqual('volume_up');
     });
-
-    it('should call basicGet when calling getMessagesFromServer', () => {
-        component.getMessagesFromServer();
-        expect(communicationServiceSpy.basicGet).toHaveBeenCalled();
+    it('should handle credits display when calling creditsOnClick', () => {
+        const credits = document.getElementById('credits');
+        if (!credits) {
+            return;
+        }
+        component.creditsOnClick();
+        expect(credits.style.display).toEqual('block');
     });
-
-    it('should call basicPost when calling sendTimeToServer', () => {
-        component.sendTimeToServer();
-        expect(communicationServiceSpy.basicPost).toHaveBeenCalled();
+    it('should handle credits display when calling creditsOnClick and the credits HTML element does not work', () => {
+        const credits = document.getElementById('credits');
+        if (!credits) {
+            return;
+        }
+        credits.remove();
+        expect(component.creditsOnClick()).toBeUndefined();
     });
-
-    it('should handle basicPost that returns a valid HTTP response', () => {
-        component.sendTimeToServer();
-        component.message.subscribe((res) => {
-            expect(res).toContain('201 : Created');
-        });
-    });
-
-    it('should handle basicPost that returns an invalid HTTP response', () => {
-        communicationServiceSpy.basicPost.and.returnValue(throwError(() => new Error('test')));
-        component.sendTimeToServer();
-        component.message.subscribe({
-            next: (res) => {
-                expect(res).toContain('Le serveur ne répond pas');
-            },
-        });
+    it('should redirect to /selection when clicking on the classic button', () => {
+        const router = TestBed.inject(Router);
+        const spy = spyOn(router, 'navigate');
+        component.startGameOnClick();
+        expect(spy).toHaveBeenCalledWith(['/selection']);
     });
 });

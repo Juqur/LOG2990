@@ -1,27 +1,37 @@
 <div class="container background">
     <header class="header-item">
-        <mat-icon fontIcon="home"></mat-icon>
+        <button class="side-button" (click)="volumeOnClick()">
+            <i class="material-icons">{{ icon }}</i>
+        </button>
     </header>
 
-    <div class="grid-container">
-        <h1 class="title">Jeu de différences</h1>
-
-        <img class="image" src="https://bit.ly/3QofL1J" alt="Logo Projet" />
-        <div class="buttons-container">
-            <div class="buttons">
-                <button class="button" routerLink="/selection" (click)="getMessagesFromServer()">Classique</button>
-                <button class="button" (click)="sendTimeToServer()">Temps limite</button>
-                <button class="button" routerLink="/config">Configuration</button>
-                <button class="button" routerLink="/material">Old_Material</button>
-            </div>
+    <body class="body-item">
+        <div class="title-container prevent-select">
+            <h1 class="title-top">Jeu des</h1>
+            <h1 class="title-bottom">différences</h1>
         </div>
-    </div>
+
+        <div class="button-container">
+            <button mat-button class="menu-button" (click)="startGameOnClick()"><span>Classique</span></button>
+            <button mat-button class="menu-button"><span>Temps limité</span></button>
+            <button mat-button class="menu-button" (click)="configPageOnClick()"><span>Configurations</span></button>
+        </div>
+    </body>
+
+    <!-- <img class="picture" src="https://bit.ly/3QofL1J" alt="Logo Projet" /> -->
 
     <footer class="footer-item">
-        <h4 class="team-name">Équipe Poly</h4>
-        <p>
-            <span>Charles Degrandpré</span>, <span>Simon Gagné</span>, <span>Galen Hu</span>, <span>Junaid Qureshi</span>,
-            <span>Louis Félix St-Amour</span>, <span>Pierre Tran</span>
-        </p>
+        <div class="credit-container prevent-select" id="credits">
+            <h4 class="team-name">Équipe 304</h4>
+            <p>Charles Degrandpré</p>
+            <p>Simon Gagné</p>
+            <p>Galen Hu</p>
+            <p>Junaid Qureshi</p>
+            <p>Louis Félix St-Amour</p>
+            <p>Pierre Tran</p>
+        </div>
+        <button class="side-button" (click)="creditsOnClick()">
+            <i class="material-icons">school</i>
+        </button>
     </footer>
 </div>
