@@ -36,8 +36,6 @@ export class ChatMessageComponent implements OnInit {
         document.getElementsByClassName('sender').item(this.index)?.classList.add('player2');
     }
 
-    // TODO dynamically generate the text component depending on if it's the opponent
-    // or the "ally"
     ngOnInit(): void {
         this.formatNameLength();
         this.createMessageComponent();

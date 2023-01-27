@@ -8,4 +8,11 @@ import { messages } from '@app/messages';
 })
 export class GameChatComponent {
     messages = messages;
+
+    receiveMessage() {
+        // TODO
+        // Method to catch that a message has been received, wether that message is
+        // a server wide message or not. THis should add the message to the .messages
+        // div component in the HTML.
+    }
 }

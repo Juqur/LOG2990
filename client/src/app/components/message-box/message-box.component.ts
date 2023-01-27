@@ -12,5 +12,7 @@ export class MessageBoxComponent {
     sendMessage(messageInput: HTMLTextAreaElement) {
         this.messageToSend = messageInput.value;
         messageInput.value = '';
+        // TODO
+        // Send HTTP request to send message on server.
     }
 }
