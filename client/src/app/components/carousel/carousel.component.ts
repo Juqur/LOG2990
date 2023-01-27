@@ -7,70 +7,25 @@ import { Level } from '@app/levels';
     styleUrls: ['./carousel.component.scss'],
 })
 export class CarouselComponent implements OnInit {
-    @Input() level: Level;
-    @Input() index: number;
+    @Input() level: Level = {
+        id: -1,
+        image: 'no image',
+        name: 'no name',
+        playerSolo: ['player 1', 'player 2', 'player 3'],
+        timeSolo: [-1, -1, -1],
+        playerMulti: ['player 1', 'player 2', 'player 3'],
+        timeMulti: [-1, -1, -1],
+        isEasy: true,
+        route: 'no route'
+    };
+
+    @Input() index: number = -1;
     temp: string;
     slides: string[] = [];
     i = 0;
 
     ngOnInit(): void {
         this.populateSlides();
-    }
-
-    /**
-     * Get the time of the level for the solo mode
-     *
-     * @param index
-     * @returns the time of the level for the solo mode
-     */
-    getTimeSolo(index: number) {
-        try {
-            return this.formatTime(this.level.timeSolo[index]);
-        } catch {
-            return 'No time';
-        }
-    }
-
-    /**
-     * get the time of the level for the multi mode
-     *
-     * @param index
-     * @returns the time of the level for the multi mode
-     */
-    getTimeMulti(index: number) {
-        try {
-            return this.formatTime(this.level.timeMulti[index]);
-        } catch {
-            return 'No time';
-        }
-    }
-
-    /**
-     * get the player of the level for the solo mode
-     *
-     * @param index
-     * @returns the player of the level for the solo mode
-     */
-    getPlayerSolo(index: number) {
-        try {
-            return this.level.playerSolo[index];
-        } catch {
-            return 'No player';
-        }
-    }
-
-    /**
-     * get the player of the level for the multi mode
-     *
-     * @param index
-     * @returns the player of the level for the multi mode
-     */
-    getPlayerMulti(index: number): string {
-        try {
-            return this.level.playerMulti[index];
-        } catch {
-            return 'No player';
-        }
     }
 
     /**
@@ -96,22 +51,22 @@ export class CarouselComponent implements OnInit {
     <table width="100%">
     <thead>
       <tr>
-        <td class="name-column-header"><b>SOLO</b></th>
-        <td class="time-column-header"><b>Time</b></th>
+        <th class="name-column-header"><b>SOLO</b></th>
+        <th class="time-column-header"><b>Time</b></th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td width="70%" class="name-column">${this.getPlayerSolo(0)}</td>
-        <td width="30%" class="time-column">${this.getTimeSolo(0)}</td>
+        <td width="70%" class="name-column">${this.level.playerSolo[0]}</td>
+        <td width="30%" class="time-column">${this.level.timeSolo[0]}</td>
       </tr>
       <tr>
-      <td width="70%" class="name-column">${this.getPlayerSolo(1)}</td>
-      <td width="30%" class="time-column">${this.getTimeSolo(1)}</td>
+        <td width="70%" class="name-column">${this.level.playerSolo[1]}</td>
+        <td width="30%" class="time-column">${this.level.timeSolo[1]}</td>
       </tr>
       <tr>
-      <td width="70%" class="nameColumn">${this.getPlayerSolo(2)}</td>
-      <td width="30%" class="time-column">${this.getTimeSolo(2)}</td>
+        <td width="70%" class="nameColumn">${this.level.playerSolo[2]}</td>
+        <td width="30%" class="time-column">${this.level.timeSolo[2]}</td>
       </tr>
     </tbody>
     </table>`;
@@ -122,23 +77,23 @@ export class CarouselComponent implements OnInit {
     <table width="100%">
     <thead>
       <tr>
-      <td><b>1v1</b></th>
-      <td><b>Time</b></th>
+        <th><b>1v1</b></th>
+        <th><b>Time</b></th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td width="70%" class="name-column">${this.getPlayerMulti(0)}</td>
-        <td width="30%" class="time-column">${this.getTimeMulti(0)}</td>
-      </tr>
-      <tr>
-      <td width="70%" class="name-column">${this.getPlayerMulti(1)}</td>
-      <td width="30%" class="time-column">${this.getTimeMulti(1)}</td>
-      </tr>
-      <tr>
-      <td width="70%" class="name-column">${this.getPlayerMulti(2)}</td>
-      <td width="30%" class="time-column">${this.getTimeMulti(2)}</td>
-      </tr>
+        <tr>
+            <td width="70%" class="name-column">${this.level.playerMulti[0]}</td>
+            <td width="30%" class="time-column">${this.level.timeMulti[0]}</td>
+        </tr>
+        <tr>
+            <td width="70%" class="name-column">${this.level.playerMulti[1]}</td>
+            <td width="30%" class="time-column">${this.level.timeMulti[1]}</td>
+        </tr>
+        <tr>
+            <td width="70%" class="nameColumn">${this.level.playerMulti[2]}</td>
+            <td width="30%" class="time-column">${this.level.timeMulti[2]}</td>
+        </tr>
     </tbody>
     </table>`;
 

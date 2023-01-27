@@ -7,7 +7,16 @@ import { Level } from '@app/levels';
     styleUrls: ['./card.component.scss'],
 })
 export class CardComponent implements OnInit {
-    @Input() level: Level;
+    @Input() level: Level = {
+        id: -1,
+        image: 'no image',
+        name: 'no name',
+        playerSolo: ['player 1', 'player 2', 'player 3'],
+        timeSolo: [-1, -1, -1],
+        playerMulti: ['player 1', 'player 2', 'player 3'],
+        timeMulti: [-1, -1, -1],
+        isEasy: true,
+        route: 'no route'};
 
     difficulty: string;
 
@@ -18,14 +27,10 @@ export class CardComponent implements OnInit {
      */
 
     displayDifficulty(): string {
-        try {
-            if (this.level.isEasy === true) {
-                return 'Easy';
-            } else {
-                return 'Hard';
-            }
-        } catch {
-            return 'No difficulty';
+        if (this.level.isEasy === true) {
+            return 'Easy';
+        } else {
+            return 'Hard';
         }
     }
 
