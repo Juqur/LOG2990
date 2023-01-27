@@ -51,8 +51,8 @@ export class CarouselComponent implements OnInit {
     <table width="100%">
     <thead>
       <tr>
-        <th class="name-column-header"><b>SOLO</b></th>
-        <th class="time-column-header"><b>Time</b></th>
+        <td class="name-column"><b>SOLO</b></td>
+        <td class="time-column"><b>Time</b></td>
       </tr>
     </thead>
     <tbody>
@@ -77,8 +77,8 @@ export class CarouselComponent implements OnInit {
     <table width="100%">
     <thead>
       <tr>
-        <th><b>1v1</b></th>
-        <th><b>Time</b></th>
+        <td><b>1v1</b></td>
+        <td><b>Time</b></td>
       </tr>
     </thead>
     <tbody>
