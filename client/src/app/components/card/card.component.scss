@@ -16,3 +16,14 @@
     display: grid;
     grid-template-columns: auto auto;
 }
+
+//center the img
+img {
+    margin: 0 auto;
+    display: block;
+}
+
+//h2 under img
+h2 {
+    text-align: center;
+}
