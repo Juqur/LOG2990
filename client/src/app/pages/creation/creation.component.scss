@@ -1,17 +1,9 @@
 .top-bar-container {
     display: flex;
-    justify-content: left;
+    justify-content: space-around;
     align-items: center;
-    padding-right: 5vw;
     padding-top: 20px;
     margin-bottom: 20px;
-    margin-top: 20px;
-    margin-left: 4.5vw;
-}
-.selection-card-container {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: nowrap;
 }
 .bottom-container {
     display: flex;
@@ -20,20 +12,6 @@
     margin-top: 20px;
     padding-bottom: 20px;
     width: 100%;
-}
-.page-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6px 14px;
-    border-radius: 60px;
-    border: none;
-    color: #fff;
-    background: #3b7ff6;
-}
-.mat-orange {
-    background-color: orange;
-    color: #fff;
 }
 .mat-darkblue {
     background-color: rgb(21, 21, 132);

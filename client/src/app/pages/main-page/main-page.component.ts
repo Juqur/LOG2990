@@ -22,6 +22,10 @@ export class MainPageComponent {
         this.router.navigate(['/selection']);
     }
 
+    configPageOnClick() {
+        this.router.navigate(['/config']);
+    }
+
     volumeOnClick() {
         // this.playAudio();
         //  this.audio.muted = !this.audio.muted;

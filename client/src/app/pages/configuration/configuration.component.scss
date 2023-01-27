@@ -1,12 +1,20 @@
+.cornerButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 20px;
+    margin-left: 4.5vw;
+    border-radius: 50%;
+    background-color: #3b7ff6;
+    font-size: 1.5rem;
+}
 .top-bar-container {
     display: flex;
-    justify-content: left;
+    justify-content: right;
     align-items: center;
     padding-right: 5vw;
     padding-top: 20px;
     margin-bottom: 20px;
-    margin-top: 20px;
-    margin-left: 4.5vw;
 }
 .selection-card-container {
     display: flex;
@@ -30,6 +38,18 @@
     border: none;
     color: #fff;
     background: #3b7ff6;
+}
+.button-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 14px;
+    margin-left: 2em;
+    border-radius: 60px;
+    border: none;
+    color: #fff;
+    background: #f63b3b;
+    cursor: pointer;
 }
 .mat-orange {
     background-color: orange;
