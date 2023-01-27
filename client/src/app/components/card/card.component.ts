@@ -1,13 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Level } from '@app/levels';
 
-// import { CarouselComponent } from '../carousel/carousel.component';
 @Component({
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
 })
-export class CardComponent {
+export class CardComponent implements OnInit {
     @Input() level: Level;
 
     difficulty: string;
@@ -19,8 +18,7 @@ export class CardComponent {
             } else {
                 return 'Hard';
             }
-        }
-        catch {
+        } catch {
             return 'No difficulty';
         }
     }

@@ -22,8 +22,8 @@ export class CarouselComponent implements OnInit {
     slides: string[] = [];
     i = 0;
 
-    getSafe(fn:any, defaultVal:any) {
-      try {
+    getSafe(fn: any, defaultVal: any) {
+      try {  
         return fn();
       } catch (e) {
         return defaultVal;
