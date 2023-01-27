@@ -1,5 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Level } from '@app/levels';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-carousel',
@@ -80,11 +81,11 @@ export class CarouselComponent implements OnInit {
      * @returns the time formatted
      */
     formatTime(time: number): string {
-        const minutes: number = Math.floor(time / 60);
-        const seconds: number = time - minutes * 60;
+        const minutes: number = Math.floor(time / Constants.secondsPerMinute);
+        const seconds: number = time - minutes * Constants.secondsPerMinute;
 
-        const minutesString: string = minutes < 10 ? '0' + minutes : minutes.toString();
-        const secondsString: string = seconds < 10 ? '0' + seconds : seconds.toString();
+        const minutesString: string = minutes < Constants.ten ? '0' + minutes : minutes.toString();
+        const secondsString: string = seconds < Constants.ten ? '0' + seconds : seconds.toString();
         return minutesString + ':' + secondsString;
     }
 

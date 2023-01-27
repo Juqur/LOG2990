@@ -1,5 +1,5 @@
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
-
+import { Constants } from '@common/constants';
 import { GameTimerComponent } from './game-timer.component';
 
 describe('GameTimerComponent', () => {
@@ -42,15 +42,15 @@ describe('GameTimerComponent', () => {
         component.isCountDown = true;
         component.gameLength = 120;
         component.ngOnInit();
-        tick(1000);
+        tick(Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:59');
-        tick(29000);
+        tick(Constants.thirty - 1 * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');
-        tick(30000);
+        tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:00');
-        tick(30000);
+        tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:30');
-        tick(30000);
+        tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:00');
         discardPeriodicTasks();
     }));
@@ -59,15 +59,15 @@ describe('GameTimerComponent', () => {
         component.isCountDown = false;
         component.gameLength = 120;
         component.ngOnInit();
-        tick(1000);
+        tick(Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:01');
-        tick(29000);
+        tick(Constants.thirty - 1 * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:30');
-        tick(30000);
+        tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:00');
-        tick(30000);
+        tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');
-        tick(30000);
+        tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 02:00');
         discardPeriodicTasks();
     }));
@@ -76,7 +76,11 @@ describe('GameTimerComponent', () => {
         component.isCountDown = true;
         component.gameLength = 120;
         component.ngOnInit();
-        tick(121000);
+        tick(
+            Constants.hundred * Constants.millisecondsInOneSecond +
+                Constants.twenty * Constants.millisecondsInOneSecond +
+                Constants.millisecondsInOneSecond,
+        );
         expect(component.gameTimeFormatted).toEqual('Time: 00:00');
         discardPeriodicTasks();
     }));
@@ -85,7 +89,11 @@ describe('GameTimerComponent', () => {
         component.isCountDown = false;
         component.gameLength = 120;
         component.ngOnInit();
-        tick(121000);
+        tick(
+            Constants.hundred * Constants.millisecondsInOneSecond +
+                Constants.twenty * Constants.millisecondsInOneSecond +
+                Constants.millisecondsInOneSecond,
+        );
         expect(component.gameTimeFormatted).toEqual('Time: 02:00');
         discardPeriodicTasks();
     }));
