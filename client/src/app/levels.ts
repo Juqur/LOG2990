@@ -1,5 +1,3 @@
-/*eslint no-magic-numbers: ["error", { "ignore": [1] }]*/
-
 export interface Level {
     id: number;
     image: string;

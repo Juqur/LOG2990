@@ -22,7 +22,7 @@ export class MainPageComponent {
         this.router.navigate(['/selection']);
     }
 
-    configPageOnClick(){
+    configPageOnClick() {
         this.router.navigate(['/config']);
     }
 
