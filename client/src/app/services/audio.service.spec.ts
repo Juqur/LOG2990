@@ -14,6 +14,25 @@ describe('AudioService', () => {
         expect(service).toBeTruthy();
     });
     it('should create an audio HTML element', () => {
-        expect(service.playSound('./assets/audio/click.mp3'));
+        const audio = service.create('./assets/audio/click.mp3');
+        expect(audio).toBeInstanceOf(HTMLAudioElement);
+    });
+    it('should play an audio HTML element', () => {
+        const audio = service.create('./assets/audio/click.mp3');
+        service.play(audio);
+        expect(audio.paused).toBeFalsy();
+    });
+    it('playSound should call create and play', () => {
+        const spyCreate = spyOn(service, 'create');
+        const spyPlay = spyOn(service, 'play');
+        service.playSound('./assets/audio/click.mp3');
+        expect(spyCreate).toHaveBeenCalled();
+        expect(spyPlay).toHaveBeenCalled();
+    });
+    it('should mute an audio HTML element', () => {
+        const audio = service.create('./assets/audio/click.mp3');
+        service.play(audio);
+        service.mute(audio);
+        expect(audio.muted).toBeTruthy();
     });
 });
