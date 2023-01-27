@@ -1,12 +1,28 @@
 <div class="container">
-    <header class="top-bar-container">
+    <span class="cornerButton">
         <button mat-fab color="darkblue" routerLink="/home">
             <mat-icon>home</mat-icon>
+        </button>
+    </span>
+
+    <header class="top-bar-container">
+        <button class="button-settings" color="orange">
+            Historique
+            <mat-icon>clear_all</mat-icon>
+        </button>
+        <button class="button-settings" color="orange">
+            Variables Globales
+            <mat-icon>settings</mat-icon>
+        </button>
+        <button class="button-settings" color="orange" routerLink="/creation">
+            Nouveau Jeu
+            <mat-icon>add</mat-icon>
         </button>
     </header>
 
     <body class="selection-card-container">
         <app-card *ngFor="let level of levelToShow" [level]="level"></app-card>
+        <!--Il faudra passer en paramètre un booléean pour afficher supprimer et Réinitialiser-->
     </body>
 
     <footer class="bottom-container">
