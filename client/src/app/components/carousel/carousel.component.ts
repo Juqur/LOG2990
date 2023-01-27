@@ -6,64 +6,56 @@ import { Level } from '@app/levels';
     templateUrl: './carousel.component.html',
     styleUrls: ['./carousel.component.scss'],
 })
-
 export class CarouselComponent implements OnInit {
-  @Input() level: Level;
-  @Input() index: number;
-
-  // soloClassList: string[] = ['button-81 solo selected'];
-  // oneVOneClassList: string[] = ['button-81 1v1'];
+    @Input() level: Level;
+    @Input() index: number;
+    temp: string;
+    slides: string[] = [];
+    i = 0;
 
     ngOnInit(): void {
         this.populateSlides();
     }
 
-    temp: string;
-    slides: string[] = [];
-    i = 0;
-
-    getSafe(fn:any, defaultVal:any) {
-      try {
-        return fn();
-      } catch (e) {
-        return defaultVal;
-      }
-    }
-
     getTimeSolo(index: number) {
-      try{
-        return this.level.timeSolo[index];
-      }
-      catch{
-        return "No time";
-      }
+        try {
+            return this.formatTime(this.level.timeSolo[index]);
+        } catch {
+            return 'No time';
+        }
     }
 
     getTimeMulti(index: number) {
-      try{
-        return this.level.timeMulti[index];
-      }
-      catch{
-        return "No time";
-      }
+        try {
+            return this.formatTime(this.level.timeMulti[index]);
+        } catch {
+            return 'No time';
+        }
     }
 
     getPlayerSolo(index: number) {
-      try{
-        return this.level.playerSolo[index];
-      }
-      catch{
-        return "No player";
-      }
+        try {
+            return this.level.playerSolo[index];
+        } catch {
+            return 'No player';
+        }
     }
 
-    getPlayerMulti(index: number) {
-      try{
-        return this.level.playerMulti[index];
-      }
-      catch{
-        return "No player";
-      }
+    getPlayerMulti(index: number): string {
+        try {
+            return this.level.playerMulti[index];
+        } catch {
+            return 'No player';
+        }
+    }
+
+    formatTime(time: number): string {
+        const minutes: number = Math.floor(time / 60);
+        const seconds: number = time - minutes * 60;
+
+        const minutesString: string = minutes < 10 ? '0' + minutes : minutes.toString();
+        const secondsString: string = seconds < 10 ? '0' + seconds : seconds.toString();
+        return minutesString + ':' + secondsString;
     }
 
     populateSlides() {
@@ -71,22 +63,22 @@ export class CarouselComponent implements OnInit {
     <table width="100%">
     <thead>
       <tr>
-        <td><b>SOLO</b></th>
-        <td><b>Time (s)</b></th>
+        <td class="name-column-header"><b>SOLO</b></th>
+        <td class="time-column-header"><b>Time</b></th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td width="70%">${this.getPlayerSolo(0)}</td>
-        <td width="30%">${this.getTimeSolo(0)}</td>
+        <td width="70%" class="name-column">${this.getPlayerSolo(0)}</td>
+        <td width="30%" class="time-column">${this.getTimeSolo(0)}</td>
       </tr>
       <tr>
-      <td width="70%">${this.getPlayerSolo(1)}</td>
-      <td width="30%">${this.getTimeSolo(1)}</td>
+      <td width="70%" class="name-column">${this.getPlayerSolo(1)}</td>
+      <td width="30%" class="time-column">${this.getTimeSolo(1)}</td>
       </tr>
       <tr>
-      <td width="70%">${this.getPlayerSolo(2)}</td>
-      <td width="30%">${this.getTimeSolo(2)}</td>
+      <td width="70%" class="nameColumn">${this.getPlayerSolo(2)}</td>
+      <td width="30%" class="time-column">${this.getTimeSolo(2)}</td>
       </tr>
     </tbody>
     </table>`;
@@ -98,56 +90,49 @@ export class CarouselComponent implements OnInit {
     <thead>
       <tr>
       <td><b>1v1</b></th>
-      <td><b>Time (s)</b></th>
+      <td><b>Time</b></th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td width="70%">${this.getPlayerMulti(0)}</td>
-        <td width="30%">${this.getTimeMulti(0)}</td>
+        <td width="70%" class="name-column">${this.getPlayerMulti(0)}</td>
+        <td width="30%" class="time-column">${this.getTimeMulti(0)}</td>
       </tr>
       <tr>
-      <td width="70%">${this.getPlayerMulti(1)}</td>
-      <td width="30%">${this.getTimeMulti(1)}</td>
+      <td width="70%" class="name-column">${this.getPlayerMulti(1)}</td>
+      <td width="30%" class="time-column">${this.getTimeMulti(1)}</td>
       </tr>
       <tr>
-      <td width="70%">${this.getPlayerMulti(2)}</td>
-      <td width="30%">${this.getTimeMulti(2)}</td>
+      <td width="70%" class="name-column">${this.getPlayerMulti(2)}</td>
+      <td width="30%" class="time-column">${this.getTimeMulti(2)}</td>
       </tr>
     </tbody>
     </table>`;
 
         this.slides.push(this.temp);
-    
+    }
 
-  }
+    getSlide() {
+        return this.slides[this.i];
+    }
 
-  getSlide() {
-      return this.slides[this.i];
-  }
+    getSolo(index: number) {
+        this.i = this.i === 0 ? 0 : this.i - 1;
+        document.getElementsByClassName(index.toString())[0].classList.add('selected');
+        document.getElementsByClassName((index + 1).toString())[0].classList.remove('selected');
+    }
 
-  getSolo(index: number) {
-      this.i = this.i===0 ? 0 : this.i - 1;
-      document.getElementsByClassName(index.toString())[0].classList.add("selected");
-      document.getElementsByClassName((index+1).toString())[0].classList.remove("selected");
-  }
-//edit here    
-  getOneVOne(index: number) {
-      this.i = this.i===this.slides.length-1 ? this.i : this.i + 1;
-      document.getElementsByClassName(index.toString())[0].classList.add("selected");
-      document.getElementsByClassName((index-1).toString())[0].classList.remove("selected");
-  }
+    getOneVOne(index: number) {
+        this.i = this.i === this.slides.length - 1 ? this.i : this.i + 1;
+        document.getElementsByClassName(index.toString())[0].classList.add('selected');
+        document.getElementsByClassName((index - 1).toString())[0].classList.remove('selected');
+    }
 
-  getPrev() {
-      this.i = this.i === 0 ? 0 : this.i - 1;
-  }
-  
-  getNext() {
-      this.i = this.i === this.slides.length - 1 ? this.i : this.i + 1;
-  }
+    getPrev() {
+        this.i = this.i === 0 ? 0 : this.i - 1;
+    }
 
-  // function getSlide() {
-  //   throw new Error('Function not implemented.');
-  // }
-
+    getNext() {
+        this.i = this.i === this.slides.length - 1 ? this.i : this.i + 1;
+    }
 }

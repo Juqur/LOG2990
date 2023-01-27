@@ -19,8 +19,7 @@ export class CardComponent {
             } else {
                 return 'Hard';
             }
-        }
-        catch {
+        } catch {
             return 'No difficulty';
         }
     }
