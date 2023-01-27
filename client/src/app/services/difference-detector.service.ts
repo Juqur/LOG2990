@@ -34,12 +34,6 @@ export class DifferenceDetectorService {
                             differenceData[pixelPosition + 1] = 0;
                             differenceData[pixelPosition + 2] = 0;
                             differenceData[pixelPosition + 3] = 255;
-                            if (j === 0 && k === 0) {
-                                differenceData[pixelPosition] = 255;
-                                differenceData[pixelPosition + 1] = 0;
-                                differenceData[pixelPosition + 2] = 0;
-                                differenceData[pixelPosition + 3] = 255;
-                            }
                         }
                     }
                 }
