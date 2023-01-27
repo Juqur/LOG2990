@@ -1,16 +1,13 @@
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-
-    <div class="action">
-        <!-- <button mat-button (click)='getSolo()' [classList]="soloClassList">Solo</button>
-        <button (click)='getOneVOne()' [classList]="oneVOneClassList">1v1</button> -->
-
-        <button (click)='getSolo(2*index)' class="button-81 solo selected {{2*index}}" id="{{2*index}}" mat-button>Solo</button>
-        <button (click)='getOneVOne(2*index+1)' class="button-81 1v1 {{(2*index)+1}}" id="{{(2*index)+1}}" mat-button>1v1</button>
-    </div>
    
     <div class="carousel-inner" role="listbox">
         <div [innerHTML]="getSlide()">
         </div>
+    </div>
+
+    <div class="action">
+        <button (click)='changeSoloButtonStyle(2*index)' class="button-leaderboard solo selected {{2*index}}" id="{{2*index}}"></button>
+        <button (click)='changeMultiButtonStyle(2*index+1)' class="button-leaderboard 1v1 {{(2*index)+1}}" id="{{(2*index)+1}}"></button>
     </div>
   
   </div>

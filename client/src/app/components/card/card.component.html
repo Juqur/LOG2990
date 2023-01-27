@@ -2,9 +2,10 @@
     <img src="{{ level.image }}" class="thumbnail" />
     <h2>{{ level.name }} - {{ difficulty }}</h2>
     <mat-card-content>
-        <mat-card-header>LeaderBoard - Top 3</mat-card-header>
-        <app-carousel [level]="this.level" [index]="this.level.id"></app-carousel>
-        <!-- <img mat-card-image src="{{ level.difficulty }}" class="difficulty"> -->
+        <div class="carousel-container">
+            <h4>LeaderBoard - Top 3</h4>
+            <app-carousel [level]="this.level" [index]="this.level.id"></app-carousel>
+        </div>
         <mat-card-actions>
             <button routerLink="/game" mat-raised-button>Solo</button>
             <button mat-raised-button>1v1</button>
