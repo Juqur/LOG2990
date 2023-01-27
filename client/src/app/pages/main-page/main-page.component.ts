@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AudioService } from '@app/services/audio.service';
 
@@ -7,10 +7,20 @@ import { AudioService } from '@app/services/audio.service';
     templateUrl: './main-page.component.html',
     styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent {
+export class MainPageComponent implements OnInit, OnDestroy {
     icon: string = 'volume_up';
 
     constructor(private router: Router, private audioService: AudioService) {}
+
+    ngOnInit(): void {
+        this.audioService.soundtrack = this.audioService.create('./assets/audio/soundtrack.mp3');
+        this.audioService.soundtrack.loop = true;
+        this.audioService.play(this.audioService.soundtrack);
+    }
+
+    ngOnDestroy(): void {
+        this.audioService.soundtrack.load();
+    }
 
     startGameOnClick() {
         this.router.navigate(['/selection']);

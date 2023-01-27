@@ -5,11 +5,6 @@ import { Injectable } from '@angular/core';
 })
 export class AudioService {
     soundtrack: HTMLAudioElement;
-    constructor() {
-        this.soundtrack = this.create('./assets/audio/soundtrack.mp3');
-        this.soundtrack.loop = true;
-        this.play(this.soundtrack);
-    }
 
     /**
      * Creates an audio element.
