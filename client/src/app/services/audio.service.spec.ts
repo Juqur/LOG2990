@@ -19,8 +19,9 @@ describe('AudioService', () => {
     });
     it('should play an audio HTML element', () => {
         const audio = service.create('./assets/audio/click.mp3');
+        const spyAudioPlay = spyOn(audio, 'play');
         service.play(audio);
-        expect(audio.paused).toBeFalsy();
+        expect(spyAudioPlay).toHaveBeenCalled();
     });
     it('playSound should call create and play', () => {
         const spyCreate = spyOn(service, 'create');
