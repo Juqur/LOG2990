@@ -7,8 +7,8 @@ import { Message } from '@app/messages';
     styleUrls: ['./chat-message.component.scss'],
 })
 export class ChatMessageComponent implements OnInit {
-    @Input() message: Message;
-    @Input() index: number;
+    @Input() message: Message = { sender: 'No name', text: 'No text', hourPosted: '00:00', playerId: -1 };
+    @Input() index: number | -1;
 
     displayName: string;
 

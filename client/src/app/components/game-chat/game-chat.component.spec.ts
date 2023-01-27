@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatMessageComponent } from '../chat-message/chat-message.component';
 // import { ChatMessageComponent } from '../chat-message/chat-message.component';
-import { MessageBoxComponent } from '../components/message-box.component';
+import { MessageBoxComponent } from '../message-box/message-box.component';
 // '../services/mouse-handler.service'
 
 import SpyObj = jasmine.SpyObj;
