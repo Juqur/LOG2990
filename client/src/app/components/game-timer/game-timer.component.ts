@@ -25,10 +25,12 @@ export class GameTimerComponent implements OnInit {
 
     downTimer() {
         this.gameTime = this.gameLength;
+        this.formatTime();
         this.interval = setInterval(() => {
-            if (this.gameTime >= 0) {
+            if (this.gameTime > 0) {
                 this.gameTime--;
             } else {
+                clearInterval(this.interval);
                 // TODO
                 // Send message that timer has ended.
             }
@@ -38,10 +40,12 @@ export class GameTimerComponent implements OnInit {
 
     upTimer() {
         this.gameTime = 0;
+        this.formatTime();
         this.interval = setInterval(() => {
             if (this.gameTime < this.gameLength) {
                 this.gameTime++;
             } else {
+                clearInterval(this.interval);
                 // TODO
                 // Send message that timer has ended.
             }
@@ -52,7 +56,10 @@ export class GameTimerComponent implements OnInit {
     formatTime() {
         const minutes: number = Math.floor(this.gameTime / 60);
         const seconds: number = this.gameTime - minutes * 60;
-        this.gameTimeFormatted = 'Time: ' + minutes + ':' + seconds;
+
+        const minutesString: string = minutes < 10 ? '0' + minutes : minutes.toString();
+        const secondsString: string = seconds < 10 ? '0' + seconds : seconds.toString();
+        this.gameTimeFormatted = 'Time: ' + minutesString + ':' + secondsString;
     }
 
     ngOnInit(): void {
