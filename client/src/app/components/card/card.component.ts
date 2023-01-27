@@ -13,10 +13,15 @@ export class CardComponent {
     difficulty: string;
 
     displayDifficulty(): string {
-        if (this.level.isEasy === true) {
-            return 'Easy';
-        } else {
-            return 'Hard';
+        try {
+            if (this.level.isEasy === true) {
+                return 'Easy';
+            } else {
+                return 'Hard';
+            }
+        }
+        catch {
+            return 'No difficulty';
         }
     }
 

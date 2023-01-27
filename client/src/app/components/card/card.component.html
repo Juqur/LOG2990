@@ -1,9 +1,9 @@
 <mat-card *ngIf="level" class="card">
-    <img mat-card-image src="{{ level.image }}" class="thumbnail" />
-    <mat-card-title>{{ level.name }} - {{ difficulty }}</mat-card-title>
+    <img src="{{ level.image }}" class="thumbnail" />
+    <h2>{{ level.name }} - {{ difficulty }}</h2>
     <mat-card-content>
         <mat-card-header>LeaderBoard - Top 3</mat-card-header>
-        <app-carousel [level]="this.level"></app-carousel>
+        <app-carousel [level]="this.level" [index]="this.level.id"></app-carousel>
         <!-- <img mat-card-image src="{{ level.difficulty }}" class="difficulty"> -->
         <mat-card-actions>
             <button routerLink="/game" mat-raised-button>Solo</button>
