@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
+    // TODO: Fix audio!! All commented out for now is audio related code.
     icon: string = 'volume_up';
     // audio: HTMLAudioElement;
     constructor(private router: Router) {
@@ -18,7 +19,7 @@ export class MainPageComponent {
     }
 
     startGameOnClick() {
-        this.router.navigate(['/game']);
+        this.router.navigate(['/selection']);
     }
 
     volumeOnClick() {

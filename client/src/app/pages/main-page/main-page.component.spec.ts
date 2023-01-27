@@ -37,10 +37,18 @@ describe('MainPageComponent', () => {
         component.creditsOnClick();
         expect(credits.style.display).toEqual('block');
     });
-    it('should redirect to /game when clicking on the classic button', () => {
+    it('should handle credits display when calling creditsOnClick and the credits HTML element does not work', () => {
+        const credits = document.getElementById('credits');
+        if (!credits) {
+            return;
+        }
+        credits.remove();
+        expect(component.creditsOnClick()).toBeUndefined();
+    });
+    it('should redirect to /selection when clicking on the classic button', () => {
         const router = TestBed.inject(Router);
         const spy = spyOn(router, 'navigate');
         component.startGameOnClick();
-        expect(spy).toHaveBeenCalledWith(['/game']);
+        expect(spy).toHaveBeenCalledWith(['/selection']);
     });
 });
