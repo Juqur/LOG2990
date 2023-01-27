@@ -17,6 +17,11 @@ export class CarouselComponent implements OnInit {
         this.populateSlides();
     }
 
+    /**
+     * get the time of the level for the solo mode
+     * @param index 
+     * @returns the time of the level for the solo mode
+     */
     getTimeSolo(index: number) {
         try {
             return this.formatTime(this.level.timeSolo[index]);
@@ -25,6 +30,11 @@ export class CarouselComponent implements OnInit {
         }
     }
 
+    /**
+     * get the time of the level for the multi mode
+     * @param index 
+     * @returns the time of the level for the multi mode
+     */
     getTimeMulti(index: number) {
         try {
             return this.formatTime(this.level.timeMulti[index]);
@@ -33,6 +43,11 @@ export class CarouselComponent implements OnInit {
         }
     }
 
+    /**
+     * get the player of the level for the solo mode
+     * @param index 
+     * @returns the player of the level for the solo mode
+     */
     getPlayerSolo(index: number) {
         try {
             return this.level.playerSolo[index];
@@ -41,7 +56,12 @@ export class CarouselComponent implements OnInit {
         }
     }
 
-    getPlayerMulti(index: number): string {
+    /**
+     * get the player of the level for the multi mode
+     * @param index 
+     * @returns the player of the level for the multi mode
+     */
+    getPlayerMulti(index: number):string {
         try {
             return this.level.playerMulti[index];
         } catch {
@@ -49,6 +69,11 @@ export class CarouselComponent implements OnInit {
         }
     }
 
+    /**
+     * format the time
+     * @param time 
+     * @returns the time formatted
+     */
     formatTime(time: number): string {
         const minutes: number = Math.floor(time / 60);
         const seconds: number = time - minutes * 60;
@@ -58,6 +83,9 @@ export class CarouselComponent implements OnInit {
         return minutesString + ':' + secondsString;
     }
 
+    /**
+     * populate the slides
+     */
     populateSlides() {
         this.temp = `
     <table width="100%">
@@ -112,17 +140,29 @@ export class CarouselComponent implements OnInit {
         this.slides.push(this.temp);
     }
 
+    /**
+     * get the slide
+     * @returns the slide
+     */
     getSlide() {
         return this.slides[this.i];
     }
 
-    getSolo(index: number) {
+    /**
+     * change the style of the solo button when selected
+     * @param index 
+     */
+    changeSoloButtonStyle(index: number) {
         this.i = this.i === 0 ? 0 : this.i - 1;
         document.getElementsByClassName(index.toString())[0].classList.add('selected');
         document.getElementsByClassName((index + 1).toString())[0].classList.remove('selected');
     }
 
-    getOneVOne(index: number) {
+    /**
+     * change the style of the multi button when selected
+     * @param index 
+     */
+    changeMultiButtonStyle(index: number) {
         this.i = this.i === this.slides.length - 1 ? this.i : this.i + 1;
         document.getElementsByClassName(index.toString())[0].classList.add('selected');
         document.getElementsByClassName((index - 1).toString())[0].classList.remove('selected');

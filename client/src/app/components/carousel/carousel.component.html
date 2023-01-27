@@ -6,8 +6,8 @@
     </div>
 
     <div class="action">
-        <button (click)='getSolo(2*index)' class="button-leaderboard solo selected {{2*index}}" id="{{2*index}}"></button>
-        <button (click)='getOneVOne(2*index+1)' class="button-leaderboard 1v1 {{(2*index)+1}}" id="{{(2*index)+1}}"></button>
+        <button (click)='changeSoloButtonStyle(2*index)' class="button-leaderboard solo selected {{2*index}}" id="{{2*index}}"></button>
+        <button (click)='changeMultiButtonStyle(2*index+1)' class="button-leaderboard 1v1 {{(2*index)+1}}" id="{{(2*index)+1}}"></button>
     </div>
   
   </div>
