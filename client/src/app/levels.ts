@@ -15,9 +15,9 @@ export const levels = [
         image: 'assets/images/spinningSkull.gif',
         name: ':skull:',
         playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: [60,65,70],
+        timeSolo: [60, 65, 70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: [80,83,90],
+        timeMulti: [80, 83, 90],
         difficulty: 'assets/images/easy.png',
     },
     {
@@ -25,9 +25,9 @@ export const levels = [
         image: 'assets/images/bing-chilling.png',
         name: '现在我有冰淇淋',
         playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: [60,65,70],
+        timeSolo: [60, 65, 70],
         playerMulti: ['Brother 郝', 'Hervé Harvey', 'Marcel Martel'],
-        timeMulti: [80,83,90],
+        timeMulti: [80, 83, 90],
         difficulty: 'assets/images/hard.png',
     },
     {
@@ -35,9 +35,9 @@ export const levels = [
         image: 'assets/images/flibustier.png',
         name: 'Le flibuster mysogine',
         playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: [60,65,70],
+        timeSolo: [60, 65, 70],
         playerMulti: ['Eliza Vezina', 'Caillou Roche', 'Marcel Martel'],
-        timeMulti: [80,83,90],
+        timeMulti: [80, 83, 90],
         difficulty: 'assets/images/easy.png',
     },
 
@@ -46,9 +46,9 @@ export const levels = [
         image: 'assets/images/figma.png',
         name: 'Figma rouleau de printemps',
         playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: [60,65,70],
+        timeSolo: [60, 65, 70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: [80,83,90],
+        timeMulti: [80, 83, 90],
         difficulty: 'assets/images/easy.png',
     },
 
@@ -57,9 +57,9 @@ export const levels = [
         image: 'assets/images/kekqing.png',
         name: 'Yuheng of Liyue Qixing',
         playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: [60,65,70],
+        timeSolo: [60, 65, 70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: [80,83,90],
+        timeMulti: [80, 83, 90],
         difficulty: 'assets/images/easy.png',
     },
     {
@@ -67,12 +67,11 @@ export const levels = [
         image: 'assets/images/kekqing.png',
         name: 'KEKW',
         playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: [60,65,70],
+        timeSolo: [60, 65, 70],
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: [80,83,90],
+        timeMulti: [80, 83, 90],
         difficulty: 'assets/images/easy.png',
-
-    }
+    },
 ];
 
 /*
