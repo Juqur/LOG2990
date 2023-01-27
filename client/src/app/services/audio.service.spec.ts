@@ -13,7 +13,7 @@ describe('AudioService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-    it('should play audio', () => {
-        service.playAudio('./assets/audio/click.mp3');
+    it('should create an audio HTML element', () => {
+        expect(service.playSound('./assets/audio/click.mp3'));
     });
 });
