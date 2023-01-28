@@ -1,11 +1,11 @@
 .background {
     background-color: #355070;
+    height: 100vh;
 }
 
-.container {
+.flex-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
 }
 
 /* Header */
@@ -16,8 +16,8 @@
 
 /* Body */
 .body-item {
+    justify-content: center;
     padding-left: 20vh;
-    align-self: left;
 }
 
 h1 {
@@ -31,31 +31,26 @@ p {
     color: black;
     margin: 0 0 0;
 }
+
 .title-container {
-    align-self: left;
-    font-size: 5rem;
-    // margin-top: 5vh;
+    width: 100vh;
+    height: 25vh;
 }
 
 .title-top {
-    align-self: right;
     font-size: 3rem;
+    line-height: 1rem;
     margin-left: 1.2vh;
 }
 
 .title-bottom {
-    align-self: right;
-    margin-top: 7vh;
+    line-height: 8rem;
     font-size: 8rem;
 }
 
 .button-container {
-    display: flex;
-    flex-direction: column;
-    // justify-content: center;
-    // align-items: center;
-    margin-top: 10vh;
-    margin-left: 2vh;
+    margin-top: 5vh;
+    margin-left: 1vh;
 
     button + button {
         margin-top: 3rem;
