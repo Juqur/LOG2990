@@ -44,7 +44,7 @@ describe('GameTimerComponent', () => {
         component.ngOnInit();
         tick(Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:59');
-        tick(Constants.thirty - 1 * Constants.millisecondsInOneSecond);
+        tick((Constants.thirty - 1) * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');
         tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:00');
@@ -61,7 +61,7 @@ describe('GameTimerComponent', () => {
         component.ngOnInit();
         tick(Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:01');
-        tick(Constants.thirty - 1 * Constants.millisecondsInOneSecond);
+        tick((Constants.thirty - 1) * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:30');
         tick(Constants.thirty * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:00');

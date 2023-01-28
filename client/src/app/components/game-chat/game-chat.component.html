@@ -1,1 +1,13 @@
-<p>game-chat works!</p>
+<!--
+Inspired by https://dribbble.com/supahfunk
+-->
+<section class="avenue-messenger">
+    <div class="chat">
+        <div class="messages">
+            <div *ngFor="let message of messages; index as i" class="zero-padding">
+                <app-chat-message [message]="message" [index]="i"></app-chat-message>
+            </div>
+        </div>
+        <app-message-box class="zero-padding"></app-message-box>
+    </div>
+</section>

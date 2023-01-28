@@ -1,13 +1,32 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Level } from '@app/levels';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
 })
+
+/**
+ * Component that displays a preview
+ * of a level and its difficulty
+ *
+ * @author Galen HU
+ * @class CardComponent
+ */
 export class CardComponent implements OnInit {
-    @Input() level: Level;
+    @Input() level: Level = {
+        id: -1,
+        image: 'no image',
+        name: 'no name',
+        playerSolo: ['player 1', 'player 2', 'player 3'],
+        timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
+        playerMulti: ['player 1', 'player 2', 'player 3'],
+        timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
+        isEasy: true,
+        route: 'no route',
+    };
 
     difficulty: string;
 
@@ -18,14 +37,10 @@ export class CardComponent implements OnInit {
      */
 
     displayDifficulty(): string {
-        try {
-            if (this.level.isEasy === true) {
-                return 'Easy';
-            } else {
-                return 'Hard';
-            }
-        } catch {
-            return 'No difficulty';
+        if (this.level.isEasy === true) {
+            return 'Easy';
+        } else {
+            return 'Hard';
         }
     }
 
