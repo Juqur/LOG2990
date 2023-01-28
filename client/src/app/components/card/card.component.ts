@@ -16,7 +16,8 @@ export class CardComponent implements OnInit {
         playerMulti: ['player 1', 'player 2', 'player 3'],
         timeMulti: [-1, -1, -1],
         isEasy: true,
-        route: 'no route'};
+        route: 'no route',
+    };
 
     difficulty: string;
 
@@ -25,7 +26,6 @@ export class CardComponent implements OnInit {
      *
      * @returns the difficulty of the level
      */
-
     displayDifficulty(): string {
         if (this.level.isEasy === true) {
             return 'Easy';
@@ -34,11 +34,11 @@ export class CardComponent implements OnInit {
         }
     }
 
-    displayDifficultyIcon(isEasy:boolean): string {
+    displayDifficultyIcon(isEasy: boolean): string {
         if (isEasy === true) {
-            return "../../../assets/images/easy.png";
+            return '../../../assets/images/easy.png';
         } else {
-            return "../../../assets/images/hard.png";
+            return '../../../assets/images/hard.png';
         }
     }
 

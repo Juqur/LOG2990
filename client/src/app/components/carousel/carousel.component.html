@@ -1,5 +1,5 @@
 <div id="carouselExampleControls" class="carousel slide">
-	<div class="carousel-inner" role="listbox">
+    <div class="carousel-inner" role="listbox">
         <div class="leaderboards">
             <div class="solo-leaderboard" *ngIf="selectedButton === 'solo'">
                 <table width="100%">
@@ -11,22 +11,22 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td width="80%" class="name-column">{{this.level.playerSolo[0]}}</td>
-                            <td width="20%" class="time-column">{{this.formatTime(this.level.timeSolo[0])}}</td>
+                            <td width="80%" class="name-column">{{ this.level.playerSolo[0] }}</td>
+                            <td width="20%" class="time-column">{{ this.formatTime(this.level.timeSolo[0]) }}</td>
                         </tr>
                         <tr>
-                            <td width="80%" class="name-column">{{this.level.playerSolo[1]}}</td>
-                            <td width="20%" class="time-column">{{this.formatTime(this.level.timeSolo[1])}}</td>
+                            <td width="80%" class="name-column">{{ this.level.playerSolo[1] }}</td>
+                            <td width="20%" class="time-column">{{ this.formatTime(this.level.timeSolo[1]) }}</td>
                         </tr>
                         <tr>
-                            <td width="80%" class="nameColumn">{{this.level.playerSolo[2]}}</td>
-                            <td width="20%" class="time-column">{{this.formatTime(this.level.timeSolo[2])}}</td>
+                            <td width="80%" class="nameColumn">{{ this.level.playerSolo[2] }}</td>
+                            <td width="20%" class="time-column">{{ this.formatTime(this.level.timeSolo[2]) }}</td>
                         </tr>
                     </tbody>
-				</table>
+                </table>
             </div>
             <div class="multi-leaderboard" *ngIf="selectedButton === 'multi'">
-				<table width="100%">
+                <table width="100%">
                     <thead>
                         <tr>
                             <td><b>1v1</b></td>
@@ -35,40 +35,32 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td width="80%" class="name-column">{{this.level.playerMulti[0]}}</td>
-                            <td width="20%" class="time-column">{{this.formatTime(this.level.timeMulti[0])}}</td>
+                            <td width="80%" class="name-column">{{ this.level.playerMulti[0] }}</td>
+                            <td width="20%" class="time-column">{{ this.formatTime(this.level.timeMulti[0]) }}</td>
                         </tr>
                         <tr>
-                            <td width="80%" class="name-column">{{this.level.playerMulti[1]}}</td>
-                            <td width="20%" class="time-column">{{this.formatTime(this.level.timeMulti[1])}}</td>
+                            <td width="80%" class="name-column">{{ this.level.playerMulti[1] }}</td>
+                            <td width="20%" class="time-column">{{ this.formatTime(this.level.timeMulti[1]) }}</td>
                         </tr>
                         <tr>
-                            <td width="80%" class="nameColumn">{{this.level.playerMulti[2]}}</td>
-                            <td width="20%" class="time-column">{{this.formatTime(this.level.timeMulti[2])}}</td>
+                            <td width="80%" class="nameColumn">{{ this.level.playerMulti[2] }}</td>
+                            <td width="20%" class="time-column">{{ this.formatTime(this.level.timeMulti[2]) }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-<!-- 
+
     <div class="action">
-        <button type="button" (click)="changeButtonStyle('solo')" class="button-leaderboard solo selected" *ngIf="selectedButton === 'solo'"></button>
-        <button type="button" (click)="changeButtonStyle('multi')" class="button-leaderboard 1v1" *ngIf="selectedButton === 'solo'"></button>
+        <button type="button" (click)="changeButtonStyle('multi')" *ngIf="selectedButton === 'solo'" class="toggle">
+            <button type="button" class="button-leaderboard selected"></button>
+            <button type="button" class="button-leaderboard"></button>
+        </button>
 
-		<button type="button" (click)="changeButtonStyle('solo')" class="button-leaderboard solo " *ngIf="selectedButton === 'multi'"></button>
-        <button type="button" (click)="changeButtonStyle('multi')" class="button-leaderboard 1v1 selected" *ngIf="selectedButton === 'multi'"></button>
-    </div> -->
-
-	<div class="action">
-		<button type="button" (click)="changeButtonStyle('multi')" *ngIf="selectedButton === 'solo'" class="toggle">
-			<button type="button" class="button-leaderboard selected"></button>
-			<button type="button" class="button-leaderboard "></button>
-		</button>
-
-		<button type="button" (click)="changeButtonStyle('solo')" *ngIf="selectedButton === 'multi'" class="toggle">
-			<button type="button" class="button-leaderboard "></button>
-			<button type="button" class="button-leaderboard selected"></button>
-		</button>
-	</div>
+        <button type="button" (click)="changeButtonStyle('solo')" *ngIf="selectedButton === 'multi'" class="toggle">
+            <button type="button" class="button-leaderboard"></button>
+            <button type="button" class="button-leaderboard selected"></button>
+        </button>
+    </div>
 </div>

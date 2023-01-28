@@ -16,17 +16,16 @@ export class CarouselComponent implements OnInit {
         playerMulti: ['player 1', 'player 2', 'player 3'],
         timeMulti: [-1, -1, -1],
         isEasy: true,
-        route: 'no route'
+        route: 'no route',
     };
 
     @Input() index: number = -1;
     temp: string;
     slides: string[] = [];
     i = 0;
-    selectedButton: string = "solo";
+    selectedButton: string = 'solo';
 
-    ngOnInit(): void {
-    }
+    ngOnInit(): void {}
 
     /**
      * format the time
@@ -43,11 +42,11 @@ export class CarouselComponent implements OnInit {
         return minutesString + ':' + secondsString;
     }
 
-    changeButtonStyle(button:string) {
+    changeButtonStyle(button: string) {
         if (button === 'solo') {
-          this.selectedButton = 'solo';
+            this.selectedButton = 'solo';
         } else {
-          this.selectedButton = 'multi';
+            this.selectedButton = 'multi';
         }
     }
 }
