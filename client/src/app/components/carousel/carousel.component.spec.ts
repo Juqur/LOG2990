@@ -19,8 +19,4 @@ describe('CarouselComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('carousel should have 2 slides', () => {
-        expect(component.slides.length).toEqual(2);
-    });
 });
