@@ -1,5 +1,7 @@
 export namespace Constants {
     // Global constants
+    export const minusOne: number = -1;
+    export const anyMinusOne = -1; // A servi a des tests, peut-être à supprimer
     export const ten: number = 10;
     export const twenty: number = 20;
     export const thirty: number = 30;
@@ -26,4 +28,9 @@ export namespace Constants {
 
     // Game timer
     export const millisecondsInOneSecond: number = 1000;
+
+    // Chat message
+    export const maxNameLength: number = 11;
+    export const maxNameLengthShown: number = 8;
+    export const maxMessageLength: number = 100;
 }
