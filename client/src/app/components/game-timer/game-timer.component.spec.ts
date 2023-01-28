@@ -40,9 +40,10 @@ describe('GameTimerComponent', () => {
 
     it('Down timer should correctly decrement value.', fakeAsync(() => {
         component.isCountDown = true;
-        component.gameLength = 120;
+        component.gameLength = 600;
         component.ngOnInit();
-        tick(1000);
+        expect(component.gameTimeFormatted).toEqual('Time: 10:00');
+        tick(481000);
         expect(component.gameTimeFormatted).toEqual('Time: 01:59');
         tick(29000);
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');
@@ -57,7 +58,7 @@ describe('GameTimerComponent', () => {
 
     it('Up timer should correctly increment value.', fakeAsync(() => {
         component.isCountDown = false;
-        component.gameLength = 120;
+        component.gameLength = 600;
         component.ngOnInit();
         tick(1000);
         expect(component.gameTimeFormatted).toEqual('Time: 00:01');
@@ -69,6 +70,8 @@ describe('GameTimerComponent', () => {
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');
         tick(30000);
         expect(component.gameTimeFormatted).toEqual('Time: 02:00');
+        tick(480000);
+        expect(component.gameTimeFormatted).toEqual('Time: 10:00');
         discardPeriodicTasks();
     }));
 
