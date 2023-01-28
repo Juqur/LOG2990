@@ -20,7 +20,7 @@ export class ChatMessageComponent implements OnInit {
         }
     }
 
-    createMessageComponent() {
+    createMessageComponent(): void {
         if (this.message.playerId === 1) {
             this.createMessageComponentPlayer1();
         } else {
