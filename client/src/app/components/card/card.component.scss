@@ -1,15 +1,31 @@
-.thumbnail {
-    width: 90%;
-    height: 100%;
-}
 
 .difficulty {
     width: 50%;
 }
 
+.leaderboard-title{
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 500;
+    font-family: Trebuchet MS, sans-serif;
+    color: #eaac8b;
+}
+
 .card {
-    width: 260px;
-    background-color: #3896a4;
+    max-width: 300px;
+    min-width: 260px;
+    background-color: #355070;
+    border: 0.2em solid #eaac8b;
+    padding: 1em;
+    border-radius: 1em;
+    font-size: larger;
+    font-weight: 300;
+    font-family: Trebuchet MS, sans-serif;
+    color: #eaac8b;
+    height: 616px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
 .grid {
@@ -17,20 +33,78 @@
     grid-template-columns: auto auto;
 }
 
-//center the img
-img {
-    margin: 0 auto;
-    display: block;
-}
-
-//h2 under img
-h2 {
+.level-name {
     text-align: center;
+    font-size: 2rem;
+    font-weight: 500;
 }
 
 .carousel-container{
-    border: 1px solid black;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 1px 1px 1px rgba(3, 3, 3, 0.37);
+    // border: 0.2em solid #eaac8b;
+    // border-radius: 10px;
+    padding: 1em;
+    margin-bottom: 1em;
+    // box-shadow: 1px 1px 1px rgba(3, 3, 3, 0.37);
+    background-color: rgba(0, 0, 0, 0.252);
+    border-radius: 1em;
+}
+
+.action-button-container{
+    margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-button {
+    background-color: #eaac8b00;
+    padding: 5px;
+    color: #eaac8b;
+    text-align: center;
+    border: 0.15em solid #eaac8b;
+    transition: 0.2s;
+    width: 40%;
+    margin: 0 10px;
+    font-size: large;
+}
+
+.action-button:hover {
+    transition: 0.3s;
+    background-color: #eaac8b;
+    color: black;
+    transform: rotate(3deg) scale(1.1);
+}
+
+.card > .card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 1em;
+}
+
+.image-container {
+    display: flex;
+    align-items: right;
+}
+
+.thumbnail {
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 1;
+}
+
+
+.difficulty-icon{
+    position:relative;
+    right:80px;
+    top:5px;
+    z-index: 2;
+}
+
+
+
+img.difficulty-icon{
+    width: 4em;
+    height: 4em;
 }

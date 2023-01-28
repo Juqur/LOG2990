@@ -23,9 +23,10 @@ export class CarouselComponent implements OnInit {
     temp: string;
     slides: string[] = [];
     i = 0;
+    selectedButton: string = "solo";
 
     ngOnInit(): void {
-        this.populateSlides();
+        // this.populateSlides();
     }
 
     /**
@@ -43,62 +44,62 @@ export class CarouselComponent implements OnInit {
         return minutesString + ':' + secondsString;
     }
 
-    /**
-     * populate the slides
-     */
-    populateSlides() {
-        this.temp = `
-    <table width="100%">
-    <thead>
-      <tr>
-        <td class="name-column"><b>SOLO</b></td>
-        <td class="time-column"><b>Time</b></td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td width="70%" class="name-column">${this.level.playerSolo[0]}</td>
-        <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[0])}</td>
-      </tr>
-      <tr>
-        <td width="70%" class="name-column">${this.level.playerSolo[1]}</td>
-        <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[1])}</td>
-      </tr>
-      <tr>
-        <td width="70%" class="nameColumn">${this.level.playerSolo[2]}</td>
-        <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[2])}</td>
-      </tr>
-    </tbody>
-    </table>`;
+    // /**
+    //  * populate the slides
+    //  */
+    // populateSlides() {
+    //     this.temp = `
+    // <table width="100%">
+    // <thead>
+    //   <tr>
+    //     <td class="name-column"><b>SOLO</b></td>
+    //     <td class="time-column"><b>Time</b></td>
+    //   </tr>
+    // </thead>
+    // <tbody>
+    //   <tr>
+    //     <td width="70%" class="name-column">${this.level.playerSolo[0]}</td>
+    //     <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[0])}</td>
+    //   </tr>
+    //   <tr>
+    //     <td width="70%" class="name-column">${this.level.playerSolo[1]}</td>
+    //     <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[1])}</td>
+    //   </tr>
+    //   <tr>
+    //     <td width="70%" class="nameColumn">${this.level.playerSolo[2]}</td>
+    //     <td width="30%" class="time-column">${this.formatTime(this.level.timeSolo[2])}</td>
+    //   </tr>
+    // </tbody>
+    // </table>`;
 
-        this.slides.push(this.temp);
+    //     this.slides.push(this.temp);
 
-        this.temp = `
-    <table width="100%">
-    <thead>
-      <tr>
-        <td><b>1v1</b></td>
-        <td><b>Time</b></td>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td width="70%" class="name-column">${this.level.playerMulti[0]}</td>
-            <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[0])}</td>
-        </tr>
-        <tr>
-            <td width="70%" class="name-column">${this.level.playerMulti[1]}</td>
-            <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[1])}</td>
-        </tr>
-        <tr>
-            <td width="70%" class="nameColumn">${this.level.playerMulti[2]}</td>
-            <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[2])}</td>
-        </tr>
-    </tbody>
-    </table>`;
+    //     this.temp = `
+    // <table width="100%">
+    // <thead>
+    //   <tr>
+    //     <td><b>1v1</b></td>
+    //     <td><b>Time</b></td>
+    //   </tr>
+    // </thead>
+    // <tbody>
+    //     <tr>
+    //         <td width="70%" class="name-column">${this.level.playerMulti[0]}</td>
+    //         <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[0])}</td>
+    //     </tr>
+    //     <tr>
+    //         <td width="70%" class="name-column">${this.level.playerMulti[1]}</td>
+    //         <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[1])}</td>
+    //     </tr>
+    //     <tr>
+    //         <td width="70%" class="nameColumn">${this.level.playerMulti[2]}</td>
+    //         <td width="30%" class="time-column">${this.formatTime(this.level.timeMulti[2])}</td>
+    //     </tr>
+    // </tbody>
+    // </table>`;
 
-        this.slides.push(this.temp);
-    }
+    //     this.slides.push(this.temp);
+    // }
 
     /**
      * get the slide
@@ -109,25 +110,33 @@ export class CarouselComponent implements OnInit {
         return this.slides[this.i];
     }
 
-    /**
-     * change the style of the solo button when selected
-     *
-     * @param index
-     */
-    changeSoloButtonStyle(index: number) {
-        this.i = this.i === 0 ? 0 : this.i - 1;
-        document.getElementsByClassName(index.toString())[0].classList.add('selected');
-        document.getElementsByClassName((index + 1).toString())[0].classList.remove('selected');
-    }
+    // /**
+    //  * change the style of the solo button when selected
+    //  *
+    //  * @param index
+    //  */
+    // changeSoloButtonStyle(index: number) {
+    //     this.i = this.i === 0 ? 0 : this.i - 1;
+    //     document.getElementsByClassName(index.toString())[0].classList.add('selected');
+    //     document.getElementsByClassName((index + 1).toString())[0].classList.remove('selected');
+    // }
 
-    /**
-     * change the style of the multi button when selected
-     *
-     * @param index
-     */
-    changeMultiButtonStyle(index: number) {
-        this.i = this.i === this.slides.length - 1 ? this.i : this.i + 1;
-        document.getElementsByClassName(index.toString())[0].classList.add('selected');
-        document.getElementsByClassName((index - 1).toString())[0].classList.remove('selected');
+    // /**
+    //  * change the style of the multi button when selected
+    //  *
+    //  * @param index
+    //  */
+    // changeMultiButtonStyle(index: number) {
+    //     this.i = this.i === this.slides.length - 1 ? this.i : this.i + 1;
+    //     document.getElementsByClassName(index.toString())[0].classList.add('selected');
+    //     document.getElementsByClassName((index - 1).toString())[0].classList.remove('selected');
+    // }
+
+    changeButtonStyle(button:string) {
+        if (button === 'solo') {
+          this.selectedButton = 'solo';
+        } else {
+          this.selectedButton = 'multi';
+        }
     }
 }

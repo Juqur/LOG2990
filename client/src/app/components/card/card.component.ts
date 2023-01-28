@@ -34,6 +34,14 @@ export class CardComponent implements OnInit {
         }
     }
 
+    displayDifficultyIcon(isEasy:boolean): string {
+        if (isEasy === true) {
+            return "../../../assets/images/easy.png";
+        } else {
+            return "../../../assets/images/hard.png";
+        }
+    }
+
     ngOnInit(): void {
         this.difficulty = this.displayDifficulty();
     }
