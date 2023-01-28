@@ -22,7 +22,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.audioService.soundtrack.load();
     }
 
-    startGameOnClick() {
+    classicPageOnClick() {
         this.router.navigate(['/selection']);
     }
 
