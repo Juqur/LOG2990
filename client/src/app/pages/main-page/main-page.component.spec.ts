@@ -45,10 +45,18 @@ describe('MainPageComponent', () => {
         credits.remove();
         expect(component.creditsOnClick()).toBeUndefined();
     });
+
     it('should redirect to /selection when clicking on the classic button', () => {
         const router = TestBed.inject(Router);
         const spy = spyOn(router, 'navigate');
         component.startGameOnClick();
         expect(spy).toHaveBeenCalledWith(['/selection']);
+    });
+
+    it('should redirect to /config when clicking on the classic button', () => {
+        const router = TestBed.inject(Router);
+        const spy = spyOn(router, 'navigate');
+        component.configPageOnClick();
+        expect(spy).toHaveBeenCalledWith(['/config']);
     });
 });
