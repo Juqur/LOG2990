@@ -26,7 +26,7 @@ export class AudioService {
      *
      * @param path The path to the audio file.
      */
-    play(audio: HTMLAudioElement): void {
+    play(audio?: HTMLAudioElement): void {
         const promise = audio?.play();
         if (promise) {
             promise
