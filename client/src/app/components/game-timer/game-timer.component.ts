@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-game-timer',
@@ -11,7 +12,7 @@ export class GameTimerComponent implements OnInit {
 
     gameTime: number = 0;
     interval: ReturnType<typeof setTimeout>;
-    readonly waitTime: number = 1000; // ms
+    readonly waitTime: number = Constants.millisecondsInOneSecond;
 
     gameTimeFormatted: string;
 
@@ -54,11 +55,11 @@ export class GameTimerComponent implements OnInit {
     }
 
     formatTime() {
-        const minutes: number = Math.floor(this.gameTime / 60);
-        const seconds: number = this.gameTime - minutes * 60;
+        const minutes: number = Math.floor(this.gameTime / Constants.secondsPerMinute);
+        const seconds: number = this.gameTime - minutes * Constants.secondsPerMinute;
 
-        const minutesString: string = minutes < 10 ? '0' + minutes : minutes.toString();
-        const secondsString: string = seconds < 10 ? '0' + seconds : seconds.toString();
+        const minutesString: string = minutes < Constants.ten ? '0' + minutes : minutes.toString();
+        const secondsString: string = seconds < Constants.ten ? '0' + seconds : seconds.toString();
         this.gameTimeFormatted = 'Time: ' + minutesString + ':' + secondsString;
     }
 

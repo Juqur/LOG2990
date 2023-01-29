@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Level, levels } from '@app/levels';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-configuration',
@@ -9,7 +10,7 @@ import { Level, levels } from '@app/levels';
 export class ConfigurationComponent {
     levels = [...levels];
     currentPage: number = 0;
-    levelsPerPage: number = 4;
+    levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
     lastPage = Math.round(levels.length / this.levelsPerPage - 1);

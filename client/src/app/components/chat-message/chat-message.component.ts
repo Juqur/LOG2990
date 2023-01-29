@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Message } from '@app/messages';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-chat-message',
@@ -8,13 +9,13 @@ import { Message } from '@app/messages';
 })
 export class ChatMessageComponent implements OnInit {
     @Input() message: Message = { sender: 'No name', text: 'No text', hourPosted: '00:00', playerId: -1 };
-    @Input() index: number | -1;
+    @Input() index: number = Constants.minusOne;
 
     displayName: string;
 
     formatNameLength() {
-        if (this.message.sender.length > 11) {
-            this.displayName = this.message.sender.substring(0, 8) + '...';
+        if (this.message.sender.length > Constants.maxNameLength) {
+            this.displayName = this.message.sender.substring(0, Constants.maxNameLengthShown) + '...';
         } else {
             this.displayName = this.message.sender;
         }
