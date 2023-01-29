@@ -24,7 +24,7 @@ describe('GameTimerComponent', () => {
 
     it('Down timer should have a value after initialization.', fakeAsync(() => {
         component.isCountDown = true;
-        component.gameLength = 120;
+        component.gameLength = Constants.twoMinutesTimer;
         component.ngOnInit();
         expect(component.gameTimeFormatted).toEqual('Time: 02:00');
         discardPeriodicTasks();
@@ -32,7 +32,7 @@ describe('GameTimerComponent', () => {
 
     it('Up timer should have a value after initialization.', fakeAsync(() => {
         component.isCountDown = false;
-        component.gameLength = 120;
+        component.gameLength = Constants.twoMinutesTimer;
         component.ngOnInit();
         expect(component.gameTimeFormatted).toEqual('Time: 00:00');
         discardPeriodicTasks();
@@ -40,41 +40,44 @@ describe('GameTimerComponent', () => {
 
     it('Down timer should correctly decrement value.', fakeAsync(() => {
         component.isCountDown = true;
-        component.gameLength = 120;
+        component.gameLength = Constants.tenMinutesTimer;
         component.ngOnInit();
-        tick(Constants.millisecondsInOneSecond);
+        expect(component.gameTimeFormatted).toEqual('Time: 10:00');
+        tick(Constants.eightMinutesWait + Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:59');
         tick((Constants.thirty - 1) * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');
-        tick(Constants.thirty * Constants.millisecondsInOneSecond);
+        tick(Constants.millisecondsInThirtySeconds);
         expect(component.gameTimeFormatted).toEqual('Time: 01:00');
-        tick(Constants.thirty * Constants.millisecondsInOneSecond);
+        tick(Constants.millisecondsInThirtySeconds);
         expect(component.gameTimeFormatted).toEqual('Time: 00:30');
-        tick(Constants.thirty * Constants.millisecondsInOneSecond);
+        tick(Constants.millisecondsInThirtySeconds);
         expect(component.gameTimeFormatted).toEqual('Time: 00:00');
         discardPeriodicTasks();
     }));
 
     it('Up timer should correctly increment value.', fakeAsync(() => {
         component.isCountDown = false;
-        component.gameLength = 120;
+        component.gameLength = Constants.tenMinutesTimer;
         component.ngOnInit();
         tick(Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:01');
         tick((Constants.thirty - 1) * Constants.millisecondsInOneSecond);
         expect(component.gameTimeFormatted).toEqual('Time: 00:30');
-        tick(Constants.thirty * Constants.millisecondsInOneSecond);
+        tick(Constants.millisecondsInThirtySeconds);
         expect(component.gameTimeFormatted).toEqual('Time: 01:00');
-        tick(Constants.thirty * Constants.millisecondsInOneSecond);
+        tick(Constants.millisecondsInThirtySeconds);
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');
-        tick(Constants.thirty * Constants.millisecondsInOneSecond);
+        tick(Constants.millisecondsInThirtySeconds);
         expect(component.gameTimeFormatted).toEqual('Time: 02:00');
+        tick(Constants.eightMinutesWait);
+        expect(component.gameTimeFormatted).toEqual('Time: 10:00');
         discardPeriodicTasks();
     }));
 
     it('Down timer should stop decrementing after max value', fakeAsync(() => {
         component.isCountDown = true;
-        component.gameLength = 120;
+        component.gameLength = Constants.twoMinutesTimer;
         component.ngOnInit();
         tick(
             Constants.hundred * Constants.millisecondsInOneSecond +
@@ -87,7 +90,7 @@ describe('GameTimerComponent', () => {
 
     it('Up timer should stop incrementing after max value', fakeAsync(() => {
         component.isCountDown = false;
-        component.gameLength = 120;
+        component.gameLength = Constants.twoMinutesTimer;
         component.ngOnInit();
         tick(
             Constants.hundred * Constants.millisecondsInOneSecond +
