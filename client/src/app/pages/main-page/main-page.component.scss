@@ -33,8 +33,14 @@ p {
 }
 
 .title-container {
-    width: 100vh;
-    height: 25vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.title-img-container {
+    padding-left: 5vh;
+    width: 11rem;
+    height: 11rem;
 }
 
 .title-top {
@@ -107,6 +113,10 @@ p {
 }
 
 /* Components */
+button {
+    cursor: pointer;
+}
+
 .side-button {
     position: relative;
     width: 50px;
@@ -150,9 +160,39 @@ p {
     display: none;
 }
 
+#magnifying-glass {
+    max-width: 5rem;
+    max-height: 5rem;
+    animation: hover-around 15s ease-in-out infinite;
+}
+
+@keyframes hover-around {
+    0% {
+        transform: translate(0px, 0px);
+    }
+    20% {
+        transform: translate(-10px, -60px) rotate(-15deg);
+    }
+    40% {
+        transform: translate(-20px, 30px) rotate(10deg);
+    }
+    5% {
+        transform: translate(-5px, -2px) rotate(-15deg);
+    }
+    60% {
+        transform: translate(30px, -70px) rotate(-5deg);
+    }
+    80% {
+        transform: translate(40px, 40px) rotate(9deg);
+    }
+    100% {
+        transform: translate(0px, 0px);
+    }
+}
+
 /* Properties */
 .prevent-select {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
+    --webkit-user-select: none; /* Safari */
+    --ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
 }
