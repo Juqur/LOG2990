@@ -8,13 +8,14 @@ import { AudioService } from '@app/services/audio.service';
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent implements OnInit, OnDestroy {
-    icon: string = 'volume_up';
+    icon: string = 'volume_off';
 
     constructor(private router: Router, private audioService: AudioService) {}
 
     ngOnInit(): void {
         this.audioService.soundtrack = this.audioService.create('./assets/audio/soundtrack.mp3');
         this.audioService.soundtrack.loop = true;
+        this.audioService.soundtrack.muted = true;
         this.audioService.play(this.audioService.soundtrack);
     }
 
