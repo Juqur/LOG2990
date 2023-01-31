@@ -3,8 +3,8 @@ import { Vec2 } from '@app/interfaces/vec2';
 import { DrawService } from '@app/services/draw.service';
 
 // TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
+export const DEFAULT_WIDTH = 640;
+export const DEFAULT_HEIGHT = 480;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
