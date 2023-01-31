@@ -5,7 +5,8 @@
     <section id="creation-area-container">
         <div class="img-zone-container">
             <p>Image originale</p>
-            <app-play-area id="original-play-area" ></app-play-area>
+            <app-play-area *ngIf="modifiedArea"></app-play-area>
+            <app-play-area id="original-play-area" [currentImgSrc]="'./assets/un_regal.bmp'"></app-play-area>
             <div class="zone-button-container">
                 <button class="button-settings" color="orange">
                    Téléverser Image Originale
@@ -25,7 +26,8 @@
         </div>
         <div class="img-zone-container" >
             <p>Image modifiée</p>
-            <app-play-area></app-play-area>
+            <app-play-area *ngIf="modifiedArea"></app-play-area>
+            <app-play-area id="modofied-play-area" [currentImgSrc]="'./assets/un_regal.bmp'"></app-play-area>
             <div class="zone-button-container">
                 <button class="button-settings" color="orange">
                    Téléverser Image Modifiée
@@ -42,5 +44,6 @@
         <div class="enlargissement-container">
             <p>Rayon d'élargissement</p>
         </div>
+        <input type="file" (change)="onFileChange($event)">
 </section>
 </div>
