@@ -3,11 +3,11 @@ import { Level, levels } from '@app/levels';
 import { Constants } from '@common/constants';
 
 @Component({
-    selector: 'app-selection-page',
-    templateUrl: './selection-page.component.html',
-    styleUrls: ['./selection-page.component.scss'],
+    selector: 'app-configuration',
+    templateUrl: './configuration.component.html',
+    styleUrls: ['./configuration.component.scss'],
 })
-export class SelectionPageComponent {
+export class ConfigurationComponent {
     levels = [...levels];
     currentPage: number = 0;
     levelsPerPage: number = Constants.levelsPerPage;
