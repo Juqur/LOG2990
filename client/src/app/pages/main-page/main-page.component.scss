@@ -12,7 +12,6 @@
     aspect-ratio: 16/9;
     width: 1920px;
     height: 1080px;
-    resize: both;
     box-sizing: border-box;
     position: relative;
     top: 50%;
@@ -191,7 +190,7 @@ button {
     40% {
         transform: translate(-20px, 30px) rotate(10deg);
     }
-    5% {
+    50% {
         transform: translate(-5px, -2px) rotate(-15deg);
     }
     60% {

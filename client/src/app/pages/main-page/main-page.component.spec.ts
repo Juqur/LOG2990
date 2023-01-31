@@ -23,25 +23,19 @@ describe('MainPageComponent', () => {
     it('should handle volume icon when calling volumeOnClick', () => {
         component.volumeOnClick();
         expect(component.icon).toEqual('volume_up');
-    });
-    it('should handle volume icon when calling volumeOnClick twice', () => {
-        component.volumeOnClick();
         component.volumeOnClick();
         expect(component.icon).toEqual('volume_off');
     });
-    it('should handle credits display when calling creditsOnClick', () => {
+
+    it('creditsOnClick should handle credits display', () => {
         const credits = document.getElementById('credits');
         if (!credits) {
             return;
         }
         component.creditsOnClick();
         expect(credits.style.display).toEqual('block');
-    });
-    it('should handle credits display when calling creditsOnClick and the credits HTML element does not work', () => {
-        const credits = document.getElementById('credits');
-        if (!credits) {
-            return;
-        }
+        component.creditsOnClick();
+        expect(credits.style.display).toEqual('none');
         credits.remove();
         expect(component.creditsOnClick()).toBeUndefined();
     });
