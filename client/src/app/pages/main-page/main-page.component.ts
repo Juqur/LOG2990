@@ -27,20 +27,32 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.audioService.soundtrack.load();
     }
 
+    /**
+     * Redirects to the selection page.
+     */
     classicPageOnClick() {
         this.router.navigate(['/selection']);
     }
 
+    /**
+     * Redirects to the configuration page.
+     */
     configPageOnClick() {
         this.router.navigate(['/config']);
     }
 
+    /**
+     * Handles the click on the volume button.
+     */
     volumeOnClick() {
         this.audioService.playSound('./assets/audio/click.mp3');
         this.audioService.mute();
         this.icon = this.icon === 'volume_up' ? 'volume_off' : 'volume_up';
     }
 
+    /**
+     * Handles the click on the credits button.
+     */
     creditsOnClick() {
         this.audioService.playSound('./assets/audio/click.mp3');
         const credits = document.getElementById('credits');
@@ -50,6 +62,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
         credits.style.display = credits.style.display === 'block' ? 'none' : 'block';
     }
 
+    /**
+     * Resizes the container and its components to fit the screen.
+     */
     resizeContainer() {
         const screenWidth = this.screen.nativeElement.offsetWidth;
         const screenHeight = this.screen.nativeElement.offsetHeight;
