@@ -9,18 +9,17 @@
 }
 
 .container {
-    display: flex;
     aspect-ratio: 16/9;
-    box-sizing: border-box;
+    width: 1920px;
+    height: 1080px;
     resize: both;
+    box-sizing: border-box;
     position: relative;
     top: 50%;
     left: 50%;
     overflow: hidden;
     background-color: #355070;
     transform-origin: center center;
-    width: 1920px;
-    height: 1080px;
 }
 
 .justified {
@@ -41,7 +40,7 @@
 /* Body */
 .body-item {
     justify-content: center;
-    padding-left: 20vh;
+    padding-left: 10rem;
 }
 
 h1 {
@@ -62,7 +61,7 @@ p {
 }
 
 .title-img-container {
-    padding-left: 5vh;
+    padding-left: 5rem;
     width: 11rem;
     height: 11rem;
 }
@@ -70,7 +69,7 @@ p {
 .title-top {
     font-size: 3rem;
     line-height: 1rem;
-    margin-left: 1.2vh;
+    margin-left: 0.5rem;
 }
 
 .title-bottom {
@@ -79,8 +78,8 @@ p {
 }
 
 .button-container {
-    margin-top: 5vh;
-    margin-left: 1vh;
+    margin-top: 5rem;
+    margin-left: 1rem;
 
     button + button {
         margin-top: 3rem;
@@ -120,14 +119,6 @@ p {
     margin-top: auto;
     text-align: right;
     padding: 10px;
-}
-
-.picture {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    padding-top: 20vh;
-    padding-right: 0vh;
 }
 
 .team-name {
@@ -178,8 +169,8 @@ button {
     border-top: 4px solid #eaac8b;
     border-left: 4px solid #eaac8b;
     border-radius: 15px 0 0 0px;
-    padding: 1.5vh;
-    padding-bottom: 8vh;
+    padding: 1.5rem;
+    padding-bottom: 8rem;
     z-index: 10;
     display: none;
 }
