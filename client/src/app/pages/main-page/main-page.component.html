@@ -1,41 +1,42 @@
-<div class="container justified">
-    <header class="header-item">
-        <button class="side-button" (click)="volumeOnClick()">
-            <i class="material-icons">{{ icon }}</i>
-        </button>
-    </header>
+<div class=flexible-fullscreen-body>
+    <div class="container justified">
+        <header class="header-item">
+            <button class="side-button" (click)="volumeOnClick()">
+                <i class="material-icons">{{ icon }}</i>
+            </button>
+        </header>
 
-    <body class="body-item justified">
-        <div class="title-container">
-            <div class="justified prevent-select">
-                <h1 class="title-top">Jeu des</h1>
-                <h1 class="title-bottom">différences</h1>
+        <body class="body-item justified">
+            <div class="title-container">
+                <div class="justified prevent-select">
+                    <h1 class="title-top">Jeu des</h1>
+                    <h1 class="title-bottom">différences</h1>
+                </div>
+                <div class="title-img-container">
+                    <img src="./assets/images/logo.png" alt="Logo" id="magnifying-glass" />
+                </div>
             </div>
-            <div class="title-img-container">
-                <img src="./assets/images/logo.png" alt="Logo" id="magnifying-glass" />
+            <div class="button-container justified">
+                <button mat-button class="menu-button" (click)="classicPageOnClick()"><span>Classique</span></button>
+                <button mat-button class="menu-button"><span>Temps limité</span></button>
+                <button mat-button class="menu-button"
+                    (click)="configPageOnClick()"><span>Configurations</span></button>
             </div>
-        </div>
+        </body>
 
-
-        <div class="button-container justified">
-            <button mat-button class="menu-button" (click)="classicPageOnClick()"><span>Classique</span></button>
-            <button mat-button class="menu-button"><span>Temps limité</span></button>
-            <button mat-button class="menu-button" (click)="configPageOnClick()"><span>Configurations</span></button>
-        </div>
-    </body>
-
-    <footer class="footer-item">
-        <div class="credit-container prevent-select" id="credits">
-            <h4 class="team-name">Équipe 304</h4>
-            <p>Charles Degrandpré</p>
-            <p>Simon Gagné</p>
-            <p>Galen Hu</p>
-            <p>Junaid Qureshi</p>
-            <p>Louis Félix St-Amour</p>
-            <p>Pierre Tran</p>
-        </div>
-        <button class="side-button" (click)="creditsOnClick()">
-            <i class="material-icons">school</i>
-        </button>
-    </footer>
+        <footer class="footer-item">
+            <div class="credit-container prevent-select" id="credits">
+                <h4 class="team-name">Équipe 304</h4>
+                <p>Charles Degrandpré</p>
+                <p>Simon Gagné</p>
+                <p>Galen Hu</p>
+                <p>Junaid Qureshi</p>
+                <p>Louis Félix St-Amour</p>
+                <p>Pierre Tran</p>
+            </div>
+            <button class="side-button" (click)="creditsOnClick()">
+                <i class="material-icons">school</i>
+            </button>
+        </footer>
+    </div>
 </div>

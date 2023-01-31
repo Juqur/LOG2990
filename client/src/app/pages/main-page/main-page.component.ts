@@ -9,7 +9,6 @@ import { AudioService } from '@app/services/audio.service';
 })
 export class MainPageComponent implements OnInit, OnDestroy {
     icon: string = 'volume_off';
-
     constructor(private router: Router, private audioService: AudioService) {}
 
     ngOnInit(): void {

@@ -1,6 +1,24 @@
-.container {
-    background-color: #355070;
+.flexible-fullscreen-body {
+    margin: 0;
+    position: fixed;
     height: 100vh;
+    width: 100vw;
+    transform-origin: center center;
+    background-color: #24364c;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    aspect-ratio: 16/9;
+    box-sizing: border-box;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-height: 100vh;
+    overflow: hidden;
+    background-color: #355070;
 }
 
 .justified {
@@ -10,6 +28,10 @@
 
 /* Header */
 .header-item {
+    aspect-ratio: 10/1;
+    box-sizing: border-box;
+    position: relative;
+    max-height: 100vh;
     text-align: right;
     padding: 10px;
 }
