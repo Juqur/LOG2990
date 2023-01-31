@@ -1,5 +1,6 @@
-<div class=flexible-fullscreen-body>
-    <div class="container justified">
+<div #screen (window:resize)="resizeContainer()" class=flexible-fullscreen-body>
+    <div #container class="container justified"
+        [ngStyle]="{ transform: 'translate(-50%, -50%) scale(' + this.scale + ')' }">
         <header class="header-item">
             <button class="side-button" (click)="volumeOnClick()">
                 <i class="material-icons">{{ icon }}</i>

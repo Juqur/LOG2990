@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AudioService } from '@app/services/audio.service';
 
@@ -8,7 +8,11 @@ import { AudioService } from '@app/services/audio.service';
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent implements OnInit, OnDestroy {
+    @ViewChild('screen', { static: true }) screen: ElementRef;
+    @ViewChild('container', { static: true }) container: ElementRef;
+    scale: number = 1;
     icon: string = 'volume_off';
+
     constructor(private router: Router, private audioService: AudioService) {}
 
     ngOnInit(): void {
@@ -16,6 +20,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.audioService.soundtrack.loop = true;
         this.audioService.soundtrack.muted = true;
         this.audioService.play(this.audioService.soundtrack);
+        this.resizeContainer();
     }
 
     ngOnDestroy(): void {
@@ -43,5 +48,13 @@ export class MainPageComponent implements OnInit, OnDestroy {
             return;
         }
         credits.style.display = credits.style.display === 'block' ? 'none' : 'block';
+    }
+
+    resizeContainer() {
+        const screenWidth = this.screen.nativeElement.offsetWidth;
+        const screenHeight = this.screen.nativeElement.offsetHeight;
+        const containerWidth = this.container.nativeElement.offsetWidth;
+        const containerHeight = this.container.nativeElement.offsetHeight;
+        this.scale = Math.min(screenWidth / containerWidth, screenHeight / containerHeight);
     }
 }

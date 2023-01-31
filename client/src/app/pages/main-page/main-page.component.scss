@@ -12,13 +12,15 @@
     display: flex;
     aspect-ratio: 16/9;
     box-sizing: border-box;
+    resize: both;
     position: relative;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    max-height: 100vh;
     overflow: hidden;
     background-color: #355070;
+    transform-origin: center center;
+    width: 1920px;
+    height: 1080px;
 }
 
 .justified {
@@ -91,8 +93,8 @@ p {
     text-align: center;
     border: 2px solid #eaac8b;
     transition: 0.2s;
-    width: 40vh;
-    height: 8vh;
+    width: 25rem;
+    height: 5rem;
 }
 
 .menu-button span {
