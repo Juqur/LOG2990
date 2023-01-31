@@ -22,12 +22,12 @@ describe('MainPageComponent', () => {
 
     it('should handle volume icon when calling volumeOnClick', () => {
         component.volumeOnClick();
-        expect(component.icon).toEqual('volume_off');
+        expect(component.icon).toEqual('volume_up');
     });
     it('should handle volume icon when calling volumeOnClick twice', () => {
         component.volumeOnClick();
         component.volumeOnClick();
-        expect(component.icon).toEqual('volume_up');
+        expect(component.icon).toEqual('volume_off');
     });
     it('should handle credits display when calling creditsOnClick', () => {
         const credits = document.getElementById('credits');
@@ -45,10 +45,18 @@ describe('MainPageComponent', () => {
         credits.remove();
         expect(component.creditsOnClick()).toBeUndefined();
     });
+
     it('should redirect to /selection when clicking on the classic button', () => {
         const router = TestBed.inject(Router);
         const spy = spyOn(router, 'navigate');
-        component.startGameOnClick();
+        component.classicPageOnClick();
         expect(spy).toHaveBeenCalledWith(['/selection']);
+    });
+
+    it('should redirect to /config when clicking on the classic button', () => {
+        const router = TestBed.inject(Router);
+        const spy = spyOn(router, 'navigate');
+        component.configPageOnClick();
+        expect(spy).toHaveBeenCalledWith(['/config']);
     });
 });
