@@ -13,9 +13,14 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
+import { CarouselComponent } from './components/carousel/carousel.component';
+import { ChatMessageComponent } from './components/chat-message/chat-message.component';
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
+import { MessageBoxComponent } from './components/message-box/message-box.component';
+import { ConfigurationComponent } from './pages/configuration/configuration.component';
+import { CreationComponent } from './pages/creation/creation.component';
 import { TestDiffComponent } from './pages/test-diff.component';
 
 /**
@@ -37,6 +42,11 @@ import { TestDiffComponent } from './pages/test-diff.component';
         GameTimerComponent,
         GameChatComponent,
         ImageDifferenceComponent,
+        ChatMessageComponent,
+        MessageBoxComponent,
+        CarouselComponent,
+        ConfigurationComponent,
+        CreationComponent,
         TestDiffComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],

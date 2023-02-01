@@ -1,0 +1,26 @@
+.message-box {
+    background-color: #454545;
+    border-radius: 5px;
+    display: flex;
+}
+
+#message-input {
+    resize: none;
+    border: none;
+    width: 80%;
+    background-color: inherit;
+    height: auto;
+}
+
+#send-icon {
+    margin-right: 10px;
+}
+
+#sender {
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+#sender > p {
+    display: inline-block;
+}
