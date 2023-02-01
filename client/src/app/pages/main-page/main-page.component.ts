@@ -1,16 +1,13 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AudioService } from '@app/services/audio.service';
 
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
-    styleUrls: ['./main-page.component.scss'],
+    styleUrls: ['./main-page.component.scss', '../pages.scss'],
 })
 export class MainPageComponent implements OnInit, OnDestroy {
-    @ViewChild('screen', { static: true }) screen: ElementRef;
-    @ViewChild('container', { static: true }) container: ElementRef;
-    scale: number = 1;
     icon: string = 'volume_off';
 
     constructor(private router: Router, private audioService: AudioService) {}
@@ -20,7 +17,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.audioService.soundtrack.loop = true;
         this.audioService.soundtrack.muted = true;
         this.audioService.play(this.audioService.soundtrack);
-        this.resizeContainer();
     }
 
     ngOnDestroy(): void {
@@ -60,16 +56,5 @@ export class MainPageComponent implements OnInit, OnDestroy {
             return;
         }
         credits.style.display = credits.style.display === 'block' ? 'none' : 'block';
-    }
-
-    /**
-     * Resizes the container and its components to fit the screen.
-     */
-    resizeContainer() {
-        const screenWidth = this.screen.nativeElement.offsetWidth;
-        const screenHeight = this.screen.nativeElement.offsetHeight;
-        const containerWidth = this.container.nativeElement.offsetWidth;
-        const containerHeight = this.container.nativeElement.offsetHeight;
-        this.scale = Math.min(screenWidth / containerWidth, screenHeight / containerHeight);
     }
 }
