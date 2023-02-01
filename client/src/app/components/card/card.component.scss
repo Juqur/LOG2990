@@ -1,9 +1,8 @@
-
 .difficulty {
     width: 50%;
 }
 
-.leaderboard-title{
+.leaderboard-title {
     text-align: center;
     font-size: 1.2rem;
     font-weight: 500;
@@ -22,7 +21,7 @@
     font-weight: 300;
     font-family: Trebuchet MS, sans-serif;
     color: #eaac8b;
-    height: 616px;
+    height: 600px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -42,17 +41,13 @@
     display: flex;
 }
 
-.carousel-container{
-    // border: 0.2em solid #eaac8b;
-    // border-radius: 10px;
+.carousel-container {
     padding: 1em;
-    margin-bottom: 1em;
-    // box-shadow: 1px 1px 1px rgba(3, 3, 3, 0.37);
     background-color: rgba(0, 0, 0, 0.252);
     border-radius: 1em;
 }
 
-.action-button-container{
+.action-button-container {
     margin-top: 1em;
     display: flex;
     justify-content: center;
@@ -97,15 +92,14 @@
     z-index: 1;
 }
 
-
-.difficulty-icon{
-    position:relative;
-    right:80px;
-    top:5px;
+.difficulty-icon {
+    position: relative;
+    right: 80px;
+    top: 5px;
     z-index: 2;
 }
 
-img.difficulty-icon{
+img.difficulty-icon {
     width: 4em;
     height: 4em;
 }
