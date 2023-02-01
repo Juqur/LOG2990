@@ -1,23 +1,45 @@
-.background {
-    background-color: #355070;
+.flexible-fullscreen-body {
+    margin: 0;
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    transform-origin: center center;
+    background-color: #24364c;
+    overflow: hidden;
 }
 
 .container {
+    aspect-ratio: 16/9;
+    width: 1920px;
+    height: 1080px;
+    box-sizing: border-box;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    overflow: hidden;
+    background-color: #355070;
+    transform-origin: center center;
+}
+
+.justified {
     display: flex;
     flex-direction: column;
-    height: 100vh;
 }
 
 /* Header */
 .header-item {
+    aspect-ratio: 10/1;
+    box-sizing: border-box;
+    position: relative;
+    max-height: 100vh;
     text-align: right;
     padding: 10px;
 }
 
 /* Body */
 .body-item {
-    padding-left: 20vh;
-    align-self: left;
+    justify-content: center;
+    padding-left: 10rem;
 }
 
 h1 {
@@ -31,31 +53,32 @@ p {
     color: black;
     margin: 0 0 0;
 }
+
 .title-container {
-    align-self: left;
-    font-size: 5rem;
-    // margin-top: 5vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.title-img-container {
+    padding-left: 5rem;
+    width: 11rem;
+    height: 11rem;
 }
 
 .title-top {
-    align-self: right;
     font-size: 3rem;
-    margin-left: 1.2vh;
+    line-height: 1rem;
+    margin-left: 0.5rem;
 }
 
 .title-bottom {
-    align-self: right;
-    margin-top: 7vh;
+    line-height: 8rem;
     font-size: 8rem;
 }
 
 .button-container {
-    display: flex;
-    flex-direction: column;
-    // justify-content: center;
-    // align-items: center;
-    margin-top: 10vh;
-    margin-left: 2vh;
+    margin-top: 5rem;
+    margin-left: 1rem;
 
     button + button {
         margin-top: 3rem;
@@ -68,8 +91,8 @@ p {
     text-align: center;
     border: 2px solid #eaac8b;
     transition: 0.2s;
-    width: 40vh;
-    height: 8vh;
+    width: 25rem;
+    height: 5rem;
 }
 
 .menu-button span {
@@ -97,14 +120,6 @@ p {
     padding: 10px;
 }
 
-.picture {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    padding-top: 20vh;
-    padding-right: 0vh;
-}
-
 .team-name {
     margin-top: 0.25em;
     margin-bottom: 0.25em;
@@ -112,6 +127,10 @@ p {
 }
 
 /* Components */
+button {
+    cursor: pointer;
+}
+
 .side-button {
     position: relative;
     width: 50px;
@@ -149,15 +168,45 @@ p {
     border-top: 4px solid #eaac8b;
     border-left: 4px solid #eaac8b;
     border-radius: 15px 0 0 0px;
-    padding: 1.5vh;
-    padding-bottom: 8vh;
+    padding: 1.5rem;
+    padding-bottom: 8rem;
     z-index: 10;
     display: none;
 }
 
+#magnifying-glass {
+    max-width: 5rem;
+    max-height: 5rem;
+    animation: hover-around 15s ease-in-out infinite;
+}
+
+@keyframes hover-around {
+    0% {
+        transform: translate(0px, 0px);
+    }
+    20% {
+        transform: translate(-10px, -60px) rotate(-15deg);
+    }
+    40% {
+        transform: translate(-20px, 30px) rotate(10deg);
+    }
+    50% {
+        transform: translate(-5px, -2px) rotate(-15deg);
+    }
+    60% {
+        transform: translate(30px, -70px) rotate(-5deg);
+    }
+    80% {
+        transform: translate(40px, 40px) rotate(9deg);
+    }
+    100% {
+        transform: translate(0px, 0px);
+    }
+}
+
 /* Properties */
 .prevent-select {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
+    --webkit-user-select: none; /* Safari */
+    --ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
 }
