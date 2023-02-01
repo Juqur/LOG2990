@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Level } from '@app/levels';
 import { Constants } from '@common/constants';
 
@@ -7,7 +7,7 @@ import { Constants } from '@common/constants';
     templateUrl: './carousel.component.html',
     styleUrls: ['./carousel.component.scss'],
 })
-export class CarouselComponent implements OnInit {
+export class CarouselComponent {
     @Input() level: Level = {
         id: -1,
         image: 'no image',
@@ -25,8 +25,6 @@ export class CarouselComponent implements OnInit {
     slides: string[] = [];
     i = 0;
     selectedButton: string = 'solo';
-
-    ngOnInit(): void {}
 
     /**
      * format the time
