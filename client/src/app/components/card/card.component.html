@@ -1,5 +1,7 @@
 <div *ngIf="level" class="card">
-    <h2 class="level-name">{{ level.name }}</h2>
+    <div class="title-container">
+        <h2 class="level-name">{{ level.name }}</h2>
+    </div>
     <div class="image-container">
         <img src="{{ level.image }}" class="thumbnail" alt="{{ level.name }}" />
         <img src="{{ displayDifficultyIcon(level.isEasy) }}" alt="{{ difficulty }}" class="difficulty-icon" />
@@ -11,8 +13,8 @@
         </div>
         <div class="card-action">
             <div class="action-button-container">
-                <button routerLink="/game" mat-raised-button class="action-button">Solo</button>
-                <button mat-raised-button class="action-button">1v1</button>
+                <button routerLink="/game" mat-raised-button class="action-button">Play</button>
+                <button mat-raised-button class="action-button">Create</button>
             </div>
         </div>
     </div>

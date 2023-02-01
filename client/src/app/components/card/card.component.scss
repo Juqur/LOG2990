@@ -37,6 +37,9 @@
     text-align: center;
     font-size: 2rem;
     font-weight: 500;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
 .carousel-container{
@@ -102,9 +105,14 @@
     z-index: 2;
 }
 
-
-
 img.difficulty-icon{
     width: 4em;
     height: 4em;
+}
+
+.title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 auto;
 }
