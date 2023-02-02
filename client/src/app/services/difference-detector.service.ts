@@ -38,7 +38,7 @@ export class DifferenceDetectorService {
             return;
         }
         differenceCanvas.canvas.width = defaultImage.canvas.width;
-        differenceCanvas.canvas.height = defaultImage.canvas.width;
+        differenceCanvas.canvas.height = defaultImage.canvas.height;
         differenceCanvas.putImageData(comparisonData, 0, 0);
         document.body.appendChild(differenceCanvas.canvas);
     }
@@ -52,7 +52,7 @@ export class DifferenceDetectorService {
             const r2 = this.modifiedImageArray[i];
             const g2 = this.modifiedImageArray[i + 1];
             const b2 = this.modifiedImageArray[i + 2];
-            if (r - r2 > 0 || g - g2 > 0 || b - b2 > 0) {
+            if (r !== r2 || g !== g2 || b !== b2) {
                 if (i >= 0 && i < this.defaultImageArray.length) {
                     this.changeColor(i, [0, 0, 0]);
                     this.initialDifferentPixels.push(i);
