@@ -1,26 +1,127 @@
-.top-bar-container {
+.container {
+    height: 100%;
     display: flex;
+    flex-direction: column;
+    background-color: #355070;
+}
+
+#top-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 10%;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+#top-area button {
+    background-color: #eaac8b00;
+    text-align: center;
+    border: 2px solid #F63B3B;
+    transition: 0.2s;
+}
+
+#top-area button span {
+    color: #F63B3B;
+    border: none;
+    transition: 0.2s;
+    font-size: 200%;
+}
+
+#top-area button:hover {
+    transition: 0.3s;
+    background-color: #F63B3B;
+    transform: rotate(3deg) scale(1.1);
+}
+
+#top-area button:hover span {
+    transition: 0.3s;
+    color: #355070;
+}
+
+#between-images {
+    width: 10px;
+    display: flex;
+    flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    padding-top: 20px;
-    margin-bottom: 20px;
 }
-.bottom-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 20px;
-    padding-bottom: 20px;
-    width: 100%;
+
+#between-images p {
+    padding-top: 10px;
+    font-weight: bold;
+    color: #3ab138;
 }
+
+.mat-icon {
+    color: white;
+    vertical-align: middle;
+    padding-bottom: 5px;
+}
+
 .mat-darkblue {
     background-color: rgb(21, 21, 132);
     color: #fff;
 }
-.container {
+
+#nb-hints{
+    text-align: center;
+    color: #ffffff;
+}
+
+#creation-area-container {
+    overflow: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 70%;
+    ///margin-top: 60px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.zone-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+#bottom-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 10%;
+    margin-top: 10px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.button-reset {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 100vh;
-    background-color: #355070;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 60px;
+    border: none;
+    color: #fff;
+    background: #f63b3b;
+    cursor: pointer;
+}
+
+.button-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 60px;
+    border: none;
+    color: #fff;
+    background: orange;
+    cursor: pointer;
 }

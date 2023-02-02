@@ -30,8 +30,8 @@ export class TestDiffComponent {
         if (!this.defaultImage || !this.diffImage) {
             return;
         }
-        const defaultCanvas = document.createElement('canvas').getContext('2d');
-        const diffCanvas = document.createElement('canvas').getContext('2d');
+        const defaultCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+        const diffCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
         document.body.appendChild(defaultCanvas?.canvas as HTMLCanvasElement);
         document.body.appendChild(diffCanvas?.canvas as HTMLCanvasElement);
         const image1 = new Image();
@@ -49,7 +49,7 @@ export class TestDiffComponent {
                 diffCanvas.canvas.height = image1.height;
                 defaultCanvas?.drawImage(image1, 0, 0);
                 diffCanvas?.drawImage(image2, 0, 0);
-                this.differenceDetectorService.differentDectection(defaultCanvas, diffCanvas, this.radius.toString());
+                this.differenceDetectorService.detectDifferences(defaultCanvas, diffCanvas, this.radius.toString());
             };
         };
     }
