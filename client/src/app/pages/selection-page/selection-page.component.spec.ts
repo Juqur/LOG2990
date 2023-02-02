@@ -50,21 +50,13 @@ describe('SelectionPageComponent', () => {
     });
 
     it('arrow_back button should be disabled if at the first page', () => {
-        if (document.getElementById('arrow_back') instanceof HTMLButtonElement) {
-            const button = document.getElementById('arrow_back') as HTMLButtonElement;
-            expect(button.disabled).toBeTruthy();
-        } else {
-            expect(false).toBeTruthy();
-        }
+        expect(document.getElementById('arrow_back')).toBeInstanceOf(HTMLButtonElement);
+        expect((document.getElementById('arrow_back') as HTMLButtonElement).disabled).toBeTruthy();
     });
 
     it('arrow_back button should be disabled if at the first page', () => {
         component.currentPage = component.lastPage;
-        if (document.getElementById('arrow_back') instanceof HTMLButtonElement) {
-            const button = document.getElementById('arrow_back') as HTMLButtonElement;
-            expect(button.disabled).toBeTruthy();
-        } else {
-            expect(false).toBeTruthy();
-        }
+        expect(document.getElementById('arrow_back')).toBeInstanceOf(HTMLButtonElement);
+        expect((document.getElementById('arrow_back') as HTMLButtonElement).disabled).toBeTruthy();
     });
 });
