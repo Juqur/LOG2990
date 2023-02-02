@@ -49,7 +49,7 @@ export class TestDiffComponent {
                 diffCanvas.canvas.height = image1.height;
                 defaultCanvas?.drawImage(image1, 0, 0);
                 diffCanvas?.drawImage(image2, 0, 0);
-                this.differenceDetectorService.differentDectection(defaultCanvas, diffCanvas, this.radius.toString());
+                this.differenceDetectorService.detectDifferences(defaultCanvas, diffCanvas, this.radius.toString());
             };
         };
     }

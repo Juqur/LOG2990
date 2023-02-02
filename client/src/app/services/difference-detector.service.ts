@@ -12,7 +12,7 @@ export class DifferenceDetectorService {
     visited: boolean[] = [];
     differences: number = 0;
 
-    differentDectection(defaultImage: CanvasRenderingContext2D, secondImage: CanvasRenderingContext2D, radius: string) {
+    detectDifferences(defaultImage: CanvasRenderingContext2D, secondImage: CanvasRenderingContext2D, radius: string) {
         const radiusNumber = Number(radius);
         if (radiusNumber <= 0) {
             return;
