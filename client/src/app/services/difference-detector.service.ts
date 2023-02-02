@@ -26,8 +26,8 @@ export class DifferenceDetectorService {
         this.radius = radiusNumber;
 
         // r,g,b,a
-        this.detectDifferentPixels();
-        this.radiusImplementor(defaultImage);
+        this.comparePixel();
+        this.addRadius(defaultImage);
         const differenceCanvas = document.createElement('canvas').getContext('2d');
         if (!differenceCanvas) {
             return;
@@ -38,7 +38,7 @@ export class DifferenceDetectorService {
         document.body.appendChild(differenceCanvas.canvas);
     }
 
-    detectDifferentPixels() {
+    private comparePixel() {
         for (let i = 0; i < this.firstImageData.length; i += 4) {
             const r = this.firstImageData[i];
             const g = this.firstImageData[i + 1];
@@ -56,7 +56,8 @@ export class DifferenceDetectorService {
             }
         }
     }
-    radiusImplementor(defaultImage: CanvasRenderingContext2D) {
+
+    private addRadius(defaultImage: CanvasRenderingContext2D) {
         for (const pixel of this.initialDifferentPixels) {
             for (let i = -this.radius; i < this.radius; i++) {
                 for (let j = -this.radius; j < this.radius; j++) {
@@ -70,23 +71,23 @@ export class DifferenceDetectorService {
         }
     }
 
-    detectGroup() {
-        while (this.initialDifferentPixels.length > 0) {
-            const pixel = this.initialDifferentPixels.pop();
-            if (!pixel) {
-                return;
-            }
-            if (!this.visited[pixel]) {
-                this.visited[pixel] = true;
-                for (let i = 0; i < 9; i++) {
-                    const x = (i % 3) - 1;
-                    const y = Math.floor(i / 3) - 1;
-                }
-            }
-        }
-    }
+    // private detectGroup() {
+    //     while (this.initialDifferentPixels.length > 0) {
+    //         const pixel = this.initialDifferentPixels.pop();
+    //         if (!pixel) {
+    //             return;
+    //         }
+    //         if (!this.visited[pixel]) {
+    //             this.visited[pixel] = true;
+    //             for (let i = 0; i < 9; i++) {
+    //                 const x = (i % 3) - 1;
+    //                 const y = Math.floor(i / 3) - 1;
+    //             }
+    //         }
+    //     }
+    // }
 
-    changeColor(pixelPosition: number, color: number[]) {
+    private changeColor(pixelPosition: number, color: number[]) {
         this.differenceImageData[pixelPosition] = color[0];
         this.differenceImageData[pixelPosition + 1] = color[1];
         this.differenceImageData[pixelPosition + 2] = color[2];
