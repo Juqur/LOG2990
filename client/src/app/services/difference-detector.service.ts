@@ -93,4 +93,18 @@ export class DifferenceDetectorService {
         this.differenceImageData[pixelPosition + 2] = color[2];
         this.differenceImageData[pixelPosition + 3] = 255;
     }
+
+    private listDifferences() {
+        for (let i = 0; i < this.differenceImageData.length; i += 4) {
+            this.visited[i] = true;
+            const r = this.differenceImageData[i];
+            const g = this.differenceImageData[i + 1];
+            const b = this.differenceImageData[i + 2];
+            if (r === 0 && g === 0 && b === 0) {
+                continue;
+            }
+        }
+    }
+
+    private bfs(pixel: number) {}
 }

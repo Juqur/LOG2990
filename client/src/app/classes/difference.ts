@@ -1,3 +1,3 @@
 export class Difference {
-    pixels: number[] = [];
+    pixels: Uint32Array;
 }
