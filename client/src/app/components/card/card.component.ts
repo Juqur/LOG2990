@@ -35,12 +35,19 @@ export class CardComponent implements OnInit {
      *
      * @returns the difficulty of the level
      */
-
     displayDifficulty(): string {
         if (this.level.isEasy === true) {
             return 'Easy';
         } else {
             return 'Hard';
+        }
+    }
+
+    displayDifficultyIcon(isEasy: boolean): string {
+        if (isEasy === true) {
+            return '../../../assets/images/easy.png';
+        } else {
+            return '../../../assets/images/hard.png';
         }
     }
 
