@@ -1,12 +1,57 @@
 <div class="container">
-    <header class="top-bar-container">
-        <button mat-fab color="darkblue" routerLink="/home">
-            <mat-icon>home</mat-icon>
+    <section id="top-area">
+        <button mat-button><span>Retour</span></button>
+    </section>
+    <section id="creation-area-container">
+        <div class="img-zone-container">
+            <p>Image originale</p>
+            <app-play-area id="original-play-area" ></app-play-area>
+            <div class="zone-button-container">
+                <button class="button-settings" color="orange">
+                   Téléverser Image Originale
+                  <mat-icon>add_a_photo</mat-icon>
+                </button>
+                <button class="button-reset" color="orange">
+                    Réinitialiser La Zone
+                    <mat-icon>restart_alt</mat-icon>
+                </button>
+            </div>
+        </div>
+        <div id="between-images">
+            <button class="button-settings" color="orange">
+                Téléverser Image Commune
+                <mat-icon>add_a_photo</mat-icon>
+            </button>
+            <p>Les images doivent être en format BMP 24-bit et de taille 640x480</p>
+        </div>
+        <div class="img-zone-container" >
+            <p>Image modifiée</p>
+            <app-play-area></app-play-area>
+            <div class="zone-button-container">
+                <button class="button-settings" color="orange">
+                   Téléverser Image Modifiée
+                   <mat-icon>add_a_photo</mat-icon>
+                </button>
+                <button class="button-reset" color="orange">
+                    Réinitialiser La Zone
+                    <mat-icon>restart_alt</mat-icon>
+                </button>
+            </div>
+        </div>
+    </section>
+    <section id="bottom-area">
+        <div class="enlargissement-container">
+            <p>Rayon d'élargissement</p>
+            <p>0    3   9   15</p>
+        </div>
+        <button class="button-reset" color="orange">
+            Lancer Validation des Différences
+            <mat-icon>image_search</mat-icon>
         </button>
-    </header>
-    
-    <p>Welcome to the empty space, we got A LOT of stuff to do here</p>
+        <button class="button-settings" color="orange">
+            Sauvégarder Jeu
+            <mat-icon>save_as</mat-icon>
+        </button>
 
-    <footer class="bottom-container">
-        </footer>
+</section>
 </div>
