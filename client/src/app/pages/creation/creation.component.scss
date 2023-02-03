@@ -18,12 +18,12 @@
 #top-area button {
     background-color: #eaac8b00;
     text-align: center;
-    border: 2px solid #F63B3B;
+    border: 2px solid #f63b3b;
     transition: 0.2s;
 }
 
 #top-area button span {
-    color: #F63B3B;
+    color: #f63b3b;
     border: none;
     transition: 0.2s;
     font-size: 200%;
@@ -31,7 +31,7 @@
 
 #top-area button:hover {
     transition: 0.3s;
-    background-color: #F63B3B;
+    background-color: #f63b3b;
     transform: rotate(3deg) scale(1.1);
 }
 
@@ -65,7 +65,7 @@
     color: #fff;
 }
 
-#nb-hints{
+#nb-hints {
     text-align: center;
     color: #ffffff;
 }
