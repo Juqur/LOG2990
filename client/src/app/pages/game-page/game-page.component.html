@@ -20,10 +20,10 @@
             <app-play-area></app-play-area>
             <div id="between-images">
                 <button mat-button>
-                    <span>
-                        <mat-icon>image_search</mat-icon></span>
+                    <span> <mat-icon>image_search</mat-icon></span>
                 </button>
-                <p>3 </p><span id="nb-hints">indices restants</span>
+                <p>3</p>
+                <span id="nb-hints">indices restants</span>
             </div>
             <app-play-area></app-play-area>
         </section>
@@ -33,10 +33,10 @@
                 <div><span class="info-question">Jeu : </span><span class="info-answer">Délice sucré-salé</span></div>
                 <div><span class="info-question">Difficulté : </span><span class="info-answer">Facile</span></div>
                 <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
-                <div><span class="info-question">Nombres de différences : </span><span class="info-answer">810</span>
+                <div>
+                    <span class="info-question">Nombres de différences : </span><span class="info-answer">{{ differenceCounter }}</span>
                 </div>
-                <div><span class="info-question">Pénalité indice : </span><span class="info-answer">20 secondes</span>
-                </div>
+                <div><span class="info-question">Pénalité indice : </span><span class="info-answer">20 secondes</span></div>
             </div>
         </section>
     </div>

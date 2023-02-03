@@ -44,6 +44,6 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     mouseHitDetect(event: MouseEvent) {
-        this.mouseService.mouseHitDetect(event);
+        this.mouseService.mouseHitDetect(event, this.width);
     }
 }
