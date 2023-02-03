@@ -43,8 +43,14 @@ export class DifferenceDetectorService {
         document.body.appendChild(differenceCanvas.canvas);
     }
 
-    private comparePixels() {
+    /**
+     * Compares the pixels of the two images and
+     * generates the new image with the differences.
+     */
+    private comparePixels(): void {
         const channelsPerPixel = 4;
+        const white = [255, 255, 255];
+        const black = [0, 0, 0];
         for (let i = 0; i < this.defaultImageArray.length; i += channelsPerPixel) {
             const r = this.defaultImageArray[i];
             const g = this.defaultImageArray[i + 1];
@@ -54,11 +60,11 @@ export class DifferenceDetectorService {
             const b2 = this.modifiedImageArray[i + 2];
             if (r !== r2 || g !== g2 || b !== b2) {
                 if (i >= 0 && i < this.defaultImageArray.length) {
-                    this.changeColor(i, [0, 0, 0]);
+                    this.changeColor(i, black);
                     this.initialDifferentPixels.push(i);
                 }
             } else {
-                this.changeColor(i, [255, 255, 255]);
+                this.changeColor(i, white);
             }
         }
     }
@@ -86,7 +92,7 @@ export class DifferenceDetectorService {
         return width === expectedWidth && height === expectedHeight;
     }
 
-    private addRadius(defaultImage: CanvasRenderingContext2D) {
+    private addRadius(defaultImage: CanvasRenderingContext2D): void {
         for (const pixel of this.initialDifferentPixels) {
             for (let i = -this.radius; i < this.radius; i++) {
                 for (let j = -this.radius; j < this.radius; j++) {
@@ -100,23 +106,7 @@ export class DifferenceDetectorService {
         }
     }
 
-    // private detectGroup() {
-    //     while (this.initialDifferentPixels.length > 0) {
-    //         const pixel = this.initialDifferentPixels.pop();
-    //         if (!pixel) {
-    //             return;
-    //         }
-    //         if (!this.visited[pixel]) {
-    //             this.visited[pixel] = true;
-    //             for (let i = 0; i < 9; i++) {
-    //                 const x = (i % 3) - 1;
-    //                 const y = Math.floor(i / 3) - 1;
-    //             }
-    //         }
-    //     }
-    // }
-
-    private changeColor(pixelPosition: number, color: number[]) {
+    private changeColor(pixelPosition: number, color: number[]): void {
         this.comparisonArray[pixelPosition] = color[0];
         this.comparisonArray[pixelPosition + 1] = color[1];
         this.comparisonArray[pixelPosition + 2] = color[2];
