@@ -21,6 +21,7 @@ import { ImageDifferenceComponent } from './components/image-difference/image-di
 import { MessageBoxComponent } from './components/message-box/message-box.component';
 import { ConfigurationComponent } from './pages/configuration/configuration.component';
 import { CreationComponent } from './pages/creation/creation.component';
+import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 
 /**
  * Main module that is used in main.ts.
@@ -46,6 +47,7 @@ import { CreationComponent } from './pages/creation/creation.component';
         CarouselComponent,
         ConfigurationComponent,
         CreationComponent,
+        ScaleContainerComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

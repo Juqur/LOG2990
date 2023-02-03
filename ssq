@@ -1,0 +1,24 @@
+  Test/AudioService[m
+  Test/VueInitiale/MainPage[m
+  Test/VueInitiale/MainPageComponent[m
+  feature/PageComponent[m
+  feature/VueDeCreation/VueInitiale[m
+  feature/VueDeJeuEnSolo/CouleursEtStyle[m
+  feature/VueDeJeuEnSolo/game-chat[m
+  feature/VueInitiale/AudioServiceRefactor[m
+  feature/VueInitiale/add-StyleAndFunctionality[m
+  feature/detectionDeDifference/serviceCreationAndTestPage[m
+  hotfix/UI/VueDeSelection/refactoring[m
+  hotfix/VueInitiale[m
+* [32mmaster[m
+  [31mremotes/origin/HEAD[m -> origin/master
+  [31mremotes/origin/Test/MergeRequest[m
+  [31mremotes/origin/Test/VueDeConfiguration/VueDeConfigurationComponent[m
+  [31mremotes/origin/Test/VueDeSelection/VueDeSelectionComponent[m
+  [31mremotes/origin/Test/VueInitiale/MainPageComponent[m
+  [31mremotes/origin/feature/PageComponent[m
+  [31mremotes/origin/feature/VueDeConfiguration/VueInitiale[m
+  [31mremotes/origin/feature/VueDeCration/UploadImages[m
+  [31mremotes/origin/feature/VueDeSelection/Style[m
+  [31mremotes/origin/feature/detectionDeDifference/serviceCreationAndTestPage[m
+  [31mremotes/origin/master[m

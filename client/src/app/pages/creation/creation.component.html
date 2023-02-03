@@ -1,3 +1,4 @@
+<app-scale-container>
 <div class="container">
     <section id="top-area">
         <button mat-button><span>Retour</span></button>
@@ -5,7 +6,7 @@
     <section id="creation-area-container">
         <div class="img-zone-container">
             <p>Image originale</p>
-            <app-play-area *ngIf="originalArea"></app-play-area>
+            <app-play-area id="original-play-area" ></app-play-area>
             <div class="zone-button-container">
                 <button class="button-settings" color="orange">
                    Téléverser Image Originale
@@ -26,8 +27,7 @@
         </div>
         <div class="img-zone-container" >
             <p>Image modifiée</p>
-            <!--canvas *ngIf="diffCanvas"></canvas-->
-            <app-play-area *ngIf="modifiedArea"></app-play-area>
+            <app-play-area></app-play-area>
             <div class="zone-button-container">
                 <button class="button-settings" color="orange">
                    Téléverser Image Modifiée
@@ -45,20 +45,14 @@
             <p>Rayon d'élargissement</p>
             <p>0    3   9   15</p>
         </div>
-        <!--input type="file" (change)="onFileChange($event)"-->
-</section>
-<section>
-    <label for="default">Default image:</label>
-    <input type="file" name="default image" id="default" (change)="defaultImageSelector($event)" />
-    <label for="default">Diff image:</label>
-    <input type="file" name="diff image" id="diff" (change)="diffImageSelector($event)" />
-    <label for="values">Choose a radius:</label>
-    <select name="values" [(ngModel)]="radius">
-        <option value="0">0</option>
-        <option default value="3">3</option>
-        <option value="9">9</option>
-        <option value="15">15</option>
-    </select>
-    <button (click)="detectDifference()">Check for diff</button>
+        <button class="button-reset" color="orange">
+            Lancer Validation des Différences
+            <mat-icon>image_search</mat-icon>
+        </button>
+        <button class="button-settings" color="orange">
+            Sauvégarder Jeu
+            <mat-icon>save_as</mat-icon>
+        </button>
 </section>
 </div>
+</app-scale-container>

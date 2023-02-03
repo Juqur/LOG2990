@@ -7,19 +7,22 @@
     margin-bottom: 20px;
     margin-left: 4.5vw;
 }
+
 .selection-card-container {
     display: flex;
     justify-content: space-evenly;
     flex-wrap: nowrap;
 }
+
 .bottom-container {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 15rem;
     padding-bottom: 20px;
     width: 100%;
 }
+
 .page-display {
     display: flex;
     flex-direction: column;
@@ -30,18 +33,20 @@
     color: #fff;
     background: #3b7ff6;
 }
+
 .mat-orange {
     background-color: orange;
     color: #fff;
 }
+
 .mat-darkblue {
     background-color: rgb(21, 21, 132);
     color: #fff;
 }
+
 .container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 100vh;
     background-color: #355070;
 }
