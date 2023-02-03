@@ -58,5 +58,5 @@ describe('ConfigurationComponent', () => {
         component.currentPage = component.lastPage;
         expect(document.getElementById('arrow_back')).toBeInstanceOf(HTMLButtonElement);
         expect((document.getElementById('arrow_back') as HTMLButtonElement).disabled).toBeTruthy();
-    });    
+    });
 });
