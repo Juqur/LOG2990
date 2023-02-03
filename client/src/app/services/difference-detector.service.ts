@@ -18,9 +18,9 @@ export class DifferenceDetectorService {
             return;
         }
 
-        if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
-            return;
-        }
+        // if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
+        //     return;
+        // }
 
         // Initializing data.
         const defaultImageData = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
@@ -33,7 +33,7 @@ export class DifferenceDetectorService {
 
         // Processing data.
         this.comparePixels();
-        this.addRadius(defaultImage);
+        this.addRadius(defaultImage.canvas.width);
         this.chooseDifficulty();
         const differenceCanvas = document.createElement('canvas').getContext('2d');
         if (!differenceCanvas) {
@@ -49,7 +49,7 @@ export class DifferenceDetectorService {
      * Compares the pixels of the two images and
      * generates the new image with the differences.
      */
-    private comparePixels(): void {
+    comparePixels(): void {
         const channelsPerPixel = 4;
         const white = [255, 255, 255];
         const black = [0, 0, 0];
@@ -78,27 +78,13 @@ export class DifferenceDetectorService {
      * @param image The image to verify.
      * @returns True if the image is valid, false otherwise.
      */
-    private isImageValid(image: CanvasRenderingContext2D): boolean {
-        const expectedWidth = 640;
-        const expectedHeight = 480;
-        const expectedChannels = 4;
 
-        // Checks the number of color channels in the image, which should be 4 for a 24-bit image.
-        if (image.getImageData(0, 0, 1, 1).data.length !== expectedChannels) {
-            return false;
-        }
-
-        // Check the canvas size
-        const width = image.canvas.width;
-        const height = image.canvas.height;
-        return width === expectedWidth && height === expectedHeight;
-    }
-
-    private addRadius(defaultImage: CanvasRenderingContext2D): void {
+    addRadius(width: number): void {
+        if (this.radius === 0) return;
         for (const pixel of this.initialDifferentPixels) {
             for (let i = -this.radius; i < this.radius; i++) {
                 for (let j = -this.radius; j < this.radius; j++) {
-                    const pixelPosition = i * 4 + j * 4 * defaultImage.canvas.width + pixel;
+                    const pixelPosition = i * 4 + j * 4 * width + pixel;
                     const distance = Math.pow(i, 2) + Math.pow(j, 2);
                     if (pixelPosition >= 0 && pixelPosition < this.defaultImageArray.length && distance <= Math.pow(this.radius, 2)) {
                         this.changeColor(pixelPosition, [0, 0, 0]);
@@ -109,13 +95,12 @@ export class DifferenceDetectorService {
         }
     }
 
-    private chooseDifficulty(): boolean {
+    chooseDifficulty(): boolean {
         const rate = this.counter / this.defaultImageArray.length;
-        console.log(rate);
         return rate < 0.15 && this.differences >= 7;
     }
 
-    private changeColor(pixelPosition: number, color: number[]): void {
+    changeColor(pixelPosition: number, color: number[]): void {
         this.comparisonArray[pixelPosition] = color[0];
         this.comparisonArray[pixelPosition + 1] = color[1];
         this.comparisonArray[pixelPosition + 2] = color[2];
