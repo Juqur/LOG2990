@@ -1,58 +1,64 @@
 <app-scale-container>
-<div class="container">
-    <section id="top-area">
-        <button mat-button><span>Retour</span></button>
-    </section>
-    <section id="creation-area-container">
-        <div class="img-zone-container">
-            <p>Image originale</p>
-            <app-play-area id="original-play-area" ></app-play-area>
-            <div class="zone-button-container">
-                <button class="button-settings" color="orange">
-                   Téléverser Image Originale
-                  <mat-icon>add_a_photo</mat-icon>
-                </button>
-                <button class="button-reset" color="orange">
-                    Réinitialiser La Zone
-                    <mat-icon>restart_alt</mat-icon>
-                </button>
+    <div class="container">
+        <section id="top-area">
+            <button mat-button><span>Retour</span></button>
+        </section>
+        <section id="creation-area-container">
+            <div class="img-zone-container">
+                <p>Image originale</p>
+                <app-play-area *ngIf="originalArea"></app-play-area>
+                <div class="zone-button-container">
+                    <button class="button-settings" color="orange">
+                        Téléverser Image Originale
+                        <mat-icon>add_a_photo</mat-icon>
+                    </button>
+                    <button class="button-reset" color="orange">
+                        Réinitialiser La Zone
+                        <mat-icon>restart_alt</mat-icon>
+                    </button>
+                </div>
             </div>
-        </div>
-        <div id="between-images">
-            <button class="button-settings" color="orange">
-                Téléverser Image Commune
-                <mat-icon>add_a_photo</mat-icon>
-            </button>
-            <p>Les images doivent être en format BMP 24-bit et de taille 640x480</p>
-        </div>
-        <div class="img-zone-container" >
-            <p>Image modifiée</p>
-            <app-play-area></app-play-area>
-            <div class="zone-button-container">
+            <div id="between-images">
                 <button class="button-settings" color="orange">
-                   Téléverser Image Modifiée
-                   <mat-icon>add_a_photo</mat-icon>
+                    Téléverser Image Commune
+                    <mat-icon>add_a_photo</mat-icon>
                 </button>
-                <button class="button-reset" color="orange">
-                    Réinitialiser La Zone
-                    <mat-icon>restart_alt</mat-icon>
-                </button>
+                <p>Les images doivent être en format BMP 24-bit et de taille 640x480</p>
             </div>
-        </div>
-    </section>
-    <section id="bottom-area">
-        <div class="enlargissement-container">
-            <p>Rayon d'élargissement</p>
-            <p>0    3   9   15</p>
-        </div>
-        <button class="button-reset" color="orange">
-            Lancer Validation des Différences
-            <mat-icon>image_search</mat-icon>
-        </button>
-        <button class="button-settings" color="orange">
-            Sauvégarder Jeu
-            <mat-icon>save_as</mat-icon>
-        </button>
-</section>
-</div>
+            <div class="img-zone-container">
+                <p>Image modifiée</p>
+                <app-play-area *ngIf="modifiedArea"></app-play-area>
+                <div class="zone-button-container">
+                    <button class="button-settings" color="orange">
+                        Téléverser Image Modifiée
+                        <mat-icon>add_a_photo</mat-icon>
+                    </button>
+                    <button class="button-reset" color="orange">
+                        Réinitialiser La Zone
+                        <mat-icon>restart_alt</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </section>
+        <section id="bottom-area">
+            <div class="enlargissement-container">
+                <p>Rayon d'élargissement</p>
+            </div>
+            <!--input type="file" (change)="onFileChange($event)"-->
+        </section>
+        <section>
+            <label for="default">Default image:</label>
+            <input type="file" name="default image" id="default" (change)="defaultImageSelector($event)" />
+            <label for="default">Diff image:</label>
+            <input type="file" name="diff image" id="diff" (change)="diffImageSelector($event)" />
+            <label for="values">Choose a radius:</label>
+            <select name="values" [(ngModel)]="radius">
+                <option value="0">0</option>
+                <option default value="3">3</option>
+                <option value="9">9</option>
+                <option value="15">15</option>
+            </select>
+            <button (click)="detectDifference()">Check for diff</button>
+        </section>
+    </div>
 </app-scale-container>
