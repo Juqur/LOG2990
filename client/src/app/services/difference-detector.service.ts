@@ -70,7 +70,6 @@ export class DifferenceDetectorService {
      * generates the new image with the differences.
      */
     comparePixels(): void {
-        // const black = [0, 0, 0];
         for (let i = 0; i < this.defaultImageArray.length; i += CHANNELS_PER_PIXEL) {
             const r = this.defaultImageArray[i];
             const g = this.defaultImageArray[i + 1];
@@ -127,7 +126,6 @@ export class DifferenceDetectorService {
      */
     isHard(nbDifferences: number): boolean {
         const rate = this.counter / this.defaultImageArray.length;
-        // console.log(rate);
         return rate < DIFFICULTY_RATIO && nbDifferences >= MIN_DIFFERENCES;
     }
 
