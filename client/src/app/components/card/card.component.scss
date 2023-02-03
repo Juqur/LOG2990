@@ -66,11 +66,22 @@
     font-size: large;
 }
 
+.action-button.delete-button {
+    // background-color: ;
+    color: #f63b3b;
+    border: 0.15em solid #f63b3b;
+}
+
 .action-button:hover {
     transition: 0.3s;
     background-color: #eaac8b;
     color: black;
     transform: rotate(3deg) scale(1.1);
+}
+
+.action-button.delete-button:hover {
+    background-color: #f63b3b;
+    color: black;
 }
 
 .card > .card-content {
