@@ -9,6 +9,7 @@ export class DifferenceDetectorService {
     comparisonArray: Uint8ClampedArray;
     initialDifferentPixels: number[] = [];
     radius: number;
+    counter: number = 0;
     visited: boolean[] = [];
     differences: number = 0;
 
@@ -33,6 +34,7 @@ export class DifferenceDetectorService {
         // Processing data.
         this.comparePixels();
         this.addRadius(defaultImage);
+        this.chooseDifficulty();
         const differenceCanvas = document.createElement('canvas').getContext('2d');
         if (!differenceCanvas) {
             return;
@@ -100,10 +102,17 @@ export class DifferenceDetectorService {
                     const distance = Math.pow(i, 2) + Math.pow(j, 2);
                     if (pixelPosition >= 0 && pixelPosition < this.defaultImageArray.length && distance <= Math.pow(this.radius, 2)) {
                         this.changeColor(pixelPosition, [0, 0, 0]);
+                        this.counter++;
                     }
                 }
             }
         }
+    }
+
+    private chooseDifficulty(): boolean {
+        const rate = this.counter / this.defaultImageArray.length;
+        console.log(rate);
+        return rate < 0.15 && this.differences >= 7;
     }
 
     private changeColor(pixelPosition: number, color: number[]): void {
