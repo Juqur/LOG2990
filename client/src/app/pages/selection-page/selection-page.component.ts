@@ -32,10 +32,10 @@ export class SelectionPageComponent {
     }
 
     isBeginningOfList() {
-        return this.currentPage === 0;
+        return this.currentPage <= 0;
     }
 
     isEndOfList() {
-        return this.currentPage === this.lastPage;
+        return this.currentPage >= this.lastPage;
     }
 }
