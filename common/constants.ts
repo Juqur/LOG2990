@@ -37,3 +37,11 @@ export namespace Constants {
     export const maxNameLengthShown: number = 8;
     export const maxMessageLength: number = 100;
 }
+
+export enum MouseButton {
+    Left = 0,
+    Middle = 1,
+    Right = 2,
+    Back = 3,
+    Forward = 4,
+}
