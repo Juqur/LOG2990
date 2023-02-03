@@ -14,6 +14,19 @@ export class ConfigurationComponent {
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
     lastPage = Math.round(levels.length / this.levelsPerPage - 1);
+    showGlobalVariable = false;
+
+    formatLabel(value: number | null) {
+        if (!value) {
+            return 0;
+        }
+
+        if (value >= 1000) {
+            return Math.round(value / 1000) + 'k';
+        }
+
+        return value;
+    }
 
     levelToShow: Level[] = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     nextPage(): void {
