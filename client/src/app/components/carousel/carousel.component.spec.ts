@@ -25,12 +25,14 @@ describe('CarouselComponent', () => {
     });
 
     it('should change button style from solo to multi', () => {
-        component.changeButtonStyle('solo');
+        component.selectedButton = 'solo';
+        component.changeButtonStyle('multi');
         expect(component.selectedButton).toEqual('multi');
     });
 
     it('should change button style from multi to solo', () => {
-        component.changeButtonStyle('multi');
+        component.selectedButton = 'multi';
+        component.changeButtonStyle('solo');
         expect(component.selectedButton).toEqual('solo');
     });
 });
