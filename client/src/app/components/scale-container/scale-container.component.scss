@@ -1,0 +1,24 @@
+.flexible-fullscreen-body {
+    margin: 0;
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    transform-origin: center center;
+    background-color: #24364c;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 16/9;
+    width: 1920px;
+    height: 1080px;
+    box-sizing: border-box;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    overflow: hidden;
+    background-color: #355070;
+    transform-origin: center center;
+}

@@ -27,7 +27,14 @@ describe('AudioService', () => {
     });
 
     it('play should not play the audio if it is undefined and the autoplay is denied', () => {
+        const audio = service.create('./assets/audio/undefined.mp3');
+        const spyAudioPlay = spyOn(audio, 'play').and.returnValue(
+            Promise.reject().catch(() => {
+                /* Do nothing */
+            }),
+        );
         service.play(undefined);
+        expect(spyAudioPlay).not.toHaveBeenCalled();
     });
 
     it('playSound should call create and play', () => {

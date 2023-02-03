@@ -24,10 +24,10 @@ export class DifferenceDetectorService {
 
         // Initializing data.
         const defaultImageData = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
-        const secondImageData = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
+        const modifiedImageData = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
         const comparisonData = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
         this.defaultImageArray = defaultImageData.data;
-        this.modifiedImageArray = secondImageData.data;
+        this.modifiedImageArray = modifiedImageData.data;
         this.comparisonArray = comparisonData.data;
         this.radius = Number(radius);
 
