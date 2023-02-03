@@ -8,6 +8,7 @@
     background-color: #3b7ff6;
     font-size: 1.5rem;
 }
+
 .top-bar-container {
     display: flex;
     justify-content: right;
@@ -16,19 +17,22 @@
     padding-top: 20px;
     margin-bottom: 20px;
 }
+
 .selection-card-container {
     display: flex;
     justify-content: space-evenly;
     flex-wrap: nowrap;
 }
+
 .bottom-container {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 15rem;
     padding-bottom: 20px;
     width: 100%;
 }
+
 .page-display {
     display: flex;
     flex-direction: column;
@@ -39,6 +43,7 @@
     color: #fff;
     background: #3b7ff6;
 }
+
 .button-settings {
     display: flex;
     flex-direction: column;
@@ -51,18 +56,20 @@
     background: #f63b3b;
     cursor: pointer;
 }
+
 .mat-orange {
     background-color: orange;
     color: #fff;
 }
+
 .mat-darkblue {
     background-color: rgb(21, 21, 132);
     color: #fff;
 }
+
 .container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 100vh;
     background-color: #355070;
 }
