@@ -67,9 +67,13 @@
 }
 
 .action-button.delete-button {
-    // background-color: ;
     color: #f63b3b;
     border: 0.15em solid #f63b3b;
+}
+
+.action-button.reinitiate-button{
+    color: #FFFF00;
+    border: 0.15em solid #FFFF00;
 }
 
 .action-button:hover {
@@ -81,6 +85,11 @@
 
 .action-button.delete-button:hover {
     background-color: #f63b3b;
+    color: black;
+}
+
+.action-button.reinitiate-button:hover {
+    background-color: #FFFF00;
     color: black;
 }
 
