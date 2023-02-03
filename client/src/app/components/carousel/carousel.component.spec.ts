@@ -18,4 +18,19 @@ describe('CarouselComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should format time', () => {
+        const time = 60;
+        expect(component.formatTime(time)).toEqual('01:00');
+    });
+
+    it('should change button style from solo to multi', () => {
+        component.changeButtonStyle('solo');
+        expect(component.selectedButton).toEqual('multi');
+    });
+
+    it('should change button style from multi to solo', () => {
+        component.changeButtonStyle('multi');
+        expect(component.selectedButton).toEqual('solo');
+    });
 });
