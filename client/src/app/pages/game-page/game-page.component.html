@@ -1,39 +1,43 @@
-<div class="container">
-    <section id="top-area">
-        <button mat-button><span>Abandonner</span></button>
-        <app-game-timer [isCountDown]="false" [gameLength]="400"></app-game-timer>
-        <div id="diff-counter">
-            <div>
-                <span class="diff-self">Val Valière :</span>
-                <span> 741 </span>
-                <span class="diff-self">différences trouvées</span>
+<app-scale-container>
+    <div class="container">
+        <section id="top-area">
+            <button mat-button><span>Abandonner</span></button>
+            <app-game-timer [isCountDown]="false" [gameLength]="400"></app-game-timer>
+            <div id="diff-counter">
+                <div>
+                    <span class="diff-self">Val Valière :</span>
+                    <span> 741 </span>
+                    <span class="diff-self">différences trouvées</span>
+                </div>
+                <div>
+                    <span class="diff-friend">Eugène Poubelle :</span>
+                    <span> 696 </span>
+                    <span class="diff-friend">différences trouvées</span>
+                </div>
             </div>
-            <div>
-                <span class="diff-friend">Eugène Poubelle :</span>
-                <span> 696 </span>
-                <span class="diff-friend">différences trouvées</span>
+        </section>
+        <section id="play-area-container">
+            <app-play-area></app-play-area>
+            <div id="between-images">
+                <button mat-button>
+                    <span>
+                        <mat-icon>image_search</mat-icon></span>
+                </button>
+                <p>3 </p><span id="nb-hints">indices restants</span>
             </div>
-        </div>
-    </section>
-    <section id="play-area-container">
-        <app-play-area></app-play-area>
-        <div id="between-images">
-            <button mat-button>
-                <span>
-                <mat-icon>image_search</mat-icon></span>
-            </button>
-            <p>3 </p><span id="nb-hints">indices restants</span>
-        </div>
-        <app-play-area></app-play-area>
-    </section>
-    <section id="bottom-area">
-    <app-game-chat></app-game-chat>
-    <div id="info-game">
-        <div><span class="info-question">Jeu : </span><span class="info-answer">Délice sucré-salé</span></div>
-        <div><span class="info-question">Difficulté : </span><span class="info-answer">Facile</span></div>
-        <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
-        <div><span class="info-question">Nombres de différences : </span><span class="info-answer">810</span></div>
-        <div><span class="info-question">Pénalité indice : </span><span class="info-answer">20 secondes</span></div>
+            <app-play-area></app-play-area>
+        </section>
+        <section id="bottom-area">
+            <app-game-chat></app-game-chat>
+            <div id="info-game">
+                <div><span class="info-question">Jeu : </span><span class="info-answer">Délice sucré-salé</span></div>
+                <div><span class="info-question">Difficulté : </span><span class="info-answer">Facile</span></div>
+                <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
+                <div><span class="info-question">Nombres de différences : </span><span class="info-answer">810</span>
+                </div>
+                <div><span class="info-question">Pénalité indice : </span><span class="info-answer">20 secondes</span>
+                </div>
+            </div>
+        </section>
     </div>
-</section>
-</div>
+</app-scale-container>
