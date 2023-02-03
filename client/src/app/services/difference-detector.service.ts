@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
 
+/* Bitmap 24 bits per pixel */
+export const CHANNELS_PER_PIXEL = 4;
+export const EXPECTED_WIDTH = 640;
+export const EXPECTED_HEIGHT = 480;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -34,7 +39,9 @@ export class DifferenceDetectorService {
         // Processing data.
         this.comparePixels();
         this.addRadius(defaultImage.canvas.width);
+        this.listDifferences();
         this.chooseDifficulty();
+
         const differenceCanvas = document.createElement('canvas').getContext('2d');
         if (!differenceCanvas) {
             return;
@@ -71,16 +78,7 @@ export class DifferenceDetectorService {
         }
     }
 
-    /**
-     * Verifies if the image is valid.
-     * The image must be 640x480 and 24 bits.
-     *
-     * @param image The image to verify.
-     * @returns True if the image is valid, false otherwise.
-     */
-
     addRadius(width: number): void {
-        if (this.radius === 0) return;
         for (const pixel of this.initialDifferentPixels) {
             for (let i = -this.radius; i < this.radius; i++) {
                 for (let j = -this.radius; j < this.radius; j++) {
@@ -107,17 +105,62 @@ export class DifferenceDetectorService {
         this.comparisonArray[pixelPosition + 3] = 255;
     }
 
-    // private listDifferences() {
-    //     for (let i = 0; i < this.differenceImageData.length; i += 4) {
-    //         this.visited[i] = true;
-    //         const r = this.differenceImageData[i];
-    //         const g = this.differenceImageData[i + 1];
-    //         const b = this.differenceImageData[i + 2];
-    //         if (r === 0 && g === 0 && b === 0) {
-    //             continue;
-    //         }
-    //     }
-    // }
+    listDifferences(): number[][] {
+        const listOfDifferences: number[][] = [];
+        for (const pixel of this.initialDifferentPixels) {
+            if (!this.visited[pixel]) {
+                listOfDifferences.push(this.bfs(pixel));
+            }
+        }
+        return listOfDifferences;
+    }
 
-    // private bfs(pixel: number) {}
+    bfs(pixel: number): number[] {
+        const queue: number[] = [];
+        const cluster: number[] = [];
+
+        queue.push(pixel);
+        this.visited[pixel] = true;
+
+        while (queue.length !== 0) {
+            const currentPixel = queue.pop(); // I'm not sure if this is the best way to do it.
+            if (currentPixel) {
+                this.visited[currentPixel] = true;
+                cluster.push(currentPixel);
+                const adjacentPixels = this.findAdjacentPixels(currentPixel);
+                queue.push(...adjacentPixels);
+            }
+        }
+
+        return cluster;
+    }
+
+    findAdjacentPixels(pixel: number): Uint32List {
+        const adjacentPixels: number[] = [];
+
+        for (let i = -1; i < 1; i++) {
+            for (let j = -1; j < 1; j++) {
+                const pixelPosition = i * CHANNELS_PER_PIXEL + j * CHANNELS_PER_PIXEL * EXPECTED_WIDTH + pixel;
+                // Checks if the pixel is inside the image.
+                if (pixelPosition < 0 || pixelPosition > this.defaultImageArray.length) {
+                    continue;
+                }
+                // Checks if the pixel has already been visited.
+                if (this.visited[pixelPosition] === true) {
+                    continue;
+                }
+                // Checks if the pixel is black.
+                if (!this.isPixelBlack(pixelPosition)) {
+                    continue;
+                }
+                adjacentPixels.push(pixelPosition);
+            }
+        }
+
+        return adjacentPixels;
+    }
+
+    isPixelBlack(pixel: number): boolean {
+        return this.comparisonArray[pixel] === 0 && this.comparisonArray[pixel + 1] === 0 && this.comparisonArray[pixel + 2] === 0;
+    }
 }

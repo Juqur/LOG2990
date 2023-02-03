@@ -64,7 +64,7 @@ describe('DifferenceDetectorService', () => {
         expect(service.counter).toEqual(8);
     });
 
-    it('chooseDiffculty should return false if the game is easy', () => {
+    it('chooseDifficulty should return false if the game is easy', () => {
         service.differences = 0;
         service.defaultImageArray = new Uint8ClampedArray(1);
         service.counter = 1;
@@ -94,5 +94,43 @@ describe('DifferenceDetectorService', () => {
         }
         service.comparePixels();
         expect(spyChangeColor).toHaveBeenCalledTimes(4);
+    });
+    it('listDifferences should call bfs the correct amount of time', () => {
+        const spyBfs = spyOn(service, 'bfs');
+        service.initialDifferentPixels = [1, 2, 3, 4, 5, 6];
+        service.listDifferences();
+        expect(spyBfs).toHaveBeenCalledTimes(6);
+    });
+    it('should return true if pixel is black', () => {
+        service.comparisonArray = new Uint8ClampedArray(4);
+        service.comparisonArray[0] = 0;
+        service.comparisonArray[1] = 0;
+        service.comparisonArray[2] = 0;
+        expect(service.isPixelBlack(0)).toBeTruthy();
+    });
+    it('should return false if pixel is not black', () => {
+        service.comparisonArray = new Uint8ClampedArray(4);
+        service.comparisonArray[0] = 90;
+        service.comparisonArray[1] = 0;
+        service.comparisonArray[2] = 0;
+        expect(service.isPixelBlack(0)).toBeFalsy();
+    });
+    it('findAdjacentPixels should return a all adjacent pixels if they are all valid', () => {
+        const pixel = 8;
+        service.visited[pixel] = true;
+        service.comparisonArray = new Uint8ClampedArray(20);
+        service.defaultImageArray = new Uint8ClampedArray(20);
+        for (let i = 0; i < 12; i++) {
+            service.comparisonArray[i] = 0;
+            if (i === pixel) {
+                service.visited[i] = true;
+            } else if (i === 4) {
+                service.comparisonArray[i] = 1;
+            } else if (i % 4 === 0) {
+                service.visited[i] = false;
+            }
+        }
+        const result: Uint32List = [0, 8];
+        expect(service.findAdjacentPixels(pixel)).toEqual(result);
     });
 });
