@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { MouseButton } from '@common/constants';
 
@@ -7,10 +7,9 @@ import { MouseButton } from '@common/constants';
     providedIn: 'root',
 })
 export class MouseService {
-    @Output() differenceCounterChange = new EventEmitter<boolean>();
+    differenceCounter: number = 0;
     mousePosition: Vec2 = { x: 0, y: 0 };
     width: number;
-    differenceCounter: number = 0;
     url = ''; // The URL the service needs to send the value at.
 
     constructor(public http: HttpClient) {}
@@ -24,7 +23,6 @@ export class MouseService {
     mouseHitDetect(event: MouseEvent, width: number) {
         // This is to test stuff, not meant for final product.
         this.width = width;
-        window.alert(event.button);
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
             this.processClick();

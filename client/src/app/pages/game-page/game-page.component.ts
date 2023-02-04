@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MouseService } from '@app/services/mouse.service';
 
 @Component({
     selector: 'app-game-page',
@@ -7,4 +8,9 @@ import { Component } from '@angular/core';
 })
 export class GamePageComponent {
     differenceCounter: number = 0;
+    constructor(private service: MouseService) {}
+
+    getDifferenceCounter(): number {
+        return this.service.differenceCounter;
+    }
 }
