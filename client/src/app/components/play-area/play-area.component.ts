@@ -40,13 +40,15 @@ export class PlayAreaComponent implements AfterViewInit {
 
     mouseHitDetect(event: MouseEvent) {
         let clickedOnDiff: boolean = this.mouseService.mouseHitDetect(event, this.width);
-        if (!clickedOnDiff) {
-            this.drawService.drawError(this.mouseService);
-            this.timeout(1000).then(() => {
-                this.drawPlayArea();
-            });
+        if (clickedOnDiff) {
+            this.drawService.drawSuccess(this.mouseService);
             // setTimeout(this.drawService.drawPlayArea, 1000);
+        } else {
+            this.drawService.drawError(this.mouseService);
         }
+        this.timeout(1000).then(() => {
+            this.drawPlayArea();
+        });
     }
 
     drawPlayArea() {

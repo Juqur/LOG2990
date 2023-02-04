@@ -58,6 +58,12 @@ export class DrawService {
         this.context.fillText('ERROR', mouseService.getX(), mouseService.getY());
     }
 
+    drawSuccess(mouseService: MouseService) {
+        this.context.font = '20px system-ui';
+        this.context.fillStyle = 'green';
+        this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
+    }
+
     drawPlayArea(file:string = './assets/un_regal.bmp'){
         const currentImage = new Image();
         currentImage.src = file;
