@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
+import { MouseService } from './mouse.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
@@ -49,5 +50,19 @@ export class DrawService {
         for (let i = 0; i < word.length; i++) {
             this.context.fillText(word[i], startPosition.x + step * i, startPosition.y);
         }
+    }
+
+    drawError(mouseService: MouseService) {
+        this.context.font = '20px system-ui';
+        this.context.fillStyle = 'red';
+        this.context.fillText('ERROR', mouseService.getX(), mouseService.getY());
+    }
+
+    drawPlayArea(file:string = './assets/un_regal.bmp'){
+        const currentImage = new Image();
+        currentImage.src = file;
+        currentImage.onload = () => {
+            this.context.drawImage(currentImage, 0, 0, this.width, this.height);
+        };
     }
 }

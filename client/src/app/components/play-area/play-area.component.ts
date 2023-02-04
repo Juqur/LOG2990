@@ -33,6 +33,23 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        this.drawPlayArea();
+        // this.drawService.drawGrid();
+        // this.drawService.drawPlayArea();
+    }
+
+    mouseHitDetect(event: MouseEvent) {
+        let clickedOnDiff: boolean = this.mouseService.mouseHitDetect(event, this.width);
+        if (!clickedOnDiff) {
+            this.drawService.drawError(this.mouseService);
+            this.timeout(1000).then(() => {
+                this.drawPlayArea();
+            });
+            // setTimeout(this.drawService.drawPlayArea, 1000);
+        }
+    }
+
+    drawPlayArea() {
         this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         const ctx = this.drawService.context;
         const currentImage = new Image();
@@ -43,7 +60,7 @@ export class PlayAreaComponent implements AfterViewInit {
         this.canvas.nativeElement.focus();
     }
 
-    mouseHitDetect(event: MouseEvent) {
-        this.mouseService.mouseHitDetect(event, this.width);
+    timeout(ms: number) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 }

@@ -20,14 +20,16 @@ export class MouseService {
      *
      * @param event the mouse event
      */
-    mouseHitDetect(event: MouseEvent, width: number) {
+    mouseHitDetect(event: MouseEvent, width: number): boolean {
         // This is to test stuff, not meant for final product.
         this.width = width;
         // window.alert(event.button);
         if (event.button === MouseButton.Left) {
+            console.log(event.offsetX, event.offsetY);
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            this.processClick();
+            return this.processClick();
         }
+        return false;
     }
 
     /**
@@ -37,7 +39,7 @@ export class MouseService {
      * correctly process it there.
      */
 
-    processClick() {
+    processClick(): boolean {
         // const PIXEL_SIZE = 4;
         // const position: number = this.mousePosition.x * PIXEL_SIZE + this.mousePosition.y * this.width * PIXEL_SIZE;
         // TODO
@@ -46,8 +48,12 @@ export class MouseService {
         // const res = this.http.post(url, position);
         const res: Vec2[] = [{ x: 1, y: 2 }];
         if (res.length > 0) {
-            this.incrementCounter();
+            if (this.mousePosition.x > 0 && this.mousePosition.x < 100 && this.mousePosition.y > 0 && this.mousePosition.y < 100) {
+                this.incrementCounter();
+                return true;
+            }
         }
+        return false;
     }
 
     /**
@@ -67,5 +73,17 @@ export class MouseService {
      */
     getDifferenceCounter() {
         return this.differenceCounter;
+    }
+
+    displayError(): string {
+        return 'Error';
+    }
+
+    getX(): number {
+        return this.mousePosition.x;
+    }
+
+    getY(): number {
+        return this.mousePosition.y;
     }
 }
