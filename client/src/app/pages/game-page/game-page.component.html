@@ -1,7 +1,7 @@
 <app-scale-container>
     <div class="container">
         <section id="top-area">
-            <button mat-button><span>Abandonner</span></button>
+            <button mat-button routerLink="/selection"><span>Abandonner</span></button>
             <app-game-timer [isCountDown]="false" [gameLength]="400"></app-game-timer>
             <div id="diff-counter">
                 <div>
@@ -21,7 +21,10 @@
             <div id="between-images">
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
+                    <span> <mat-icon>image_search</mat-icon></span>
                 </button>
+                <p>3</p>
+                <span id="nb-hints">indices restants</span>
                 <p>3</p>
                 <span id="nb-hints">indices restants</span>
             </div>
@@ -34,7 +37,7 @@
                 <div><span class="info-question">Difficulté : </span><span class="info-answer">Facile</span></div>
                 <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
                 <div>
-                    <span class="info-question">Nombres de différences : </span><span class="info-answer">{{ getDifferenceCounter() }}</span>
+                    <span class="info-question">Nombres de différences : </span><span class="info-answer"><app-counter></app-counter></span>
                 </div>
                 <div><span class="info-question">Pénalité indice : </span><span class="info-answer">20 secondes</span></div>
             </div>

@@ -23,6 +23,7 @@ export class MouseService {
     mouseHitDetect(event: MouseEvent, width: number) {
         // This is to test stuff, not meant for final product.
         this.width = width;
+        // window.alert(event.button);
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
             this.processClick();
@@ -57,5 +58,14 @@ export class MouseService {
      */
     incrementCounter() {
         this.differenceCounter++;
+    }
+
+    /**
+     * Returns the difference counter.
+     *
+     * @returns the difference counter
+     */
+    getDifferenceCounter() {
+        return this.differenceCounter;
     }
 }

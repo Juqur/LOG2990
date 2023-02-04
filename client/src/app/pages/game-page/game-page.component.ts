@@ -7,7 +7,6 @@ import { MouseService } from '@app/services/mouse.service';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent {
-    differenceCounter: number = 0;
     constructor(private service: MouseService) {}
 
     getDifferenceCounter(): number {
