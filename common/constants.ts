@@ -36,6 +36,13 @@ export namespace Constants {
     export const maxNameLength: number = 11;
     export const maxNameLengthShown: number = 8;
     export const maxMessageLength: number = 100;
+
+    // Detection of difference constants
+    export const PIXEL_SIZE: number = 4;
+
+    // Canvas for game
+    export const DEFAULT_WIDTH = 640;
+    export const DEFAULT_HEIGHT = 480;
 }
 
 export enum MouseButton {

@@ -1,10 +1,9 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 
 // TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 640;
-export const DEFAULT_HEIGHT = 480;
 
 @Component({
     selector: 'app-play-area',
@@ -16,7 +15,7 @@ export class PlayAreaComponent implements AfterViewInit {
 
     buttonPressed = '';
 
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
     constructor(private readonly drawService: DrawService, private readonly mouseService: MouseService) {}
 
     get width(): number {
@@ -39,16 +38,25 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     mouseHitDetect(event: MouseEvent) {
-        let clickedOnDiff: boolean = this.mouseService.mouseHitDetect(event, this.width);
-        if (clickedOnDiff) {
-            this.drawService.drawSuccess(this.mouseService);
-            // setTimeout(this.drawService.drawPlayArea, 1000);
+        if (this.mouseService.canClick) {
+            const clickedOnDiff: boolean = this.mouseService.mouseHitDetect(event);
+            if (clickedOnDiff) {
+                this.drawService.drawSuccess(this.mouseService);
+                // setTimeout(this.drawService.drawPlayArea, 1000);
+                this.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    this.drawPlayArea();
+                });
+            } else {
+                this.drawService.drawError(this.mouseService);
+                this.mouseService.changeClickState();
+                this.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    this.mouseService.changeClickState();
+                    this.drawPlayArea();
+                });
+            }
         } else {
-            this.drawService.drawError(this.mouseService);
+            // The player is not allowed to click again so he has to wait.
         }
-        this.timeout(1000).then(() => {
-            this.drawPlayArea();
-        });
     }
 
     drawPlayArea() {
@@ -62,7 +70,7 @@ export class PlayAreaComponent implements AfterViewInit {
         this.canvas.nativeElement.focus();
     }
 
-    timeout(ms: number) {
+    async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 }
