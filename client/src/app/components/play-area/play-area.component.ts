@@ -9,6 +9,7 @@ import { Constants } from '@common/constants';
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
+    providers: [DrawService],
 })
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
@@ -33,8 +34,6 @@ export class PlayAreaComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.drawPlayArea();
-        // this.drawService.drawGrid();
-        // this.drawService.drawPlayArea();
     }
 
     mouseHitDetect(event: MouseEvent) {
@@ -42,7 +41,6 @@ export class PlayAreaComponent implements AfterViewInit {
             const clickedOnDiff: boolean = this.mouseService.mouseHitDetect(event);
             if (clickedOnDiff) {
                 this.drawService.drawSuccess(this.mouseService);
-                // setTimeout(this.drawService.drawPlayArea, 1000);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.drawPlayArea();
                 });
@@ -73,4 +71,6 @@ export class PlayAreaComponent implements AfterViewInit {
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
+
+    sleep = async (ms: number) => new Promise((r) => setTimeout(r, ms));
 }
