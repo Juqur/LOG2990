@@ -53,18 +53,21 @@ export class DrawService {
     }
 
     drawError(mouseService: MouseService) {
-        this.context.font = '20px system-ui';
+        this.context.font = '36px system-ui';
         this.context.fillStyle = 'red';
         this.context.fillText('ERROR', mouseService.getX(), mouseService.getY());
     }
 
     drawSuccess(mouseService: MouseService) {
-        this.context.font = '20px system-ui';
+        this.context.font = '36px system-ui';
         this.context.fillStyle = 'green';
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
     }
 
-    drawPlayArea(file:string = './assets/un_regal.bmp'){
+    // DOESNT WORK
+    // this function is used to draw the image on the canvas
+    drawPlayArea(file: string = './assets/un_regal.bmp', canvas: CanvasRenderingContext2D) {
+        this.context = canvas;
         const currentImage = new Image();
         currentImage.src = file;
         currentImage.onload = () => {
