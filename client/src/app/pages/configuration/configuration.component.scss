@@ -3,7 +3,7 @@
     top: 0;
     left: 0;
     margin-top: 20px;
-    margin-left: 4.5vw;
+    margin-left: 20px;
     border-radius: 50%;
     background-color: #3b7ff6;
     font-size: 1.5rem;
@@ -13,35 +13,10 @@
     display: flex;
     justify-content: right;
     align-items: center;
-    padding-right: 4.5vw;
+    padding-right: 20px;
     padding-top: 20px;
-    margin-bottom: 20px;
-}
-
-.selection-card-container {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: nowrap;
-}
-
-.bottom-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 15rem;
-    padding-bottom: 20px;
-    width: 100%;
-}
-
-.page-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6px 14px;
-    border-radius: 60px;
-    border: none;
-    color: #fff;
-    background: #3b7ff6;
+    margin-bottom: 140px;
+    margin-left: 20px;
 }
 
 .button-settings {
@@ -55,6 +30,32 @@
     color: #fff;
     background: #f63b3b;
     cursor: pointer;
+}
+
+.selection-card-container {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+}
+
+.bottom-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 140px;
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+.page-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 60px;
+    border: none;
+    color: #fff;
+    background: #3b7ff6;
 }
 
 .mat-orange {
