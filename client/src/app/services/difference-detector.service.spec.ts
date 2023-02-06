@@ -160,51 +160,45 @@ describe('DifferenceDetectorService', () => {
     //     service.listDifferences();
     //     expect(spyBfs).toHaveBeenCalledTimes(6);
     // });
-    // it('should return true if pixel is black', () => {
-    //     service.comparisonArray = new Uint8ClampedArray(4);
-    //     service.comparisonArray[0] = 0;
-    //     service.comparisonArray[1] = 0;
-    //     service.comparisonArray[2] = 0;
-    //     expect(service.isPixelBlack(0)).toBeTruthy();
-    // });
-    // it('should return false if pixel is not black', () => {
-    //     service.comparisonArray = new Uint8ClampedArray(4);
-    //     service.comparisonArray[0] = 90;
-    //     service.comparisonArray[1] = 0;
-    //     service.comparisonArray[2] = 0;
-    //     expect(service.isPixelBlack(0)).toBeFalsy();
-    // });
+    it('bfs should return the chunk of pixels desired', () => {
+        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.visited = [];
+        for (const position of TestConstants.CHUNK_OF_PIXELS) {
+            service.colorizePixel(position);
+        }
+        const chunk = service.bfs(TestConstants.PIXEL_TO_FIND_ADJACENT).sort((a, b) => a - b);
+        // console.log(service.visited);
+        expect(chunk).toEqual(TestConstants.CHUNK_OF_PIXELS);
+    });
 
-    it('findAdjacentPixels should return a all adjacent pixels if they are all valid', () => {
-        // Mock EXPECTED_WIDTH from difference.service.ts
-        // const EXPECTED_WIDTH = 5;
-        jasmine.createSpy('EXPECTED_WIDTH').and.returnValue(123);
-        // expect(service.findAdjacentPixels(50)).toEqual([]);
-        // const pixel = 8;
-        // service.visited[pixel] = true;
-        // service.comparisonArray = new Uint8ClampedArray(20);
-        // service.defaultImageArray = new Uint8ClampedArray(20);
-        // for (let i = 0; i < 12; i++) {
-        //     service.comparisonArray[i] = 0;
-        //     if (i === pixel) {
-        //         service.visited[i] = true;
-        //     } else if (i === 4) {
-        //         service.comparisonArray[i] = 1;
-        //     } else if (i % 4 === 0) {
-        //         service.visited[i] = false;
-        //     }
-        // }
-        // const result: Uint32List = [0, 8];
-        // expect(service.findAdjacentPixels(pixel)).toEqual(result);
+    it('findAdjacentPixels should return all adjacent pixels if they are all valid', () => {
+        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.visited = [];
+        service.visited[TestConstants.PIXEL_TO_FIND_ADJACENT] = true;
+        for (const position of TestConstants.ADJACENT_PIXELS) {
+            service.colorizePixel(position);
+        }
+        const adjacent = service.findAdjacentPixels(TestConstants.PIXEL_TO_FIND_ADJACENT);
+        expect(adjacent).toEqual(TestConstants.ADJACENT_PIXELS);
+    });
+
+    it('findAdjacentPixels should return an empty array if the pixel is invalid', () => {
+        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.visited = [];
+        const adjacent = service.findAdjacentPixels(NaN);
+        expect(adjacent).toEqual([]);
     });
 
     it('isPixelColored should return true if the pixel is colored', () => {
         service.comparisonArray = new Uint8ClampedArray([0, 0, 0, FULL_ALPHA]);
-        expect(service.isPixelColored(0)).toBeTruthy();
+        expect(service['isPixelColored'](0)).toBeTruthy();
     });
 
     it('isPixelColored should return false if the pixel is not colored', () => {
         service.comparisonArray = new Uint8ClampedArray([FULL_ALPHA, FULL_ALPHA, FULL_ALPHA, FULL_ALPHA]);
-        expect(service.isPixelColored(0)).toBeFalsy();
+        expect(service['isPixelColored'](0)).toBeFalsy();
     });
 });

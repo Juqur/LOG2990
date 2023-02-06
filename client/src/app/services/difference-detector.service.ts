@@ -125,7 +125,7 @@ export class DifferenceDetectorService {
 
             for (let i = -this.radius; i <= this.radius; i++) {
                 for (let j = -this.radius; j <= this.radius; j++) {
-                    const pixelPosition = i * CHANNELS_PER_PIXEL + j * CHANNELS_PER_PIXEL * EXPECTED_WIDTH + pixel;
+                    const pixelPosition = (i * EXPECTED_WIDTH + j) * CHANNELS_PER_PIXEL + pixel;
                     const distance = Math.pow(i, 2) + Math.pow(j, 2);
                     if (this.isInBounds(pixelPosition) && distance <= Math.pow(this.radius, 2)) {
                         this.colorizePixel(pixelPosition);
@@ -183,13 +183,11 @@ export class DifferenceDetectorService {
     bfs(pixel: number): number[] {
         const queue: number[] = [];
         const cluster: number[] = [];
-
         queue.push(pixel);
-        this.visited[pixel] = true;
 
         while (queue.length > 0) {
-            const currentPixel = queue.pop();
-            if (currentPixel) {
+            const currentPixel = queue.shift() as number;
+            if (!this.visited[currentPixel]) {
                 this.visited[currentPixel] = true;
                 cluster.push(currentPixel);
                 const adjacentPixels = this.findAdjacentPixels(currentPixel);
@@ -202,6 +200,7 @@ export class DifferenceDetectorService {
 
     /**
      * Finds the adjacent pixels of a given pixel.
+     * Note: The pixel is in flat-map format.
      *
      * @param pixel The pixel to start the search.
      * @returns A list of pixels that are adjacent and valid to the pixel.
@@ -210,7 +209,7 @@ export class DifferenceDetectorService {
         const adjacentPixels: number[] = [];
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
-                const pixelPosition = i * CHANNELS_PER_PIXEL + j * CHANNELS_PER_PIXEL * EXPECTED_WIDTH + pixel;
+                const pixelPosition = (i * EXPECTED_WIDTH + j) * CHANNELS_PER_PIXEL + pixel;
                 // Checks if the pixel is inside the image.
                 if (pixelPosition < 0 || pixelPosition > this.defaultImageArray.length) {
                     continue;
@@ -231,12 +230,14 @@ export class DifferenceDetectorService {
     }
 
     /**
-     * Verifies if the pixel is colored.
+     * Internal method that verifies if the pixel is colored.
+     * Note: It is important that the pixel's alpha is visible
+     * because the array's values are equal to 0 to all channels.
      *
      * @param pixel The pixel to start the search.
      * @returns A list of pixels that are adjacent and valid to the pixel.
      */
-    isPixelColored(pixel: number): boolean {
+    private isPixelColored(pixel: number): boolean {
         return (
             this.comparisonArray[pixel] === 0 &&
             this.comparisonArray[pixel + 1] === 0 &&
