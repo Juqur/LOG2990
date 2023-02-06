@@ -9,7 +9,12 @@ import { MouseService } from '@app/services/mouse.service';
 export class CounterComponent {
     constructor(private mouseService: MouseService) {}
 
+    /**
+     * Returns the value of the counter from the mouseService.
+     *
+     * @returns the value of the counter.
+     */
     get mouseCount() {
-        return this.mouseService.differenceCounter;
+        return this.mouseService.getDifferenceCounter();
     }
 }

@@ -7,10 +7,10 @@ import { Constants, MouseButton } from '@common/constants';
     providedIn: 'root',
 })
 export class MouseService {
-    differenceCounter: number = 0;
-    mousePosition: Vec2 = { x: 0, y: 0 };
-    url = ''; // The URL the service needs to send the value at.
-    canClick: boolean = true;
+    private differenceCounter: number = 0;
+    private mousePosition: Vec2 = { x: 0, y: 0 };
+    // private url = ''; // The URL the service needs to send the value at.
+    private canClick: boolean = true;
 
     constructor(public http: HttpClient) {}
 
@@ -19,10 +19,9 @@ export class MouseService {
      * and stores it inside tbe mousePosition variable.
      *
      * @param event the mouse event
+     * @returns a boolean indicating if the click was valid.
      */
     mouseHitDetect(event: MouseEvent): boolean {
-        // This is to test stuff, not meant for final product.
-        // window.alert(event.button);
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
             return this.processClick();
@@ -31,10 +30,11 @@ export class MouseService {
     }
 
     /**
-     * TODO
      * This function should process the click and react accordingly.
      * The information on the click should be sent to the server in order to
      * correctly process it there.
+     *
+     * @returns a boolean indicating if the click was valid.
      */
 
     processClick(): boolean {
@@ -47,8 +47,8 @@ export class MouseService {
             // Add router link
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
             // const res = this.http.post(url, position);
-            const res: Vec2[] = [{ x: 1, y: 2 }];
-            if (res.length > 0) {
+            const testRes: Vec2[] = [{ x: 1, y: 2 }];
+            if (testRes.length > 0) {
                 // Simply to add a section of the canvas that we can use to test on.
                 if (
                     this.mousePosition.x > 0 &&
@@ -84,10 +84,20 @@ export class MouseService {
         return this.differenceCounter;
     }
 
+    /**
+     * Returns the x coordinate of the last loaded click.
+     *
+     * @returns the value of the x coordinate.
+     */
     getX(): number {
         return this.mousePosition.x;
     }
 
+    /**
+     * Returns the y coordinate of the last loaded click.
+     *
+     * @returns the value of the y coordinate.
+     */
     getY(): number {
         return this.mousePosition.y;
     }
@@ -97,5 +107,14 @@ export class MouseService {
      */
     changeClickState(): void {
         this.canClick = !this.canClick;
+    }
+
+    /**
+     * Returns the boolean indicating if a click can be processed.
+     *
+     * @returns the canClick boolean.
+     */
+    getCanClick(): boolean {
+        return this.canClick;
     }
 }

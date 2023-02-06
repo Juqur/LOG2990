@@ -3,8 +3,6 @@ import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
-// TODO : Avoir un fichier séparé pour les constantes!
-
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
@@ -36,8 +34,15 @@ export class PlayAreaComponent implements AfterViewInit {
         this.drawPlayArea();
     }
 
+    /**
+     * The function in charge of receiving the click event.
+     * It is also the function in charge of giving the player a penality
+     * if he click on a pixel that wasn't a difference.
+     *
+     * @param event the mouse click event on the canvas we want to process.
+     */
     mouseHitDetect(event: MouseEvent) {
-        if (this.mouseService.canClick) {
+        if (this.mouseService.getCanClick()) {
             const clickedOnDiff: boolean = this.mouseService.mouseHitDetect(event);
             if (clickedOnDiff) {
                 this.drawService.drawSuccess(this.mouseService);
@@ -52,11 +57,14 @@ export class PlayAreaComponent implements AfterViewInit {
                     this.drawPlayArea();
                 });
             }
-        } else {
-            // The player is not allowed to click again so he has to wait.
         }
     }
 
+    /**
+     * The function in charge of loading the image on the canvas.
+     * It is also used to reload the image and erase any text or modifications we may
+     * have added to it.
+     */
     drawPlayArea() {
         this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         const ctx = this.drawService.context;
@@ -72,5 +80,7 @@ export class PlayAreaComponent implements AfterViewInit {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    sleep = async (ms: number) => new Promise((r) => setTimeout(r, ms));
+    getServiceCanPlay(): boolean {
+        return this.mouseService.getCanClick();
+    }
 }

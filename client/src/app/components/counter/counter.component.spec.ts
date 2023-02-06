@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CounterComponent } from './counter.component';
@@ -8,6 +9,7 @@ describe('CounterComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [HttpClientModule],
             declarations: [CounterComponent],
         }).compileComponents();
 
