@@ -19,6 +19,7 @@ export class TestDiffComponent {
         }
         this.defaultImage = target.files[0];
     }
+
     diffImageSelector(event: Event) {
         const target = event.target as HTMLInputElement;
         if (!target.files) {
@@ -26,6 +27,7 @@ export class TestDiffComponent {
         }
         this.diffImage = target.files[0];
     }
+
     detectDifference() {
         if (!this.defaultImage || !this.diffImage) {
             return;

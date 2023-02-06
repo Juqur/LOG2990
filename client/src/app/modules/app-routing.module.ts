@@ -9,7 +9,7 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 import { TestDiffComponent } from '@app/pages/test-diff.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: '/testGame', pathMatch: 'full' },
+    { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GamePageComponent },
     { path: 'material', component: MaterialPageComponent },
