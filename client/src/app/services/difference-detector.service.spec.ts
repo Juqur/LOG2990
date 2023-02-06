@@ -99,16 +99,16 @@ describe('DifferenceDetectorService', () => {
 
     it('colorizePixel should colorize the appropriate pixel', () => {
         const expectedColor = new Uint8ClampedArray([0, 0, 0, FULL_ALPHA]);
-        service.comparisonArray = new Uint8ClampedArray(CHANNELS_PER_PIXEL);
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+        service.comparisonImage.data.set(new Uint8ClampedArray(CHANNELS_PER_PIXEL));
         service.colorizePixel(0);
-        expect(service.comparisonArray).toEqual(expectedColor);
+        expect(service.comparisonImage.data.slice(0, CHANNELS_PER_PIXEL)).toEqual(expectedColor);
     });
 
     it('addRadius should not colorize if pixel is out of range', () => {
         const spyOnColorize = spyOn(service, 'colorizePixel');
         service.initialDifferentPixels = TestConstants.OFF_BOUNDS_PIXELS;
-        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
-        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
         service.radius = 3;
         service.addRadius();
         expect(spyOnColorize).not.toHaveBeenCalled();
@@ -116,27 +116,22 @@ describe('DifferenceDetectorService', () => {
 
     it('addRadius should call changeColor the correct amount of time', () => {
         const expectedTimes = 8;
-        service.comparisonArray = new Uint8ClampedArray(CHANNELS_PER_PIXEL);
         const spyChangeColor = spyOn(service, 'colorizePixel');
-        service.initialDifferentPixels = TestConstants.VALID_PIXELS;
-        service.defaultImageArray = new Uint8ClampedArray(service.initialDifferentPixels.length);
-        service.radius = 2;
+
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+        service.initialDifferentPixels = TestConstants.PIXELS_TO_ADD_RADIUS;
+        service.radius = 1;
+
         service.addRadius();
         expect(spyChangeColor).toHaveBeenCalledTimes(expectedTimes);
         expect(service.counter).toEqual(expectedTimes);
     });
 
     it('isHard should return false if the amount of differences is inputted incorrectly', () => {
-        service.counter = TestConstants.NB_VALID_PIXELS;
-        service.defaultImageArray = new Uint8ClampedArray(TestConstants.NB_TOTAL_PIXELS);
         const argument = NaN as number;
-        expect(service.isHard(argument)).toBeFalsy();
-    });
-
-    it('isHard should return false if the amount of differences is inputted incorrectly', () => {
         service.counter = TestConstants.NB_VALID_PIXELS;
-        service.defaultImageArray = new Uint8ClampedArray(TestConstants.NB_TOTAL_PIXELS);
-        const argument = NaN as number;
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+        service.comparisonImage.data.set(new Uint8ClampedArray(TestConstants.NB_TOTAL_PIXELS));
         expect(service.isHard(argument)).toBeFalsy();
     });
 
@@ -144,19 +139,20 @@ describe('DifferenceDetectorService', () => {
         const spyColorizePixel = spyOn(service, 'colorizePixel');
         const dataLength = TestConstants.DATA_LENGTH * CHANNELS_PER_PIXEL;
         service.initialDifferentPixels = [];
-        service.defaultImageArray = new Uint8ClampedArray(dataLength);
-        service.modifiedImageArray = new Uint8ClampedArray(dataLength);
+        service.defaultImage = defaultCanvas.getImageData(0, 0, dataLength, 1);
+        service.modifiedImage = modifiedCanvas.getImageData(0, 0, dataLength, 1);
+        service.comparisonImage = defaultCanvas.createImageData(dataLength, 1);
+
         for (let i = 0; i < dataLength; i++) {
-            service.modifiedImageArray[i] = 1;
-            service.defaultImageArray[i] = 0;
+            service.modifiedImage.data[i] = 1;
+            service.defaultImage.data[i] = 0;
         }
         service.comparePixels();
         expect(spyColorizePixel).toHaveBeenCalledTimes(TestConstants.DATA_LENGTH);
     });
 
     it('listDifferences should return the appropriate amount of differences', () => {
-        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
-        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
         service.initialDifferentPixels = TestConstants.LIST_OF_DIFFERENCES;
         service.visited = [];
 
@@ -169,8 +165,7 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('bfs should return the chunk of pixels desired', () => {
-        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
-        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
         service.visited = [];
         for (const position of TestConstants.CHUNK_OF_PIXELS) {
             service.colorizePixel(position);
@@ -180,8 +175,7 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('findAdjacentPixels should return all adjacent pixels if they are all valid', () => {
-        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
-        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
         service.visited = [];
         service.visited[TestConstants.PIXEL_TO_FIND_ADJACENT] = true;
         for (const position of TestConstants.ADJACENT_PIXELS) {
@@ -192,20 +186,21 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('findAdjacentPixels should return an empty array if the pixel is invalid', () => {
-        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
-        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
         service.visited = [];
         const adjacent = service.findAdjacentPixels(NaN);
         expect(adjacent).toEqual([]);
     });
 
     it('isPixelColored should return true if the pixel is colored', () => {
-        service.comparisonArray = new Uint8ClampedArray([0, 0, 0, FULL_ALPHA]);
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+        service.comparisonImage.data.set(new Uint8ClampedArray([0, 0, 0, FULL_ALPHA]));
         expect(service['isPixelColored'](0)).toBeTruthy();
     });
 
     it('isPixelColored should return false if the pixel is not colored', () => {
-        service.comparisonArray = new Uint8ClampedArray([FULL_ALPHA, FULL_ALPHA, FULL_ALPHA, FULL_ALPHA]);
+        service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+        service.comparisonImage.data.set(new Uint8ClampedArray([FULL_ALPHA, FULL_ALPHA, FULL_ALPHA, FULL_ALPHA]));
         expect(service['isPixelColored'](0)).toBeFalsy();
     });
 });

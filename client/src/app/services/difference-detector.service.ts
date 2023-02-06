@@ -12,9 +12,9 @@ export const FULL_ALPHA = 255;
     providedIn: 'root',
 })
 export class DifferenceDetectorService {
-    defaultImageArray: Uint8ClampedArray;
-    modifiedImageArray: Uint8ClampedArray;
-    comparisonArray: Uint8ClampedArray;
+    defaultImage: ImageData;
+    modifiedImage: ImageData;
+    comparisonImage: ImageData;
     initialDifferentPixels: number[];
     clusters: number[][];
     radius: number;
@@ -37,12 +37,12 @@ export class DifferenceDetectorService {
         }
 
         // Initializing data.
-        const defaultImageData = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
-        const modifiedImageData = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
-        const comparisonData = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
-        this.defaultImageArray = defaultImageData.data;
-        this.modifiedImageArray = modifiedImageData.data;
-        this.comparisonArray = comparisonData.data;
+        this.defaultImage = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
+        this.modifiedImage = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
+        this.comparisonImage = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
+        // this.defaultImageArray = defaultImageData.data;
+        // this.modifiedImageArray = modifiedImageData.data;
+        // this.comparisonArray = comparisonData.data;
         this.radius = Number(radius);
         this.initialDifferentPixels = [];
         this.visited = [];
@@ -57,11 +57,9 @@ export class DifferenceDetectorService {
         const differenceCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         differenceCanvas.canvas.width = defaultImage.canvas.width;
         differenceCanvas.canvas.height = defaultImage.canvas.height;
-        differenceCanvas.putImageData(comparisonData, 0, 0);
+        differenceCanvas.putImageData(this.comparisonImage, 0, 0);
         document.body.appendChild(differenceCanvas.canvas);
 
-        // console.log(this.initialDifferentPixels);
-        // console.log(cluster);
         return cluster;
     }
 
@@ -84,7 +82,7 @@ export class DifferenceDetectorService {
      * @returns True if the pixel is in bound, false otherwise.
      */
     isInBounds(position: number): boolean {
-        return position >= 0 && position < this.defaultImageArray.length;
+        return position >= 0 && position < this.comparisonImage.data.length;
     }
 
     /**
@@ -92,13 +90,13 @@ export class DifferenceDetectorService {
      * generates the new image with the differences.
      */
     comparePixels(): void {
-        for (let i = 0; i < this.defaultImageArray.length; i += CHANNELS_PER_PIXEL) {
-            const r = this.defaultImageArray[i];
-            const g = this.defaultImageArray[i + 1];
-            const b = this.defaultImageArray[i + 2];
-            const r2 = this.modifiedImageArray[i];
-            const g2 = this.modifiedImageArray[i + 1];
-            const b2 = this.modifiedImageArray[i + 2];
+        for (let i = 0; i < this.defaultImage.data.length; i += CHANNELS_PER_PIXEL) {
+            const r = this.defaultImage.data[i];
+            const g = this.defaultImage.data[i + 1];
+            const b = this.defaultImage.data[i + 2];
+            const r2 = this.modifiedImage.data[i];
+            const g2 = this.modifiedImage.data[i + 1];
+            const b2 = this.modifiedImage.data[i + 2];
             if (r !== r2 || g !== g2 || b !== b2) {
                 if (this.isInBounds(i)) {
                     this.colorizePixel(i);
@@ -119,7 +117,7 @@ export class DifferenceDetectorService {
 
         for (const pixel of this.initialDifferentPixels) {
             // Ensures the pixel is in the image.
-            if (!this.isInBounds(pixel) || NaN) {
+            if (!this.isInBounds(pixel) || NaN || pixel % CHANNELS_PER_PIXEL !== 0) {
                 continue;
             }
 
@@ -142,7 +140,7 @@ export class DifferenceDetectorService {
      * @returns True if the pair of difference is hard, false otherwise.
      */
     isHard(nbDifferences: number): boolean {
-        const rate = this.counter / this.defaultImageArray.length;
+        const rate = this.counter / this.comparisonImage.data.length;
         return rate < DIFFICULTY_RATIO && nbDifferences >= MIN_DIFFERENCES;
     }
 
@@ -153,10 +151,10 @@ export class DifferenceDetectorService {
      * @param position The position of the pixel in the array.
      */
     colorizePixel(position: number): void {
-        this.comparisonArray[position] = 0;
-        this.comparisonArray[position + 1] = 0;
-        this.comparisonArray[position + 2] = 0;
-        this.comparisonArray[position + 3] = FULL_ALPHA;
+        this.comparisonImage.data[position] = 0;
+        this.comparisonImage.data[position + 1] = 0;
+        this.comparisonImage.data[position + 2] = 0;
+        this.comparisonImage.data[position + 3] = FULL_ALPHA;
     }
 
     /**
@@ -211,7 +209,7 @@ export class DifferenceDetectorService {
             for (let j = -1; j <= 1; j++) {
                 const pixelPosition = (i * EXPECTED_WIDTH + j) * CHANNELS_PER_PIXEL + pixel;
                 // Checks if the pixel is inside the image.
-                if (pixelPosition < 0 || pixelPosition > this.defaultImageArray.length) {
+                if (!this.isInBounds(pixelPosition)) {
                     continue;
                 }
                 // Checks if the pixel has already been visited.
@@ -239,10 +237,10 @@ export class DifferenceDetectorService {
      */
     private isPixelColored(pixel: number): boolean {
         return (
-            this.comparisonArray[pixel] === 0 &&
-            this.comparisonArray[pixel + 1] === 0 &&
-            this.comparisonArray[pixel + 2] === 0 &&
-            this.comparisonArray[pixel + 3] === FULL_ALPHA
+            this.comparisonImage.data[pixel] === 0 &&
+            this.comparisonImage.data[pixel + 1] === 0 &&
+            this.comparisonImage.data[pixel + 2] === 0 &&
+            this.comparisonImage.data[pixel + 3] === FULL_ALPHA
         );
     }
 }
