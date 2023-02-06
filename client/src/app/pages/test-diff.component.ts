@@ -30,26 +30,23 @@ export class TestDiffComponent {
         if (!this.defaultImage || !this.diffImage) {
             return;
         }
-        const defaultCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-        const diffCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-        document.body.appendChild(defaultCanvas?.canvas as HTMLCanvasElement);
-        document.body.appendChild(diffCanvas?.canvas as HTMLCanvasElement);
+        const defaultCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const modifiedCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        document.body.appendChild(defaultCanvas.canvas);
+        document.body.appendChild(modifiedCanvas.canvas);
         const image1 = new Image();
         const image2 = new Image();
         image1.src = URL.createObjectURL(this.defaultImage);
         image2.src = URL.createObjectURL(this.diffImage);
         image1.onload = () => {
             image2.onload = () => {
-                if (!defaultCanvas || !diffCanvas) {
-                    return;
-                }
                 defaultCanvas.canvas.width = image1.width;
                 defaultCanvas.canvas.height = image1.height;
-                diffCanvas.canvas.width = image1.width;
-                diffCanvas.canvas.height = image1.height;
-                defaultCanvas?.drawImage(image1, 0, 0);
-                diffCanvas?.drawImage(image2, 0, 0);
-                this.differenceDetectorService.detectDifferences(defaultCanvas, diffCanvas, this.radius.toString());
+                modifiedCanvas.canvas.width = image1.width;
+                modifiedCanvas.canvas.height = image1.height;
+                defaultCanvas.drawImage(image1, 0, 0);
+                modifiedCanvas.drawImage(image2, 0, 0);
+                this.differenceDetectorService.detectDifferences(defaultCanvas, modifiedCanvas, this.radius.toString());
             };
         };
     }

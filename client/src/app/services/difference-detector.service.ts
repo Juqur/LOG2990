@@ -28,11 +28,12 @@ export class DifferenceDetectorService {
      * @param defaultImage The image to compare.
      * @param modifiedImage The other image to compare.
      * @param radius The radius of the pixels to change.
+     * @return The clusters of pixels that are different.
      */
     detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: string) {
         // Ensures image format is valid.
         if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
-            return;
+            return undefined;
         }
 
         // Initializing data.
@@ -53,16 +54,37 @@ export class DifferenceDetectorService {
         this.isHard(cluster.length);
 
         // Displaying data.
-        const differenceCanvas = document.createElement('canvas').getContext('2d');
-        if (!differenceCanvas) {
-            return;
-        }
+        const differenceCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         differenceCanvas.canvas.width = defaultImage.canvas.width;
         differenceCanvas.canvas.height = defaultImage.canvas.height;
         differenceCanvas.putImageData(comparisonData, 0, 0);
         document.body.appendChild(differenceCanvas.canvas);
 
+        // console.log(this.initialDifferentPixels);
+        // console.log(cluster);
         return cluster;
+    }
+
+    /**
+     * Verifies if the image is valid.
+     * The image must be 640x480 and 24 bits.
+     *
+     * @param image The image to verify.
+     * @returns True if the image is valid, false otherwise.
+     */
+    isImageValid(image: CanvasRenderingContext2D): boolean {
+        const width = image.canvas.width;
+        const height = image.canvas.height;
+        return width === EXPECTED_WIDTH && height === EXPECTED_HEIGHT;
+    }
+
+    /**
+     * Returns if the pixel is in bound.
+     *
+     * @returns True if the pixel is in bound, false otherwise.
+     */
+    isInBounds(position: number): boolean {
+        return position >= 0 && position < this.defaultImageArray.length;
     }
 
     /**
@@ -78,8 +100,8 @@ export class DifferenceDetectorService {
             const g2 = this.modifiedImageArray[i + 1];
             const b2 = this.modifiedImageArray[i + 2];
             if (r !== r2 || g !== g2 || b !== b2) {
-                if (i >= 0 && i < this.defaultImageArray.length) {
-                    this.colorPixel(i);
+                if (this.isInBounds(i)) {
+                    this.colorizePixel(i);
                     this.initialDifferentPixels.push(i);
                 }
             }
@@ -87,31 +109,26 @@ export class DifferenceDetectorService {
     }
 
     /**
-     * Verifies if the image is valid.
-     * The image must be 640x480 and 24 bits.
-     *
-     * @param image The image to verify.
-     * @returns True if the image is valid, false otherwise.
-     */
-    isImageValid(image: CanvasRenderingContext2D): boolean {
-        // Check the canvas size
-        const width = image.canvas.width;
-        const height = image.canvas.height;
-        return width === EXPECTED_WIDTH && height === EXPECTED_HEIGHT;
-    }
-
-    /**
      * Applies the radius to the initial different pixels.
      * The pixels within the radius are then included.
      */
     addRadius(): void {
+        if (this.radius < 0 || isNaN(this.radius)) {
+            this.radius = 0;
+        }
+
         for (const pixel of this.initialDifferentPixels) {
+            // Ensures the pixel is in the image.
+            if (!this.isInBounds(pixel) || NaN) {
+                continue;
+            }
+
             for (let i = -this.radius; i <= this.radius; i++) {
                 for (let j = -this.radius; j <= this.radius; j++) {
                     const pixelPosition = i * CHANNELS_PER_PIXEL + j * CHANNELS_PER_PIXEL * EXPECTED_WIDTH + pixel;
                     const distance = Math.pow(i, 2) + Math.pow(j, 2);
-                    if (pixelPosition >= 0 && pixelPosition < this.defaultImageArray.length && distance <= Math.pow(this.radius, 2)) {
-                        this.colorPixel(pixelPosition);
+                    if (this.isInBounds(pixelPosition) && distance <= Math.pow(this.radius, 2)) {
+                        this.colorizePixel(pixelPosition);
                         this.counter++;
                     }
                 }
@@ -131,10 +148,11 @@ export class DifferenceDetectorService {
 
     /**
      * Colorizes the pixel to the new array as to signify a difference.
+     * Note here: the pixel needs to be visible in the new image (using alpha channel).
      *
      * @param position The position of the pixel in the array.
      */
-    colorPixel(position: number): void {
+    colorizePixel(position: number): void {
         this.comparisonArray[position] = 0;
         this.comparisonArray[position + 1] = 0;
         this.comparisonArray[position + 2] = 0;
