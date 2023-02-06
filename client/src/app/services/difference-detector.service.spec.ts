@@ -154,12 +154,20 @@ describe('DifferenceDetectorService', () => {
         expect(spyColorizePixel).toHaveBeenCalledTimes(TestConstants.DATA_LENGTH);
     });
 
-    // it('listDifferences should call bfs the correct amount of time', () => {
-    //     const spyBfs = spyOn(service, 'bfs');
-    //     service.initialDifferentPixels = [1, 2, 3, 4, 5, 6];
-    //     service.listDifferences();
-    //     expect(spyBfs).toHaveBeenCalledTimes(6);
-    // });
+    it('listDifferences should return the appropriate amount of differences', () => {
+        service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
+        service.initialDifferentPixels = TestConstants.LIST_OF_DIFFERENCES;
+        service.visited = [];
+
+        for (const position of service.initialDifferentPixels) {
+            service.colorizePixel(position);
+        }
+
+        const differences = service.listDifferences();
+        expect(differences.length).toEqual(TestConstants.EXPECTED_DIFFERENCES);
+    });
+
     it('bfs should return the chunk of pixels desired', () => {
         service.defaultImageArray = defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
         service.comparisonArray = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height).data;
@@ -168,7 +176,6 @@ describe('DifferenceDetectorService', () => {
             service.colorizePixel(position);
         }
         const chunk = service.bfs(TestConstants.PIXEL_TO_FIND_ADJACENT).sort((a, b) => a - b);
-        // console.log(service.visited);
         expect(chunk).toEqual(TestConstants.CHUNK_OF_PIXELS);
     });
 
