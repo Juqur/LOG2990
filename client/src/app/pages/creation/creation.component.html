@@ -6,13 +6,13 @@
         <section id="creation-area-container">
             <div class="img-zone-container">
                 <p>Image originale</p>
-                <app-play-area *ngIf="originalArea"></app-play-area>
+                <app-play-area *ngIf="originalArea" [isDiff]="false"></app-play-area>
                 <div class="zone-button-container">
                     <button class="button-settings" color="orange">
                         Téléverser Image Originale
                         <mat-icon>add_a_photo</mat-icon>
                     </button>
-                    <button class="button-reset" color="orange">
+                    <button class="button-reset" color="orange" (click)="resetOriginal">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>
@@ -27,13 +27,13 @@
             </div>
             <div class="img-zone-container">
                 <p>Image modifiée</p>
-                <app-play-area *ngIf="modifiedArea"></app-play-area>
+                <app-play-area *ngIf="modifiedArea" [isDiff]="true"></app-play-area>
                 <div class="zone-button-container">
                     <button class="button-settings" color="orange">
                         Téléverser Image Modifiée
                         <mat-icon>add_a_photo</mat-icon>
                     </button>
-                    <button class="button-reset" color="orange">
+                    <button class="button-reset" color="orange" (click)="resetDiff()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>
@@ -44,7 +44,6 @@
             <div class="enlargissement-container">
                 <p>Rayon d'élargissement</p>
             </div>
-            <!--input type="file" (change)="onFileChange($event)"-->
         </section>
         <section>
             <label for="default">Default image:</label>

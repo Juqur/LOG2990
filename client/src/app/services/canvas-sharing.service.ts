@@ -5,9 +5,14 @@ import { Injectable } from '@angular/core';
 })
 export class CanvasSharingService {
 
-  canvasRef: HTMLCanvasElement;
+  originalCanvasRef: HTMLCanvasElement;
+  diffCanvasRef: HTMLCanvasElement;
 
-  setCanvasRef(canvas: HTMLCanvasElement) {
-    this.canvasRef = canvas;
+  setOriginalCanvasRef(canvas: HTMLCanvasElement) {
+    this.originalCanvasRef = canvas;
+  }
+
+  setDiffCanvasRef(canvas: HTMLCanvasElement) {
+    this.diffCanvasRef = canvas;
   }
 }
