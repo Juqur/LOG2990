@@ -10,7 +10,7 @@ import { DrawService } from '@app/services/draw.service';
 })
 export class CreationComponent {
 
-    constructor(private defaultCanvasShare: CanvasSharingService, private diffCanvasShare: CanvasSharingService) { }
+    constructor(private canvasShare: CanvasSharingService) { }
 
     defaultImage: File | null = null;
     diffImage: File | null = null;
@@ -59,13 +59,13 @@ export class CreationComponent {
         }
 
         this.defaultCanvas = document.createElement('canvas').getContext('2d');
-        this.defaultCanvasShare.setDefaultCanvasRef(this.defaultCanvas?.canvas as HTMLCanvasElement);
+        this.canvasShare.setDefaultCanvasRef(this.defaultCanvas?.canvas as HTMLCanvasElement);
 
         this.diffCanvas = document.createElement('canvas').getContext('2d');
-        this.diffCanvasShare.setDiffCanvasRef(this.diffCanvas?.canvas as HTMLCanvasElement);
+        this.canvasShare.setDiffCanvasRef(this.diffCanvas?.canvas as HTMLCanvasElement);
 
-        this.defaultArea = new PlayAreaComponent(new DrawService(), this.defaultCanvasShare);
-        this.modifiedArea = new PlayAreaComponent(new DrawService(), this.diffCanvasShare);
+        this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
+        this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
 
         const image1 = new Image();
         const image2 = new Image();
@@ -76,27 +76,25 @@ export class CreationComponent {
                 if (!this.defaultCanvas || !this.diffCanvas) {
                     return;
                 }
-                this.defaultCanvasShare.defaultCanvasRef.width = image1.width;
-                this.defaultCanvasShare.defaultCanvasRef.height = image1.height;
-                this.diffCanvasShare.diffCanvasRef.width = image1.width;
-                this.diffCanvasShare.diffCanvasRef.height = image1.height;
-                this.defaultCanvasShare.defaultCanvasRef.getContext('2d')?.drawImage(image1, 0, 0);
-                this.diffCanvasShare.diffCanvasRef.getContext('2d')?.drawImage(image2, 0, 0);
+                this.canvasShare.defaultCanvasRef.width = image1.width;
+                this.canvasShare.defaultCanvasRef.height = image1.height;
+                this.canvasShare.diffCanvasRef.width = image1.width;
+                this.canvasShare.diffCanvasRef.height = image1.height;
+                this.canvasShare.defaultCanvasRef.getContext('2d')?.drawImage(image1, 0, 0);
+                this.canvasShare.diffCanvasRef.getContext('2d')?.drawImage(image2, 0, 0);
             };
         };
     }
 
     resetDefault() {
-        this.defaultCanvasShare.defaultCanvasRef.getContext('2d')?.clearRect(0, 0, this.defaultCanvasShare.defaultCanvasRef.width, 
-            this.defaultCanvasShare.defaultCanvasRef.height);
+        this.canvasShare.defaultCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvasRef.width, 
+            this.canvasShare.defaultCanvasRef.height);
     }
 
     resetDiff() {
-        this.diffCanvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.diffCanvasShare.diffCanvasRef.width, 
-            this.diffCanvasShare.diffCanvasRef.height);
+        this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, 
+            this.canvasShare.diffCanvasRef.height);
     }
-
-
 
     /*onFileChange(event: any){
         const target = event.target as HTMLInputElement;
