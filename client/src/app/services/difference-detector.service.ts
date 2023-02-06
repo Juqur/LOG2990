@@ -22,6 +22,22 @@ export class DifferenceDetectorService {
     visited: boolean[];
 
     /**
+     * Resets the properties of the service..
+     *
+     * @param defaultImage The image to compare.
+     * @param modifiedImage The other image to compare.
+     * @param radius The radius of the pixels to change.
+     */
+    initializeData(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: string) {
+        this.defaultImage = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
+        this.modifiedImage = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
+        this.comparisonImage = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
+        this.radius = Number(radius);
+        this.initialDifferentPixels = [];
+        this.visited = [];
+    }
+
+    /**
      * Detects the differences between two images.
      * The image must be 640x480 and 24 bits.
      *
@@ -37,15 +53,7 @@ export class DifferenceDetectorService {
         }
 
         // Initializing data.
-        this.defaultImage = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
-        this.modifiedImage = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
-        this.comparisonImage = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
-        // this.defaultImageArray = defaultImageData.data;
-        // this.modifiedImageArray = modifiedImageData.data;
-        // this.comparisonArray = comparisonData.data;
-        this.radius = Number(radius);
-        this.initialDifferentPixels = [];
-        this.visited = [];
+        this.initializeData(defaultImage, modifiedImage, radius);
 
         // Processing data.
         this.comparePixels();

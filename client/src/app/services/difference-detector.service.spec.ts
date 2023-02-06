@@ -61,6 +61,12 @@ describe('DifferenceDetectorService', () => {
         expect(cluster).toBeUndefined();
     });
 
+    it('detectDifferences should call initializeData', () => {
+        const spyInitializeData = spyOn(service, 'initializeData').and.callThrough();
+        service.detectDifferences(defaultCanvas, modifiedCanvas, '1');
+        expect(spyInitializeData).toHaveBeenCalled();
+    });
+
     it('detectDifferences should call comparePixels', () => {
         const spyComparePixel = spyOn(service, 'comparePixels');
         service.detectDifferences(defaultCanvas, modifiedCanvas, '1');
@@ -68,9 +74,9 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('detectDifferences should call isHard', () => {
-        const isHard = spyOn(service, 'isHard');
+        const spyIsHard = spyOn(service, 'isHard');
         service.detectDifferences(defaultCanvas, modifiedCanvas, '1');
-        expect(isHard).toHaveBeenCalled();
+        expect(spyIsHard).toHaveBeenCalled();
     });
 
     it('isImageValid should be true if the image passed in context are 640 x 480', () => {
@@ -147,6 +153,7 @@ describe('DifferenceDetectorService', () => {
             service.modifiedImage.data[i] = 1;
             service.defaultImage.data[i] = 0;
         }
+
         service.comparePixels();
         expect(spyColorizePixel).toHaveBeenCalledTimes(TestConstants.DATA_LENGTH);
     });
