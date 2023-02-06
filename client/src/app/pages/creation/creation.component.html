@@ -6,13 +6,13 @@
         <section id="creation-area-container">
             <div class="img-zone-container">
                 <p>Image originale</p>
-                <app-play-area *ngIf="originalArea" [isDiff]="false"></app-play-area>
+                <app-play-area *ngIf="defaultArea" [isDiff]="false"></app-play-area>
                 <div class="zone-button-container">
                     <button class="button-settings" color="orange">
                         Téléverser Image Originale
                         <mat-icon>add_a_photo</mat-icon>
                     </button>
-                    <button class="button-reset" color="orange" (click)="resetOriginal">
+                    <button class="button-reset" color="orange" (click)="resetDefault">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>

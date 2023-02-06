@@ -47,7 +47,7 @@ export class PlayAreaComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         if (this.canvas) {
             if (!this.isDiff) {
-                this.canvasSharing.setOriginalCanvasRef(this.canvas.nativeElement);
+                this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             }
             else { 
