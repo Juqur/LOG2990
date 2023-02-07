@@ -134,7 +134,7 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('isHard should return false if the amount of differences is inputted incorrectly', () => {
-        const argument = NaN;
+        const argument = NaN as number;
         service.counter = TestConstants.NB_VALID_PIXELS;
         service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
         service.comparisonImage.data.set(new Uint8ClampedArray(TestConstants.NB_TOTAL_PIXELS));
