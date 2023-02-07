@@ -63,15 +63,4 @@ export class DrawService {
         this.context.fillStyle = 'green';
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
     }
-
-    // DOESNT WORK
-    // this function is used to draw the image on the canvas
-    drawPlayArea(file: string = './assets/un_regal.bmp', canvas: CanvasRenderingContext2D) {
-        this.context = canvas;
-        const currentImage = new Image();
-        currentImage.src = file;
-        currentImage.onload = () => {
-            this.context.drawImage(currentImage, 0, 0, this.width, this.height);
-        };
-    }
 }

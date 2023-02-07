@@ -38,7 +38,7 @@ export class MouseService {
      */
 
     processClick(): boolean {
-        if (this.canClick) {
+        if (this.getCanClick()) {
             // The following commented code is to be used when server implementation has been completed.
             // const PIXEL_SIZE = 4;
             // const position: number = this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH
@@ -47,15 +47,10 @@ export class MouseService {
             // Add router link
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
             // const res = this.http.post(url, position);
-            const testRes: Vec2[] = [{ x: 1, y: 2 }];
+            const testRes: Vec2[] = this.getTestVariable();
             if (testRes.length > 0) {
                 // Simply to add a section of the canvas that we can use to test on.
-                if (
-                    this.mousePosition.x > 0 &&
-                    this.mousePosition.x < Constants.hundred &&
-                    this.mousePosition.y > 0 &&
-                    this.mousePosition.y < Constants.hundred
-                ) {
+                if (this.getX() > 0 && this.getX() < Constants.hundred && this.getY() > 0 && this.getY() < Constants.hundred) {
                     this.incrementCounter();
                     return true;
                 }
@@ -116,5 +111,9 @@ export class MouseService {
      */
     getCanClick(): boolean {
         return this.canClick;
+    }
+
+    private getTestVariable(): Vec2[] {
+        return [{ x: 1, y: 2 }];
     }
 }
