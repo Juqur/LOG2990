@@ -53,7 +53,10 @@ export class CreationComponent {
     showDefaultImage() {
     }
 
-    detectDifference() {
+    showDiffImage() {
+    }
+
+    afficherImg() {
         if (!this.defaultImage || !this.diffImage) {
             return;
         }
