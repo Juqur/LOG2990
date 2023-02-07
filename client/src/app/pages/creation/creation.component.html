@@ -13,7 +13,7 @@
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
                     <input type="file" name="default image" id="default" (change)="defaultImageSelector($event)" />
-                    <button class="button-reset" color="orange" (click)="resetDefault">
+                    <button class="button-reset" color="orange" (click)="resetDefault()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>
@@ -56,7 +56,6 @@
                 <option value="9">9</option>
                 <option value="15">15</option>
             </select>
-            <button (click)="afficherImg()">Afficher</button>
         </section>
     </div>
 </app-scale-container>
