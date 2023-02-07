@@ -1,19 +1,26 @@
 <app-scale-container>
     <div class="container">
-        <span class="cornerButton">
-            <button mat-fab color="darkblue" routerLink="/home">
-                <mat-icon>home</mat-icon>
-            </button>
-        </span>
-
         <header class="top-bar-container">
+            <span class="cornerButton">
+                <button mat-fab color="darkblue" routerLink="/home">
+                    <mat-icon>home</mat-icon>
+                </button>
+            </span>
+            <div class="global-variable-container prevent-select" id="credits">
+                <h2 class="team-name">Variables Globales</h2>
+                <mat-form-field>
+                    <input matInput placeholder="temps initial du compte à rebours (secondes)" value="30" />
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput placeholder="temps de pénalité pour l’utilisation d’un indice (secondes)" value="5" />
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput placeholder="temps gagné avec la découverte d’une différence (secondes)" value="5" />
+                </mat-form-field>
+            </div>
             <button class="button-settings" color="orange">
                 Historique
                 <mat-icon>clear_all</mat-icon>
-            </button>
-            <button class="button-settings" color="orange">
-                Variables Globales
-                <mat-icon>settings</mat-icon>
             </button>
             <button class="button-settings" color="orange" routerLink="/creation">
                 Nouveau Jeu
@@ -22,8 +29,7 @@
         </header>
 
         <body class="selection-card-container">
-            <app-card *ngFor="let level of levelToShow" [level]="level"></app-card>
-            <!--Il faudra passer en paramètre un booléean pour afficher supprimer et Réinitialiser-->
+            <app-card *ngFor="let level of levelToShow" [level]="level" [page]="'configuration'"></app-card>
         </body>
 
         <footer class="bottom-container">

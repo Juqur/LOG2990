@@ -14,8 +14,9 @@ export class ConfigurationComponent {
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
     lastPage = Math.round(levels.length / this.levelsPerPage - 1);
-
+    showGlobalVariable = false;
     levelToShow: Level[] = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
         this.firstShownLevel = this.currentPage * this.levelsPerPage;

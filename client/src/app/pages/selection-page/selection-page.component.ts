@@ -8,6 +8,7 @@ import { Constants } from '@common/constants';
     styleUrls: ['./selection-page.component.scss'],
 })
 export class SelectionPageComponent {
+    page = 'selection';
     levels = [...levels];
     currentPage: number = 0;
     levelsPerPage: number = Constants.levelsPerPage;
