@@ -28,6 +28,8 @@ export class CardComponent implements OnInit {
         route: 'no route',
     };
 
+    @Input() page: string = 'no page';
+
     difficulty: string;
 
     /**

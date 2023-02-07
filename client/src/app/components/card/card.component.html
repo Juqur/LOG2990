@@ -12,9 +12,13 @@
             <app-carousel [level]="this.level" [index]="this.level.id"></app-carousel>
         </div>
         <div class="card-action">
-            <div class="action-button-container">
+            <div class="action-button-container" *ngIf="page === 'selection'">
                 <button routerLink="/game" mat-raised-button class="action-button">Play</button>
                 <button mat-raised-button class="action-button">Create</button>
+            </div>
+            <div class="action-button-container" *ngIf="page === 'configuration'">
+                <button mat-raised-button class="action-button reinitiate-button">Reinitiate</button>
+                <button mat-raised-button class="action-button delete-button">Delete</button>
             </div>
         </div>
     </div>

@@ -9,6 +9,7 @@ import { AudioService } from '@app/services/audio.service';
 })
 export class MainPageComponent implements OnInit, OnDestroy {
     icon: string = 'volume_off';
+    showCredits: boolean = true;
 
     constructor(private router: Router, private audioService: AudioService) {}
 
@@ -51,10 +52,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
      */
     creditsOnClick() {
         this.audioService.playSound('./assets/audio/click.mp3');
-        const credits = document.getElementById('credits');
-        if (!credits) {
-            return;
-        }
-        credits.style.display = credits.style.display === 'block' ? 'none' : 'block';
+        this.showCredits = !this.showCredits;
     }
 }
