@@ -22,7 +22,6 @@ import { MessageBoxComponent } from './components/message-box/message-box.compon
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 import { ConfigurationComponent } from './pages/configuration/configuration.component';
 import { CreationComponent } from './pages/creation/creation.component';
-import { TestDiffComponent } from './pages/test-diff.component';
 
 /**
  * Main module that is used in main.ts.
@@ -49,7 +48,6 @@ import { TestDiffComponent } from './pages/test-diff.component';
         ConfigurationComponent,
         CreationComponent,
         ScaleContainerComponent,
-        TestDiffComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
