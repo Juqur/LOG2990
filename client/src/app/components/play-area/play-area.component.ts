@@ -43,8 +43,7 @@ export class PlayAreaComponent implements AfterViewInit {
      */
     mouseHitDetect(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
-            const clickedOnDiff: boolean = this.mouseService.mouseHitDetect(event);
-            if (clickedOnDiff) {
+            if (this.mouseService.mouseHitDetect(event)) {
                 this.drawService.drawSuccess(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.drawPlayArea();
@@ -78,9 +77,5 @@ export class PlayAreaComponent implements AfterViewInit {
 
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    getServiceCanPlay(): boolean {
-        return this.mouseService.getCanClick();
     }
 }
