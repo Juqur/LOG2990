@@ -1,17 +1,31 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientModule } from '@angular/common/http';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Vec2 } from '@app/interfaces/vec2';
+import { DrawService } from '@app/services/draw.service';
+import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
+import SpyObj = jasmine.SpyObj;
 
 describe('PlayAreaComponent', () => {
+    let mouseServiceSpy: SpyObj<MouseService>;
+    let drawServiceSpy: SpyObj<DrawService>;
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
-    let mouseEvent: MouseEvent;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [PlayAreaComponent],
-        }).compileComponents();
+    beforeEach(() => {
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess', 'drawPlayArea']);
     });
+
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [PlayAreaComponent],
+            imports: [HttpClientModule],
+            providers: [{ provide: MouseService, useValue: mouseServiceSpy }],
+        })
+            .overrideProvider(DrawService, { useValue: drawServiceSpy })
+            .compileComponents();
+    }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(PlayAreaComponent);
@@ -23,28 +37,118 @@ describe('PlayAreaComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('mouseHitDetect should assign the mouse position to mousePosition variable', () => {
-        const expectedPosition: Vec2 = { x: 100, y: 200 };
-        mouseEvent = {
-            offsetX: expectedPosition.x,
-            offsetY: expectedPosition.y,
+    it('mouseHitDetect should call mouseHitDetect of mouseService', () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
             button: 0,
         } as MouseEvent;
+
+        mouseServiceSpy.getCanClick.and.returnValue(true);
+        spyOn(component, 'drawPlayArea');
+
         component.mouseHitDetect(mouseEvent);
-        expect(component.mousePosition).toEqual(expectedPosition);
+        expect(mouseServiceSpy.mouseHitDetect).toHaveBeenCalledTimes(1);
     });
 
-    /* eslint-disable @typescript-eslint/no-magic-numbers -- Add reason */
-    it('mouseHitDetect should not change the mouse position if it is not a left click', () => {
-        const expectedPosition: Vec2 = { x: 0, y: 0 };
-        mouseEvent = {
-            offsetX: expectedPosition.x + 10,
-            offsetY: expectedPosition.y + 10,
-            button: 1,
+    it('mouseHitDetect should not call mouseHitDetect from mouse service if we cannot click', () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
         } as MouseEvent;
+
+        spyOn(component, 'drawPlayArea');
+
+        mouseServiceSpy.getCanClick.and.returnValue(false);
+
         component.mouseHitDetect(mouseEvent);
-        expect(component.mousePosition).not.toEqual({ x: mouseEvent.offsetX, y: mouseEvent.offsetY });
-        expect(component.mousePosition).toEqual(expectedPosition);
+        expect(mouseServiceSpy.mouseHitDetect).not.toHaveBeenCalled();
+    });
+
+    it('mouseHitDetect should call drawSuccess if we clicked on a difference.', () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+
+        mouseServiceSpy.getCanClick.and.returnValue(true);
+        mouseServiceSpy.mouseHitDetect.and.returnValue(true);
+        spyOn(component, 'drawPlayArea');
+
+        component.mouseHitDetect(mouseEvent);
+        expect(drawServiceSpy.drawSuccess).toHaveBeenCalledTimes(1);
+    });
+
+    it('mouseHitDetect should call drawError if we did not click on a difference', () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+
+        mouseServiceSpy.getCanClick.and.returnValue(true);
+        mouseServiceSpy.mouseHitDetect.and.returnValue(false);
+        spyOn(component, 'drawPlayArea');
+
+        component.mouseHitDetect(mouseEvent);
+        expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+    });
+
+    it('clicking on a pixel that is not a difference should call changeClickState of mouseService', fakeAsync(() => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+
+        mouseServiceSpy.getCanClick.and.returnValue(true);
+        mouseServiceSpy.mouseHitDetect.and.returnValue(false);
+
+        component.mouseHitDetect(mouseEvent);
+        tick(Constants.millisecondsInOneSecond);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(2);
+    }));
+
+    it('Clicking on a difference should call draw play area after a one second delay', fakeAsync(() => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+
+        mouseServiceSpy.getCanClick.and.returnValue(true);
+        mouseServiceSpy.mouseHitDetect.and.returnValue(true);
+        const spy = spyOn(component, 'drawPlayArea');
+
+        component.mouseHitDetect(mouseEvent);
+        expect(spy).not.toHaveBeenCalled();
+        tick(Constants.millisecondsInOneSecond);
+        expect(spy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('Clicking on a pixel that is not a difference should call draw play area after a one second delay', fakeAsync(() => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+
+        mouseServiceSpy.getCanClick.and.returnValue(true);
+        mouseServiceSpy.mouseHitDetect.and.returnValue(false);
+        const spy = spyOn(component, 'drawPlayArea');
+
+        component.mouseHitDetect(mouseEvent);
+        expect(spy).not.toHaveBeenCalled();
+        tick(Constants.millisecondsInOneSecond);
+        expect(spy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('ngAfterViewInit should call drawPlayArea', () => {
+        const spy = spyOn(component, 'drawPlayArea');
+        component.ngAfterViewInit();
+        expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('buttonDetect should modify the buttonPressed variable', () => {
