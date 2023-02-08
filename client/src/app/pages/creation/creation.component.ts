@@ -58,11 +58,9 @@ export class CreationComponent {
         const target = event.target as HTMLInputElement;
         if (!target.files) {
             return;
-            console.log("waaatt");
         }
         this.defaultImage = target.files[0];
         this.diffImage = target.files[0];
-        console.log("both");
         this.showDefaultImage();
         this.showDiffImage();
     }
@@ -72,13 +70,11 @@ export class CreationComponent {
     }
 
     showDefaultImage() {
-        console.log("ouiii");
         if (!this.defaultImage) {
             return;
         }
         const image1 = new Image();
         image1.src = URL.createObjectURL(this.defaultImage);
-        console.log(image1);
         image1.onload = () => {
             if (!this.defaultCanvasCtx) {
                 return;
