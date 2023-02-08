@@ -57,6 +57,7 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('detectDifferences should expect undefined if any of the canvas is invalid', () => {
+        spyOn(service, 'isImageValid').and.returnValue(false);
         const canvas: CanvasRenderingContext2D = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         cluster = service.detectDifferences(canvas, canvas, '1') as number[][];
         expect(cluster).toBeUndefined();
