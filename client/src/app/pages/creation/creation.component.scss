@@ -40,36 +40,6 @@
     color: #355070;
 }
 
-#between-images {
-    width: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-}
-
-#between-images p {
-    padding-top: 10px;
-    font-weight: bold;
-    color: #3ab138;
-}
-
-.mat-icon {
-    color: white;
-    vertical-align: middle;
-    padding-bottom: 5px;
-}
-
-.mat-darkblue {
-    background-color: rgb(21, 21, 132);
-    color: #fff;
-}
-
-#nb-hints {
-    text-align: center;
-    color: #ffffff;
-}
-
 #creation-area-container {
     overflow: auto;
     display: flex;
@@ -77,9 +47,47 @@
     justify-content: space-around;
     align-items: center;
     height: 70%;
-    ///margin-top: 60px;
-    margin-left: 30px;
-    margin-right: 30px;
+    margin-left: 150px;
+    margin-right: 150px;
+    padding: auto;
+}
+
+#between-images {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+}
+
+#between-images p {
+    padding-top: 10px;
+    font-weight: 500;
+    font-size: 1.3em;
+    color: #F63B3B;
+}
+
+.mat-icon {
+    color: white;
+    vertical-align: middle;
+    padding-bottom: 2px;
+}
+
+.mat-darkblue {
+    background-color: rgb(21, 21, 132);
+    color: #fff;
+}
+
+.info-txt {
+    text-align: center;
+    color: #eaac8b;
+    font-size: 1.5em;
+}
+
+#radius-txt {
+    text-align: center;
+    color: #3ab138;
+    font-size: 2em;
 }
 
 .zone-button-container {
@@ -92,21 +100,24 @@
 }
 
 #bottom-area {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 0.25fr;
     height: 10%;
     margin-top: 10px;
     margin-left: 50px;
     margin-right: 50px;
 }
 
+#enlargissement-container label{
+    font-weight: bolder;
+    font-size: 1.5em;
+}
+
 .button-reset {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px 14px;
+    padding: 10px 14px;
     border-radius: 60px;
     border: none;
     color: #fff;
@@ -118,12 +129,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px 14px;
+    padding: 10px 14px;
     border-radius: 60px;
     border: none;
     color: #fff;
     background: orange;
     cursor: pointer;
+}
+
+.button-disabled {
+    opacity: 0.5;
 }
 
 input[type="file"] {
