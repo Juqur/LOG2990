@@ -36,4 +36,12 @@ export namespace Constants {
     export const maxNameLength: number = 11;
     export const maxNameLengthShown: number = 8;
     export const maxMessageLength: number = 100;
+
+    // Difference Detector
+    export const CHANNELS_PER_PIXEL = 4;
+    export const EXPECTED_WIDTH = 640;
+    export const EXPECTED_HEIGHT = 480;
+    export const DIFFICULTY_RATIO = 0.15;
+    export const MIN_DIFFERENCES = 7;
+    export const FULL_ALPHA = 255;
 }

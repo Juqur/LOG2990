@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
+import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 
-import { CHANNELS_PER_PIXEL, DifferenceDetectorService, FULL_ALPHA } from './difference-detector.service';
+import { DifferenceDetectorService } from './difference-detector.service';
 
 describe('DifferenceDetectorService', () => {
     let service: DifferenceDetectorService;
@@ -104,11 +105,11 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('colorizePixel should colorize the appropriate pixel', () => {
-        const expectedColor = new Uint8ClampedArray([0, 0, 0, FULL_ALPHA]);
+        const expectedColor = new Uint8ClampedArray([0, 0, 0, Constants.FULL_ALPHA]);
         service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
-        service.comparisonImage.data.set(new Uint8ClampedArray(CHANNELS_PER_PIXEL));
+        service.comparisonImage.data.set(new Uint8ClampedArray(Constants.CHANNELS_PER_PIXEL));
         service.colorizePixel(0);
-        expect(service.comparisonImage.data.slice(0, CHANNELS_PER_PIXEL)).toEqual(expectedColor);
+        expect(service.comparisonImage.data.slice(0, Constants.CHANNELS_PER_PIXEL)).toEqual(expectedColor);
     });
 
     it('addRadius should not colorize if pixel is out of range', () => {
@@ -143,7 +144,7 @@ describe('DifferenceDetectorService', () => {
 
     it('comparePixels should call changeColor the correct amount of time if the pixels are different', () => {
         const spyColorizePixel = spyOn(service, 'colorizePixel');
-        const dataLength = TestConstants.DATA_LENGTH * CHANNELS_PER_PIXEL;
+        const dataLength = TestConstants.DATA_LENGTH * Constants.CHANNELS_PER_PIXEL;
         service.initialDifferentPixels = [];
         service.defaultImage = defaultCanvas.getImageData(0, 0, dataLength, 1);
         service.modifiedImage = modifiedCanvas.getImageData(0, 0, dataLength, 1);
@@ -201,13 +202,15 @@ describe('DifferenceDetectorService', () => {
 
     it('isPixelColored should return true if the pixel is colored', () => {
         service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
-        service.comparisonImage.data.set(new Uint8ClampedArray([0, 0, 0, FULL_ALPHA]));
+        service.comparisonImage.data.set(new Uint8ClampedArray([0, 0, 0, Constants.FULL_ALPHA]));
         expect(service['isPixelColored'](0)).toBeTruthy();
     });
 
     it('isPixelColored should return false if the pixel is not colored', () => {
         service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
-        service.comparisonImage.data.set(new Uint8ClampedArray([FULL_ALPHA, FULL_ALPHA, FULL_ALPHA, FULL_ALPHA]));
+        service.comparisonImage.data.set(
+            new Uint8ClampedArray([Constants.FULL_ALPHA, Constants.FULL_ALPHA, Constants.FULL_ALPHA, Constants.FULL_ALPHA]),
+        );
         expect(service['isPixelColored'](0)).toBeFalsy();
     });
 });
