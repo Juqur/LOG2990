@@ -6,12 +6,18 @@ import { MouseService } from './mouse.service';
 
 describe('MouseService', () => {
     let service: MouseService;
+    let mouseEvent: MouseEvent;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientModule],
         });
         service = TestBed.inject(MouseService);
+        mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
     });
 
     it('should be created', () => {
@@ -19,11 +25,6 @@ describe('MouseService', () => {
     });
 
     it('mouseHitDetect should correctly change the mouse position attribute', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
         spyOn(service, 'processClick');
         service.mouseHitDetect(mouseEvent);
         expect(service.getX()).toEqual(mouseEvent.offsetX);
@@ -31,22 +32,12 @@ describe('MouseService', () => {
     });
 
     it('mouseHitDetect should call processClick', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
         const spy = spyOn(service, 'processClick');
         service.mouseHitDetect(mouseEvent);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('mouseHitDetect should return false if the event does not support the correct button', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: -1,
-        } as MouseEvent;
         spyOn(service, 'processClick');
         const result: boolean = service.mouseHitDetect(mouseEvent);
         expect(result).not.toBeTrue();
