@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { DrawService } from '@app/services/draw.service';
+import { MouseService } from './mouse.service';
+import SpyObj = jasmine.SpyObj;
 
 describe('DrawService', () => {
     let service: DrawService;
@@ -72,5 +74,31 @@ describe('DrawService', () => {
         imageData = service.context.getImageData(0, 0, service.width, service.height).data;
         const afterSize = imageData.filter((x) => x !== 0).length;
         expect(afterSize).toBeGreaterThan(beforeSize);
+    });
+
+    it(' drawError should call mouseService getX and getY', () => {
+        const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
+        service.drawError(mouseServiceSpy);
+        expect(mouseServiceSpy.getX).toHaveBeenCalledTimes(1);
+        expect(mouseServiceSpy.getY).toHaveBeenCalledTimes(1);
+    });
+
+    it(' drawError should have red text', () => {
+        const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
+        service.drawError(mouseServiceSpy);
+        expect(service.context.fillStyle.toString()).toEqual('#ff0000');
+    });
+
+    it(' drawSuccess should call mouseService getX and getY', () => {
+        const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
+        service.drawSuccess(mouseServiceSpy);
+        expect(mouseServiceSpy.getX).toHaveBeenCalledTimes(1);
+        expect(mouseServiceSpy.getY).toHaveBeenCalledTimes(1);
+    });
+
+    it(' drawSuccess should have green text', () => {
+        const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
+        service.drawSuccess(mouseServiceSpy);
+        expect(service.context.fillStyle.toString()).toEqual('#008000');
     });
 });

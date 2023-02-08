@@ -1,35 +1,23 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { Vec2 } from '@app/interfaces/vec2';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
-
-// TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 640;
-export const DEFAULT_HEIGHT = 480;
-
-// TODO : Déplacer ça dans un fichier séparé accessible par tous
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
+import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
+    providers: [DrawService],
 })
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
     @Input() isDiff: boolean;
 
-    mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
 
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
+    private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private readonly mouseService: MouseService) {}
 
     get width(): number {
         return this.canvasSize.x;
@@ -45,6 +33,40 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        this.drawPlayArea();
+    }
+
+    /**
+     * The function in charge of receiving the click event.
+     * It is also the function in charge of giving the player a penality
+     * if he click on a pixel that wasn't a difference.
+     *
+     * @param event the mouse click event on the canvas we want to process.
+     */
+    mouseHitDetect(event: MouseEvent) {
+        if (this.mouseService.getCanClick()) {
+            if (this.mouseService.mouseHitDetect(event)) {
+                this.drawService.drawSuccess(this.mouseService);
+                this.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    this.drawPlayArea();
+                });
+            } else {
+                this.drawService.drawError(this.mouseService);
+                this.mouseService.changeClickState();
+                this.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    this.mouseService.changeClickState();
+                    this.drawPlayArea();
+                });
+            }
+        }
+    }
+
+    /**
+     * The function in charge of loading the image on the canvas.
+     * It is also used to reload the image and erase any text or modifications we may
+     * have added to it.
+     */
+    drawPlayArea() {
         if (this.canvas) {
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
             if (!this.isDiff) {
@@ -59,10 +81,7 @@ export class PlayAreaComponent implements AfterViewInit {
         }
     }
 
-    // TODO : déplacer ceci dans un service de gestion de la souris!
-    mouseHitDetect(event: MouseEvent) {
-        if (event.button === MouseButton.Left) {
-            this.mousePosition = { x: event.offsetX, y: event.offsetY };
-        }
+    async timeout(ms: number) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 }

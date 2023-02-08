@@ -23,6 +23,7 @@ import { MessageBoxComponent } from './components/message-box/message-box.compon
 import { ConfigurationComponent } from './pages/configuration/configuration.component';
 import { CreationComponent } from './pages/creation/creation.component';
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
+import { CounterComponent } from './components/counter/counter.component';
 
 /**
  * Main module that is used in main.ts.
@@ -49,6 +50,7 @@ import { ScaleContainerComponent } from './components/scale-container/scale-cont
         ConfigurationComponent,
         CreationComponent,
         ScaleContainerComponent,
+        CounterComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, MatSliderModule, FormsModule, HttpClientModule],
     providers: [],
