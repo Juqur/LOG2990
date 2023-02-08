@@ -44,4 +44,19 @@ export namespace Constants {
     export const MIN_DIFFICULTY_RATIO = 0.15;
     export const MIN_DIFFERENCES = 7;
     export const FULL_ALPHA = 255;
+
+    // Detection of difference constants
+    export const PIXEL_SIZE: number = 4;
+
+    // Canvas for game
+    export const DEFAULT_WIDTH = 640;
+    export const DEFAULT_HEIGHT = 480;
+}
+
+export enum MouseButton {
+    Left = 0,
+    Middle = 1,
+    Right = 2,
+    Back = 3,
+    Forward = 4,
 }
