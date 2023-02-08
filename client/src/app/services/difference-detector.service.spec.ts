@@ -5,8 +5,11 @@ import { TestConstants } from '@common/test-constants';
 
 import { DifferenceDetectorService } from './difference-detector.service';
 
+import SpyObj = jasmine.SpyObj;
+
 describe('DifferenceDetectorService', () => {
     let service: DifferenceDetectorService;
+    let serviceSpy: SpyObj<DifferenceDetectorService>;
     let defaultCanvas: CanvasRenderingContext2D;
     let modifiedCanvas: CanvasRenderingContext2D;
     let defaultImage: HTMLImageElement;
@@ -16,6 +19,7 @@ describe('DifferenceDetectorService', () => {
 
     beforeEach((done) => {
         service = TestBed.inject(DifferenceDetectorService);
+
         defaultImage = new Image();
         modifiedImage = new Image();
 
@@ -65,22 +69,45 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('detectDifferences should call initializeData', () => {
-        spyOn(service, 'isImageValid').and.returnValue(true);
-        const spyInitializeData = spyOn(service, 'initializeData').and.callThrough();
-        service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
-        expect(spyInitializeData).toHaveBeenCalled();
+        serviceSpy = jasmine.createSpyObj(
+            'DifferenceDetectorService',
+            ['detectDifferences', 'addRadius', 'isImageValid', 'initializeData', 'comparePixels', 'listDifferences', 'isHard'],
+            { comparisonImage: defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height) },
+        );
+        serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
+        serviceSpy.isImageValid.and.returnValue(true);
+        serviceSpy.listDifferences.and.returnValue([]);
+
+        serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, 0);
+        expect(serviceSpy.initializeData).toHaveBeenCalledTimes(1);
     });
 
     it('detectDifferences should call comparePixels', () => {
-        const spyComparePixel = spyOn(service, 'comparePixels');
-        service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
-        expect(spyComparePixel).toHaveBeenCalled();
+        serviceSpy = jasmine.createSpyObj(
+            'DifferenceDetectorService',
+            ['detectDifferences', 'addRadius', 'isImageValid', 'initializeData', 'comparePixels', 'listDifferences', 'isHard'],
+            { comparisonImage: defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height) },
+        );
+        serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
+        serviceSpy.isImageValid.and.returnValue(true);
+        serviceSpy.listDifferences.and.returnValue([]);
+
+        serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, 0);
+        expect(serviceSpy.comparePixels).toHaveBeenCalledTimes(1);
     });
 
     it('detectDifferences should call isHard', () => {
-        const spyIsHard = spyOn(service, 'isHard');
-        service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
-        expect(spyIsHard).toHaveBeenCalled();
+        serviceSpy = jasmine.createSpyObj(
+            'DifferenceDetectorService',
+            ['detectDifferences', 'addRadius', 'isImageValid', 'initializeData', 'comparePixels', 'listDifferences', 'isHard'],
+            { comparisonImage: defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height) },
+        );
+        serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
+        serviceSpy.isImageValid.and.returnValue(true);
+        serviceSpy.listDifferences.and.returnValue([]);
+
+        serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, 0);
+        expect(serviceSpy.isHard).toHaveBeenCalledTimes(1);
     });
 
     it('isImageValid should be true if the image passed in context are 640 x 480', () => {
