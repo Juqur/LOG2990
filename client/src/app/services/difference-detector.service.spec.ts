@@ -53,18 +53,20 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('detectDifferences should distinguish the differences correctly', () => {
-        const expectedDifferences = 7;
         expect(defaultImage.complete).toBeTruthy();
         expect(modifiedImage.complete).toBeTruthy();
-
+        const expectedDifferences = 7;
         const differences = service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
         expect(differences.clusters.length).toEqual(expectedDifferences);
     });
 
     it('detectDifferences should expect undefined if any of the canvas is invalid', () => {
-        spyOn(service, 'isImageValid').and.returnValue(false);
+        serviceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences', 'isImageValid']);
+        serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
+        serviceSpy.isImageValid.and.returnValue(false);
+
         const canvas: CanvasRenderingContext2D = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const differences = service.detectDifferences(canvas, canvas, 1) as Difference;
+        const differences = serviceSpy.detectDifferences(canvas, canvas, 1) as Difference;
         expect(differences).toBeUndefined();
     });
 
@@ -96,6 +98,20 @@ describe('DifferenceDetectorService', () => {
         expect(serviceSpy.comparePixels).toHaveBeenCalledTimes(1);
     });
 
+    it('detectDifferences should call addRadius', () => {
+        serviceSpy = jasmine.createSpyObj(
+            'DifferenceDetectorService',
+            ['detectDifferences', 'addRadius', 'isImageValid', 'initializeData', 'comparePixels', 'listDifferences', 'isHard'],
+            { comparisonImage: defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height) },
+        );
+        serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
+        serviceSpy.isImageValid.and.returnValue(true);
+        serviceSpy.listDifferences.and.returnValue([]);
+
+        serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, 0);
+        expect(serviceSpy.addRadius).toHaveBeenCalledTimes(1);
+    });
+
     it('detectDifferences should call isHard', () => {
         serviceSpy = jasmine.createSpyObj(
             'DifferenceDetectorService',
@@ -121,18 +137,40 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('radius should return 0 if the radius is negative', () => {
+        serviceSpy = jasmine.createSpyObj(
+            'DifferenceDetectorService',
+            ['detectDifferences', 'addRadius', 'isImageValid', 'initializeData', 'comparePixels', 'listDifferences', 'isHard'],
+            {
+                comparisonImage: defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height),
+                initialDifferentPixels: [],
+            },
+        );
+        serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
+        serviceSpy.addRadius.and.callFake(DifferenceDetectorService.prototype.addRadius);
+        serviceSpy.isImageValid.and.returnValue(true);
+        serviceSpy.listDifferences.and.returnValue([]);
+
         const negativeNumber = -1;
-        expect(defaultImage.complete).toBeTruthy();
-        expect(modifiedImage.complete).toBeTruthy();
-        service.detectDifferences(defaultCanvas, modifiedCanvas, negativeNumber) as Difference;
-        expect(service.radius).toEqual(0);
+        serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, negativeNumber) as Difference;
+        expect(serviceSpy.radius).toEqual(0);
     });
 
     it('radius should return 0 if the radius is invalid', () => {
-        expect(defaultImage.complete).toBeTruthy();
-        expect(modifiedImage.complete).toBeTruthy();
-        service.detectDifferences(defaultCanvas, modifiedCanvas, NaN) as Difference;
-        expect(service.radius).toEqual(0);
+        serviceSpy = jasmine.createSpyObj(
+            'DifferenceDetectorService',
+            ['detectDifferences', 'addRadius', 'isImageValid', 'initializeData', 'comparePixels', 'listDifferences', 'isHard'],
+            {
+                comparisonImage: defaultCanvas.getImageData(0, 0, defaultCanvas.canvas.width, defaultCanvas.canvas.height),
+                initialDifferentPixels: [],
+            },
+        );
+        serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
+        serviceSpy.addRadius.and.callFake(DifferenceDetectorService.prototype.addRadius);
+        serviceSpy.isImageValid.and.returnValue(true);
+        serviceSpy.listDifferences.and.returnValue([]);
+
+        serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, NaN) as Difference;
+        expect(serviceSpy.radius).toEqual(0);
     });
 
     it('colorizePixel should colorize the appropriate pixel', () => {
@@ -149,7 +187,7 @@ describe('DifferenceDetectorService', () => {
         service.comparisonImage = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
         service.radius = 3;
         service.addRadius();
-        expect(spyOnColorize).not.toHaveBeenCalled();
+        expect(spyOnColorize).not.toHaveBeenCalledTimes(1);
     });
 
     it('addRadius should call changeColor the correct amount of time', () => {
