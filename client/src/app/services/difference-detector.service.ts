@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Difference } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 
 @Injectable({
@@ -9,7 +10,6 @@ export class DifferenceDetectorService {
     modifiedImage: ImageData;
     comparisonImage: ImageData;
     initialDifferentPixels: number[];
-    clusters: number[][];
     radius: number;
     counter: number = 0;
     visited: boolean[];
@@ -21,11 +21,11 @@ export class DifferenceDetectorService {
      * @param modifiedImage The other image to compare.
      * @param radius The radius of the pixels to change.
      */
-    initializeData(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: string) {
+    initializeData(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number) {
         this.defaultImage = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
         this.modifiedImage = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
         this.comparisonImage = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
-        this.radius = Number(radius);
+        this.radius = radius;
         this.initialDifferentPixels = [];
         this.visited = [];
     }
@@ -39,7 +39,7 @@ export class DifferenceDetectorService {
      * @param radius The radius of the pixels to change.
      * @return The clusters of pixels that are different.
      */
-    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: string) {
+    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number) {
         // Ensures image format is valid.
         if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
             return undefined;
@@ -51,10 +51,18 @@ export class DifferenceDetectorService {
         // Processing data.
         this.comparePixels();
         this.addRadius();
-        const cluster = this.listDifferences();
-        this.isHard(cluster.length);
 
-        return cluster;
+        const differences = new Difference();
+        const differenceCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        differenceCanvas.canvas.width = defaultImage.canvas.width;
+        differenceCanvas.canvas.height = defaultImage.canvas.height;
+        differenceCanvas.putImageData(this.comparisonImage, 0, 0);
+
+        differences.canvas = differenceCanvas;
+        differences.clusters = this.listDifferences();
+        differences.isHard = this.isHard(differences.clusters.length);
+
+        return differences;
     }
 
     /**
@@ -135,7 +143,7 @@ export class DifferenceDetectorService {
      */
     isHard(nbDifferences: number): boolean {
         const rate = this.counter / this.comparisonImage.data.length;
-        return rate < Constants.DIFFICULTY_RATIO && nbDifferences >= Constants.MIN_DIFFERENCES;
+        return rate < Constants.MIN_DIFFICULTY_RATIO && nbDifferences >= Constants.MIN_DIFFERENCES;
     }
 
     /**

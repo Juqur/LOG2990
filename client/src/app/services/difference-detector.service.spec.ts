@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Difference } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 
@@ -10,7 +11,6 @@ describe('DifferenceDetectorService', () => {
     let modifiedCanvas: CanvasRenderingContext2D;
     let defaultImage: HTMLImageElement;
     let modifiedImage: HTMLImageElement;
-    let cluster: number[][];
 
     beforeEach(() => TestBed.configureTestingModule({}));
 
@@ -52,32 +52,34 @@ describe('DifferenceDetectorService', () => {
         const expectedDifferences = 7;
         expect(defaultImage.complete).toBeTruthy();
         expect(modifiedImage.complete).toBeTruthy();
-        cluster = service.detectDifferences(defaultCanvas, modifiedCanvas, '1') as number[][];
-        expect(cluster.length).toEqual(expectedDifferences);
+
+        const differences = service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
+        expect(differences.clusters.length).toEqual(expectedDifferences);
     });
 
     it('detectDifferences should expect undefined if any of the canvas is invalid', () => {
         spyOn(service, 'isImageValid').and.returnValue(false);
         const canvas: CanvasRenderingContext2D = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        cluster = service.detectDifferences(canvas, canvas, '1') as number[][];
-        expect(cluster).toBeUndefined();
+        const differences = service.detectDifferences(canvas, canvas, 1) as Difference;
+        expect(differences).toBeUndefined();
     });
 
     it('detectDifferences should call initializeData', () => {
+        spyOn(service, 'isImageValid').and.returnValue(true);
         const spyInitializeData = spyOn(service, 'initializeData').and.callThrough();
-        service.detectDifferences(defaultCanvas, modifiedCanvas, '1');
+        service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
         expect(spyInitializeData).toHaveBeenCalled();
     });
 
     it('detectDifferences should call comparePixels', () => {
         const spyComparePixel = spyOn(service, 'comparePixels');
-        service.detectDifferences(defaultCanvas, modifiedCanvas, '1');
+        service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
         expect(spyComparePixel).toHaveBeenCalled();
     });
 
     it('detectDifferences should call isHard', () => {
         const spyIsHard = spyOn(service, 'isHard');
-        service.detectDifferences(defaultCanvas, modifiedCanvas, '1');
+        service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
         expect(spyIsHard).toHaveBeenCalled();
     });
 
@@ -92,16 +94,17 @@ describe('DifferenceDetectorService', () => {
     });
 
     it('radius should return 0 if the radius is negative', () => {
+        const negativeNumber = -1;
         expect(defaultImage.complete).toBeTruthy();
         expect(modifiedImage.complete).toBeTruthy();
-        cluster = service.detectDifferences(defaultCanvas, modifiedCanvas, '-1') as number[][];
+        service.detectDifferences(defaultCanvas, modifiedCanvas, negativeNumber) as Difference;
         expect(service.radius).toEqual(0);
     });
 
     it('radius should return 0 if the radius is invalid', () => {
         expect(defaultImage.complete).toBeTruthy();
         expect(modifiedImage.complete).toBeTruthy();
-        cluster = service.detectDifferences(defaultCanvas, modifiedCanvas, 'I FAILED TO PARSE') as number[][];
+        service.detectDifferences(defaultCanvas, modifiedCanvas, NaN) as Difference;
         expect(service.radius).toEqual(0);
     });
 
