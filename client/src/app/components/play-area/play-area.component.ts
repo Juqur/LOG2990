@@ -53,6 +53,7 @@ export class PlayAreaComponent implements AfterViewInit {
             if (this.mouseService.mouseHitDetect(event)) {
                 this.drawService.drawSuccess(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    console.log('IM HERE');
                     this.drawPlayArea(this.image);
                 });
             } else {
