@@ -63,4 +63,8 @@ export class DrawService {
         this.context.fillStyle = 'green';
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
     }
+
+    drawHighlight(mouseService: MouseService) {}
+
+    drawPartOfOriginalImage(mouseService: MouseService) {}
 }
