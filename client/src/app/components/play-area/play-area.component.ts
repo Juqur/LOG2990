@@ -53,14 +53,14 @@ export class PlayAreaComponent implements AfterViewInit {
             if (this.mouseService.mouseHitDetect(event)) {
                 this.drawService.drawSuccess(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.drawService.refreshCanvas(this.image);
+                    this.drawPlayArea(this.image);
                 });
             } else {
                 this.drawService.drawError(this.mouseService);
                 this.mouseService.changeClickState();
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.mouseService.changeClickState();
-                    this.drawService.refreshCanvas(this.image);
+                    this.drawPlayArea(this.image);
                 });
             }
         }
@@ -83,8 +83,6 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             }
-            // this.canvas.nativeElement.style.backgroundColor = 'white';
-            // this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             const ctx = this.drawService.context;
             const currentImage = new Image();
             currentImage.src = image;
@@ -95,6 +93,12 @@ export class PlayAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * timeout function
+     *
+     * @param ms a number of milliseconds
+     * @returns a promise that resolves after ms milliseconds
+     */
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }

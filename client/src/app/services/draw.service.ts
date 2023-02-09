@@ -63,13 +63,4 @@ export class DrawService {
         this.context.fillStyle = 'green';
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
     }
-
-    refreshCanvas(image: string) {
-        this.context.fillStyle = 'black';
-        const currentImage = new Image();
-        currentImage.src = image;
-        currentImage.onload = () => {
-            this.context.drawImage(currentImage, 0, 0, this.width, this.height);
-        };
-    }
 }

@@ -159,4 +159,16 @@ describe('PlayAreaComponent', () => {
         component.buttonDetect(buttonEvent);
         expect(component.buttonPressed).toEqual(expectedKey);
     });
+
+    it('drawPlayArea should call canvas drawImage', () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+
+        spyOn(component, 'drawPlayArea');
+        component.mouseHitDetect(mouseEvent);
+        expect(drawServiceSpy.context.drawImage).toHaveBeenCalledTimes(1);
+    });
 });
