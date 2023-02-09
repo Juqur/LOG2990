@@ -52,14 +52,16 @@ export class PlayAreaComponent implements AfterViewInit {
             if (this.mouseService.mouseHitDetect(event)) {
                 this.drawService.drawSuccess(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.drawPlayArea();
+                    // this.drawPlayArea();
+                    this.drawService.refreshCanvas();
                 });
             } else {
                 this.drawService.drawError(this.mouseService);
                 this.mouseService.changeClickState();
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.mouseService.changeClickState();
-                    this.drawPlayArea();
+                    // this.drawPlayArea();
+                    this.drawService.refreshCanvas();
                 });
             }
         }
@@ -72,11 +74,15 @@ export class PlayAreaComponent implements AfterViewInit {
      */
     drawPlayArea() {
         if (this.canvas) {
+            console.log('Drawing play area');
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
+            console.log(this.canvas.nativeElement.id);
             if (!this.isDiff) {
+                // Default canvas (left canvas)
                 this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             } else {
+                // Diff canvas (right canvas)
                 this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             }

@@ -3,8 +3,8 @@ import { Vec2 } from '@app/interfaces/vec2';
 import { MouseService } from './mouse.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
+export const DEFAULT_WIDTH = 640;
+export const DEFAULT_HEIGHT = 480;
 
 @Injectable({
     providedIn: 'root',
@@ -62,5 +62,10 @@ export class DrawService {
         this.context.font = '36px system-ui';
         this.context.fillStyle = 'green';
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
+    }
+
+    refreshCanvas() {
+        this.context.fillStyle = 'black';
+        this.context.fillRect(0, 0, this.width, this.height);
     }
 }
