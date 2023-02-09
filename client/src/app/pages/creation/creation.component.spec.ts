@@ -9,7 +9,7 @@ describe('CreationComponent', () => {
     let canvasSharingService: CanvasSharingService;
     let fixture: ComponentFixture<CreationComponent>;
     let mouseServiceSpy: SpyObj<MouseService>;
-    
+
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
     });
@@ -17,7 +17,7 @@ describe('CreationComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent],
-            providers: [CanvasSharingService,{ provide: MouseService, useValue: mouseServiceSpy }],
+            providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationComponent);
@@ -32,29 +32,28 @@ describe('CreationComponent', () => {
 
     it('should set defaultImage with selected file', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockEvent = { target: { files: [mockFile] } } as any;
+        const mockEvent = { target: { files: [mockFile] } } as unknown;
         component.defaultImageSelector(mockEvent);
         expect(component.defaultImage).toEqual(mockFile);
     });
 
     it('defaultImageSelector should call showDefaultImage', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockFileInput = { target: { files: [mockFile] } } as any;
+        const mockFileInput = { target: { files: [mockFile] } } as unknown;
         const spy = spyOn(component, 'showDefaultImage');
         component.defaultImageSelector(mockFileInput);
         expect(spy).toHaveBeenCalled();
     });
     it('diffImageSelector should call showDiffImage', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockFileInput = { target: { files: [mockFile] } } as any;
+        const mockFileInput = { target: { files: [mockFile] } } as unknown;
         const spy = spyOn(component, 'showDiffImage');
         component.diffImageSelector(mockFileInput);
         expect(spy).toHaveBeenCalled();
-
     });
     it('bothImagesSelector should call both showDefaultImage and showDiffImage', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockFileInput = { target: { files: [mockFile] } } as any;
+        const mockFileInput = { target: { files: [mockFile] } } as unknown;
         const defaultSpy = spyOn(component, 'showDefaultImage');
         const diffSpy = spyOn(component, 'showDiffImage');
         component.bothImagesSelector(mockFileInput);
@@ -81,5 +80,4 @@ describe('CreationComponent', () => {
         expect(canvasSharingService.diffCanvasRef.width).toBeGreaterThan(0);
         expect(canvasSharingService.diffCanvasRef.height).toBeGreaterThan(0);
     });
-
 });

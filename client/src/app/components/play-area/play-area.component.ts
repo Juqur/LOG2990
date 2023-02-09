@@ -11,13 +11,17 @@ import { Constants } from '@common/constants';
     providers: [DrawService],
 })
 export class PlayAreaComponent implements AfterViewInit {
-    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
     @Input() isDiff: boolean;
+    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private readonly mouseService: MouseService) {}
+    constructor(
+        private readonly drawService: DrawService,
+        private canvasSharing: CanvasSharingService,
+        private readonly mouseService: MouseService,
+    ) {}
 
     get width(): number {
         return this.canvasSize.x;
@@ -72,9 +76,8 @@ export class PlayAreaComponent implements AfterViewInit {
             if (!this.isDiff) {
                 this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-            }
-            else { 
-                this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement); 
+            } else {
+                this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             }
             this.canvas.nativeElement.style.backgroundColor = 'white';

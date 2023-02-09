@@ -43,6 +43,14 @@ export namespace Constants {
     // Canvas for game
     export const DEFAULT_WIDTH = 640;
     export const DEFAULT_HEIGHT = 480;
+
+    // Radius values and Creation Component constants
+    export const RADIUS_DEFAULT = 3;
+    export const RADIUS_TABLE :Number[] = [0, 3, 9, 15];
+    export const SLIDER_DEFAULT = 1;
+    export const BIG_DIFF_NB = 9;
+    export const INIT_DIFF_NB = 0;
+
 }
 
 export enum MouseButton {

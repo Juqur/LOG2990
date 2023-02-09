@@ -1,24 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-creation',
     templateUrl: './creation.component.html',
     styleUrls: ['./creation.component.scss'],
 })
-export class CreationComponent {
-
-    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService) { }
-
+export class CreationComponent implements OnInit {
     defaultImage: File | null = null;
     diffImage: File | null = null;
-    sliderValue = 1;
-    radius = 3;
-    radiusTable = [0,3,9,15];
-    nbDifferences = 0;
+    sliderValue = Constants.SLIDER_DEFAULT;
+    radius = Constants.RADIUS_DEFAULT;
+    radiusTable = Constants.RADIUS_TABLE;
+    nbDifferences = Constants.INIT_DIFF_NB;
     isSaveable = false;
 
     defaultArea: PlayAreaComponent | null = null;
@@ -26,8 +24,10 @@ export class CreationComponent {
     defaultCanvasCtx: CanvasRenderingContext2D | null = null;
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
-    url: any;
-    msg = "";
+    url: unknown;
+    msg = '';
+
+    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService) {}
 
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
@@ -67,7 +67,7 @@ export class CreationComponent {
     }
     cleanSrc(event: Event) {
         const target = event.target as HTMLInputElement;
-        target.value = "";
+        target.value = '';
     }
 
     showDefaultImage() {
@@ -84,7 +84,7 @@ export class CreationComponent {
             this.canvasShare.defaultCanvasRef.height = image1.height;
             this.canvasShare.defaultCanvasRef.getContext('2d')?.drawImage(image1, 0, 0);
             this.defaultCanvasCtx = this.canvasShare.defaultCanvasRef.getContext('2d');
-        }
+        };
     }
     showDiffImage() {
         if (!this.diffImage) {
@@ -106,34 +106,32 @@ export class CreationComponent {
     }
 
     resetDefault() {
-        this.canvasShare.defaultCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvasRef.width,
-            this.canvasShare.defaultCanvasRef.height);
+        this.canvasShare.defaultCanvasRef
+            .getContext('2d')
+            ?.clearRect(0, 0, this.canvasShare.defaultCanvasRef.width, this.canvasShare.defaultCanvasRef.height);
 
-        //televerser img1 commune -> reinitialiser une zone -> televerser img1 commune ne fonctionne pas??
-        //en fait tu peux pas televerser la meme image 2 fois (telev img1 -> reinit -> telev img1)
+        // televerser img1 commune -> reinitialiser une zone -> televerser img1 commune ne fonctionne pas??
+        // en fait tu peux pas televerser la meme image 2 fois (telev img1 -> reinit -> telev img1)
     }
     resetDiff() {
-        this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width,
-            this.canvasShare.diffCanvasRef.height);
+        this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, this.canvasShare.diffCanvasRef.height);
     }
 
-    sliderChange(value : number) {
+    sliderChange(value: number) {
         this.radius = this.radiusTable[value];
     }
 
-    detectDifference(){
-        //Lancer la validation des différences selon le rayon
-        //Ouvrir un popup qui affiche le résultat
-        if (this.nbDifferences >= 3 && this.nbDifferences <= 9)
-            this.isSaveable = true;
-        else
-            this.isSaveable = false;
+    detectDifference() {
+        // Lancer la validation des différences selon le rayon
+        // Ouvrir un popup qui affiche le résultat
+        if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) this.isSaveable = true;
+        else this.isSaveable = false;
     }
 
-    saveGame(){
-        if (!this.isSaveable){
-            //Ouvrir un popup qui demande à l'utilisateur de nommer le jeu
-            //Sauvegarder le jeu
+    saveGame() {
+        if (!this.isSaveable) {
+            // Ouvrir un popup qui demande à l'utilisateur de nommer le jeu
+            // Sauvegarder le jeu
         }
     }
 }
