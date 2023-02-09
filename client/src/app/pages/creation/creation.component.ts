@@ -109,9 +109,6 @@ export class CreationComponent implements OnInit {
         this.canvasShare.defaultCanvasRef
             .getContext('2d')
             ?.clearRect(0, 0, this.canvasShare.defaultCanvasRef.width, this.canvasShare.defaultCanvasRef.height);
-
-        // televerser img1 commune -> reinitialiser une zone -> televerser img1 commune ne fonctionne pas??
-        // en fait tu peux pas televerser la meme image 2 fois (telev img1 -> reinit -> telev img1)
     }
     resetDiff() {
         this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, this.canvasShare.diffCanvasRef.height);
