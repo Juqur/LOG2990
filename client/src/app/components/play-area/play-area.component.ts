@@ -84,7 +84,6 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             }
-            // const ctx = this.drawService.context;
             const currentImage = new Image();
             currentImage.src = image;
             currentImage.onload = () => {
