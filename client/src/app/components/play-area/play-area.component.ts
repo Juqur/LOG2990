@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
@@ -10,6 +10,7 @@ import { Constants } from '@common/constants';
     providers: [DrawService],
 })
 export class PlayAreaComponent implements AfterViewInit {
+    @Input() image: string = './assets/un_regal.bmp';
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
     buttonPressed = '';
@@ -44,7 +45,8 @@ export class PlayAreaComponent implements AfterViewInit {
     mouseHitDetect(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
             if (this.mouseService.mouseHitDetect(event)) {
-                this.drawService.drawSuccess(this.mouseService);
+                // this.drawService.drawSuccess(this.mouseService);
+                this.drawService.drawHighlight(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.drawPlayArea();
                 });
@@ -68,7 +70,7 @@ export class PlayAreaComponent implements AfterViewInit {
         this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         const ctx = this.drawService.context;
         const currentImage = new Image();
-        currentImage.src = './assets/un_regal.bmp';
+        currentImage.src = this.image;
         currentImage.onload = () => {
             ctx.drawImage(currentImage, 0, 0, this.width, this.height);
         };
