@@ -12,6 +12,7 @@ import { Constants } from '@common/constants';
 })
 export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
+    @Input() image: string;
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
     buttonPressed = '';
@@ -37,7 +38,7 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.drawPlayArea();
+        this.drawPlayArea(this.image);
     }
 
     /**
@@ -52,16 +53,14 @@ export class PlayAreaComponent implements AfterViewInit {
             if (this.mouseService.mouseHitDetect(event)) {
                 this.drawService.drawSuccess(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    // this.drawPlayArea();
-                    this.drawService.refreshCanvas();
+                    this.drawService.refreshCanvas(this.image);
                 });
             } else {
                 this.drawService.drawError(this.mouseService);
                 this.mouseService.changeClickState();
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.mouseService.changeClickState();
-                    // this.drawPlayArea();
-                    this.drawService.refreshCanvas();
+                    this.drawService.refreshCanvas(this.image);
                 });
             }
         }
@@ -72,7 +71,7 @@ export class PlayAreaComponent implements AfterViewInit {
      * It is also used to reload the image and erase any text or modifications we may
      * have added to it.
      */
-    drawPlayArea() {
+    drawPlayArea(image: string) {
         if (this.canvas) {
             console.log('Drawing play area');
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
@@ -86,7 +85,15 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             }
-            this.canvas.nativeElement.style.backgroundColor = 'white';
+            // this.canvas.nativeElement.style.backgroundColor = 'white';
+            // this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            const ctx = this.drawService.context;
+            const currentImage = new Image();
+            currentImage.src = image;
+            currentImage.onload = () => {
+                ctx.drawImage(currentImage, 0, 0, this.width, this.height);
+            };
+            this.canvas.nativeElement.focus();
         }
     }
 
