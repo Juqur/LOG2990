@@ -74,6 +74,7 @@ export class PlayAreaComponent implements AfterViewInit {
     drawPlayArea(image: string) {
         if (this.canvas) {
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
+            const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
                 this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
@@ -83,11 +84,11 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
             }
-            const ctx = this.drawService.context;
+            // const ctx = this.drawService.context;
             const currentImage = new Image();
             currentImage.src = image;
             currentImage.onload = () => {
-                ctx.drawImage(currentImage, 0, 0, this.width, this.height);
+                context.drawImage(currentImage, 0, 0, this.width, this.height);
             };
             this.canvas.nativeElement.focus();
         }
