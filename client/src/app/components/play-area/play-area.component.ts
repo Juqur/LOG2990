@@ -90,6 +90,7 @@ export class PlayAreaComponent implements AfterViewInit {
             currentImage.onload = () => {
                 context.drawImage(currentImage, 0, 0, this.width, this.height);
             };
+            this.canvas.nativeElement.style.backgroundColor = 'white';
             this.canvas.nativeElement.focus();
         }
     }
