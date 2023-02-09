@@ -1,17 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
-
+import { MouseService } from '@app/services/mouse.service';
 import { CreationComponent } from './creation.component';
+import SpyObj = jasmine.SpyObj;
 
 describe('CreationComponent', () => {
     let component: CreationComponent;
     let canvasSharingService: CanvasSharingService;
     let fixture: ComponentFixture<CreationComponent>;
+    let mouseServiceSpy: SpyObj<MouseService>;
+    
+    beforeEach(() => {
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+    });
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent],
-            providers: [CanvasSharingService],
+            providers: [CanvasSharingService,{ provide: MouseService, useValue: mouseServiceSpy }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationComponent);
