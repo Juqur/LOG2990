@@ -73,9 +73,7 @@ export class PlayAreaComponent implements AfterViewInit {
      */
     drawPlayArea(image: string) {
         if (this.canvas) {
-            console.log('Drawing play area');
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
-            console.log(this.canvas.nativeElement.id);
             if (!this.isDiff) {
                 // Default canvas (left canvas)
                 this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
