@@ -32,28 +32,28 @@ describe('CreationComponent', () => {
 
     it('should set defaultImage with selected file', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockEvent = { target: { files: [mockFile] } } as unknown;
+        const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         component.defaultImageSelector(mockEvent);
         expect(component.defaultImage).toEqual(mockFile);
     });
 
     it('defaultImageSelector should call showDefaultImage', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockFileInput = { target: { files: [mockFile] } } as unknown;
+        const mockFileInput = { target: { files: [mockFile] } } as unknown as Event;
         const spy = spyOn(component, 'showDefaultImage');
         component.defaultImageSelector(mockFileInput);
         expect(spy).toHaveBeenCalled();
     });
     it('diffImageSelector should call showDiffImage', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockFileInput = { target: { files: [mockFile] } } as unknown;
+        const mockFileInput = { target: { files: [mockFile] } } as unknown as Event;
         const spy = spyOn(component, 'showDiffImage');
         component.diffImageSelector(mockFileInput);
         expect(spy).toHaveBeenCalled();
     });
     it('bothImagesSelector should call both showDefaultImage and showDiffImage', () => {
         const mockFile = new File([''], 'mock.jpg');
-        const mockFileInput = { target: { files: [mockFile] } } as unknown;
+        const mockFileInput = { target: { files: [mockFile] } } as unknown as Event;
         const defaultSpy = spyOn(component, 'showDefaultImage');
         const diffSpy = spyOn(component, 'showDiffImage');
         component.bothImagesSelector(mockFileInput);
