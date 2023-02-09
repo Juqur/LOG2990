@@ -76,14 +76,4 @@ describe('CreationComponent', () => {
         expect(canvasSharingService.diffCanvasRef.height).toBeGreaterThan(0);
     });
 
-    /*it('resetDefault should reset default canva', () => {
-        component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
-        const mockFile = new File([''], 'mock.jpg');
-        component.defaultImage = mockFile;
-        component.showDefaultImage();
-        component.resetDefault();
-    });*/
-
-
 });

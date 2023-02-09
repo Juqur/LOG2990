@@ -136,24 +136,4 @@ export class CreationComponent {
             //Sauvegarder le jeu
         }
     }
-    /*onFileChange(event: any){
-        const target = event.target as HTMLInputElement;
-        const files = target.files as FileList;
-        this.defaultImage = files[0];
-
-
-        if (!this.defaultImage) {
-
-            this.msg = "No file selected!";
-            return;
-        }
-
-        var reader = new FileReader();
-        reader.readAsDataURL(this.defaultImage);
-    	
-        reader.onload = (_event) => {
-            this.defaultArea = new PlayAreaComponent(new DrawService);
-        }
-
-    }*/
 }
