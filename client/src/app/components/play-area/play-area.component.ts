@@ -12,7 +12,7 @@ import { Constants } from '@common/constants';
 })
 export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
-    @Input() image: string;
+    @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
     buttonPressed = '';
