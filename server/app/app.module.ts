@@ -10,6 +10,8 @@ import { ExampleService } from '@app/services/example/example.service';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ImageController } from './controllers/image/image.controller';
+import { ImageService } from './services/image/image.service';
 
 @Module({
     imports: [
@@ -23,7 +25,7 @@ import { MongooseModule } from '@nestjs/mongoose';
         }),
         MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
-    controllers: [CourseController, DateController, ExampleController],
-    providers: [ChatGateway, TimerGateway, CourseService, DateService, ExampleService, Logger],
+    controllers: [CourseController, DateController, ExampleController, ImageController],
+    providers: [ChatGateway, TimerGateway, CourseService, DateService, ExampleService, ImageService, Logger],
 })
 export class AppModule {}

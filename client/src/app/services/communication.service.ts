@@ -13,8 +13,8 @@ export class CommunicationService {
 
     constructor(private readonly http: HttpClient) {}
 
-    basicGet(): Observable<Message> {
-        return this.http.get<Message>(`${this.baseUrl}/example`).pipe(catchError(this.handleError<Message>('basicGet')));
+    get(path: string): Observable<Message> {
+        return this.http.get<Message>(`${this.baseUrl}/api` + path).pipe(catchError(this.handleError<Message>('basicGet')));
     }
 
     basicPost(message: Message): Observable<HttpResponse<string>> {

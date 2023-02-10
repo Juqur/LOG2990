@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Level, levels } from '@app/levels';
 import { Constants } from '@common/constants';
 
@@ -7,7 +7,7 @@ import { Constants } from '@common/constants';
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
-export class SelectionPageComponent {
+export class SelectionPageComponent implements OnInit {
     page = 'selection';
     levels = [...levels];
     currentPage: number = 0;

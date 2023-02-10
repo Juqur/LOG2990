@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
+import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-
 @Component({
     selector: 'app-creation',
     templateUrl: './creation.component.html',
@@ -27,7 +27,11 @@ export class CreationComponent implements OnInit {
     url: unknown;
     msg = '';
 
-    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService) {}
+    constructor(
+        private canvasShare: CanvasSharingService,
+        private mouseService: MouseService,
+        private differenceDetectorService: DifferenceDetectorService,
+    ) {}
 
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
@@ -121,6 +125,10 @@ export class CreationComponent implements OnInit {
     detectDifference() {
         // Lancer la validation des différences selon le rayon
         // Ouvrir un popup qui affiche le résultat
+        if (!this.defaultCanvasCtx || !this.diffCanvasCtx) {
+            return;
+        }
+        this.differenceDetectorService.detectDifferences(this.defaultCanvasCtx, this.diffCanvasCtx, this.radius);
         if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) this.isSaveable = true;
         else this.isSaveable = false;
     }
