@@ -1,5 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CardComponent } from '@app/components/card/card.component';
+import { CarouselComponent } from '@app/components/carousel/carousel.component';
+import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { levels } from '@app/levels';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { Constants } from '@common/constants';
 import { SelectionPageComponent } from './selection-page.component';
 
@@ -9,7 +13,8 @@ describe('SelectionPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SelectionPageComponent],
+            declarations: [SelectionPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
+            imports: [AppMaterialModule],
         }).compileComponents();
     });
 
