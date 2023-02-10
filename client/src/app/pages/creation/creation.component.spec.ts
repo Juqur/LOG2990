@@ -12,12 +12,11 @@ import SpyObj = jasmine.SpyObj;
 describe('CreationComponent', () => {
     let component: CreationComponent;
 
-    //Nécessaire pour des futurs tests
-    //let canvasSharingService: CanvasSharingService;
+    // Nécessaire pour des futurs tests
+    // let canvasSharingService: CanvasSharingService;
 
     let fixture: ComponentFixture<CreationComponent>;
     let mouseServiceSpy: SpyObj<MouseService>;
-
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
@@ -32,9 +31,9 @@ describe('CreationComponent', () => {
 
         fixture = TestBed.createComponent(CreationComponent);
 
-        //Nécessaire pour des futurs tests
-        //canvasSharingService = TestBed.inject(CanvasSharingService);
-        
+        // Nécessaire pour des futurs tests
+        // canvasSharingService = TestBed.inject(CanvasSharingService);
+
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -110,13 +109,15 @@ describe('CreationComponent', () => {
 
     it('verifyImageFormat should return true if the image format is correct', (done) => {
         const imageSrc = './assets/test/image_7_diff.bmp';
-        fetch(imageSrc).then(res => res.blob()).then(blob => {
-            const goodFile = new File([blob], 'image_7_.bmp', { type: 'image/bmp' });
-            component.verifyImageFormat(goodFile).then((result) => {
-                expect(result).toBe(true);
-                done();
+        fetch(imageSrc)
+            .then(async (res) => res.blob())
+            .then((blob) => {
+                const goodFile = new File([blob], 'image_7_.bmp', { type: 'image/bmp' });
+                component.verifyImageFormat(goodFile).then((result) => {
+                    expect(result).toBe(true);
+                    done();
+                });
             });
-        });
     });
 
     it('verifyImageFormat should return false if the image format is incorrect', (done) => {

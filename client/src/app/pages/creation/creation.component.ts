@@ -28,7 +28,7 @@ export class CreationComponent implements OnInit {
     url: unknown;
     msg = '';
 
-    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService, private diffService : DifferenceDetectorService) { }
+    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService, private diffService: DifferenceDetectorService) {}
 
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
@@ -89,7 +89,7 @@ export class CreationComponent implements OnInit {
         const image1 = new Image();
         image1.src = URL.createObjectURL(this.defaultImageFile);
         image1.onload = () => {
-            if (!this.defaultCanvasCtx || image1.width !== 640 || image1.height !== 480) {
+            if (!this.defaultCanvasCtx || image1.width !== Constants.DEFAULT_WIDTH || image1.height !== Constants.DEFAULT_HEIGHT) {
                 return;
             }
             this.canvasShare.defaultCanvasRef.width = image1.width;
@@ -105,7 +105,7 @@ export class CreationComponent implements OnInit {
         const image2 = new Image();
         image2.src = URL.createObjectURL(this.diffImageFile);
         image2.onload = () => {
-            if (!this.diffCanvasCtx || image2.width !== 640 || image2.height !== 480) {
+            if (!this.diffCanvasCtx || image2.width !== Constants.DEFAULT_WIDTH || image2.height !== Constants.DEFAULT_HEIGHT) {
                 return;
             }
             this.canvasShare.diffCanvasRef.width = image2.width;
@@ -115,23 +115,22 @@ export class CreationComponent implements OnInit {
         };
     }
 
-    verifyImageFormat(imageFile: File) {
+    async verifyImageFormat(imageFile: File) {
         if (imageFile.type !== 'image/bmp' || imageFile.type !== 'image/bmp') {
             this.msg = 'Les images doivent être au format PNG';
             return Promise.resolve(false);
         }
 
-        return new Promise((resolve, reject) => {
-
+        return new Promise((resolve) => {
             // Vérifie le header de l'image. Ce header contient les informations que l'on recherche :
             // Le Nombre de bits par pixel (en little endian)
             const reader = new FileReader();
             reader.onload = (e) => {
                 const imgData = e.target?.result as ArrayBuffer;
                 const view = new DataView(imgData);
-                const bitNb = view.getUint16(28, true);
+                const bitNb = view.getUint16(Constants.BMP_BPP_POS, true);
 
-                if (bitNb !== 24) {
+                if (bitNb !== Constants.BMP_BPP) {
                     resolve(false);
                     this.msg = 'Les images doivent être de 24 bits par pixel';
                 }
@@ -170,9 +169,8 @@ export class CreationComponent implements OnInit {
         document.getElementById('top-area')?.appendChild(differences.canvas.canvas);
 
         if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
-             this.isSaveable = true;
-        }
-        else this.isSaveable = false;
+            this.isSaveable = true;
+        } else this.isSaveable = false;
     }
 
     saveGame() {
