@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+// import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
+import { Area } from '@app/area';
 
 @Component({
     selector: 'app-play-area',
@@ -15,6 +17,7 @@ export class PlayAreaComponent implements AfterViewInit {
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
+    area = [...Area];
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
@@ -30,6 +33,10 @@ export class PlayAreaComponent implements AfterViewInit {
 
     get height(): number {
         return this.canvasSize.y;
+    }
+
+    setCanvas(canvas: HTMLCanvasElement) {
+        this.canvas.nativeElement = canvas;
     }
 
     @HostListener('keydown', ['$event'])
@@ -51,8 +58,6 @@ export class PlayAreaComponent implements AfterViewInit {
     mouseHitDetect(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
             if (this.mouseService.mouseHitDetect(event)) {
-                // this.drawService.drawSuccess(this.mouseService);
-                this.drawService.drawHighlight(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.drawPlayArea(this.image);
                 });
@@ -93,6 +98,63 @@ export class PlayAreaComponent implements AfterViewInit {
             this.canvas.nativeElement.style.backgroundColor = 'white';
             this.canvas.nativeElement.focus();
         }
+    }
+
+    drawPlayArea2(image: string, canvas: HTMLCanvasElement) {
+        if (canvas) {
+            canvas.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
+            const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+            if (!this.isDiff) {
+                // Default canvas (left canvas)
+                this.canvasSharing.setDefaultCanvasRef(canvas);
+                this.drawService.context = canvas.getContext('2d') as CanvasRenderingContext2D;
+            } else {
+                // Diff canvas (right canvas)
+                this.canvasSharing.setDiffCanvasRef(canvas);
+                this.drawService.context = canvas.getContext('2d') as CanvasRenderingContext2D;
+            }
+            const currentImage = new Image();
+            currentImage.src = image;
+            currentImage.onload = () => {
+                context.drawImage(currentImage, 0, 0, this.width, this.height);
+            };
+            canvas.style.backgroundColor = 'white';
+            canvas.focus();
+        }
+    }
+
+    flashArea(area: number[]) {
+        let x: number = 0;
+        let y: number = 0;
+        area.forEach((pixelData) => {
+            x = (pixelData % 640) / 4;
+            y = Math.floor(pixelData / 640 / 4);
+
+            let context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            if (!context) {
+                return;
+            }
+
+            context.fillStyle = 'red';
+            context.fillRect(x, y, 1, 1);
+        });
+    }
+
+    flashArea2(area: number[], canvas: HTMLCanvasElement) {
+        let x: number = 0;
+        let y: number = 0;
+        area.forEach((pixelData) => {
+            x = (pixelData % 640) / 4;
+            y = Math.floor(pixelData / 640 / 4);
+
+            let context = canvas.getContext('2d');
+            if (!context) {
+                return;
+            }
+
+            context.fillStyle = 'red';
+            context.fillRect(x, y, 1, 1);
+        });
     }
 
     /**

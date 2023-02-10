@@ -5,6 +5,7 @@ import { DrawService } from '@app/services/draw.service';
 import { Area } from '@app/area';
 // import { FlashDifferenceService } from '@app/services/flash-difference.service';
 import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-game-page',
@@ -12,11 +13,7 @@ import { MouseService } from '@app/services/mouse.service';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit {
-    constructor(
-        // private flash: FlashDifferenceService,
-        private canvasShare: CanvasSharingService,
-        private mouseService: MouseService, // private drawService: DrawService,
-    ) {}
+    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService, private drawService: DrawService) {}
 
     area = [...Area];
 
@@ -39,50 +36,45 @@ export class GamePageComponent implements OnInit {
         this.originalPlayArea = new PlayAreaComponent(new DrawService(), this.canvasShare, this.mouseService);
         this.diffPlayArea = new PlayAreaComponent(new DrawService(), this.canvasShare, this.mouseService);
     }
-    /**
-     * The function in charge of receiving the click event.
-     * It is also the function in charge of giving the player a penality
-     * if he click on a pixel that wasn't a difference.
-     *
-     * @param event the mouse click event on the canvas we want to process.
-     */
-    mouseHitDetect(event: MouseEvent) {
-        console.log('mouse hit detect');
-    }
 
     clickedOnOriginal(event: MouseEvent) {
         console.log('clicked on original');
         if (!this.diffCanvasCtx) {
             return;
         }
-        let rgba = this.pick(this.mouseService.getX(), this.mouseService.getY());
-        console.log(rgba);
 
-        // this.diffCanvasCtx.fillStyle = rgba;
-        // this.diffCanvasCtx.fillRect(0, 0, 100, 100);
+        if (this.mouseService.mouseHitDetect(event)) {
+            this.originalPlayArea.flashArea2(this.area[0].area, this.canvasShare.defaultCanvasRef);
+            // this.originalPlayArea.setCanvas(this.canvasShare.defaultCanvasRef);
+            // this.originalPlayArea.flashArea(this.area[0].area);
+            // // this.flashArea(this.area[0].area, this.canvasShare.defaultCanvasRef);
+            this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+                this.originalPlayArea.drawPlayArea2('../../../assets/un_regal.bmp', this.canvasShare.defaultCanvasRef);
+                console.log('timeout');
+            });
+        }
     }
 
     clickedOnDiff(event: MouseEvent) {
         console.log('clicked on diff');
-        // this.showOriginalImage();
-        console.log(this.area[0]);
-        // this.highlightArea(this.area);
 
-        let rgba = this.pick(this.mouseService.getX(), this.mouseService.getY());
-        if (!this.originalCanvasCtx) {
-            return;
+        // this.flashArea(this.area[0].area, this.canvasShare.diffCanvasRef);
+        if (this.mouseService.mouseHitDetect(event)) {
+            // this.drawService.drawError(this.mouseService);
+            this.drawService.drawError2(this.mouseService, this.canvasShare.diffCanvasRef);
+            this.mouseService.changeClickState();
+            this.diffPlayArea.flashArea2(this.area[0].area, this.canvasShare.diffCanvasRef);
+            this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+                // this.diffPlayArea.drawPlayArea2('../../../assets/test/image_7_diff.bmp', this.canvasShare.diffCanvasRef);
+                console.log('timeout');
+                this.copyArea(this.area[0].area);
+            });
         }
-        let context = this.canvasShare.diffCanvasRef.getContext('2d');
-        if (!context) {
-            return;
-        }
-        context.fillStyle = rgba;
-        context.fillRect(this.mouseService.getX(), this.mouseService.getY(), 100, 100);
     }
 
     pick(x: number, y: number): string {
         const pixel = this.canvasShare.defaultCanvasRef.getContext('2d')?.getImageData(x, y, 1, 1);
-        console.log(pixel);
+        // console.log(pixel);
         if (!pixel) {
             console.log('no pixel');
             return 'white';
@@ -90,31 +82,42 @@ export class GamePageComponent implements OnInit {
         const data = pixel.data;
 
         const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
-        console.log(rgba);
+        // console.log(rgba);
         return rgba;
     }
 
-    colorPixel(x: number, y: number, color: string) {
-        if (!this.originalCanvasCtx) {
-            return;
-        }
-        this.originalCanvasCtx.fillStyle = color;
-        this.originalCanvasCtx.fillRect(x, y, 1, 1);
-    }
-
-    highlightArea(area: number[]) {
+    copyArea(area: number[]) {
         let x: number = 0;
         let y: number = 0;
         area.forEach((pixelData) => {
             x = (pixelData % 640) / 4;
             y = Math.floor(pixelData / 640 / 4);
+
+            let rgba = this.pick(x, y);
+            let context = this.canvasShare.diffCanvasRef.getContext('2d');
+            if (!context) {
+                return;
+            }
+
+            context.fillStyle = rgba;
+            context.fillRect(x, y, 1, 1);
         });
-        let rgba = this.pick(x, y);
-        let context = this.canvasShare.diffCanvasRef.getContext('2d');
-        if (!context) {
-            return;
-        }
-        context.fillStyle = rgba;
-        context.fillRect(x, y, 1, 1);
+    }
+
+    flashArea(area: number[], canvas: HTMLCanvasElement) {
+        let x: number = 0;
+        let y: number = 0;
+        area.forEach((pixelData) => {
+            x = (pixelData % 640) / 4;
+            y = Math.floor(pixelData / 640 / 4);
+
+            let context = canvas.getContext('2d');
+            if (!context) {
+                return;
+            }
+
+            context.fillStyle = 'red';
+            context.fillRect(x, y, 1, 1);
+        });
     }
 }
