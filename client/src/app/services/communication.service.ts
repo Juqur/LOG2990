@@ -25,6 +25,10 @@ export class CommunicationService {
         return this.http.post(`${this.baseUrl}/example/send`, message, { observe: 'response', responseType: 'text' });
     }
 
+    post(message: Message): Observable<HttpResponse<string>> {
+        return this.http.post(`${this.baseUrl}/example/send`, message, { observe: 'response', responseType: 'text' });
+    }
+
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);
     }
