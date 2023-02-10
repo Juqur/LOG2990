@@ -1,0 +1,12 @@
+{
+  "stats": {
+    "solo1": 20,
+    "solo2": 30,
+    "solo3": 35,
+    "1v11": 21,
+    "1v12": 31,
+    "1v13": 36
+  },
+  "difficulty": "difficile",
+  "title": "7-Rectangles"
+}
