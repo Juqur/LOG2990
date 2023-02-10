@@ -34,7 +34,7 @@ describe('CreationComponent', () => {
         const mockFile = new File([''], 'mock.jpg');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         component.defaultImageSelector(mockEvent);
-        expect(component.defaultImage).toEqual(mockFile);
+        expect(component.defaultImageFile).toEqual(mockFile);
     });
 
     it('defaultImageSelector should call showDefaultImage', () => {
@@ -65,7 +65,7 @@ describe('CreationComponent', () => {
         component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
         canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
         const mockFile = new File([''], 'mock.jpg');
-        component.defaultImage = mockFile;
+        component.defaultImageFile = mockFile;
         component.showDefaultImage();
         expect(canvasSharingService.defaultCanvasRef.width).toBeGreaterThan(0);
         expect(canvasSharingService.defaultCanvasRef.height).toBeGreaterThan(0);
@@ -75,7 +75,7 @@ describe('CreationComponent', () => {
         component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
         canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
         const mockFile = new File([''], 'mock.jpg');
-        component.diffImage = mockFile;
+        component.diffImageFile = mockFile;
         component.showDiffImage();
         expect(canvasSharingService.diffCanvasRef.width).toBeGreaterThan(0);
         expect(canvasSharingService.diffCanvasRef.height).toBeGreaterThan(0);

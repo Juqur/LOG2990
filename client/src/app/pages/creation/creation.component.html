@@ -5,14 +5,15 @@
         </section>
         <section id="creation-area-container">
             <div class="img-zone-container">
-                <p class = "info-txt">Image originale</p>
+                <p class="info-txt">Image originale</p>
                 <app-play-area *ngIf="defaultArea" [isDiff]="false"></app-play-area>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
                         Téléverser Image Originale
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="default image" id="default" (change)="defaultImageSelector($event)" (click)="cleanSrc($event)" />
+                    <input type="file" name="default image" id="default" accept=".bmp"
+                        (change)="defaultImageSelector($event)" (click)="cleanSrc($event)" />
                     <button class="button-reset" color="orange" (click)="resetDefault()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -24,18 +25,20 @@
                     Téléverser Image Commune
                     <mat-icon>add_a_photo</mat-icon>
                 </label>
-                <input type="file" name="both images" id="both" (change)="bothImagesSelector($event)" (click)="cleanSrc($event)" />
+                <input type="file" name="both images" id="both" accept=".bmp" (change)="bothImagesSelector($event)"
+                    (click)="cleanSrc($event)" />
                 <p>Les images doivent être en format BMP 24-bit et de taille 640x480</p>
             </div>
             <div class="img-zone-container">
-                <p class = "info-txt">Image modifiée</p>
+                <p class="info-txt">Image modifiée</p>
                 <app-play-area *ngIf="modifiedArea" [isDiff]="true"></app-play-area>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
                         Téléverser Image Modifiée
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="diff image" id="diff" (change)="diffImageSelector($event)" (click)="cleanSrc($event)" />
+                    <input type="file" name="diff image" id="diff" accept=".bmp" (change)="diffImageSelector($event)"
+                        (click)="cleanSrc($event)" />
                     <button class="button-reset" color="orange" (click)="resetDiff()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -45,7 +48,7 @@
         </section>
         <section id="bottom-area">
             <div id="enlargissement-container">
-                <label for="values">Rayon d'élargissement:</label>
+                <label class="info-txt" for="values">Rayon d'élargissement:</label>
                 <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="sliderValue"
                     (change)="sliderChange(sliderValue)"></mat-slider>
             </div>
@@ -60,9 +63,16 @@
                     <mat-icon>save</mat-icon>
                 </button>
             </div>
-            <div id="radius-area">
-                <span class = "info-txt">Rayon: </span>
-                <span id="radius-txt">{{ radius }}</span>
+            <div id="info-area">
+                <div>
+                    <span class="info-txt">Rayon: </span>
+                    <span class="answer-txt">{{ radius }}</span>
+                </div>
+                <div>
+                    <span class="info-txt">Nombre de différences: </span>
+                    <span class="answer-txt">{{nbDifferences}}</span>
+                    <p id="diff-nb-note">Le nombre de différences doit se situer entre 3 et 9.</p>
+                </div>
             </div>
         </section>
     </div>
