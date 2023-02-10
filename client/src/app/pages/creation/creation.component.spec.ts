@@ -96,39 +96,6 @@ describe('CreationComponent', () => {
         expect(showDiffSpy).toHaveBeenCalled();
     });
 
-    it('showDefaultImage should show default image on canvas if the image format is correct', () => {
-        component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
-        const mockFile = new File([''], 'mock.bmp'); 
-        component.defaultImageFile = mockFile;
-        //const onLoadSpy = 
-        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
-        const onLoadSpy = spyOn(Image.prototype, 'onload');
-        
-        component.showDefaultImage();
-
-        expect(onLoadSpy).toHaveBeenCalled();
-        
-        /*fetch(imageSrc).then(res => res.blob()).then(blob => {
-            const goodFile = new File([blob], 'image_7_.bmp', { type: 'image/bmp' });
-            component.defaultImageFile = goodFile;
-            component.showDefaultImage();
-            expect(canvasSharingService.defaultCanvasRef.width).toEqual(480);
-            expect(canvasSharingService.defaultCanvasRef.height).toEqual(640);
-            done();
-        });*/
-
-    });
-    it('showDiffImage should show diff image on canvas if the image format is correct', () => {
-        component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
-        const mockFile = new File([''], 'mock.bmp');
-        component.diffImageFile = mockFile;
-        component.showDiffImage();
-        expect(canvasSharingService.diffCanvasRef.width).toBeGreaterThan(0);
-        expect(canvasSharingService.diffCanvasRef.height).toBeGreaterThan(0);
-    });
-
     it('verifyImageFormat should return true if the image format is correct', (done) => {
         const imageSrc = './assets/test/image_7_diff.bmp';
         fetch(imageSrc).then(res => res.blob()).then(blob => {

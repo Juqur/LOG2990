@@ -92,7 +92,6 @@ export class CreationComponent implements OnInit {
             if (!this.defaultCanvasCtx || image1.width !== 640 || image1.height !== 480) {
                 return;
             }
-            console.log(image1.width);
             this.canvasShare.defaultCanvasRef.width = image1.width;
             this.canvasShare.defaultCanvasRef.height = image1.height;
             this.canvasShare.defaultCanvasRef.getContext('2d')?.drawImage(image1, 0, 0);
