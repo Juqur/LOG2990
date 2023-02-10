@@ -8,8 +8,8 @@ describe('DrawService', () => {
     let service: DrawService;
     let ctxStub: CanvasRenderingContext2D;
 
-    const CANVAS_WIDTH = 500;
-    const CANVAS_HEIGHT = 500;
+    const CANVAS_WIDTH = 640;
+    const CANVAS_HEIGHT = 480;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
@@ -27,7 +27,7 @@ describe('DrawService', () => {
     });
 
     it(' height should return the height of the grid canvas', () => {
-        expect(service.width).toEqual(CANVAS_HEIGHT);
+        expect(service.height).toEqual(CANVAS_HEIGHT);
     });
 
     it(' drawWord should call fillText on the canvas', () => {
