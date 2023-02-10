@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Level } from '@app/levels';
 import { Constants } from '@common/constants';
 
@@ -15,7 +15,7 @@ import { Constants } from '@common/constants';
  * @author Galen HU
  * @class CardComponent
  */
-export class CardComponent implements OnInit {
+export class CardComponent {
     @Input() level: Level = {
         id: -1,
         image: 'no image',
@@ -35,25 +35,13 @@ export class CardComponent implements OnInit {
     /**
      * Display the difficulty of the level
      *
-     * @returns the difficulty of the level
+     * @returns the path difficulty image
      */
-    displayDifficulty(): string {
-        if (this.level.isEasy === true) {
-            return 'Easy';
-        } else {
-            return 'Hard';
-        }
-    }
-
     displayDifficultyIcon(isEasy: boolean): string {
         if (isEasy === true) {
             return '../../../assets/images/easy.png';
         } else {
             return '../../../assets/images/hard.png';
         }
-    }
-
-    ngOnInit(): void {
-        this.difficulty = this.displayDifficulty();
     }
 }
