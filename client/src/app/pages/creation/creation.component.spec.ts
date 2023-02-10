@@ -6,7 +6,10 @@ import SpyObj = jasmine.SpyObj;
 
 describe('CreationComponent', () => {
     let component: CreationComponent;
-    let canvasSharingService: CanvasSharingService;
+
+    //Nécessaire pour des futurs tests
+    //let canvasSharingService: CanvasSharingService;
+
     let fixture: ComponentFixture<CreationComponent>;
     let mouseServiceSpy: SpyObj<MouseService>;
 
@@ -22,7 +25,10 @@ describe('CreationComponent', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationComponent);
-        canvasSharingService = TestBed.inject(CanvasSharingService);
+
+        //Nécessaire pour des futurs tests
+        //canvasSharingService = TestBed.inject(CanvasSharingService);
+        
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
