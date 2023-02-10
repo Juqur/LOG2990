@@ -7,6 +7,14 @@ import { Constants } from '@common/constants';
     templateUrl: './carousel.component.html',
     styleUrls: ['./carousel.component.scss'],
 })
+
+/**
+ * Component that allows to display top 3 times
+ * of a level in solo and multiPlayer mode one at a time
+ *
+ * @author Galen HU
+ * @class CarouselComponent
+ */
 export class CarouselComponent {
     @Input() level: Level = {
         id: -1,
@@ -27,10 +35,10 @@ export class CarouselComponent {
     selectedButton: string = 'solo';
 
     /**
-     * format the time
+     * Formats the time
      *
-     * @param time
-     * @returns the time formatted
+     * @param time the time to format
+     * @returns the formatted time
      */
     formatTime(time: number): string {
         const minutes: number = Math.floor(time / Constants.secondsPerMinute);
@@ -41,6 +49,11 @@ export class CarouselComponent {
         return minutesString + ':' + secondsString;
     }
 
+    /**
+     * Change the button style when clicked
+     *
+     * @param button that is active
+     */
     changeButtonStyle(button: string) {
         if (button === 'solo') {
             this.selectedButton = 'solo';

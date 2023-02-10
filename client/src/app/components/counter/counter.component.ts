@@ -6,6 +6,13 @@ import { MouseService } from '@app/services/mouse.service';
     templateUrl: './counter.component.html',
     styleUrls: ['./counter.component.scss'],
 })
+
+/**
+ * Displays the number of differences found by the player.
+ *
+ * @author Galen HU & Charles Degrandpré
+ * @class CounterComponent
+ */
 export class CounterComponent {
     constructor(private mouseService: MouseService) {}
 

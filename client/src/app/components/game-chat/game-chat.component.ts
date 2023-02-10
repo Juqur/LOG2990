@@ -6,6 +6,13 @@ import { messages } from '@app/messages';
     templateUrl: './game-chat.component.html',
     styleUrls: ['./game-chat.component.scss'],
 })
+
+/**
+ * Is the "container" of all messages sent in the game.
+ *
+ * @author Charles Degrandpré
+ * @class GameChatComponent
+ */
 export class GameChatComponent {
     messages = messages;
 

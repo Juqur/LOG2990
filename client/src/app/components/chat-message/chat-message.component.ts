@@ -7,12 +7,22 @@ import { Constants } from '@common/constants';
     templateUrl: './chat-message.component.html',
     styleUrls: ['./chat-message.component.scss'],
 })
+
+/**
+ * Generate a chat message in the game-chat
+ *
+ * @author Charles Degrandpré
+ * @class ChatMessageComponent
+ */
 export class ChatMessageComponent implements OnInit {
     @Input() message: Message = { sender: 'No name', text: 'No text', hourPosted: '00:00', playerId: -1 };
     @Input() index: number = Constants.minusOne;
 
     displayName: string;
 
+    /**
+     * Limits the length of the name to Constants.maxNameLengthShown
+     */
     formatNameLength() {
         if (this.message.sender.length > Constants.maxNameLength) {
             this.displayName = this.message.sender.substring(0, Constants.maxNameLengthShown) + '...';
@@ -21,6 +31,14 @@ export class ChatMessageComponent implements OnInit {
         }
     }
 
+    /**
+     * This series of 3 functions change the class
+     * of the sender name depending on the player
+     * and allows to display the message in different colors
+     * has to be changed to the "angular way"
+     *
+     * @returns the path difficulty image
+     */
     createMessageComponent(): void {
         if (this.message.playerId === 1) {
             this.createMessageComponentPlayer1();
