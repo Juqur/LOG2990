@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
+import { Area } from '@app/area';
 // import { FlashDifferenceService } from '@app/services/flash-difference.service';
 import { MouseService } from '@app/services/mouse.service';
 
@@ -16,6 +17,8 @@ export class GamePageComponent implements OnInit {
         private canvasShare: CanvasSharingService,
         private mouseService: MouseService, // private drawService: DrawService,
     ) {}
+
+    area = [...Area];
 
     defaultImage: File | null = null;
     diffImage: File | null = null;
@@ -52,21 +55,20 @@ export class GamePageComponent implements OnInit {
         if (!this.diffCanvasCtx) {
             return;
         }
-        let rgba = this.pick(this.mouseService);
+        let rgba = this.pick(this.mouseService.getX(), this.mouseService.getY());
         console.log(rgba);
 
-        this.diffCanvasCtx.fillStyle = rgba;
-        this.diffCanvasCtx.fillRect(0, 0, 100, 100);
-        // let context = this.canvasShare.diffCanvasRef.getContext('2d');
-        // let color = this.pick(event, context);
-        // context?.fillStyle = 'red';
-        // context?.fillRect(0, 0, 100, 100);
+        // this.diffCanvasCtx.fillStyle = rgba;
+        // this.diffCanvasCtx.fillRect(0, 0, 100, 100);
     }
 
     clickedOnDiff(event: MouseEvent) {
         console.log('clicked on diff');
         // this.showOriginalImage();
-        let rgba = this.pick(this.mouseService);
+        console.log(this.area[0]);
+        // this.highlightArea(this.area);
+
+        let rgba = this.pick(this.mouseService.getX(), this.mouseService.getY());
         if (!this.originalCanvasCtx) {
             return;
         }
@@ -78,10 +80,8 @@ export class GamePageComponent implements OnInit {
         context.fillRect(this.mouseService.getX(), this.mouseService.getY(), 100, 100);
     }
 
-    pick(mouseService: MouseService): string {
-        console.log(mouseService.getX());
-        console.log(mouseService.getY());
-        const pixel = this.canvasShare.defaultCanvasRef.getContext('2d')?.getImageData(mouseService.getX(), mouseService.getY(), 1, 1);
+    pick(x: number, y: number): string {
+        const pixel = this.canvasShare.defaultCanvasRef.getContext('2d')?.getImageData(x, y, 1, 1);
         console.log(pixel);
         if (!pixel) {
             console.log('no pixel');
@@ -92,5 +92,29 @@ export class GamePageComponent implements OnInit {
         const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
         console.log(rgba);
         return rgba;
+    }
+
+    colorPixel(x: number, y: number, color: string) {
+        if (!this.originalCanvasCtx) {
+            return;
+        }
+        this.originalCanvasCtx.fillStyle = color;
+        this.originalCanvasCtx.fillRect(x, y, 1, 1);
+    }
+
+    highlightArea(area: number[]) {
+        let x: number = 0;
+        let y: number = 0;
+        area.forEach((pixelData) => {
+            x = (pixelData % 640) / 4;
+            y = Math.floor(pixelData / 640 / 4);
+        });
+        let rgba = this.pick(x, y);
+        let context = this.canvasShare.diffCanvasRef.getContext('2d');
+        if (!context) {
+            return;
+        }
+        context.fillStyle = rgba;
+        context.fillRect(x, y, 1, 1);
     }
 }
