@@ -46,7 +46,7 @@ export class CreationComponent implements OnInit {
             return;
         }
         this.defaultImageFile = target.files[0];
-        this.verifiyImageFormat(this.defaultImageFile).then((result) => {
+        this.verifyImageFormat(this.defaultImageFile).then((result) => {
             if (!result) return;
             else this.showDefaultImage();
         });
@@ -57,7 +57,7 @@ export class CreationComponent implements OnInit {
             return;
         }
         this.diffImageFile = target.files[0];
-        this.verifiyImageFormat(this.diffImageFile).then((result) => {
+        this.verifyImageFormat(this.diffImageFile).then((result) => {
             if (!result) return;
             else this.showDiffImage();
         });
@@ -69,7 +69,7 @@ export class CreationComponent implements OnInit {
         }
         this.defaultImageFile = target.files[0];
         this.diffImageFile = target.files[0];
-        this.verifiyImageFormat(this.defaultImageFile).then((result) => {
+        this.verifyImageFormat(this.defaultImageFile).then((result) => {
             if (!result) return;
             else {
                 this.showDefaultImage();
@@ -92,6 +92,7 @@ export class CreationComponent implements OnInit {
             if (!this.defaultCanvasCtx || image1.width !== 640 || image1.height !== 480) {
                 return;
             }
+            console.log(image1.width);
             this.canvasShare.defaultCanvasRef.width = image1.width;
             this.canvasShare.defaultCanvasRef.height = image1.height;
             this.canvasShare.defaultCanvasRef.getContext('2d')?.drawImage(image1, 0, 0);
@@ -115,7 +116,7 @@ export class CreationComponent implements OnInit {
         };
     }
 
-    verifiyImageFormat(imageFile: File) {
+    verifyImageFormat(imageFile: File) {
         if (imageFile.type !== 'image/bmp' || imageFile.type !== 'image/bmp') {
             this.msg = 'Les images doivent être au format PNG';
             return Promise.resolve(false);
