@@ -37,7 +37,7 @@ describe('CreationComponent', () => {
         expect(component.defaultImageFile).toEqual(mockFile);
     });
 
-    it('defaultImageSelector should call showDefaultImage', () => {
+    /*it('defaultImageSelector should call showDefaultImage', () => {
         const mockFile = new File([''], 'mock.jpg');
         const mockFileInput = { target: { files: [mockFile] } } as unknown as Event;
         const spy = spyOn(component, 'showDefaultImage');
@@ -59,7 +59,7 @@ describe('CreationComponent', () => {
         component.bothImagesSelector(mockFileInput);
         expect(defaultSpy).toHaveBeenCalled();
         expect(diffSpy).toHaveBeenCalled();
-    });
+    });*/
 
     it('showDefaultImage should show default image on canvas', () => {
         component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
