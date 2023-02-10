@@ -64,13 +64,5 @@ export class DrawService {
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
     }
 
-    drawHighlight(mouseService: MouseService) {
-        this.context.beginPath();
-        this.context.strokeStyle = 'black';
-        this.context.lineWidth = 3;
-        this.context.rect(mouseService.getX() - 10, mouseService.getY() - 10, 20, 20);
-        this.context.stroke();
-    }
-
     // drawPartOfOriginalImage(mouseService: MouseService) {}
 }
