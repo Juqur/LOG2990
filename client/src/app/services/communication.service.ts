@@ -14,7 +14,11 @@ export class CommunicationService {
     constructor(private readonly http: HttpClient) {}
 
     get(path: string): Observable<Message> {
-        return this.http.get<Message>(`${this.baseUrl}/api` + path).pipe(catchError(this.handleError<Message>('basicGet')));
+        return this.http.get<Message>(`${this.baseUrl}api` + path).pipe(catchError(this.handleError<Message>('basicGet')));
+    }
+
+    getArray(path: string): Observable<unknown> {
+        return this.http.get(`${this.baseUrl}api` + path);
     }
 
     basicPost(message: Message): Observable<HttpResponse<string>> {
