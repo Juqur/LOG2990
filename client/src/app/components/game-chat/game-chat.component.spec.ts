@@ -5,6 +5,7 @@ import { MessageBoxComponent } from '@app/components/message-box/message-box.com
 
 import SpyObj = jasmine.SpyObj;
 
+import { AppMaterialModule } from '@app/modules/material.module';
 import { GameChatComponent } from './game-chat.component';
 
 describe('GameChatComponent', () => {
@@ -20,11 +21,12 @@ describe('GameChatComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GameChatComponent],
+            declarations: [GameChatComponent, MessageBoxComponent, ChatMessageComponent],
             providers: [
                 { provide: ChatMessageComponent, useValue: chatMessageComponentSpy },
                 { provide: MessageBoxComponent, useValue: messageBoxComponentSpy },
             ],
+            imports: [AppMaterialModule],
         }).compileComponents();
     });
 
