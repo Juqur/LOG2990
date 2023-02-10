@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
@@ -10,12 +11,18 @@ import { Constants } from '@common/constants';
     providers: [DrawService],
 })
 export class PlayAreaComponent implements AfterViewInit {
+    @Input() isDiff: boolean;
+    @Input() image: string;
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private readonly mouseService: MouseService) {}
+    constructor(
+        private readonly drawService: DrawService,
+        private canvasSharing: CanvasSharingService,
+        private readonly mouseService: MouseService,
+    ) {}
 
     get width(): number {
         return this.canvasSize.x;
@@ -31,7 +38,7 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.drawPlayArea();
+        this.drawPlayArea(this.image);
     }
 
     /**
@@ -46,14 +53,14 @@ export class PlayAreaComponent implements AfterViewInit {
             if (this.mouseService.mouseHitDetect(event)) {
                 this.drawService.drawSuccess(this.mouseService);
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.drawPlayArea();
+                    this.drawPlayArea(this.image);
                 });
             } else {
                 this.drawService.drawError(this.mouseService);
                 this.mouseService.changeClickState();
                 this.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.mouseService.changeClickState();
-                    this.drawPlayArea();
+                    this.drawPlayArea(this.image);
                 });
             }
         }
@@ -64,17 +71,35 @@ export class PlayAreaComponent implements AfterViewInit {
      * It is also used to reload the image and erase any text or modifications we may
      * have added to it.
      */
-    drawPlayArea() {
-        this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        const ctx = this.drawService.context;
-        const currentImage = new Image();
-        currentImage.src = './assets/un_regal.bmp';
-        currentImage.onload = () => {
-            ctx.drawImage(currentImage, 0, 0, this.width, this.height);
-        };
-        this.canvas.nativeElement.focus();
+    drawPlayArea(image: string) {
+        if (this.canvas) {
+            this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
+            const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            if (!this.isDiff) {
+                // Default canvas (left canvas)
+                this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
+                this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            } else {
+                // Diff canvas (right canvas)
+                this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
+                this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            }
+            const currentImage = new Image();
+            currentImage.src = image;
+            currentImage.onload = () => {
+                context.drawImage(currentImage, 0, 0, this.width, this.height);
+            };
+            this.canvas.nativeElement.style.backgroundColor = 'white';
+            this.canvas.nativeElement.focus();
+        }
     }
 
+    /**
+     * timeout function
+     *
+     * @param ms a number of milliseconds
+     * @returns a promise that resolves after ms milliseconds
+     */
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
