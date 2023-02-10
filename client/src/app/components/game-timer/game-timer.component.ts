@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Constants } from '@common/constants';
+import { Gateways, SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
     selector: 'app-game-timer',
@@ -7,51 +8,14 @@ import { Constants } from '@common/constants';
     styleUrls: ['./game-timer.component.scss'],
 })
 export class GameTimerComponent implements OnInit {
-    @Input() isCountDown: boolean;
-    @Input() gameLength: number;
-
     gameTime: number = 0;
-    interval: ReturnType<typeof setTimeout>;
-    readonly waitTime: number = Constants.millisecondsInOneSecond;
-
     gameTimeFormatted: string;
 
-    timer() {
-        if (this.isCountDown) {
-            this.downTimer();
-        } else {
-            this.upTimer();
-        }
-    }
+    constructor(private socketHandler: SocketHandler) {}
 
-    downTimer() {
-        this.gameTime = this.gameLength;
+    setTimer(value: number) {
+        this.gameTime = value;
         this.formatTime();
-        this.interval = setInterval(() => {
-            if (this.gameTime > 0) {
-                this.gameTime--;
-            } else {
-                clearInterval(this.interval);
-                // TODO
-                // Send message that timer has ended.
-            }
-            this.formatTime();
-        }, this.waitTime);
-    }
-
-    upTimer() {
-        this.gameTime = 0;
-        this.formatTime();
-        this.interval = setInterval(() => {
-            if (this.gameTime < this.gameLength) {
-                this.gameTime++;
-            } else {
-                clearInterval(this.interval);
-                // TODO
-                // Send message that timer has ended.
-            }
-            this.formatTime();
-        }, this.waitTime);
     }
 
     formatTime() {
@@ -64,6 +28,16 @@ export class GameTimerComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.timer();
+        if (!this.socketHandler.isSocketAlive(Gateways.Timer)) {
+            this.socketHandler.connect(Gateways.Timer);
+            this.socketHandler.send(Gateways.Timer, 'soloClassic', 'test');
+            this.socketHandler.on(
+                'timer',
+                (data: unknown) => {
+                    this.setTimer(data as number);
+                },
+                Gateways.Timer,
+            );
+        }
     }
 }
