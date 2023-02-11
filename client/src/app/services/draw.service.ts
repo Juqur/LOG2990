@@ -58,21 +58,9 @@ export class DrawService {
         this.context.fillText('ERROR', mouseService.getX(), mouseService.getY());
     }
 
-    drawError2(mouseService: MouseService, canvas: HTMLCanvasElement) {
-        const context = canvas.getContext('2d');
-        if (context === null) {
-            throw new Error('Could not get context');
-        }
-        context.font = '36px system-ui';
-        context.fillStyle = 'red';
-        context.fillText('ERROR', mouseService.getX(), mouseService.getY());
-    }
-
     drawSuccess(mouseService: MouseService) {
         this.context.font = '36px system-ui';
         this.context.fillStyle = 'green';
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
     }
-
-    // drawPartOfOriginalImage(mouseService: MouseService) {}
 }

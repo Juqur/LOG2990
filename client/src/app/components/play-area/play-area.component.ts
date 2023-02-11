@@ -35,10 +35,6 @@ export class PlayAreaComponent implements AfterViewInit {
         return this.canvasSize.y;
     }
 
-    setCanvas(canvas: HTMLCanvasElement) {
-        this.canvas.nativeElement = canvas;
-    }
-
     getCanvas(){
         return this.canvas;
     }

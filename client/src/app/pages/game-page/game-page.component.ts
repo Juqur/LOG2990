@@ -120,21 +120,4 @@ export class GamePageComponent implements OnInit {
             context.fillRect(x, y, 1, 1);
         });
     }
-
-    flashArea(area: number[], canvas: HTMLCanvasElement) {
-        let x: number = 0;
-        let y: number = 0;
-        area.forEach((pixelData) => {
-            x = (pixelData % 640) / 4;
-            y = Math.floor(pixelData / 640 / 4);
-
-            let context = canvas.getContext('2d');
-            if (!context) {
-                return;
-            }
-
-            context.fillStyle = 'red';
-            context.fillRect(x, y, 1, 1);
-        });
-    }
 }
