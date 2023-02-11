@@ -39,6 +39,10 @@ export class PlayAreaComponent implements AfterViewInit {
         this.canvas.nativeElement = canvas;
     }
 
+    getCanvas(){
+        return this.canvas;
+    }
+
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
@@ -100,29 +104,6 @@ export class PlayAreaComponent implements AfterViewInit {
         }
     }
 
-    drawPlayArea2(image: string, canvas: HTMLCanvasElement) {
-        if (canvas) {
-            canvas.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
-            const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-            if (!this.isDiff) {
-                // Default canvas (left canvas)
-                this.canvasSharing.setDefaultCanvasRef(canvas);
-                this.drawService.context = canvas.getContext('2d') as CanvasRenderingContext2D;
-            } else {
-                // Diff canvas (right canvas)
-                this.canvasSharing.setDiffCanvasRef(canvas);
-                this.drawService.context = canvas.getContext('2d') as CanvasRenderingContext2D;
-            }
-            const currentImage = new Image();
-            currentImage.src = image;
-            currentImage.onload = () => {
-                context.drawImage(currentImage, 0, 0, this.width, this.height);
-            };
-            canvas.style.backgroundColor = 'white';
-            canvas.focus();
-        }
-    }
-
     flashArea(area: number[]) {
         let x: number = 0;
         let y: number = 0;
@@ -131,23 +112,6 @@ export class PlayAreaComponent implements AfterViewInit {
             y = Math.floor(pixelData / 640 / 4);
 
             let context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-            if (!context) {
-                return;
-            }
-
-            context.fillStyle = 'red';
-            context.fillRect(x, y, 1, 1);
-        });
-    }
-
-    flashArea2(area: number[], canvas: HTMLCanvasElement) {
-        let x: number = 0;
-        let y: number = 0;
-        area.forEach((pixelData) => {
-            x = (pixelData % 640) / 4;
-            y = Math.floor(pixelData / 640 / 4);
-
-            let context = canvas.getContext('2d');
             if (!context) {
                 return;
             }
