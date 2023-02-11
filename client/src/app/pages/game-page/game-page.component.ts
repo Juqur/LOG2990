@@ -31,8 +31,7 @@ export class GamePageComponent implements OnInit {
     originalCanvasCtx: CanvasRenderingContext2D | null = null;
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
-    url: unknown;
-    msg = '';
+    foundADifference = false;
 
     ngOnInit(): void {
         this.originalCanvasCtx = document.createElement('canvas').getContext('2d');
@@ -48,6 +47,7 @@ export class GamePageComponent implements OnInit {
             this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
                 this.originalPlayArea.drawPlayArea('../../../assets/un_regal.bmp');
             });
+            this.foundADifference = true;
         } else {
             this.drawServiceOriginal.context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D;
             this.drawServiceOriginal.drawError(this.mouseService);
@@ -71,23 +71,22 @@ export class GamePageComponent implements OnInit {
                 .then(() => {
                     this.copyArea(this.area[0].area);
                 });
+            this.foundADifference = true;
         } else {
             this.drawServiceDiff.context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D;
             this.drawServiceDiff.drawError(this.mouseService);
-            this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-                this.diffPlayArea.drawPlayArea('../../../assets/test/image_7_diff.bmp');
-            });
-            // this.diffPlayArea
-            //     .timeout(Constants.millisecondsInOneSecond)
-            //     .then(() => {})
-            //     .then(() => {
-            //         this.copyArea(this.area[0].area);
-            //     });
-            // .then(() => {
-            //     this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-            //         this.copyArea(this.area[0].area);
-            //     });
-            // });
+            this.diffPlayArea
+                .timeout(Constants.millisecondsInOneSecond)
+                .then(() => {
+                    this.diffPlayArea.drawPlayArea('../../../assets/test/image_7_diff.bmp');
+                })
+                .then(() => {
+                    if (this.foundADifference) {
+                        this.diffPlayArea.timeout(3).then(() => {
+                            this.copyArea(this.area[0].area);
+                        });
+                    }
+                });
         }
     }
 
