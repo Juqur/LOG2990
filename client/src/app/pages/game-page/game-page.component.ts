@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
@@ -12,7 +12,7 @@ import { Constants } from '@common/constants';
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent implements OnInit {
+export class GamePageComponent {
     constructor(
         private canvasShare: CanvasSharingService,
         private mouseService: MouseService,
@@ -24,21 +24,10 @@ export class GamePageComponent implements OnInit {
 
     area = [...Area];
 
-    defaultImage: File | null = null;
-    diffImage: File | null = null;
-    // originalPlayArea: PlayAreaComponent;
-    // diffPlayArea: PlayAreaComponent;
     originalCanvasCtx: CanvasRenderingContext2D | null = null;
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
     foundADifference = false;
-
-    ngOnInit(): void {
-        this.originalCanvasCtx = document.createElement('canvas').getContext('2d');
-        this.canvasShare.setDefaultCanvasRef(this.originalCanvasCtx?.canvas as HTMLCanvasElement);
-        this.diffCanvasCtx = document.createElement('canvas').getContext('2d');
-        this.canvasShare.setDiffCanvasRef(this.diffCanvasCtx?.canvas as HTMLCanvasElement);
-    }
 
     clickedOnOriginal(event: MouseEvent) {
         console.log('clicked on original');
