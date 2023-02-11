@@ -1,9 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { MatSliderModule } from '@angular/material/slider';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
-import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { MouseService } from '@app/services/mouse.service';
 import { CreationComponent } from './creation.component';
@@ -11,10 +6,7 @@ import SpyObj = jasmine.SpyObj;
 
 describe('CreationComponent', () => {
     let component: CreationComponent;
-
-    // Nécessaire pour des futurs tests
-    // let canvasSharingService: CanvasSharingService;
-
+    let canvasSharingService: CanvasSharingService;
     let fixture: ComponentFixture<CreationComponent>;
     let mouseServiceSpy: SpyObj<MouseService>;
 
@@ -24,16 +16,12 @@ describe('CreationComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [CreationComponent, PlayAreaComponent, ScaleContainerComponent],
+            declarations: [CreationComponent],
             providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }],
-            imports: [AppMaterialModule, MatSliderModule, FormsModule],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationComponent);
-
-        // Nécessaire pour des futurs tests
-        // canvasSharingService = TestBed.inject(CanvasSharingService);
-
+        canvasSharingService = TestBed.inject(CanvasSharingService);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -105,6 +93,37 @@ describe('CreationComponent', () => {
         await Promise.resolve();
         expect(showDefaultSpy).toHaveBeenCalled();
         expect(showDiffSpy).toHaveBeenCalled();
+    });
+
+    it('showDefaultImage should show default image on canvas if the image format is correct', (done) => {
+        component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.defaultImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
+        const showSpy = spyOn(component, 'showDefaultImage').and.callThrough();
+        component.showDefaultImage();
+        setTimeout(() => {
+            expect(showSpy).toHaveBeenCalled();
+            expect(canvasSharingService.defaultCanvasRef.width).toEqual(640);
+            expect(canvasSharingService.defaultCanvasRef.height).toEqual(480);
+            done();
+        }, 1000);
+    });
+    it('showDiffImage should show diff image on canvas if the image format is correct', (done) => {
+        component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.diffImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
+        const showSpy = spyOn(component, 'showDiffImage').and.callThrough();
+        component.showDiffImage();
+        setTimeout(() => {
+            expect(showSpy).toHaveBeenCalled();
+            expect(canvasSharingService.diffCanvasRef.width).toEqual(640);
+            expect(canvasSharingService.diffCanvasRef.height).toEqual(480);
+            done();
+        }, 1000);
     });
 
     it('verifyImageFormat should return true if the image format is correct', (done) => {
