@@ -38,13 +38,18 @@ export class MouseService {
      */
     processClick(): boolean {
         if (this.getCanClick()) {
+            const url = 'image/difference';
             // The following commented code is to be used when server implementation has been completed.
-            const position: number =
-                this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
+            // const position: number =
+            //     this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
             // TODO
             // Add router link
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
-            const res = this.http.post(url, position);
+            const differencesArray = this.http.post(url, 185984 /* position*/);
+            // if (!differencesArray.empty()) {
+            //
+            //
+            console.log(differencesArray);
             const testRes: Vec2[] = this.getTestVariable();
             if (testRes.length > 0) {
                 // Simply to add a section of the canvas that we can use to test on.

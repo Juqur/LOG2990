@@ -25,9 +25,17 @@ export class CommunicationService {
         return this.http.post(`${this.baseUrl}/example/send`, message, { observe: 'response', responseType: 'text' });
     }
 
-    post(message: Message): Observable<HttpResponse<string>> {
-        return this.http.post(`${this.baseUrl}/example/send`, message, { observe: 'response', responseType: 'text' });
+    async findDifference(name: string, position: number): Promise<number[]> {
+        return this.http.post<number[]>(`${this.baseUrl}api` + path, { name, position });
     }
+
+    // postDifference(path: string, position: number): Observable<HttpResponse<number[]>> {
+    //     return this.http.post(`${this.baseUrl}/api` + path, position, { observe: 'response', responseType: 'number[]' });
+    // }
+
+    // postDifference(path: string, position: number): Observable<HttpResponse<unknown>> {
+    //     return this.http.post(`${this.baseUrl}/api` + path, position, { observe: 'response', responseType: 'json' });
+    // }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);

@@ -1,6 +1,6 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('image')
@@ -16,13 +16,11 @@ export class ImageController {
         return this.imageService.getCardData();
     }
 
-    @Get('/image')
-    @ApiOkResponse({
-        description: 'Return information about http api',
-        type: Message,
-    })
-    async getImageDifferences() {
-        // je suppose qu'on a trouvé le id avec un autre foncion
-        return this.imageService.getDifference('7-Rectangles', 0);
+    // @ApiCreatedResponse({
+    //    description: 'Send a message',
+    // })
+    @Post('/difference')
+    async findImageDifference(@Body() body: { position: number }) {
+        return await this.imageService.findDifference('7-Rectangles', body.position);
     }
 }
