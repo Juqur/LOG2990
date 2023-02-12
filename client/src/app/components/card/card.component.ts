@@ -17,6 +17,7 @@ import { Constants } from '@common/constants';
  */
 export class CardComponent implements OnInit {
     @Input() level: Level = {
+        id: -1,
         imageOriginal: new File([''], 'no file'),
         imageDiff: new File([''], 'no file'),
         name: 'no name',

@@ -46,6 +46,7 @@ export class MouseService {
             let differencesArray: number[] = [];
             this.communicationService.postDifference(url, position).subscribe((tempDifferencesArray) => {
                 differencesArray = tempDifferencesArray;
+                console.log(differencesArray);
             });
 
             if (differencesArray.length !== 0) {
