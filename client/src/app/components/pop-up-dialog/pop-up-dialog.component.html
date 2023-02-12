@@ -10,6 +10,7 @@
             #input
         />
     </div>
+    <img *ngIf="data.imgSrc" [src]="data.imgSrc" />
     <button id="close-button" [disabled]="!inputWasValid" id="close-button" (click)="onCloseClick()">
         {{ data.closeButtonMessage }}
     </button>

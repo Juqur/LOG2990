@@ -15,6 +15,7 @@ export class PopUpDialogComponent {
         if (!data.inputData) {
             this.inputWasValid = true;
         }
+
     }
 
     /**
