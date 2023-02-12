@@ -17,12 +17,7 @@
             </div>
         </section>
         <section id="play-area-container">
-            <app-play-area
-                [isDiff]="false"
-                [image]="'../../../assets/un_regal.bmp'"
-                (click)="clickedOnOriginal($event)"
-                #originalPlayArea
-            ></app-play-area>
+            <app-play-area [isDiff]="false" [image]="originalImage" (click)="clickedOnOriginal($event)" #originalPlayArea></app-play-area>
             <div id="between-images">
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
@@ -30,12 +25,7 @@
                 <p>3</p>
                 <span id="nb-hints">indices restants</span>
             </div>
-            <app-play-area
-                [isDiff]="true"
-                [image]="'../../../assets/test/image_7_diff.bmp'"
-                (click)="clickedOnDiff($event)"
-                #diffPlayArea
-            ></app-play-area>
+            <app-play-area [isDiff]="true" [image]="diffImage" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
         </section>
         <section id="bottom-area">
             <app-game-chat></app-game-chat>
