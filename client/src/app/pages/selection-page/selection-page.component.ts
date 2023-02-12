@@ -3,11 +3,6 @@ import { Level, levels } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
 
-interface Icard {
-    difficulty: string;
-    stats: object;
-    title: string;
-}
 @Component({
     selector: 'app-selection-page',
     templateUrl: './selection-page.component.html',
@@ -15,14 +10,14 @@ interface Icard {
 })
 export class SelectionPageComponent implements OnInit {
     page = 'selection';
-    levels = [...levels];
+    levels: Level[];
     currentPage: number = 0;
     levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
     lastPage = Math.round(levels.length / this.levelsPerPage - 1);
 
-    levelToShow: Level[] = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+    levelToShow: Level[];
 
     constructor(private communicationService: CommunicationService) {}
 
@@ -49,13 +44,14 @@ export class SelectionPageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.communicationService.getArray('/image').subscribe((value) => {
-            const data = value as Icard[];
-            let index = 0;
+        this.communicationService.get('/image').subscribe((value) => {
+            const data = value as Level[];
+            this.levels = [];
             for (const level of data) {
-                levels[index].name = level.title;
-                index++;
+                this.levels.push(level);
+                console.log(level.imageOriginal);
             }
+            this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
         });
     }
 }

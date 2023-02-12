@@ -10,7 +10,10 @@ export class ImageService {
 
         const promises = jsonFiles.map(async (file) => {
             const fileContents = await fs.readFile(this.path + file, 'utf8');
-            return JSON.parse(fileContents);
+            const data = JSON.parse(fileContents);
+            data.imageOriginal = await fs.readFile('assets/Images/' + data.name + '/og.bmp');
+            data.imageDiff = await fs.readFile('assets/Images/' + data.name + '/diff.bmp');
+            return data;
         });
         return Promise.all(promises);
     }

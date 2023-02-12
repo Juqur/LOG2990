@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Level, levels } from '@app/levels';
+import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -7,15 +8,17 @@ import { Constants } from '@common/constants';
     templateUrl: './configuration.component.html',
     styleUrls: ['./configuration.component.scss'],
 })
-export class ConfigurationComponent {
-    levels = [...levels];
+export class ConfigurationComponent implements OnInit {
+    levels: Level[];
     currentPage: number = 0;
     levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
     lastPage = Math.round(levels.length / this.levelsPerPage - 1);
-    showGlobalVariable = false;
-    levelToShow: Level[] = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+
+    levelToShow: Level[];
+
+    constructor(private communicationService: CommunicationService) {}
 
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
@@ -37,5 +40,16 @@ export class ConfigurationComponent {
 
     isEndOfList() {
         return this.currentPage >= this.lastPage;
+    }
+
+    ngOnInit(): void {
+        this.communicationService.get('/image').subscribe((value) => {
+            const data = value as Level[];
+            this.levels = [];
+            for (const level of data) {
+                this.levels.push(level);
+            }
+            this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+        });
     }
 }

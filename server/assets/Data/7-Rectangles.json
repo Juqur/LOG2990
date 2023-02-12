@@ -1,12 +1,11 @@
 {
-  "stats": {
-    "solo1": 20,
-    "solo2": 30,
-    "solo3": 35,
-    "1v11": 21,
-    "1v12": 31,
-    "1v13": 36
-  },
-  "difficulty": "difficile",
-  "title": "7-Rectangles"
+    "imageOriginal": "",
+    "imageDiff": "",
+    "image": "assets/images/spinningSkull.gif",
+    "name": "7-Rectangles",
+    "playerSolo": ["Guylaine Tremblay", "Gaston G. Marcotte", "Gontrand Gone"],
+    "timeSolo": [101, 201, 301],
+    "playerMulti": ["Glenn Gagnon", "Herve Harvey", "Yvons Payé"],
+    "timeSolo": [101, 201, 301],
+    "isEasy": true
 }

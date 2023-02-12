@@ -1,5 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Level } from '@app/levels';
 import { Message } from '@common/message';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -13,11 +14,15 @@ export class CommunicationService {
 
     constructor(private readonly http: HttpClient) {}
 
-    get(path: string): Observable<Message> {
+    getMessage(path: string): Observable<Message> {
         return this.http.get<Message>(`${this.baseUrl}api` + path).pipe(catchError(this.handleError<Message>('basicGet')));
     }
 
-    getArray(path: string): Observable<unknown> {
+    getLevel(path: string): Observable<Level> {
+        return this.http.get<Level>(`${this.baseUrl}api` + path).pipe(catchError(this.handleError<Level>('basicGet')));
+    }
+
+    get(path: string): Observable<unknown> {
         return this.http.get(`${this.baseUrl}api` + path);
     }
 

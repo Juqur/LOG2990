@@ -1,14 +1,13 @@
 import { Constants } from '@common/constants';
 export interface Level {
-    id: number;
-    image: string;
+    imageOriginal: File;
+    imageDiff: File;
     name: string;
     playerSolo: string[];
     timeSolo: number[];
     playerMulti: string[];
     timeMulti: number[];
     isEasy: boolean;
-    route: string; // this attribute will have to be changed when we do server side
 }
 
 export const levels = [
