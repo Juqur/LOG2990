@@ -1,1 +1,16 @@
-<p>pop-up-dialog works!</p>
+<ol>
+    <p>{{ data.textToSend }}</p>
+    <div *ngIf="data.inputData">
+        <input
+            id="pop-up-input"
+            [ngClass]="inputWasValid ? 'valid-input' : 'invalid-input'"
+            type="text"
+            (input)="submitText(input.value)"
+            [placeholder]="data.inputData.inputLabel"
+            #input
+        />
+    </div>
+    <button id="close-button" [disabled]="!inputWasValid" id="close-button" (click)="onCloseClick()">
+        {{ data.closeButtonMessage }}
+    </button>
+</ol>
