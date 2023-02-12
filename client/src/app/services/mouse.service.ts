@@ -36,7 +36,6 @@ export class MouseService {
      *
      * @returns a boolean indicating if the click was valid.
      */
-
     processClick(): boolean {
         if (this.getCanClick()) {
             // The following commented code is to be used when server implementation has been completed.

@@ -3,8 +3,8 @@ import { Vec2 } from '@app/interfaces/vec2';
 import { MouseService } from './mouse.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
+export const DEFAULT_WIDTH = 640;
+export const DEFAULT_HEIGHT = 480;
 
 @Injectable({
     providedIn: 'root',
@@ -63,14 +63,4 @@ export class DrawService {
         this.context.fillStyle = 'green';
         this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
     }
-
-    drawHighlight(mouseService: MouseService) {
-        this.context.beginPath();
-        this.context.strokeStyle = 'black';
-        this.context.lineWidth = 3;
-        this.context.rect(mouseService.getX() - 10, mouseService.getY() - 10, 20, 20);
-        this.context.stroke();
-    }
-
-    // drawPartOfOriginalImage(mouseService: MouseService) {}
 }

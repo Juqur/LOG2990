@@ -11,6 +11,11 @@ describe('PlayAreaComponent', () => {
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
+    const mouseEvent = {
+        offsetX: 100,
+        offsetY: 200,
+        button: 0,
+    } as MouseEvent;
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
@@ -38,12 +43,6 @@ describe('PlayAreaComponent', () => {
     });
 
     it('mouseHitDetect should call mouseHitDetect of mouseService', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-
         mouseServiceSpy.getCanClick.and.returnValue(true);
         spyOn(component, 'drawPlayArea');
 
@@ -52,12 +51,6 @@ describe('PlayAreaComponent', () => {
     });
 
     it('mouseHitDetect should not call mouseHitDetect from mouse service if we cannot click', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-
         spyOn(component, 'drawPlayArea');
 
         mouseServiceSpy.getCanClick.and.returnValue(false);
@@ -67,12 +60,6 @@ describe('PlayAreaComponent', () => {
     });
 
     it('mouseHitDetect should call drawSuccess if we clicked on a difference.', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(true);
         spyOn(component, 'drawPlayArea');
@@ -82,12 +69,6 @@ describe('PlayAreaComponent', () => {
     });
 
     it('mouseHitDetect should call drawError if we did not click on a difference', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(false);
         spyOn(component, 'drawPlayArea');
@@ -97,12 +78,6 @@ describe('PlayAreaComponent', () => {
     });
 
     it('clicking on a pixel that is not a difference should call changeClickState of mouseService', fakeAsync(() => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(false);
 
@@ -112,12 +87,6 @@ describe('PlayAreaComponent', () => {
     }));
 
     it('Clicking on a difference should call draw play area after a one second delay', fakeAsync(() => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(true);
         const spy = spyOn(component, 'drawPlayArea');
@@ -129,12 +98,6 @@ describe('PlayAreaComponent', () => {
     }));
 
     it('Clicking on a pixel that is not a difference should call draw play area after a one second delay', fakeAsync(() => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(false);
         const spy = spyOn(component, 'drawPlayArea');
