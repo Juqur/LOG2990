@@ -10,8 +10,8 @@
             #input
         />
     </div>
-    <div mat-dialog-actions>
-        <button mat-button id="close-button" [disabled]="!inputWasValid" [mat-dialog-close]="this.inputValue" id="close-button">
+    <div mat-dialog-actions align="end">
+        <button mat-button id="close-button" [disabled]="!inputWasValid" [mat-dialog-close]="this.inputValue">
             {{ data.closeButtonMessage }}
         </button>
     </div>
