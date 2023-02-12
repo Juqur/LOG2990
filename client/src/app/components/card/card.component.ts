@@ -52,10 +52,6 @@ export class CardComponent implements OnInit {
         }
     }
 
-    displayImage(buffer: Buffer): string {
-        return 'data:image/bmp;base64,' + buffer.toString('base64');
-    }
-
     ngOnInit(): void {
         this.difficulty = this.displayDifficulty();
     }

@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
+import { CommunicationService } from '@app/services/communication.service';
 import { Constants, MouseButton } from '@common/constants';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class MouseService {
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
 
-    constructor(public http: HttpClient) {}
+    constructor(private communicationService: CommunicationService) {}
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
@@ -38,18 +38,19 @@ export class MouseService {
      */
     processClick(): boolean {
         if (this.getCanClick()) {
-            const url = 'image/difference';
-            // The following commented code is to be used when server implementation has been completed.
-            // const position: number =
-            //     this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
-            // TODO
-            // Add router link
+            const url = '/image/difference';
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
-            const differencesArray = this.http.post(url, 185984 /* position*/);
-            // if (!differencesArray.empty()) {
-            //
-            //
-            console.log(differencesArray);
+            const position: number =
+                this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
+
+            let differencesArray: number[] = [];
+            this.communicationService.postDifference(url, position).subscribe((tempDifferencesArray) => {
+                differencesArray = tempDifferencesArray;
+            });
+
+            if (differencesArray.length !== 0) {
+                // TODO Gérer la suppression de la différence.
+            }
             const testRes: Vec2[] = this.getTestVariable();
             if (testRes.length > 0) {
                 // Simply to add a section of the canvas that we can use to test on.

@@ -1,3 +1,4 @@
+import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
 
@@ -20,24 +21,12 @@ export class ImageService {
         return Promise.all(promises);
     }
 
-    async findDifference(name: string, position: number): Promise<number[]> {
-        let allDifferences: number[][] = [];
-        const promises = await fs.readFile(this.pathDifference + name + '.json', 'utf8');
-        allDifferences = JSON.parse(promises.toString()) as number[][];
+    async findDifference(fileName: string, position: number): Promise<number[]> {
+        const promises = await fs.readFile(this.pathDifference + fileName + '.json', 'utf8');
+        const allDifferences = JSON.parse(promises.toString()) as number[][];
 
-        // const differenceIndex = allDifferences.indexOf(position); // a essayer, trouver une manière de simplifier le code
-        // Iterates trough the 2 dimension array to compare each pixel with the position of the clicked pixel
-        let differenceIndex = 0;
-        allDifferences.forEach((difference) => {
-            differenceIndex = 0;
-            difference.forEach((pixel) => {
-                if (pixel === position) {
-                    return allDifferences[differenceIndex];
-                }
-                differenceIndex++;
-            });
-        });
-
-        return [];
+        // Iterates through the 2 dimension array to compare each pixel with the position
+        // of the clicked pixel and returns the array of pixels that are different
+        return allDifferences.find((differenceRow) => differenceRow.indexOf(position) !== Constants.minusOne) || [];
     }
 }

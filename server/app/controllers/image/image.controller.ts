@@ -9,18 +9,18 @@ export class ImageController {
 
     @Get('/')
     @ApiOkResponse({
-        description: 'Return information about http api',
+        description: 'Returns the card data',
         type: Message,
     })
     async getCardData() {
         return this.imageService.getCardData();
     }
 
-    // @ApiCreatedResponse({
-    //    description: 'Send a message',
-    // })
+    @ApiOkResponse({
+        description: 'Finds if there is a difference on the pixel clicked',
+    })
     @Post('/difference')
     async findImageDifference(@Body() body: { position: number }) {
-        return await this.imageService.findDifference('7-Rectangles', body.position);
+        return this.imageService.findDifference('7-Rectangles', body.position);
     }
 }
