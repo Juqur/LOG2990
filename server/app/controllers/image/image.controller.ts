@@ -20,7 +20,7 @@ export class ImageController {
         description: 'Finds if there is a difference on the pixel clicked',
     })
     @Post('/difference')
-    async findImageDifference(@Body() body: { position: number }) {
-        return this.imageService.findDifference('7-Rectangles', body.position);
+    async findImageDifference(@Body() body: { differenceFile: string; position: number }) {
+        return this.imageService.findDifference(body.differenceFile, body.position);
     }
 }
