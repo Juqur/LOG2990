@@ -18,8 +18,8 @@ export class CommunicationService {
         return this.http.get<Message>(`${this.baseUrl}api` + path).pipe(catchError(this.handleError<Message>('basicGet')));
     }
 
-    getLevel(path: string): Observable<Level> {
-        return this.http.get<Level>(`${this.baseUrl}api` + path).pipe(catchError(this.handleError<Level>('basicGet')));
+    getLevels(path: string): Observable<Level[]> {
+        return this.http.get<Level[]>(`${this.baseUrl}api` + path).pipe(catchError(this.handleError<Level[]>('basicGet')));
     }
 
     get(path: string): Observable<unknown> {

@@ -12,10 +12,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ImageController } from './controllers/image/image.controller';
 import { ImageService } from './services/image/image.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'assets'),
+            serveRoot: '/assets',
+        }),
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],

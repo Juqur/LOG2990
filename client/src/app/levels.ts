@@ -1,7 +1,7 @@
 import { Constants } from '@common/constants';
 export interface Level {
-    imageOriginal: File;
-    imageDiff: File;
+    imageOriginal: string;
+    imageDiff: string;
     name: string;
     playerSolo: string[];
     timeSolo: number[];

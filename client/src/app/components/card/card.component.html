@@ -1,9 +1,9 @@
 <div *ngIf="level" class="card">
     <div class="title-container">
         <h2 class="level-name">{{ level.name }}</h2>
-    </div>
+    </div> 
     <div class="image-container">
-        <img src="{{ level.imageOriginal }}" class="thumbnail" alt="{{ level.name }}" />
+        <img src="http://localhost:3000/assets/Images/Skull/diff.bmp" class="thumbnail" alt="{{ level.name }}" />
         <img src="{{ displayDifficultyIcon(level.isEasy) }}" alt="{{ difficulty }}" class="difficulty-icon" />
     </div>
     <div class="card-content">

@@ -1,11 +1,10 @@
 {
-    "id": 1,
-    "image": "assets/images/spinningSkull.gif",
+    "imageOriginal": "",
+    "imageDiff": "",
     "name": "Skull",
-    "playerSolo": ["Amongus man", "Gaston G. Marcotte", "Gontrand Gone"],
+    "playerSolo": ["Guylaine Tremblay", "Gaston G. Marcotte", "Gontrand Gone"],
     "timeSolo": [101, 201, 301],
-    "playerMulti": ["Glenn Gagnon", "Herve Harvey", "Roche cisgender"],
-    "timeSolo": [11, 21, 11],
-    "isEasy": false,
-    "route": "level"
+    "playerMulti": ["Glenn Gagnon", "Herve Harvey", "Yvons Payé"],
+    "timeSolo": [101, 201, 301],
+    "isEasy": true
 }

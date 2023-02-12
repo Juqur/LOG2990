@@ -9,8 +9,8 @@ import { Constants } from '@common/constants';
 })
 export class CarouselComponent {
     @Input() level: Level = {
-        imageOriginal: new File([''], 'no file'),
-        imageDiff: new File([''], 'no file'),
+        imageOriginal: '',
+        imageDiff: '',
         name: 'no name',
         playerSolo: ['player 1', 'player 2', 'player 3'],
         timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
