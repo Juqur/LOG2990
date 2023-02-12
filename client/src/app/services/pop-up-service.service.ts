@@ -54,7 +54,6 @@ export class PopUpServiceService {
         });
 
         this.dialogRef.afterClosed().subscribe((result) => {
-            window.alert(result);
             if (dataToSend.inputData) {
                 this.result = result;
             }
