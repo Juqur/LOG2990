@@ -1,10 +1,10 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 // import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { Area } from '@app/area';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-import { Area } from '@app/area';
 
 @Component({
     selector: 'app-play-area',
@@ -15,7 +15,7 @@ import { Area } from '@app/area';
 export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
-    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
 
     area = [...Area];
     buttonPressed = '';
@@ -35,10 +35,6 @@ export class PlayAreaComponent implements AfterViewInit {
         return this.canvasSize.y;
     }
 
-    getCanvas(){
-        return this.canvas;
-    }
-
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
@@ -46,6 +42,10 @@ export class PlayAreaComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.drawPlayArea(this.image);
+    }
+
+    getCanvas() {
+        return this.canvas;
     }
 
     /**
@@ -100,17 +100,21 @@ export class PlayAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * flash the area of the canvas red
+     *
+     * @param area the area to flash
+     */
     flashArea(area: number[]) {
-        let x: number = 0;
-        let y: number = 0;
+        let x = 0;
+        let y = 0;
+        const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        if (!context) {
+            return;
+        }
         area.forEach((pixelData) => {
-            x = (pixelData % 640) / 4;
-            y = Math.floor(pixelData / 640 / 4);
-
-            let context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-            if (!context) {
-                return;
-            }
+            x = (pixelData % this.width) / Constants.PIXEL_SIZE;
+            y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
 
             context.fillStyle = 'red';
             context.fillRect(x, y, 1, 1);
