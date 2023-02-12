@@ -174,20 +174,20 @@ export class CreationComponent implements OnInit {
 
         const differences = this.diffService.detectDifferences(this.defaultCanvasCtx, this.diffCanvasCtx, this.radius);
         if (!differences) {
-            this.errorDialog();
+            this.errorDialog('Veuillez fournir des images non vides');
             return;
         }
         this.nbDifferences = differences.clusters.length;
 
         // Mets le dans le popup quand ce sera possible
         this.url = differences.canvas.canvas.toDataURL();
-        const imageD = new Image();
-        imageD.src = this.url;
-        document.getElementById('top-area')?.appendChild(imageD);
+        const message = 'Nombre de différences : ' + this.nbDifferences + '\
+        Image de différence :'
+        console.log(message);
         const canvasDialogData: DialogData = {
-            textToSend: 'Veuillez entrer le nom du jeu',
+            textToSend: 'Image de différence (contient ' + this.nbDifferences + ' différences) :',
             imgSrc: this.url,
-            closeButtonMessage: 'Sauvegarder',
+            closeButtonMessage: 'Fermer',
         };
         this.popUpService.openDialog(canvasDialogData);
         if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
@@ -196,30 +196,32 @@ export class CreationComponent implements OnInit {
     }
 
     saveGame() {
-        const saveDialogData: DialogData = {
-            textToSend: 'Veuillez entrer le nom du jeu',
-            inputData: {
-                inputLabel: 'Nom du jeu',
-                submitFunction: (value) => {
-                    //  Vérifier que le nom du jeu n'existe pas déjà
-                    //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
-                    if (value.length < Constants.ten) {
-                        this.msg = value;
-                        return true;
-                    } 
-                    return false;
+        if (this.isSaveable) {
+            let gameName = '';
+            // Ouvre un popup qui demande à l'utilisateur de nommer le jeu
+            
+            const saveDialogData: DialogData = {
+                textToSend: 'Veuillez entrer le nom du jeu',
+                inputData: {
+                    inputLabel: 'Nom du jeu',
+                    submitFunction: (value) => {
+                        //  Vérifier que le nom du jeu n'existe pas déjà
+                        //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
+                        if (value.length < Constants.ten) {
+                            return true;
+                        } 
+                        return false;
+                    },
+                    returnValue: gameName,
                 },
-            },
-            closeButtonMessage: 'Sauvegarder',
-        };
-        this.popUpService.openDialog(saveDialogData);
-        this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-            console.log(this.msg);
-        });
-        
-        if (!this.isSaveable) {
-            // Ouvrir un popup qui demande à l'utilisateur de nommer le jeu
-            // Sauvegarder le jeu
+                closeButtonMessage: 'Sauvegarder',
+            };
+            
+            this.popUpService.openDialog(saveDialogData);
+            this.popUpService.dialogRef.afterClosed().subscribe((result) => {
+                gameName = result;
+                // TODO : Sauvegarder le jeu sur le serveur
+            });
         }
     }
 
