@@ -25,6 +25,7 @@ export interface InputData {
      * @returns a boolean indicating if the value was correct or not.
      */
     submitFunction: (value: string) => boolean;
+    returnValue: string;
 }
 
 @Injectable({
@@ -53,6 +54,7 @@ export class PopUpServiceService {
         });
 
         this.dialogRef.afterClosed().subscribe((result) => {
+            window.alert(result);
             if (dataToSend.inputData) {
                 this.result = result;
             }
