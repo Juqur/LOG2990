@@ -62,15 +62,6 @@ export class DifferenceDetectorService {
         differences.clusters = this.listDifferences();
         differences.isHard = this.isHard(differences.clusters.length);
 
-        const blob = new Blob([JSON.stringify(differences.clusters)], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        const url = window.URL.createObjectURL(blob);
-        a.href = url;
-        a.download = '7-rectnagles.json';
-        a.click();
-        window.URL.revokeObjectURL(url);
         return differences;
     }
 

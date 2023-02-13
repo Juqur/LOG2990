@@ -8,6 +8,7 @@ import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
+
 @Component({
     selector: 'app-creation',
     templateUrl: './creation.component.html',
@@ -187,8 +188,9 @@ export class CreationComponent implements OnInit {
         if (!this.defaultCanvasCtx || !this.diffCanvasCtx) return;
         this.nbDifferences = Constants.INIT_DIFF_NB;
 
-        const differences = this.diffService.detectDifferences(this.defaultCanvasCtx, this.diffCanvasCtx, this.radius);
-        if (!differences) {
+        this.differences = this.diffService.detectDifferences(this.defaultCanvasCtx, this.diffCanvasCtx, this.radius);
+        if (!this.differences) {
+            this.errorDialog('Veuillez fournir des images non vides');
             return;
         }
         this.nbDifferences = this.differences.clusters.length;
@@ -245,14 +247,14 @@ export class CreationComponent implements OnInit {
                 gameName = result;
                 this.savedLevel = {
                     id: Constants.INIT_DIFF_NB,
-                    image: this.defaultImageUrl,
+                    imageOriginal: '',
+                    imageDiff: '',
                     name: gameName,
                     playerSolo: [''],
                     timeSolo: Constants.timeSolo,
                     playerMulti: [''],
                     timeMulti: Constants.timeMulti,
                     isEasy: !this.differences?.isHard,
-                    route: '',
                 };
 
                 // TODO : Sauvegarder le jeu sur le serveur
