@@ -28,7 +28,6 @@ export class MouseService {
         }
         return false;
     }
-
     /**
      * This function should process the click and react accordingly.
      * The information on the click should be sent to the server in order to
@@ -46,8 +45,8 @@ export class MouseService {
             let differencesArray: number[] = [];
             this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
                 differencesArray = tempDifferencesArray;
+                console.log(differencesArray);
             });
-            console.log(differencesArray);
 
             if (differencesArray.length !== 0) {
                 // TODO Gérer la suppression de la différence.

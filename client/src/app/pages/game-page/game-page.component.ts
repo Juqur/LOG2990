@@ -1,11 +1,11 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { DrawService } from '@app/services/draw.service';
 // import { FlashDifferenceService } from '@app/services/flash-difference.service';
-import { area } from '@app/area';
-import { MouseService } from '@app/services/mouse.service';
 import { ActivatedRoute } from '@angular/router';
+import { area } from '@app/area';
 import { Level } from '@app/levels';
+import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -110,7 +110,7 @@ export class GamePageComponent implements OnInit {
                 });
                 this.foundADifference = true;
             } else {
-                console.log('did not find a difference');
+                // console.log('did not find a difference');
                 this.mouseService.changeClickState();
                 this.drawServiceDiff.context = this.diffPlayArea
                     .getCanvas()

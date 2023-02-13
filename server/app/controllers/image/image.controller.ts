@@ -1,8 +1,8 @@
+import { levels } from '@app/../assets/data/level';
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Controller, Get, Body, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
-import { levels } from '@app/../assets/data/level';
 
 @Controller('image')
 export class ImageController {
@@ -52,6 +52,8 @@ export class ImageController {
     })
     @Post('/difference')
     async findImageDifference(@Body() body: { differenceFile: string; position: number }) {
-        return this.imageService.findDifference(body.differenceFile, body.position);
+        const a = await this.imageService.findDifference(body.differenceFile, body.position);
+        console.log(a);
+        return a;
     }
 }
