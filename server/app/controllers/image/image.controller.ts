@@ -24,6 +24,10 @@ export class ImageController {
         return levels;
     }
 
+    @ApiOkResponse({
+        description: 'Returns data for a level',
+        type: Message,
+    })
     @Get('/:id')
     getSingleGameData(@Param('id') id: string): Level {
         const idNumber = Number(id);

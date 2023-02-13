@@ -32,8 +32,7 @@ export class GamePageComponent implements OnInit {
             this.levelId = params.id;
         });
 
-        this.communicationService.getLevel('/images/', this.levelId).subscribe((value) => {
-            window.alert(value);
+        this.communicationService.getLevel('/image/', this.levelId).subscribe((value) => {
             this.currentLevel = value;
         });
     }

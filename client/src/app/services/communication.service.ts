@@ -27,7 +27,6 @@ export class CommunicationService {
     }
 
     getLevel(path: string, levelId: number): Observable<Level> {
-        window.alert(`${this.baseUrl}api` + path + levelId);
         return this.http.get<Level>(`${this.baseUrl}api` + path + levelId);
     }
 
