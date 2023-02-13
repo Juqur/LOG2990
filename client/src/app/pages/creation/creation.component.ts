@@ -260,25 +260,33 @@ export class CreationComponent implements OnInit {
                 };
 
                 const formData = new FormData();
-                if (!this.defaultImageFile) {
+                if (!this.defaultImageFile || !this.differences) {
                     return;
                 }
                 formData.append('imageOriginal', this.defaultImageFile);
                 formData.append('imageDiff', this.diffImageFile);
                 formData.append('name', this.savedLevel.name);
                 formData.append('isEasy', this.savedLevel.isEasy.toString());
+                formData.append('clusters', JSON.stringify(this.differences.clusters));
 
                 // TODO : Sauvegarder le jeu sur le serveur
-                console.log({ formData });
                 this.communicationService.postLevel(formData).subscribe((data) => {
-                    console.log(data);
+                    if (data.title === 'error') {
+                        this.errorDialog(data.body);
+                        return;
+                    } else if (data.title === 'success') {
+                        const dialogData: DialogData = {
+                            textToSend: data.body,
+                            closeButtonMessage: 'Fermer',
+                        };
+                        this.popUpService.openDialog(dialogData, '/config');
+                    }
                 });
             });
         }
     }
 
     errorDialog(msg = 'Une erreur est survenue') {
-        // Ferme le popup si il est ouvert, pour éviter d'en avoir plusieurs ouverts en même temps
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();
         const errorDialogData: DialogData = {
             textToSend: msg,

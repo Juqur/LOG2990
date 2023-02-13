@@ -1,9 +1,9 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Controller, Get, Body, Post } from '@nestjs/common';
+import { Controller, Get, Body, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
-import { levels } from '@app/../assets/data/level';
-import { FormDataRequest } from 'nestjs-form-data';
+import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
 @Controller('image')
 export class ImageController {
@@ -20,8 +20,8 @@ export class ImageController {
         type: Message,
     })
     @Get('/')
-    getCardData() {
-        return levels;
+    async getCardData() {
+        return this.imageService.getLevels();
     }
 
     /**
@@ -57,8 +57,8 @@ export class ImageController {
     }
 
     @Post('/postLevel')
-    @FormDataRequest()
-    async writeLevelData(@Body() formData: unknown) {
+    @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
+    async writeLevelData(@Body() formData: unknown): Promise<Message> {
         return this.imageService.writeLevelData(formData);
     }
 }

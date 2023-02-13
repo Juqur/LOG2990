@@ -32,10 +32,12 @@ export class CommunicationService {
             .pipe(map((response) => response.body || []));
     }
 
-    postLevel(level: FormData): Observable<Level> {
+    postLevel(level: FormData): Observable<Message> {
         const headers = new HttpHeaders();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
-        return this.http.post<Level>(`${this.baseUrl}api/image/postLevel`, level, { headers }).pipe(catchError(this.handleError<Level>('basicPost')));
+        return this.http
+            .post<Message>(`${this.baseUrl}api/image/postLevel`, level, { headers })
+            .pipe(catchError(this.handleError<Message>('basicPost')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
