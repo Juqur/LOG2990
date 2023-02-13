@@ -25,13 +25,16 @@ export class GamePageComponent implements OnInit {
     defaultArea: boolean = true;
     diffArea: boolean = true;
 
-    constructor(private route: ActivatedRoute, private communicationService: CommunicationService, private gameService: GameServiceService) {}
+    constructor(private route: ActivatedRoute, private communicationService: CommunicationService) {}
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
             this.levelId = params.id;
         });
 
-        this.communicationService.get();
+        this.communicationService.getLevel('/images/', this.levelId).subscribe((value) => {
+            window.alert(value);
+            this.currentLevel = value;
+        });
     }
 }

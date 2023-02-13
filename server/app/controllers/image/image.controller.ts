@@ -1,8 +1,10 @@
+import { Level, levels } from '@app/../assets/data/level';
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Controller, Get, Body, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
-import { levels } from '@app/../assets/data/level';
+
+export interface DataResponse {}
 
 @Controller('image')
 export class ImageController {
@@ -18,9 +20,17 @@ export class ImageController {
         description: 'Returns the card data',
         type: Message,
     })
-    @Get('/')
     getCardData() {
         return levels;
+    }
+
+    @Get('/:id')
+    getSingleGameData(@Param('id') id: string): Level {
+        const idNumber = Number(id);
+        const correctLevel = levels.find((level) => {
+            return level.id === idNumber;
+        });
+        return correctLevel;
     }
 
     /**
