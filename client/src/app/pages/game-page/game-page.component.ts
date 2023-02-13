@@ -1,9 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { DrawService } from '@app/services/draw.service';
 // import { FlashDifferenceService } from '@app/services/flash-difference.service';
 import { area } from '@app/area';
 import { MouseService } from '@app/services/mouse.service';
+import { ActivatedRoute } from '@angular/router';
+import { Level } from '@app/levels';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -11,7 +13,7 @@ import { Constants } from '@common/constants';
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent {
+export class GamePageComponent implements OnInit {
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
 
@@ -21,6 +23,18 @@ export class GamePageComponent {
     diffImage: string = '../../../assets/test/image_7_diff.bmp';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
+    levelId: number;
+    currentLevel: Level; // doit recuperer du server
+    isClassicGamemode: boolean = true;
+    isMultiplayer: boolean = false;
+    nbDiff: number = Constants.INIT_DIFF_NB; // Il faudrait avoir cette info dans le level
+    hintPenalty = Constants.HINT_PENALTY;
+    nbHints: number = Constants.INIT_HINTS_NB;
+    imagesData: unknown[] = [];
+    defaultImgSrc = '';
+    diffImgSrc = '';
+    defaultArea: boolean = true;
+    diffArea: boolean = true;
     foundADifference = false;
 
     constructor(
@@ -28,7 +42,15 @@ export class GamePageComponent {
         private mouseService: MouseService,
         private readonly drawServiceDiff: DrawService,
         private readonly drawServiceOriginal: DrawService,
+        private route: ActivatedRoute,
     ) {}
+
+    ngOnInit(): void {
+        this.route.params.subscribe((params) => {
+            // recoit le bon id!!
+            this.levelId = params.id;
+        });
+    }
 
     async clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {

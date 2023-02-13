@@ -1,9 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatSliderModule } from '@angular/material/slider';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSliderModule } from '@angular/material/slider';
 import { CardComponent } from '@app/components/card/card.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
@@ -24,6 +24,7 @@ import { MessageBoxComponent } from './components/message-box/message-box.compon
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 import { ConfigurationComponent } from './pages/configuration/configuration.component';
 import { CreationComponent } from './pages/creation/creation.component';
+import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -51,6 +52,7 @@ import { CreationComponent } from './pages/creation/creation.component';
         CreationComponent,
         ScaleContainerComponent,
         CounterComponent,
+        PopUpDialogComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, MatSliderModule, FormsModule, HttpClientModule],
     providers: [],

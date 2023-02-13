@@ -58,6 +58,14 @@ export namespace Constants {
     export const SLIDER_DEFAULT = 1;
     export const BIG_DIFF_NB = 9;
     export const INIT_DIFF_NB = 0;
+    export const BMP_BPP_POS = 28;
+    export const BMP_BPP = 24;
+
+     // Game constants
+     export const INIT_COUNTDOWN_TIME = 30;
+     export const INIT_HINTS_NB = 3;
+     export const HINT_PENALTY = 5;
+     export const COUNTDOWN_TIME_WIN = 5; 
 
 }
 
