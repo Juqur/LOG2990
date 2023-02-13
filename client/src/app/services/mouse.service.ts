@@ -44,7 +44,7 @@ export class MouseService {
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
             let differencesArray: number[] = [];
-            this.communicationService.postDifference(url, '7-Rectangles', position).subscribe((tempDifferencesArray) => {
+            this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
                 differencesArray = tempDifferencesArray;
             });
 

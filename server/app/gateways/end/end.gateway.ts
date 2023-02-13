@@ -15,5 +15,7 @@ export class EndGateway {
     @SubscribeMessage(EndEvent.WonGame)
     message(socket: Socket, message: string) {
         this.logger.log(`Message reçu : ${message}`);
+        // TODO
+        // if we find all the differences send back message?
     }
 }

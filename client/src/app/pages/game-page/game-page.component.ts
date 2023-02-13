@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Level } from '@app/levels';
+import { CommunicationService } from '@app/services/communication.service';
+import { GameServiceService } from '@app/services/game-service.service';
 import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
+    providers: [GameServiceService],
 })
 export class GamePageComponent implements OnInit {
     levelId: number;
@@ -22,11 +25,13 @@ export class GamePageComponent implements OnInit {
     defaultArea: boolean = true;
     diffArea: boolean = true;
 
-    constructor(private route: ActivatedRoute) {}
+    constructor(private route: ActivatedRoute, private communicationService: CommunicationService, private gameService: GameServiceService) {}
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
             this.levelId = params.id;
         });
+
+        this.communicationService.get();
     }
 }
