@@ -58,6 +58,12 @@ export class CardComponent implements OnInit {
         }
     }
 
+    /**
+     * Opens a pop-up to ask the player to enter his name
+     * Then redirects to the game page with the right level id, and puts the player name as a query parameter
+     *
+     *
+     */
     playSolo(): void {
         const saveDialogData: DialogData = {
             textToSend: 'Veuillez entrer le nom du jeu',

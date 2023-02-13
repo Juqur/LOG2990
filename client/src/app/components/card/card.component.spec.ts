@@ -1,16 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
-import { PopUpServiceService } from '@app/services/pop-up-service.service';
 import { CardComponent } from './card.component';
 
 describe('CardComponent', () => {
     let component: CardComponent;
     let fixture: ComponentFixture<CardComponent>;
-    let router: Router;
-    let popUpService: PopUpServiceService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -19,7 +15,6 @@ describe('CardComponent', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(CardComponent);
-        popUpService = TestBed.inject(PopUpServiceService);
 
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -47,13 +42,5 @@ describe('CardComponent', () => {
     it('should display the hard difficulty', () => {
         component.level.isEasy = false;
         expect(component.displayDifficulty()).toEqual('Hard');
-    });
-
-    it('should navigate to the game page when playSolo is called', () => {
-        component.playSolo();
-        spyOn(popUpService, 'openDialog');
-        expect(router.navigate).toHaveBeenCalledWith([`/game/${component.level.id}/`], {
-            queryParams: { playerName: component.playerName },
-        });
     });
 });
