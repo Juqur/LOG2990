@@ -10,7 +10,7 @@ import { MouseService } from '@app/services/mouse.service';
 /**
  * Component acting as a display for the number of differences found in a game.
  *
- * @author Galen HU & Charles Degrandpré
+ * @author Galen Hu & Charles Degrandpré
  * @class CounterComponent
  */
 export class CounterComponent {

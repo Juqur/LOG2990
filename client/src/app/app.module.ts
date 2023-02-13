@@ -6,7 +6,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CardComponent } from '@app/components/card/card.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
@@ -38,7 +37,6 @@ import { CreationComponent } from './pages/creation/creation.component';
         MainPageComponent,
         MaterialPageComponent,
         PlayAreaComponent,
-        SidebarComponent,
         SelectionPageComponent,
         CardComponent,
         GameTimerComponent,

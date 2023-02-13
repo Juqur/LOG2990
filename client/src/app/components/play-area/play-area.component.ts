@@ -13,7 +13,7 @@ import { Constants } from '@common/constants';
 /**
  * This component represents one of the two canvas inside a game page.
  *
- * @author Simon Gagné & Galen HU & Charles Degrandpré
+ * @author Simon Gagné & Galen Hu & Charles Degrandpré
  * @class PlayAreaComponent
  */
 export class PlayAreaComponent implements AfterViewInit {

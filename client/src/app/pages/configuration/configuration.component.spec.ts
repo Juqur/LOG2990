@@ -29,7 +29,6 @@ describe('ConfigurationComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // Il devrait toujours exister une partie dans la base de donnée du serveur
     it('levels should not be empty', () => {
         expect(component.levels.length).toBeGreaterThan(0);
     });

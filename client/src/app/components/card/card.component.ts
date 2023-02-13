@@ -12,7 +12,7 @@ import { Constants } from '@common/constants';
  * Component that displays a preview
  * of a level and its difficulty
  *
- * @author Galen HU
+ * @author Galen Hu
  * @class CardComponent
  */
 export class CardComponent {

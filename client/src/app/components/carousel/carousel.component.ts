@@ -12,7 +12,7 @@ import { Constants } from '@common/constants';
  * Component that allows to display top 3 times
  * of a level in solo and multiPlayer mode one at a time
  *
- * @author Galen HU
+ * @author Galen Hu
  * @class CarouselComponent
  */
 export class CarouselComponent {
