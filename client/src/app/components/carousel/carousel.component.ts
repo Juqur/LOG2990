@@ -35,10 +35,10 @@ export class CarouselComponent {
     selectedButton: string = 'solo';
 
     /**
-     * Formats the time
+     * Formats the time to a MM:SS format.
      *
      * @param time the time to format
-     * @returns the formatted time
+     * @returns the time in MM:SS format.
      */
     formatTime(time: number): string {
         const minutes: number = Math.floor(time / Constants.secondsPerMinute);
@@ -50,7 +50,7 @@ export class CarouselComponent {
     }
 
     /**
-     * Change the button style when clicked
+     * Change the button from solo to multi
      *
      * @param button that is active
      */

@@ -9,19 +9,20 @@ import { Constants } from '@common/constants';
 })
 
 /**
- * Generate a chat message in the game-chat
+ * This component represents a message in the chat history.
  *
  * @author Charles Degrandpré
  * @class ChatMessageComponent
  */
 export class ChatMessageComponent implements OnInit {
-    @Input() message: Message = { sender: 'No name', text: 'No text', hourPosted: '00:00', playerId: -1 };
+    @Input() message: Message = { sender: 'No name', text: 'No text', playerId: -1 };
     @Input() index: number = Constants.minusOne;
 
     displayName: string;
 
     /**
-     * Limits the length of the name to Constants.maxNameLengthShown
+     * Limits the length of the name displayed to Constants.maxNameLengthShown. This has no impact
+     * on the length of the name saved.
      */
     formatNameLength() {
         if (this.message.sender.length > Constants.maxNameLength) {
@@ -31,32 +32,7 @@ export class ChatMessageComponent implements OnInit {
         }
     }
 
-    /**
-     * This series of 3 functions change the class
-     * of the sender name depending on the player
-     * and allows to display the message in different colors
-     * has to be changed to the "angular way"
-     *
-     * @returns the path difficulty image
-     */
-    createMessageComponent(): void {
-        if (this.message.playerId === 1) {
-            this.createMessageComponentPlayer1();
-        } else {
-            this.createMessageComponentPlayer2();
-        }
-    }
-
-    createMessageComponentPlayer1() {
-        document.getElementsByClassName('sender').item(this.index)?.classList.add('player1');
-    }
-
-    createMessageComponentPlayer2() {
-        document.getElementsByClassName('sender').item(this.index)?.classList.add('player2');
-    }
-
     ngOnInit(): void {
         this.formatNameLength();
-        this.createMessageComponent();
     }
 }

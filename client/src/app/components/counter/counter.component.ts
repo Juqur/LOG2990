@@ -8,7 +8,7 @@ import { MouseService } from '@app/services/mouse.service';
 })
 
 /**
- * Displays the number of differences found by the player.
+ * Component acting as a display for the number of differences found in a game.
  *
  * @author Galen HU & Charles Degrandpré
  * @class CounterComponent

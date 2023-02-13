@@ -37,8 +37,8 @@ export class CardComponent {
      *
      * @returns the path difficulty image
      */
-    displayDifficultyIcon(isEasy: boolean): string {
-        if (isEasy === true) {
+    displayDifficultyIcon(): string {
+        if (this.level.isEasy) {
             return '../../../assets/images/easy.png';
         } else {
             return '../../../assets/images/hard.png';
