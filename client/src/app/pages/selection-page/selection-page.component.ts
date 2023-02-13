@@ -49,7 +49,6 @@ export class SelectionPageComponent implements OnInit {
             this.levels = [];
             for (const level of data) {
                 this.levels.push(level);
-                console.log(level.imageOriginal);
             }
             this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
         });
