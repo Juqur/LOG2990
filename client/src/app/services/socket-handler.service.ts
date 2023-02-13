@@ -5,8 +5,6 @@ import { environment } from 'src/environments/environment';
 export enum Gateways {
     Timer = 'timer',
     Chat = 'chat',
-    End = 'end',
-    Game = 'game',
 }
 @Injectable({
     providedIn: 'root',
@@ -14,8 +12,6 @@ export enum Gateways {
 export class SocketHandler {
     socketTimer: Socket;
     socketChat: Socket;
-    socketEnd: Socket;
-    socketGame: Socket;
 
     isSocketAlive(type: Gateways) {
         switch (type) {
@@ -23,10 +19,6 @@ export class SocketHandler {
                 return this.socketTimer && this.socketTimer.connected;
             case Gateways.Chat:
                 return this.socketChat && this.socketChat.connected;
-            case Gateways.End:
-                return this.socketEnd && this.socketEnd.connected;
-            case Gateways.Game:
-                return this.socketGame && this.socketGame.connected;
         }
     }
 
@@ -37,12 +29,6 @@ export class SocketHandler {
                 break;
             case Gateways.Chat:
                 this.socketChat = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
-                break;
-            case Gateways.End:
-                this.socketEnd = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
-                break;
-            case Gateways.Game:
-                this.socketGame = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
                 break;
         }
     }
@@ -55,20 +41,12 @@ export class SocketHandler {
             case Gateways.Chat:
                 this.socketChat.disconnect();
                 break;
-            case Gateways.End:
-                this.socketEnd.disconnect();
-                break;
-            case Gateways.Game:
-                this.socketGame.disconnect();
-                break;
         }
     }
 
     disconnectAll() {
         this.socketChat.disconnect();
         this.socketTimer.disconnect();
-        this.socketEnd.disconnect();
-        this.socketGame.disconnect();
     }
 
     on<T>(event: string, action: (data: T) => void, type: Gateways): void {
@@ -78,12 +56,6 @@ export class SocketHandler {
                 break;
             case Gateways.Chat:
                 this.socketChat.on(event, action);
-                break;
-            case Gateways.End:
-                this.socketEnd.on(event, action);
-                break;
-            case Gateways.Game:
-                this.socketGame.on(event, action);
                 break;
         }
     }
@@ -102,20 +74,6 @@ export class SocketHandler {
                     this.socketChat.emit(event, data);
                 } else {
                     this.socketChat.emit(event);
-                }
-                break;
-            case Gateways.End:
-                if (data) {
-                    this.socketEnd.emit(event, data);
-                } else {
-                    this.socketEnd.emit(event);
-                }
-                break;
-            case Gateways.Game:
-                if (data) {
-                    this.socketGame.emit(event, data);
-                } else {
-                    this.socketGame.emit(event);
                 }
                 break;
         }
