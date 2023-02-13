@@ -1,9 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { Area } from '@app/area';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 // import { FlashDifferenceService } from '@app/services/flash-difference.service';
+import { area } from '@app/area';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
@@ -16,7 +15,7 @@ export class GamePageComponent {
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
 
-    area = [...Area];
+    area = [...area];
 
     originalImage: string = '../../../assets/un_regal.bmp';
     diffImage: string = '../../../assets/test/image_7_diff.bmp';
@@ -25,7 +24,7 @@ export class GamePageComponent {
     foundADifference = false;
 
     constructor(
-        private canvasShare: CanvasSharingService,
+        // private canvasShare: CanvasSharingService,
         private mouseService: MouseService,
         private readonly drawServiceDiff: DrawService,
         private readonly drawServiceOriginal: DrawService,
@@ -109,6 +108,7 @@ export class GamePageComponent {
         return rgba;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     copyArea(area: number[]) {
         let x = 0;
         let y = 0;
@@ -117,7 +117,7 @@ export class GamePageComponent {
             y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
 
             const rgba = this.pick(x, y);
-            const context = this.canvasShare.diffCanvasRef.getContext('2d', { willReadFrequently: true });
+            const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true });
             if (!context) {
                 return;
             }

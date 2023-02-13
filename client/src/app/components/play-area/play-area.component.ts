@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 // import { GamePageComponent } from '@app/pages/game-page/game-page.component';
-import { Area } from '@app/area';
+import { area } from '@app/area';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 import { Constants } from '@common/constants';
@@ -16,7 +16,7 @@ export class PlayAreaComponent implements AfterViewInit {
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
 
-    area = [...Area];
+    area = [...area];
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
@@ -103,6 +103,7 @@ export class PlayAreaComponent implements AfterViewInit {
      *
      * @param area the area to flash
      */
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     flashArea(area: number[]) {
         let x = 0;
         let y = 0;
