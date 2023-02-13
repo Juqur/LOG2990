@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CardComponent } from '@app/components/card/card.component';
+import { CarouselComponent } from '@app/components/carousel/carousel.component';
+import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { levels } from '@app/levels';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { Constants } from '@common/constants';
 import { ConfigurationComponent } from './configuration.component';
 
@@ -9,7 +14,8 @@ describe('ConfigurationComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ConfigurationComponent],
+            declarations: [ConfigurationComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
+            imports: [AppMaterialModule, BrowserAnimationsModule],
         }).compileComponents();
     });
 

@@ -1,0 +1,20 @@
+<ol>
+    <p>{{ data.textToSend }}</p>
+    <div *ngIf="data.inputData">
+        <input
+            id="pop-up-input"
+            [ngClass]="inputWasValid ? 'valid-input' : 'invalid-input'"
+            type="text"
+            (input)="submitText(input.value)"
+            [placeholder]="data.inputData.inputLabel"
+            #input
+        />
+    </div>
+    <div mat-dialog-actions align="end">
+        <button mat-button id="close-button" [disabled]="!inputWasValid" [mat-dialog-close]="this.inputValue">
+            {{ data.closeButtonMessage }}
+        </button>
+    </div>
+</ol>
+
+<!-- (click)="onCloseClick()" -->

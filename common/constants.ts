@@ -58,6 +58,8 @@ export namespace Constants {
     export const SLIDER_DEFAULT = 1;
     export const BIG_DIFF_NB = 9;
     export const INIT_DIFF_NB = 0;
+    export const BMP_BPP_POS = 28;
+    export const BMP_BPP = 24;
 
 }
 
