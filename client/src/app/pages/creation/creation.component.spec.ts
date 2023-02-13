@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
+/*import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';*/
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { MouseService } from '@app/services/mouse.service';
@@ -108,7 +108,6 @@ describe('CreationComponent', () => {
         expect(showDefaultSpy).toHaveBeenCalled();
         expect(showDiffSpy).toHaveBeenCalled();
     });
-
     it('showDefaultImage should show default image on canvas if the image format is correct', (done) => {
         component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
         canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
@@ -138,27 +137,85 @@ describe('CreationComponent', () => {
             expect(canvasSharingService.diffCanvasRef.height).toEqual(480);
             done();
         }, 1000);
-    });
+        it('defaultImageSelector shhould not call showDefaultImage if there is not file input', () => {
+            const showImgSpy = spyOn(component, 'showDefaultImage');
+            const event = { target: {} } as unknown as Event;
+            component.defaultImageSelector(event);
+            expect(showImgSpy).toHaveBeenCalledTimes(0);
+        });
+        it('diffImageSelector shhould not call showDiffImage if there is not file input', () => {
+            const showImgSpy = spyOn(component, 'showDiffImage');
+            const event = { target: {} } as unknown as Event;
+            component.diffImageSelector(event);
+            expect(showImgSpy).toHaveBeenCalledTimes(0);
+        });
+        it('bothImagesSelector shhould not call showDefaultImage or showDiffImage if there is not file input', () => {
+            const showDefaultSpy = spyOn(component, 'showDefaultImage');
+            const showDiffSpy = spyOn(component, 'showDiffImage');
+            const event = { target: {} } as unknown as Event;
+            component.bothImagesSelector(event);
+            expect(showDefaultSpy).toHaveBeenCalledTimes(0);
+            expect(showDiffSpy).toHaveBeenCalledTimes(0);
+        });
 
-    it('verifyImageFormat should return true if the image format is correct', (done) => {
-        const imageSrc = './assets/test/image_7_diff.bmp';
-        fetch(imageSrc)
-            .then(async (res) => res.blob())
-            .then((blob) => {
-                const goodFile = new File([blob], 'image_7_.bmp', { type: 'image/bmp' });
-                component.verifyImageFormat(goodFile).then((result) => {
-                    expect(result).toBe(true);
-                    done();
+        it('defaultImageSelector should not call showDefaultImage if the image format is incorrect', async () => {
+            const mockFile = new File([''], 'mock.mp4');
+            const mockFileInput = { target: { files: [mockFile] } } as unknown as Event;
+            const showImgSpy = spyOn(component, 'showDefaultImage');
+            spyOn(component, 'verifyImageFormat').and.returnValue(Promise.resolve(false));
+            component.defaultImageSelector(mockFileInput);
+            await Promise.resolve();
+            expect(showImgSpy).toHaveBeenCalledTimes(0);
+        });
+        it('diffImageSelector should not call showDiffImage if the image format is incorrect', async () => {
+            const mockFile = new File([''], 'mock.mp4');
+            const mockFileInput = { target: { files: [mockFile] } } as unknown as Event;
+            const showImgSpy = spyOn(component, 'showDiffImage');
+            spyOn(component, 'verifyImageFormat').and.returnValue(Promise.resolve(false));
+            component.diffImageSelector(mockFileInput);
+            await Promise.resolve();
+            expect(showImgSpy).toHaveBeenCalledTimes(0);
+        });
+        it('bothImagesSelector should not call showDefaultImage or showDiffImage if the image format is incorrect', async () => {
+            const mockFile = new File([''], 'mock.mp4');
+            const mockFileInput = { target: { files: [mockFile] } } as unknown as Event;
+            const showDefaultSpy = spyOn(component, 'showDefaultImage');
+            const showDiffSpy = spyOn(component, 'showDiffImage');
+            spyOn(component, 'verifyImageFormat').and.returnValue(Promise.resolve(false));
+            component.bothImagesSelector(mockFileInput);
+            await Promise.resolve();
+            expect(showDefaultSpy).toHaveBeenCalledTimes(0);
+            expect(showDiffSpy).toHaveBeenCalledTimes(0);
+        });
+
+        it('cleanSrc should empty the target value', () => {
+            const target = document.createElement('input');
+            target.value = 'mock';
+            const event = { target } as unknown as Event;
+            component.cleanSrc(event);
+            expect(target.value).toBe('');
+        });
+
+        it('verifyImageFormat should return true if the image format is correct', (done) => {
+            const imageSrc = './assets/test/image_7_diff.bmp';
+            fetch(imageSrc)
+                .then(async (res) => res.blob())
+                .then((blob) => {
+                    const goodFile = new File([blob], 'image_7_.bmp', { type: 'image/bmp' });
+                    component.verifyImageFormat(goodFile).then((result) => {
+                        expect(result).toBe(true);
+                        done();
+                    });
                 });
-            });
-    });
+        });
 
-    it('verifyImageFormat should return false if the image format is incorrect', (done) => {
-        const mockFile = new File([''], 'mock.mp4', { type: 'video/mp4' });
-        spyOn(component, 'errorDialog');
-        component.verifyImageFormat(mockFile).then((result) => {
-            expect(result).toBe(false);
-            done();
+        it('verifyImageFormat should return false if the image format is incorrect', (done) => {
+            const mockFile = new File([''], 'mock.mp4', { type: 'video/mp4' });
+            spyOn(component, 'errorDialog');
+            component.verifyImageFormat(mockFile).then((result) => {
+                expect(result).toBe(false);
+                done();
+            });
         });
     });
 });
