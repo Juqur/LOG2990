@@ -1,12 +1,11 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Controller, Get, Res, Body, Post } from '@nestjs/common';
+import { Controller, Get, Body, Post } from '@nestjs/common';
 import { StreamableFile } from '@nestjs/common/file-stream';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
-import { Response } from 'express';
 
 export interface Level {
-    imageOriginal: StreamableFile;
+    imageOriginal: string;
     imageDiff: string;
     name: string;
     playerSolo: string[];

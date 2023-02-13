@@ -1,5 +1,6 @@
 import { Constants } from '@common/constants';
 export interface Level {
+    id: number;
     imageOriginal: string;
     imageDiff: string;
     name: string;

@@ -19,8 +19,8 @@ import { join } from 'path';
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..', 'assets'),
-            serveRoot: '/assets',
+            rootPath: join(__dirname, '..', 'assets/images'),
+            serveRoot: '/images',
         }),
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
