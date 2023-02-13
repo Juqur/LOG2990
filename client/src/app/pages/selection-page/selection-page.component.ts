@@ -7,6 +7,13 @@ import { Constants } from '@common/constants';
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
+/**
+ * This component represents the selection page, it is the page where the user selects which game to play
+ * and in what game mode.
+ *
+ * @author Louis Félix St-Amour
+ * @class SelectionPageComponent
+ */
 export class SelectionPageComponent {
     page = 'selection';
     levels = [...levels];
@@ -17,25 +24,47 @@ export class SelectionPageComponent {
     lastPage = Math.round(levels.length / this.levelsPerPage - 1);
 
     levelToShow: Level[] = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+
+    /**
+     * Increments the current page and updates the levels on the screen
+     */
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
-        this.firstShownLevel = this.currentPage * this.levelsPerPage;
-        this.lastShownLevel = this.firstShownLevel + this.levelsPerPage;
-        this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+        this.updateLevels();
     }
 
+    /**
+     * Decrements the current page and updates the levels on the screen
+     */
     previousPage(): void {
         if (this.currentPage > 0) this.currentPage--;
+        this.updateLevels();
+    }
+
+    /**
+     * Updates the levels on the screen
+     */
+    updateLevels() {
         this.firstShownLevel = this.currentPage * this.levelsPerPage;
         this.lastShownLevel = this.firstShownLevel + this.levelsPerPage;
         this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     }
 
-    isBeginningOfList() {
+    /**
+     * Checks if we have reached the last page
+     *
+     * @returns a boolean indicating if we are on the last page
+     */
+    isBeginningOfList(): boolean {
         return this.currentPage <= 0;
     }
 
-    isEndOfList() {
+    /**
+     * Checks if we have reached the first page
+     *
+     * @returns a boolean indicating if we are on the first page
+     */
+    isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
     }
 }
