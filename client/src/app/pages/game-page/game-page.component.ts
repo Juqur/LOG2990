@@ -133,7 +133,9 @@ export class GamePageComponent implements OnInit {
     }
 
     pick(x: number, y: number): string {
-        const pixel = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true })?.getImageData(x, y, 1, 1);
+        const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        // const pixel = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true })?.getImageData(x, y, 1, 1);
+        const pixel = context.getImageData(x, y, 1, 1);
         if (!pixel) {
             return 'white';
         }
@@ -147,12 +149,13 @@ export class GamePageComponent implements OnInit {
     copyArea(area: number[]) {
         let x = 0;
         let y = 0;
-        const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         area.forEach((pixelData) => {
             x = (pixelData % this.originalPlayArea.width) / Constants.PIXEL_SIZE;
             y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
 
             const rgba = this.pick(x, y);
+            console.log(rgba);
             if (!context) {
                 return;
             }

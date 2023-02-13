@@ -89,6 +89,7 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             }
             const currentImage = new Image();
+            currentImage.crossOrigin = 'anonymous';
             currentImage.src = image;
             currentImage.onload = () => {
                 context.drawImage(currentImage, 0, 0, this.width, this.height);
