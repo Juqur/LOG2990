@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { CommunicationService } from '@app/services/communication.service';
 import { Constants, MouseButton } from '@common/constants';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -11,7 +12,7 @@ export class MouseService {
     private mousePosition: Vec2 = { x: 0, y: 0 };
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
-
+    // private arrayOfDifference: number[] = [];
     constructor(private communicationService: CommunicationService) {}
 
     /**
@@ -21,12 +22,12 @@ export class MouseService {
      * @param event the mouse event
      * @returns a boolean indicating if the click was valid.
      */
-    mouseHitDetect(event: MouseEvent, area: number[]): boolean {
+    mouseHitDetect(event: MouseEvent): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            return this.processClick(area);
+            return this.processClick();
         }
-        return false;
+        return Promise.resolve([]);
     }
 
     /**
@@ -36,35 +37,35 @@ export class MouseService {
      *
      * @returns a boolean indicating if the click was valid.
      */
-    processClick(area: number[]): boolean {
+    async processClick(): Promise<number[]> {
+        // let foundDifference: Promise<boolean> = Promise.resolve(false);
         if (this.getCanClick()) {
             const url = '/image/difference';
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
-            let differencesArray: number[] = [];
-            this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
-                differencesArray = tempDifferencesArray;
-            });
+            const differencesArray = await this.getDifferencesArray(url, position);
+            console.log('===');
             console.log(differencesArray);
+            console.log('===');
 
-            if (differencesArray.length !== 0) {
-                // TODO Gérer la suppression de la différence.
+            if (differencesArray.length > 0) {
+                this.incrementCounter();
+                return differencesArray;
             }
-            const testRes: Vec2[] = this.getTestVariable();
-            if (testRes.length > 0) {
-                // Simply to add a section of the canvas that we can use to test on.
-                if (area.length > 0) {
-                    this.incrementCounter();
-                    return true;
-                }
-            }
-            return false;
         }
-        return false;
+        return [];
     }
 
+    async getDifferencesArray(url: string, position: number) {
+        return await lastValueFrom(this.communicationService.postDifference(url, '7', position));
+    }
+
+    setProcess(differencesArray: number[]) {
+        // this.arrayOfDifference = differencesArray;
+        console.log(differencesArray);
+    }
     /**
      * Takes a mouse event in order to calculate the position of the mouse
      * and stores it inside tbe mousePosition variable.
@@ -116,9 +117,5 @@ export class MouseService {
      */
     getCanClick(): boolean {
         return this.canClick;
-    }
-
-    private getTestVariable(): Vec2[] {
-        return [{ x: 1, y: 2 }];
     }
 }
