@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Constants } from '@common/constants';
 
@@ -7,12 +7,14 @@ import { MouseService } from './mouse.service';
 describe('MouseService', () => {
     let service: MouseService;
     let mouseEvent: MouseEvent;
+    let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(MouseService);
+        httpMock = TestBed.inject(HttpTestingController);
         mouseEvent = {
             offsetX: 100,
             offsetY: 200,
@@ -21,6 +23,7 @@ describe('MouseService', () => {
     });
 
     it('should be created', () => {
+        console.log(httpMock);
         expect(service).toBeTruthy();
     });
 
