@@ -10,6 +10,12 @@ import { Constants } from '@common/constants';
     styleUrls: ['./play-area.component.scss'],
     providers: [DrawService],
 })
+/**
+ * This component represents one of the two canvas inside a game page.
+ *
+ * @author Simon Gagné & Galen HU & Charles Degrandpré
+ * @class PlayAreaComponent
+ */
 export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
@@ -24,27 +30,46 @@ export class PlayAreaComponent implements AfterViewInit {
         private readonly mouseService: MouseService,
     ) {}
 
+    /**
+     * Getter for the canvas width
+     */
     get width(): number {
         return this.canvasSize.x;
     }
 
+    /**
+     * Getter for the canvas height
+     */
     get height(): number {
         return this.canvasSize.y;
     }
 
+    /**
+     * This method listens for key presses and updates the buttonPressed attribute in
+     * consequences.
+     *
+     * @param event the keyboardEvent to process.
+     */
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
     }
 
+    /**
+     * Method called after the initial rendering.
+     */
     ngAfterViewInit(): void {
         this.drawPlayArea(this.image);
     }
 
     /**
      * The function in charge of receiving the click event.
-     * It is also the function in charge of giving the player a penality
+     * It is also the function in charge of giving the player a penalty
      * if he click on a pixel that wasn't a difference.
+     *
+     * If we clicked on a difference it will paint success on the canvas and error if we
+     * didn't click on a difference. For both the message will disappear after one second
+     * and in the case of error, it will also prevent further clicks during that time.
      *
      * @param event the mouse click event on the canvas we want to process.
      */
@@ -70,6 +95,8 @@ export class PlayAreaComponent implements AfterViewInit {
      * The function in charge of loading the image on the canvas.
      * It is also used to reload the image and erase any text or modifications we may
      * have added to it.
+     *
+     * @param image the image source
      */
     drawPlayArea(image: string) {
         if (this.canvas) {
