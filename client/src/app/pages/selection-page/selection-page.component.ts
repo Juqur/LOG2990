@@ -45,7 +45,7 @@ export class SelectionPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.communicationService.getLevels('/image/AllLevels').subscribe((value) => {
-            const data = value
+            const data = value;
             this.levels = [];
             for (const level of data) {
                 this.levels.push(level);

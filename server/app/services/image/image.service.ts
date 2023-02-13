@@ -28,7 +28,6 @@ export class ImageService {
         return Promise.all(promises);
     }
 
-    async getImages(): Promise<string[]> {}
 
     /**
      * Finds the difference between the original image and the modified image
