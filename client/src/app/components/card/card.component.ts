@@ -17,15 +17,15 @@ import { Constants } from '@common/constants';
  */
 export class CardComponent implements OnInit {
     @Input() level: Level = {
-        id: -1,
-        image: '',
-        name: '',
+        id: 0,
+        imageOriginal: '',
+        imageDiff: '',
+        name: 'no name',
         playerSolo: ['player 1', 'player 2', 'player 3'],
         timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
         playerMulti: ['player 1', 'player 2', 'player 3'],
         timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
         isEasy: true,
-        route: 'no route',
     };
 
     @Input() page: string = 'no page';

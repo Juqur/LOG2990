@@ -1,9 +1,9 @@
 <div *ngIf="level" class="card">
     <div class="title-container">
         <h2 class="level-name">{{ level.name }}</h2>
-    </div>
+    </div> 
     <div class="image-container">
-        <img src="{{ level.image }}" class="thumbnail" alt="{{ level.name }}" />
+        <img src="http://localhost:3000/originals/{{level.id}}.bmp" class="thumbnail" alt="{{ level.name }}" />
         <img src="{{ displayDifficultyIcon(level.isEasy) }}" alt="{{ difficulty }}" class="difficulty-icon" />
     </div>
     <div class="card-content">
@@ -13,12 +13,12 @@
         </div>
         <div class="card-action">
             <div class="action-button-container" *ngIf="page === 'selection'">
-                <button [routerLink]="['/game', level.id]" mat-raised-button class="action-button">Play</button>
-                <button mat-raised-button class="action-button">Create</button>
+                <button [routerLink]="['/game', level.id]" mat-raised-button class="action-button">Jouer</button>
+                <button mat-raised-button class="action-button">Créer</button>
             </div>
             <div class="action-button-container" *ngIf="page === 'configuration'">
-                <button mat-raised-button class="action-button reinitiate-button">Reinitiate</button>
-                <button mat-raised-button class="action-button delete-button">Delete</button>
+                <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
+                <button mat-raised-button class="action-button delete-button">Effacer</button>
             </div>
         </div>
     </div>
