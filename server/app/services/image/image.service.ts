@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
 @Injectable()
 export class ImageService {
-    readonly pathDifference: string = '../server/assets/differences/';
+    readonly pathDifference: string = '../server/assets/images/differences/';
 
     foundDifferences: number[] = [];
 
