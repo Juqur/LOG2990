@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { Constants } from '@common/constants';
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 import { MouseService } from './mouse.service';
 
@@ -102,8 +102,7 @@ describe('MouseService', () => {
     });
 
     it('The dialog for end of game should be called if we receive an array of difference containing [-1]', () => {
-        spyOn(service['communicationService'], 'postDifference').and.returnValue([Constants.minusOne] as unknown as Observable<number[]>);
-
+        spyOn(service['communicationService'], 'postDifference').and.returnValue(of([Constants.minusOne]));
         spyOn(service, 'getCanClick').and.returnValue(true);
         service['mousePosition'] = { x: Constants.fifty, y: Constants.fifty };
         const spy = spyOn(service.popUpService, 'openDialog');
