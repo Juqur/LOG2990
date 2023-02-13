@@ -25,11 +25,16 @@ export class CreationComponent implements OnInit {
     modifiedArea: PlayAreaComponent | null = null;
     defaultCanvasCtx: CanvasRenderingContext2D | null = null;
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
-    
+
     url = '';
     msg = '';
 
-    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService, private diffService: DifferenceDetectorService,public popUpService: PopUpServiceService) {}
+    constructor(
+        private canvasShare: CanvasSharingService,
+        private mouseService: MouseService,
+        private diffService: DifferenceDetectorService,
+        public popUpService: PopUpServiceService,
+    ) {}
 
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
@@ -113,7 +118,7 @@ export class CreationComponent implements OnInit {
         const image2 = new Image();
         image2.src = URL.createObjectURL(this.diffImageFile);
         image2.onload = () => {
-            if (!this.diffCanvasCtx) {	
+            if (!this.diffCanvasCtx) {
                 this.errorDialog('aucun canvas de différence');
                 return;
             }
@@ -181,9 +186,6 @@ export class CreationComponent implements OnInit {
 
         // Mets le dans le popup quand ce sera possible
         this.url = differences.canvas.canvas.toDataURL();
-        const message = 'Nombre de différences : ' + this.nbDifferences + '\
-        Image de différence :'
-        console.log(message);
         const canvasDialogData: DialogData = {
             textToSend: 'Image de différence (contient ' + this.nbDifferences + ' différences) :',
             imgSrc: this.url,
@@ -199,7 +201,7 @@ export class CreationComponent implements OnInit {
         if (this.isSaveable) {
             let gameName = '';
             // Ouvre un popup qui demande à l'utilisateur de nommer le jeu
-            
+
             const saveDialogData: DialogData = {
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
@@ -209,14 +211,14 @@ export class CreationComponent implements OnInit {
                         //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
                         if (value.length < Constants.ten) {
                             return true;
-                        } 
+                        }
                         return false;
                     },
                     returnValue: gameName,
                 },
                 closeButtonMessage: 'Sauvegarder',
             };
-            
+
             this.popUpService.openDialog(saveDialogData);
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 gameName = result;
@@ -234,5 +236,4 @@ export class CreationComponent implements OnInit {
         };
         this.popUpService.openDialog(errorDialogData);
     }
-
 }
