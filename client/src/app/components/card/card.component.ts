@@ -25,7 +25,7 @@ export class CardComponent implements OnInit {
         playerMulti: ['player 1', 'player 2', 'player 3'],
         timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
         isEasy: true,
-        route: 'no route',
+        route: '',
     };
 
     @Input() page: string = 'no page';
