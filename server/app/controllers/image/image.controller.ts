@@ -2,7 +2,7 @@ import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
 import { Controller, Get, Body, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
-import { levels } from '@app/../assets/data/level';
+import { levels } from 'assets/data/level';
 
 @Controller('image')
 export class ImageController {
