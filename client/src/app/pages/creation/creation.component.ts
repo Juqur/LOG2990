@@ -247,14 +247,14 @@ export class CreationComponent implements OnInit {
                 gameName = result;
                 this.savedLevel = {
                     id: Constants.INIT_DIFF_NB,
-                    image: this.defaultImageUrl,
+                    imageOriginal: '',
+                    imageDiff: '',
                     name: gameName,
                     playerSolo: [''],
                     timeSolo: Constants.timeSolo,
                     playerMulti: [''],
                     timeMulti: Constants.timeMulti,
                     isEasy: !this.differences?.isHard,
-                    route: '',
                 };
 
                 // TODO : Sauvegarder le jeu sur le serveur

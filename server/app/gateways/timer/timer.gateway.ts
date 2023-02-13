@@ -15,7 +15,7 @@ export class TimerGateway implements OnGatewayDisconnect {
 
     @SubscribeMessage(TimerEvents.SoloClassic)
     message(socket: Socket, message: string) {
-        this.logger.log(`Message reçu : ${message}`);
+        this.logger.log(`Message reçu! : ${message}`);
         this.timeMap.set(socket.id, 0);
 
         const interval = setInterval(() => {
