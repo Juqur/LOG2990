@@ -52,7 +52,7 @@ export class GamePageComponent implements OnInit {
         });
     }
 
-    async clickedOnOriginal(event: MouseEvent) {
+    clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
             const diffDetected = this.mouseService.mouseHitDetect(event, this.area[0].area);
             if (diffDetected) {
@@ -78,7 +78,7 @@ export class GamePageComponent implements OnInit {
         }
     }
 
-    async clickedOnDiff(event: MouseEvent) {
+    clickedOnDiff(event: MouseEvent) {
         const myPromise = new Promise((resolve) => {
             // Do some asynchronous work
             setTimeout(() => {
@@ -89,14 +89,21 @@ export class GamePageComponent implements OnInit {
         if (this.mouseService.getCanClick()) {
             const diffDetected = this.mouseService.mouseHitDetect(event, this.area[0].area);
             if (diffDetected) {
+                console.log('found a difference');
                 this.mouseService.changeClickState();
-                this.diffPlayArea.flashArea(this.area[0].area);
-                this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.mouseService.changeClickState();
-                    this.copyArea(this.area[0].area);
+                // this.diffPlayArea.flashArea(this.area[0].area);
+                myPromise.then(() => {
+                    setTimeout(() => {
+                        if (this.foundADifference) {
+                            console.log('here');
+                            this.mouseService.changeClickState();
+                            this.copyArea(this.area[0].area);
+                        }
+                    }, Constants.twenty);
                 });
                 this.foundADifference = true;
             } else {
+                console.log('did not find a difference');
                 this.mouseService.changeClickState();
                 this.drawServiceDiff.context = this.diffPlayArea
                     .getCanvas()
@@ -134,12 +141,12 @@ export class GamePageComponent implements OnInit {
     copyArea(area: number[]) {
         let x = 0;
         let y = 0;
+        const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         area.forEach((pixelData) => {
             x = (pixelData % this.originalPlayArea.width) / Constants.PIXEL_SIZE;
             y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
 
             const rgba = this.pick(x, y);
-            const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true });
             if (!context) {
                 return;
             }

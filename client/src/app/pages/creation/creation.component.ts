@@ -5,11 +5,7 @@ import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
-<<<<<<< HEAD
-=======
-import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
->>>>>>> master
 import { Constants } from '@common/constants';
 
 @Component({
@@ -36,17 +32,12 @@ export class CreationComponent implements OnInit {
     msg = '';
     savedLevel: Level;
 
-<<<<<<< HEAD
-    constructor(private canvasShare: CanvasSharingService) {}
-=======
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
-        private mouseService: MouseService,
         private diffService: DifferenceDetectorService,
         public popUpService: PopUpServiceService,
     ) {}
->>>>>>> master
 
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
