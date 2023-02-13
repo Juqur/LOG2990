@@ -259,18 +259,18 @@ export class CreationComponent implements OnInit {
                     isEasy: !this.differences?.isHard,
                 };
 
-                const formdata = new FormData();
+                const formData = new FormData();
                 if (!this.defaultImageFile) {
                     return;
                 }
-                formdata.append('imageOriginal', this.defaultImageFile);
-                formdata.append('imageDiff', this.diffImageFile);
-                formdata.append('name', this.savedLevel.name);
-                formdata.append('isEasy', this.savedLevel.isEasy.toString());
+                formData.append('imageOriginal', this.defaultImageFile);
+                formData.append('imageDiff', this.diffImageFile);
+                formData.append('name', this.savedLevel.name);
+                formData.append('isEasy', this.savedLevel.isEasy.toString());
 
                 // TODO : Sauvegarder le jeu sur le serveur
-                console.log({ formdata });
-                this.communicationService.postLevel(formdata).subscribe((data) => {
+                console.log({ formData });
+                this.communicationService.postLevel(formData).subscribe((data) => {
                     console.log(data);
                 });
             });

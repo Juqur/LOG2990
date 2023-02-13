@@ -12,9 +12,11 @@ import { ImageController } from './controllers/image/image.controller';
 import { ImageService } from './services/image/image.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 
 @Module({
     imports: [
+        NestjsFormDataModule,
         ConfigModule.forRoot({ isGlobal: true }),
         ServeStaticModule.forRoot({
             rootPath: join('assets/images'),

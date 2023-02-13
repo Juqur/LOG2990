@@ -1,10 +1,12 @@
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
-import { Level } from 'assets/data/level';
-import { promises as fs } from 'fs';
+import { promises as fsp } from 'fs';
+import * as fs from 'fs';
+import { levels } from 'assets/data/level';
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
+    readonly pathData: string = '../server/assets/data/';
 
     foundDifferences: number[] = [];
 
@@ -17,10 +19,9 @@ export class ImageService {
      * @returns the array of pixels that are different if there is a difference
      */
     async findDifference(fileName: string, position: number): Promise<number[]> {
-        const promises = await fs.readFile(this.pathDifference + fileName + '.json', 'utf8');
+        const promises = await fsp.readFile(this.pathDifference + fileName + '.json', 'utf8');
         const allDifferences = JSON.parse(promises.toString()) as number[][];
         // const foundDifferences: number[] = [];
-
         const foundDifferenceArray = allDifferences.find((differenceRow, index) => {
             if (differenceRow.indexOf(position) !== Constants.minusOne) {
                 if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
@@ -38,8 +39,10 @@ export class ImageService {
         return foundDifferenceArray;
     }
 
-    writeLevelData(level: Level) {
-        console.log(JSON.stringify(level));
+    writeLevelData(level: unknown) {
+        const id = levels.length + 1;
+        console.log(id);
         return level;
     }
+
 }

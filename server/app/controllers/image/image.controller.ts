@@ -2,7 +2,8 @@ import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
 import { Controller, Get, Body, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
-import { Level, levels } from '@app/../assets/data/level';
+import { levels } from '@app/../assets/data/level';
+import { FormDataRequest } from 'nestjs-form-data';
 
 @Controller('image')
 export class ImageController {
@@ -56,7 +57,8 @@ export class ImageController {
     }
 
     @Post('/postLevel')
-    async writeLevelData(@Body() body: { level: Level }) {
-        return this.imageService.writeLevelData(body.level);
+    @FormDataRequest()
+    async writeLevelData(@Body() formData: unknown) {
+        return this.imageService.writeLevelData(formData);
     }
 }

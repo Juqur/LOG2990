@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Level } from '@app/levels';
 import { Message } from '@common/message';
@@ -33,7 +33,9 @@ export class CommunicationService {
     }
 
     postLevel(level: FormData): Observable<Level> {
-        return this.http.post<Level>(`${this.baseUrl}api/image/postLevel`, level).pipe(catchError(this.handleError<Level>('basicPost')));
+        const headers = new HttpHeaders();
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        return this.http.post<Level>(`${this.baseUrl}api/image/postLevel`, level, { headers }).pipe(catchError(this.handleError<Level>('basicPost')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
