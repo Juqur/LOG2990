@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Difference } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
@@ -7,7 +8,6 @@ import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
-import { Difference } from '@app/classes/difference';
 
 @Component({
     selector: 'app-creation',
@@ -33,6 +33,7 @@ export class CreationComponent implements OnInit {
     msg = '';
     savedLevel: Level;
 
+    // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
         private mouseService: MouseService,
@@ -174,9 +175,7 @@ export class CreationComponent implements OnInit {
     }
     resetDiff() {
         this.reinitGame();
-        this.canvasShare.diffCanvasRef
-            .getContext('2d')
-            ?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, this.canvasShare.diffCanvasRef.height);
+        this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, this.canvasShare.diffCanvasRef.height);
     }
 
     sliderChange(value: number) {
@@ -236,9 +235,9 @@ export class CreationComponent implements OnInit {
                 closeButtonMessage: 'Sauvegarder',
             };
             if (!this.diffImageFile) {
-            this.errorDialog('aucun fichier de différence');
-            return;
-        }
+                this.errorDialog('aucun fichier de différence');
+                return;
+            }
             this.popUpService.openDialog(saveDialogData);
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 if (!this.diffImageFile) {
@@ -257,7 +256,7 @@ export class CreationComponent implements OnInit {
                     isEasy: !this.differences?.isHard,
                     route: '',
                 };
-                
+
                 // TODO : Sauvegarder le jeu sur le serveur
             });
         }
