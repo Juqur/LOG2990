@@ -9,7 +9,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
  * This component is a wrapper to pose on the pages to format the display of elements in a uniform manner.
  *
  * @author Pierre Tran
- * @class PopUpDialogComponent
+ * @class ScaleContainerComponent
  */
 export class ScaleContainerComponent implements OnInit {
     @ViewChild('screen', { static: true }) screen: ElementRef;
