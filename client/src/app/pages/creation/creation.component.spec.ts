@@ -15,7 +15,7 @@ describe('CreationComponent', () => {
     let component: CreationComponent;
 
     // Nécessaire pour des futurs tests
-    // let canvasSharingService: CanvasSharingService;
+    let canvasSharingService: CanvasSharingService;
     // let popUpService: PopUpServiceService;
     let fixture: ComponentFixture<CreationComponent>;
     let mouseServiceSpy: SpyObj<MouseService>;
@@ -34,7 +34,7 @@ describe('CreationComponent', () => {
         fixture = TestBed.createComponent(CreationComponent);
 
         // Nécessaire pour des futurs tests
-        // canvasSharingService = TestBed.inject(CanvasSharingService);
+        canvasSharingService = TestBed.inject(CanvasSharingService);
         // popUpService = TestBed.inject(PopUpServiceService);
         component = fixture.componentInstance;
         fixture.detectChanges();
