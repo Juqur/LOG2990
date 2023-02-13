@@ -13,12 +13,12 @@
         </div>
         <div class="card-action">
             <div class="action-button-container" *ngIf="page === 'selection'">
-                <button [routerLink]="['/game', level.id]" mat-raised-button class="action-button">Play</button>
-                <button mat-raised-button class="action-button">Create</button>
+                <button [routerLink]="['/game', level.id]" mat-raised-button class="action-button">Jouer</button>
+                <button mat-raised-button class="action-button">Créer</button>
             </div>
             <div class="action-button-container" *ngIf="page === 'configuration'">
-                <button mat-raised-button class="action-button reinitiate-button">Reinitiate</button>
-                <button mat-raised-button class="action-button delete-button">Delete</button>
+                <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
+                <button mat-raised-button class="action-button delete-button">Effacer</button>
             </div>
         </div>
     </div>
