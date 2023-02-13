@@ -11,16 +11,28 @@
     justify-content: flex-end;
     align-items: flex-end;
     color: #ffffff;
+    font-size: 150%;
 }
 
 #diff-counter .diff-self{
     font-weight: normal;
+    margin-left: 10px;
+    margin-right: 10px;
     color: #3ab138;
 }
 
 #diff-counter .diff-friend{
     font-weight: normal;
+    margin-left: 10px;
+    margin-right: 10px;
     color: #F63B3B;
+}
+
+.player-counter {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 #top-area {
@@ -70,6 +82,7 @@ app-game-timer{
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+    font-size: 150%;
 }
 
 #between-images p {
@@ -126,10 +139,12 @@ app-game-timer{
 }
 
 .info-question {
+    font-size: 150%;
     font-weight: bold;
     color: #eaac8b;
 }
 
 .info-answer {
+    font-size: 150%;
     color: #ffffff;
 }
