@@ -8,6 +8,7 @@ import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
+import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
     selector: 'app-creation',
@@ -39,6 +40,7 @@ export class CreationComponent implements OnInit {
         private mouseService: MouseService,
         private diffService: DifferenceDetectorService,
         public popUpService: PopUpServiceService,
+        private communicationService: CommunicationService,
     ) {}
 
     ngOnInit(): void {
@@ -246,18 +248,31 @@ export class CreationComponent implements OnInit {
                 }
                 gameName = result;
                 this.savedLevel = {
-                    id: Constants.INIT_DIFF_NB,
+                    id: 0,
                     imageOriginal: '',
                     imageDiff: '',
                     name: gameName,
-                    playerSolo: [''],
-                    timeSolo: Constants.timeSolo,
-                    playerMulti: [''],
-                    timeMulti: Constants.timeMulti,
+                    playerSolo: [],
+                    timeSolo: [],
+                    playerMulti: [],
+                    timeMulti: [],
                     isEasy: !this.differences?.isHard,
                 };
 
+                const formdata = new FormData();
+                if (!this.defaultImageFile) {
+                    return;
+                }
+                formdata.append('imageOriginal', this.defaultImageFile);
+                formdata.append('imageDiff', this.diffImageFile);
+                formdata.append('name', this.savedLevel.name);
+                formdata.append('isEasy', this.savedLevel.isEasy.toString());
+
                 // TODO : Sauvegarder le jeu sur le serveur
+                console.log({ formdata });
+                this.communicationService.postLevel(formdata).subscribe((data) => {
+                    console.log(data);
+                });
             });
         }
     }

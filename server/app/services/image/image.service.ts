@@ -1,5 +1,6 @@
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
+import { Level } from 'assets/data/level';
 import { promises as fs } from 'fs';
 @Injectable()
 export class ImageService {
@@ -35,5 +36,10 @@ export class ImageService {
         // Iterates through the 2 dimension array to compare each pixel with the position
         // of the clicked pixel and returns the array of pixels that are different
         return foundDifferenceArray;
+    }
+
+    writeLevelData(level: Level) {
+        console.log(JSON.stringify(level));
+        return level;
     }
 }

@@ -26,10 +26,14 @@ export class CommunicationService {
         return this.http.get(`${this.baseUrl}api` + path);
     }
 
-    postDifference(path: string, differenceFile: string, position: number): Observable<number[]> {
+    postDifference(differenceFile: string, position: number): Observable<number[]> {
         return this.http
-            .post<number[]>(`${this.baseUrl}api` + path, { differenceFile, position }, { observe: 'response', responseType: 'json' })
+            .post<number[]>(`${this.baseUrl}api/image/difference`, { differenceFile, position }, { observe: 'response', responseType: 'json' })
             .pipe(map((response) => response.body || []));
+    }
+
+    postLevel(level: FormData): Observable<Level> {
+        return this.http.post<Level>(`${this.baseUrl}api/image/postLevel`, level).pipe(catchError(this.handleError<Level>('basicPost')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
