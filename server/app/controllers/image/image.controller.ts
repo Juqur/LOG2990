@@ -4,8 +4,6 @@ import { ImageService } from '@app/services/image/image.service';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 
-export interface DataResponse {}
-
 @Controller('image')
 export class ImageController {
     constructor(private readonly imageService: ImageService) {}

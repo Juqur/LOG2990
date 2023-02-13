@@ -24,6 +24,7 @@ export class GamePageComponent implements OnInit {
     diffImgSrc = '';
     defaultArea: boolean = true;
     diffArea: boolean = true;
+    closePath: string = '/selection';
 
     constructor(private route: ActivatedRoute, private communicationService: CommunicationService) {}
     ngOnInit(): void {

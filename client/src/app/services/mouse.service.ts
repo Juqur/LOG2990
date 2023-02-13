@@ -2,17 +2,24 @@ import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { CommunicationService } from '@app/services/communication.service';
 import { Constants, MouseButton } from '@common/constants';
+import { DialogData, PopUpServiceService } from './pop-up-service.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MouseService {
+    winGameDialogData: DialogData = {
+        textToSend: 'Vous avez gagnez!',
+        closeButtonMessage: 'Retour au menu de sélection',
+    };
+    closePath: string = '/selection';
+
     private differenceCounter: number = 0;
     private mousePosition: Vec2 = { x: 0, y: 0 };
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
 
-    constructor(private communicationService: CommunicationService) {}
+    constructor(private communicationService: CommunicationService, public popUpService: PopUpServiceService) {}
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
@@ -49,6 +56,9 @@ export class MouseService {
             });
 
             if (differencesArray.length !== 0) {
+                if (differencesArray[0] === Constants.minusOne) {
+                    this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+                }
                 // TODO Gérer la suppression de la différence.
             }
             const testRes: Vec2[] = this.getTestVariable();
