@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImageController } from './image.controller';
+import { ImageService } from './../../../app/services/image/image.service';
 
 describe('ImageController', () => {
     let controller: ImageController;
@@ -7,8 +8,8 @@ describe('ImageController', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ImageController],
+            providers: [ImageService],
         }).compile();
-
         controller = module.get<ImageController>(ImageController);
     });
 

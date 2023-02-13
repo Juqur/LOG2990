@@ -43,8 +43,8 @@ export class ConfigurationComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.communicationService.get('/image').subscribe((value) => {
-            const data = value as Level[];
+        this.communicationService.getLevels('/image/AllLevels').subscribe((value) => {
+            const data = value;
             this.levels = [];
             for (const level of data) {
                 this.levels.push(level);

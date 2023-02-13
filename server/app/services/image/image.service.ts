@@ -1,33 +1,12 @@
 import { Constants } from '@common/constants';
-import { Level } from '@app/controllers/image/image.controller';
 import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
-
 @Injectable()
 export class ImageService {
     readonly pathData: string = '../server/assets/data/';
     readonly pathDifference: string = '../server/assets/differences/';
-    readonly pathImage: string = '../server/assets/images/';
 
     foundDifferences: number[] = [];
-
-    /**
-     * Gets the card data from the json files
-     *
-     * @returns the array of card data
-     */
-    async getCardData(): Promise<Level[]> {
-        const files = await fs.readdir(this.pathData);
-        const jsonFiles = files.filter((file) => file.endsWith('.json'));
-
-        const promises = jsonFiles.map(async (file) => {
-            const fileContents = await fs.readFile(this.pathData + file, 'utf8');
-            const data = JSON.parse(fileContents);
-            return data;
-        });
-        return Promise.all(promises);
-    }
-
 
     /**
      * Finds the difference between the original image and the modified image
@@ -48,7 +27,6 @@ export class ImageService {
                     return false;
                 } else {
                     this.foundDifferences.push(index);
-                    console.log(this.foundDifferences);
                     return true;
                 }
             }

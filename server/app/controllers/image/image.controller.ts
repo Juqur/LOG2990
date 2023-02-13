@@ -1,19 +1,9 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
 import { Controller, Get, Body, Post } from '@nestjs/common';
-import { StreamableFile } from '@nestjs/common/file-stream';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
-
-export interface Level {
-    imageOriginal: string;
-    imageDiff: string;
-    name: string;
-    playerSolo: string[];
-    timeSolo: number[];
-    playerMulti: string[];
-    timeMulti: number[];
-    isEasy: boolean;
-}
+// eslint-disable-next-line no-restricted-imports
+import { levels } from '../../../assets/data/level';
 
 @Controller('image')
 export class ImageController {
@@ -30,8 +20,8 @@ export class ImageController {
         type: Message,
     })
     @Get('/')
-    async getCardData() {
-        return this.imageService.getCardData();
+    getCardData() {
+        return levels;
     }
 
     /**
