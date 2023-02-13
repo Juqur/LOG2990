@@ -19,8 +19,8 @@ export class GamePageComponent implements OnInit {
 
     area = [...area];
 
-    originalImage: string = '../../../assets/un_regal.bmp';
-    diffImage: string = '../../../assets/test/image_7_diff.bmp';
+    originalImageSrc: string = '';
+    diffImageSrc: string = '';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
     levelId: number;
@@ -31,8 +31,8 @@ export class GamePageComponent implements OnInit {
     hintPenalty = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     imagesData: unknown[] = [];
-    defaultImgSrc = '';
-    diffImgSrc = '';
+    // defaultImgSrc = '';
+    // diffImgSrc = '';
     defaultArea: boolean = true;
     diffArea: boolean = true;
     foundADifference = false;
@@ -50,6 +50,12 @@ export class GamePageComponent implements OnInit {
             // recoit le bon id!!
             this.levelId = params.id;
         });
+        try {
+            this.originalImageSrc = 'http://localhost:3000/originals/7.bmp';
+            this.diffImageSrc = 'http://localhost:3000/modifiees/7.bmp';
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     clickedOnOriginal(event: MouseEvent) {
@@ -60,7 +66,7 @@ export class GamePageComponent implements OnInit {
                 this.originalPlayArea.flashArea(this.area[0].area);
                 this.mouseService.changeClickState();
                 this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.originalPlayArea.drawPlayArea(this.originalImage);
+                    this.originalPlayArea.drawPlayArea(this.originalImageSrc);
                     this.mouseService.changeClickState();
                 });
                 this.foundADifference = true;
@@ -72,7 +78,7 @@ export class GamePageComponent implements OnInit {
                 this.mouseService.changeClickState();
                 this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
                     this.mouseService.changeClickState();
-                    this.originalPlayArea.drawPlayArea(this.originalImage);
+                    this.originalPlayArea.drawPlayArea(this.originalImageSrc);
                 });
             }
         }
@@ -87,9 +93,9 @@ export class GamePageComponent implements OnInit {
         });
 
         if (this.mouseService.getCanClick()) {
-            const diffDetected = this.mouseService.mouseHitDetect(event, this.area[0].area);
+            const diffDetected = this.mouseService.mouseHitDetect(event, []);
             if (diffDetected) {
-                console.log('found a difference');
+                // console.log('found a difference');
                 this.mouseService.changeClickState();
                 // this.diffPlayArea.flashArea(this.area[0].area);
                 myPromise.then(() => {
@@ -112,12 +118,12 @@ export class GamePageComponent implements OnInit {
 
                 myPromise
                     .then(() => {
-                        this.diffPlayArea.drawPlayArea(this.diffImage);
+                        this.diffPlayArea.drawPlayArea(this.diffImageSrc);
                     })
                     .then(() => {
                         setTimeout(() => {
+                            this.mouseService.changeClickState();
                             if (this.foundADifference) {
-                                this.mouseService.changeClickState();
                                 this.copyArea(this.area[0].area);
                             }
                         }, Constants.twenty);
