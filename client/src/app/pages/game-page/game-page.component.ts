@@ -1,9 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
-import { Area } from '@app/area';
 // import { FlashDifferenceService } from '@app/services/flash-difference.service';
+import { area } from '@app/area';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
@@ -13,94 +12,112 @@ import { Constants } from '@common/constants';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent {
-    constructor(
-        private canvasShare: CanvasSharingService,
-        private mouseService: MouseService,
-        private readonly drawServiceDiff: DrawService,
-        private readonly drawServiceOriginal: DrawService,
-    ) {}
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
 
-    area = [...Area];
+    area = [...area];
 
-    originalCanvasCtx: CanvasRenderingContext2D | null = null;
+    originalImage: string = '../../../assets/un_regal.bmp';
+    diffImage: string = '../../../assets/test/image_7_diff.bmp';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
     foundADifference = false;
 
-    clickedOnOriginal(event: MouseEvent) {
-        console.log('clicked on original');
-        if (this.mouseService.mouseHitDetect(event)) {
-            this.originalPlayArea.flashArea(this.area[0].area);
-            this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-                this.originalPlayArea.drawPlayArea('../../../assets/un_regal.bmp');
-            });
-            this.foundADifference = true;
-        } else {
-            this.drawServiceOriginal.context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D;
-            this.drawServiceOriginal.drawError(this.mouseService);
-            this.originalPlayArea
-                .timeout(Constants.millisecondsInOneSecond)
-                .then(() => {})
-                .then(() => {
-                    this.originalPlayArea.drawPlayArea('../../../assets/un_regal.bmp');
+    constructor(
+        // private canvasShare: CanvasSharingService,
+        private mouseService: MouseService,
+        private readonly drawServiceDiff: DrawService,
+        private readonly drawServiceOriginal: DrawService,
+    ) {}
+
+    async clickedOnOriginal(event: MouseEvent) {
+        if (this.mouseService.getCanClick()) {
+            const diffDetected = this.mouseService.mouseHitDetect(event, this.area[0].area);
+            if (diffDetected) {
+                this.copyArea(this.area[0].area);
+                this.originalPlayArea.flashArea(this.area[0].area);
+                this.mouseService.changeClickState();
+                this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    this.originalPlayArea.drawPlayArea(this.originalImage);
+                    this.mouseService.changeClickState();
                 });
+                this.foundADifference = true;
+            } else {
+                this.drawServiceOriginal.context = this.originalPlayArea
+                    .getCanvas()
+                    .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+                this.drawServiceOriginal.drawError(this.mouseService);
+                this.mouseService.changeClickState();
+                this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    this.mouseService.changeClickState();
+                    this.originalPlayArea.drawPlayArea(this.originalImage);
+                });
+            }
         }
     }
 
-    clickedOnDiff(event: MouseEvent) {
-        console.log('clicked on diff');
+    async clickedOnDiff(event: MouseEvent) {
+        const myPromise = new Promise((resolve) => {
+            // Do some asynchronous work
+            setTimeout(() => {
+                resolve('Async operation completed successfully!');
+            }, Constants.millisecondsInOneSecond);
+        });
 
-        if (this.mouseService.mouseHitDetect(event)) {
-            this.diffPlayArea.flashArea(this.area[0].area);
-            this.diffPlayArea
-                .timeout(Constants.millisecondsInOneSecond)
-                .then(() => {})
-                .then(() => {
+        if (this.mouseService.getCanClick()) {
+            const diffDetected = this.mouseService.mouseHitDetect(event, this.area[0].area);
+            if (diffDetected) {
+                this.mouseService.changeClickState();
+                this.diffPlayArea.flashArea(this.area[0].area);
+                this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+                    this.mouseService.changeClickState();
                     this.copyArea(this.area[0].area);
                 });
-            this.foundADifference = true;
-        } else {
-            this.drawServiceDiff.context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D;
-            this.drawServiceDiff.drawError(this.mouseService);
-            this.diffPlayArea
-                .timeout(Constants.millisecondsInOneSecond)
-                .then(() => {
-                    this.diffPlayArea.drawPlayArea('../../../assets/test/image_7_diff.bmp');
-                })
-                .then(() => {
-                    if (this.foundADifference) {
-                        this.diffPlayArea.timeout(3).then(() => {
-                            this.copyArea(this.area[0].area);
-                        });
-                    }
-                });
+                this.foundADifference = true;
+            } else {
+                this.mouseService.changeClickState();
+                this.drawServiceDiff.context = this.diffPlayArea
+                    .getCanvas()
+                    .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+                this.drawServiceDiff.drawError(this.mouseService);
+
+                myPromise
+                    .then(() => {
+                        this.diffPlayArea.drawPlayArea(this.diffImage);
+                    })
+                    .then(() => {
+                        setTimeout(() => {
+                            if (this.foundADifference) {
+                                this.mouseService.changeClickState();
+                                this.copyArea(this.area[0].area);
+                            }
+                        }, Constants.twenty);
+                    });
+            }
         }
     }
 
     pick(x: number, y: number): string {
         const pixel = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true })?.getImageData(x, y, 1, 1);
-        // console.log(pixel);
         if (!pixel) {
-            console.log('no pixel');
             return 'white';
         }
         const data = pixel.data;
 
-        const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+        const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / Constants.FULL_ALPHA})`;
         return rgba;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     copyArea(area: number[]) {
-        let x: number = 0;
-        let y: number = 0;
+        let x = 0;
+        let y = 0;
         area.forEach((pixelData) => {
-            x = (pixelData % 640) / 4;
-            y = Math.floor(pixelData / 640 / 4);
+            x = (pixelData % this.originalPlayArea.width) / Constants.PIXEL_SIZE;
+            y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
 
-            let rgba = this.pick(x, y);
-            let context = this.canvasShare.diffCanvasRef.getContext('2d');
+            const rgba = this.pick(x, y);
+            const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true });
             if (!context) {
                 return;
             }

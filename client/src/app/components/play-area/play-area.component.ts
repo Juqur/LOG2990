@@ -1,10 +1,9 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 // import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { area } from '@app/area';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
-import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-import { Area } from '@app/area';
 
 @Component({
     selector: 'app-play-area',
@@ -15,16 +14,15 @@ import { Area } from '@app/area';
 export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
-    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
 
-    area = [...Area];
+    area = [...area];
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
     constructor(
         private readonly drawService: DrawService,
-        private canvasSharing: CanvasSharingService,
-        private readonly mouseService: MouseService,
+        private canvasSharing: CanvasSharingService, // private readonly mouseService: MouseService,
     ) {}
 
     get width(): number {
@@ -33,10 +31,6 @@ export class PlayAreaComponent implements AfterViewInit {
 
     get height(): number {
         return this.canvasSize.y;
-    }
-
-    getCanvas(){
-        return this.canvas;
     }
 
     @HostListener('keydown', ['$event'])
@@ -48,6 +42,10 @@ export class PlayAreaComponent implements AfterViewInit {
         this.drawPlayArea(this.image);
     }
 
+    getCanvas() {
+        return this.canvas;
+    }
+
     /**
      * The function in charge of receiving the click event.
      * It is also the function in charge of giving the player a penality
@@ -55,22 +53,22 @@ export class PlayAreaComponent implements AfterViewInit {
      *
      * @param event the mouse click event on the canvas we want to process.
      */
-    mouseHitDetect(event: MouseEvent) {
-        if (this.mouseService.getCanClick()) {
-            if (this.mouseService.mouseHitDetect(event)) {
-                this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.drawPlayArea(this.image);
-                });
-            } else {
-                this.drawService.drawError(this.mouseService);
-                this.mouseService.changeClickState();
-                this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.mouseService.changeClickState();
-                    this.drawPlayArea(this.image);
-                });
-            }
-        }
-    }
+    // mouseHitDetect(event: MouseEvent) {
+    //     if (this.mouseService.getCanClick()) {
+    //         if (this.mouseService.mouseHitDetect(event, this.area)) {
+    //             this.timeout(Constants.millisecondsInOneSecond).then(() => {
+    //                 this.drawPlayArea(this.image);
+    //             });
+    //         } else {
+    //             this.drawService.drawError(this.mouseService);
+    //             this.mouseService.changeClickState();
+    //             this.timeout(Constants.millisecondsInOneSecond).then(() => {
+    //                 this.mouseService.changeClickState();
+    //                 this.drawPlayArea(this.image);
+    //             });
+    //         }
+    //     }
+    // }
 
     /**
      * The function in charge of loading the image on the canvas.
@@ -100,17 +98,22 @@ export class PlayAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * flash the area of the canvas red
+     *
+     * @param area the area to flash
+     */
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     flashArea(area: number[]) {
-        let x: number = 0;
-        let y: number = 0;
+        let x = 0;
+        let y = 0;
+        const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        if (!context) {
+            return;
+        }
         area.forEach((pixelData) => {
-            x = (pixelData % 640) / 4;
-            y = Math.floor(pixelData / 640 / 4);
-
-            let context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-            if (!context) {
-                return;
-            }
+            x = (pixelData % this.width) / Constants.PIXEL_SIZE;
+            y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
 
             context.fillStyle = 'red';
             context.fillRect(x, y, 1, 1);

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
-import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -27,7 +26,7 @@ export class CreationComponent implements OnInit {
     url: unknown;
     msg = '';
 
-    constructor(private canvasShare: CanvasSharingService, private mouseService: MouseService) {}
+    constructor(private canvasShare: CanvasSharingService) {}
 
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
@@ -35,8 +34,8 @@ export class CreationComponent implements OnInit {
         this.diffCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.setDiffCanvasRef(this.diffCanvasCtx?.canvas as HTMLCanvasElement);
 
-        this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare, this.mouseService);
-        this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare, this.mouseService);
+        this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
+        this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
     }
 
     defaultImageSelector(event: Event) {

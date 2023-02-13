@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { Constants, MouseButton } from '@common/constants';
+import { MouseButton } from '@common/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -21,10 +21,10 @@ export class MouseService {
      * @param event the mouse event
      * @returns a boolean indicating if the click was valid.
      */
-    mouseHitDetect(event: MouseEvent): boolean {
+    mouseHitDetect(event: MouseEvent, area: number[]): boolean {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            return this.processClick();
+            return this.processClick(area);
         }
         return false;
     }
@@ -36,7 +36,7 @@ export class MouseService {
      *
      * @returns a boolean indicating if the click was valid.
      */
-    processClick(): boolean {
+    processClick(area: number[]): boolean {
         if (this.getCanClick()) {
             // The following commented code is to be used when server implementation has been completed.
             // const PIXEL_SIZE = 4;
@@ -49,7 +49,7 @@ export class MouseService {
             const testRes: Vec2[] = this.getTestVariable();
             if (testRes.length > 0) {
                 // Simply to add a section of the canvas that we can use to test on.
-                if (this.getX() > 0 && this.getX() < Constants.hundred && this.getY() > 0 && this.getY() < Constants.hundred) {
+                if (area.length > 0) {
                     this.incrementCounter();
                     return true;
                 }
