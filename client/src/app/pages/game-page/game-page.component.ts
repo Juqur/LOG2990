@@ -9,6 +9,7 @@ import { Constants } from '@common/constants';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit {
+    playerName: string;
     levelId: number;
     currentLevel: Level; // doit recuperer du server
     isClassicGamemode: boolean = true;
@@ -27,6 +28,9 @@ export class GamePageComponent implements OnInit {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
             this.levelId = params.id;
+        });
+        this.route.queryParams.subscribe((params) => {
+            this.playerName = params['playerName'];
         });
     }
 }
