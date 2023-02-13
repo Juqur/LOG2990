@@ -3,7 +3,6 @@ import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } 
 import { Area } from '@app/area';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
-import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -23,8 +22,7 @@ export class PlayAreaComponent implements AfterViewInit {
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
     constructor(
         private readonly drawService: DrawService,
-        private canvasSharing: CanvasSharingService,
-        private readonly mouseService: MouseService,
+        private canvasSharing: CanvasSharingService, // private readonly mouseService: MouseService,
     ) {}
 
     get width(): number {
@@ -55,22 +53,22 @@ export class PlayAreaComponent implements AfterViewInit {
      *
      * @param event the mouse click event on the canvas we want to process.
      */
-    mouseHitDetect(event: MouseEvent) {
-        if (this.mouseService.getCanClick()) {
-            if (this.mouseService.mouseHitDetect(event)) {
-                this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.drawPlayArea(this.image);
-                });
-            } else {
-                this.drawService.drawError(this.mouseService);
-                this.mouseService.changeClickState();
-                this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.mouseService.changeClickState();
-                    this.drawPlayArea(this.image);
-                });
-            }
-        }
-    }
+    // mouseHitDetect(event: MouseEvent) {
+    //     if (this.mouseService.getCanClick()) {
+    //         if (this.mouseService.mouseHitDetect(event, this.area)) {
+    //             this.timeout(Constants.millisecondsInOneSecond).then(() => {
+    //                 this.drawPlayArea(this.image);
+    //             });
+    //         } else {
+    //             this.drawService.drawError(this.mouseService);
+    //             this.mouseService.changeClickState();
+    //             this.timeout(Constants.millisecondsInOneSecond).then(() => {
+    //                 this.mouseService.changeClickState();
+    //                 this.drawPlayArea(this.image);
+    //             });
+    //         }
+    //     }
+    // }
 
     /**
      * The function in charge of loading the image on the canvas.
