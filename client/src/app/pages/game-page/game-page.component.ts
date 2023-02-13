@@ -51,8 +51,9 @@ export class GamePageComponent implements OnInit {
             this.levelId = params.id;
         });
         try {
-            this.originalImageSrc = 'http://localhost:3000/originals/7.bmp';
-            this.diffImageSrc = 'http://localhost:3000/modifiees/7.bmp';
+            console.log(this.levelId);
+            this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
+            this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
         } catch (error) {
             console.log(error);
         }
@@ -155,7 +156,6 @@ export class GamePageComponent implements OnInit {
             y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
 
             const rgba = this.pick(x, y);
-            console.log(rgba);
             if (!context) {
                 return;
             }
