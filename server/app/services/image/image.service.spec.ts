@@ -12,7 +12,19 @@ describe('ImageService', () => {
         service = module.get<ImageService>(ImageService);
     });
 
+    beforeEach(() => {});
+
     it('should be defined', () => {
         expect(service).toBeDefined();
+    });
+
+    it('should return the correct array of differences', () => {
+        const fileName = 'test';
+        const position = 1;
+        const expectedArray = [1, 2, 3];
+
+        const result = service.findDifference(fileName, position);
+
+        expect(result).toEqual(expectedArray);
     });
 });
