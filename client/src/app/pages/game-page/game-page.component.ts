@@ -36,9 +36,9 @@ export class GamePageComponent implements OnInit {
 
     drawServiceDiff: DrawService = new DrawService();
     drawServiceOriginal: DrawService = new DrawService();
+    closePath: string = '/selection';
 
     constructor(private mouseService: MouseService, private route: ActivatedRoute, private communicationService: CommunicationService) {}
-    closePath: string = '/selection';
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
@@ -56,7 +56,7 @@ export class GamePageComponent implements OnInit {
                 this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
             });
         } catch (error) {
-            this.communicationService.getLevel(7).subscribe((value) => {
+            this.communicationService.getLevel(Constants.DEFAULTTESTNUMBER).subscribe((value) => {
                 this.currentLevel = value;
             });
         }
