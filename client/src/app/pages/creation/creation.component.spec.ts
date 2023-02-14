@@ -181,8 +181,10 @@ describe('CreationComponent', () => {
         component.defaultCanvasCtx = null;
         component.diffCanvasCtx = null;
         component.showDefaultImage();
+        component.showDiffImage();
         setTimeout(() => {
-            expect(errorSpy).toHaveBeenCalledOnceWith('aucun canvas de base');
+            expect(errorSpy).toHaveBeenCalledTimes(2);
+            expect(errorSpy).toHaveBeenCalledWith('aucun canvas de base');
             expect(defaultDrawSpy).toHaveBeenCalledTimes(0);
             expect(diffDrawSpy).toHaveBeenCalledTimes(0);
             done();
@@ -203,8 +205,10 @@ describe('CreationComponent', () => {
         const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage');
         const errorSpy = spyOn(component, 'errorDialog');
         component.showDefaultImage();
+        component.showDiffImage();
         setTimeout(() => {
-            expect(errorSpy).toHaveBeenCalledOnceWith('Les images doivent être de taille 640x480');
+            expect(errorSpy).toHaveBeenCalledTimes(2);
+            expect(errorSpy).toHaveBeenCalledWith('Les images doivent être de taille 640x480');
             expect(defaultDrawSpy).toHaveBeenCalledTimes(0);
             expect(diffDrawSpy).toHaveBeenCalledTimes(0);
             done();
