@@ -51,6 +51,23 @@ describe('ImageService', () => {
         });
     });
 
+    it('returnArray should return an empty array if the passed array is empty', () => {
+        const expectedArray: number[] = [];
+        const differenceArray: number[][] = [];
+        service.returnArray(differenceArray, 1).then((result) => {
+            expect(result).toEqual(expectedArray);
+        });
+    });
+
+    it('returnArray should return an empty array if the position is not found', () => {
+        const expectedArray: number[] = [];
+        service.getArray('clusters-test1').then((readArray) => {
+            service.returnArray(readArray, 0).then((result) => {
+                expect(result).toEqual(expectedArray);
+            });
+        });
+    });
+
     // it('should return the correct array of differences', () => {
     //     const fileName = 'clusters-test';
     //     const position = 1;

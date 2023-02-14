@@ -24,10 +24,10 @@ export class ImageService {
      *
      * @param allDifferences
      * @param position
-     * @returns
+     * @returns the array of pixels that are different if there is a difference
      */
     async returnArray(allDifferences: number[][], position: number): Promise<number[]> {
-        return allDifferences.find((differenceRow, index) => {
+        const differences = allDifferences.find((differenceRow, index) => {
             if (differenceRow.indexOf(position) !== Constants.minusOne) {
                 if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
                     return false;
@@ -37,6 +37,8 @@ export class ImageService {
             }
             return false;
         });
+
+        return differences === undefined ? [] : differences;
     }
 
     /**
