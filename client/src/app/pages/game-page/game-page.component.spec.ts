@@ -1,5 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
 import { CounterComponent } from '@app/components/counter/counter.component';
 import { GameChatComponent } from '@app/components/game-chat/game-chat.component';
@@ -26,7 +27,7 @@ describe('GamePageComponent', () => {
                 ChatMessageComponent,
                 MessageBoxComponent,
             ],
-            imports: [AppMaterialModule, HttpClientModule],
+            imports: [AppMaterialModule, HttpClientModule, RouterTestingModule],
         }).compileComponents();
     });
 

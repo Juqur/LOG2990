@@ -1,24 +1,24 @@
 <div *ngIf="level" class="card">
     <div class="title-container">
         <h2 class="level-name">{{ level.name }}</h2>
-    </div>
+    </div> 
     <div class="image-container">
-        <img src="{{ level.image }}" class="thumbnail" alt="{{ level.name }}" />
+        <img src="http://localhost:3000/originals/{{level.id}}.bmp" class="thumbnail" alt="{{ level.name }}" />
         <img src="{{ displayDifficultyIcon() }}" alt="{{ difficulty }}" class="difficulty-icon" />
     </div>
     <div class="card-content">
         <div class="carousel-container">
             <p class="leaderboard-title">LeaderBoard - Top 3</p>
-            <app-carousel [level]="this.level" [index]="this.level.id"></app-carousel>
+            <app-carousel [level]="this.level"></app-carousel>
         </div>
         <div class="card-action">
             <div class="action-button-container" *ngIf="page === 'selection'">
-                <button routerLink="/game" mat-raised-button class="action-button">Play</button>
-                <button mat-raised-button class="action-button">Create</button>
+                <button (click)="playSolo()" mat-raised-button class="action-button">Jouer</button>
+                <button mat-raised-button class="action-button">Créer</button>
             </div>
             <div class="action-button-container" *ngIf="page === 'configuration'">
-                <button mat-raised-button class="action-button reinitiate-button">Reinitiate</button>
-                <button mat-raised-button class="action-button delete-button">Delete</button>
+                <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
+                <button mat-raised-button class="action-button delete-button">Effacer</button>
             </div>
         </div>
     </div>

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Level, levels } from '@app/levels';
+import { Component, OnInit } from '@angular/core';
+import { Level } from '@app/levels';
+import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -14,20 +15,19 @@ import { Constants } from '@common/constants';
  * @author Louis Félix St-Amour
  * @class SelectionPageComponent
  */
-export class SelectionPageComponent {
+export class SelectionPageComponent implements OnInit {
     page = 'selection';
-    levels = [...levels];
+    levels: Level[];
     currentPage: number = 0;
     levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
-    lastPage = Math.round(levels.length / this.levelsPerPage - 1);
+    lastPage: number;
 
-    levelToShow: Level[] = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+    levelToShow: Level[];
 
-    /**
-     * Increments the current page and updates the levels on the screen
-     */
+    constructor(private communicationService: CommunicationService) {}
+
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
         this.updateLevels();
@@ -66,5 +66,17 @@ export class SelectionPageComponent {
      */
     isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
+    }
+
+    ngOnInit(): void {
+        this.communicationService.getLevels('/image/AllLevels').subscribe((value) => {
+            const data = value;
+            this.levels = [];
+            for (const level of data) {
+                this.levels.push(level);
+            }
+            this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+            this.lastPage = Math.round(this.levels.length / this.levelsPerPage - 1);
+        });
     }
 }

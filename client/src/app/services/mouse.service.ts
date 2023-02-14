@@ -1,18 +1,25 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
+import { CommunicationService } from '@app/services/communication.service';
 import { Constants, MouseButton } from '@common/constants';
+import { DialogData, PopUpServiceService } from './pop-up-service.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MouseService {
+    winGameDialogData: DialogData = {
+        textToSend: 'Vous avez gagnez!',
+        closeButtonMessage: 'Retour au menu de sélection',
+    };
+    closePath: string = '/selection';
+
     private differenceCounter: number = 0;
     private mousePosition: Vec2 = { x: 0, y: 0 };
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
 
-    constructor(public http: HttpClient) {}
+    constructor(private communicationService: CommunicationService, public popUpService: PopUpServiceService) {}
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
@@ -38,14 +45,22 @@ export class MouseService {
      */
     processClick(): boolean {
         if (this.getCanClick()) {
-            // The following commented code is to be used when server implementation has been completed.
-            // const PIXEL_SIZE = 4;
-            // const position: number = this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH
-            // * Constants.PIXEL_SIZE;
-            // TODO
-            // Add router link
+            const url = '/image/difference';
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
-            // const res = this.http.post(url, position);
+            const position: number =
+                this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
+
+            let differencesArray: number[] = [];
+            this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
+                differencesArray = tempDifferencesArray;
+            });
+
+            if (differencesArray.length !== 0) {
+                if (differencesArray[0] === Constants.minusOne) {
+                    this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+                }
+                // TODO Gérer la suppression de la différence.
+            }
             const testRes: Vec2[] = this.getTestVariable();
             if (testRes.length > 0) {
                 // Simply to add a section of the canvas that we can use to test on.

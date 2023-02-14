@@ -10,6 +10,7 @@
             #input
         />
     </div>
+    <img *ngIf="data.imgSrc" [src]="data.imgSrc"/>
     <div mat-dialog-actions align="end">
         <button mat-button id="close-button" [disabled]="!inputWasValid" [mat-dialog-close]="this.inputValue">
             {{ data.closeButtonMessage }}

@@ -15,37 +15,42 @@ describe('DifferenceDetectorService', () => {
     let defaultImage: HTMLImageElement;
     let modifiedImage: HTMLImageElement;
 
-    beforeEach(() => TestBed.configureTestingModule({}));
-
-    beforeEach((done) => {
-        service = TestBed.inject(DifferenceDetectorService);
-
+    beforeAll(async () => {
         defaultImage = new Image();
         modifiedImage = new Image();
 
-        // Image must ABSOLUTELY load before the test can be run.
-        const loadImage = new Promise<void>((resolve) => {
+        const defaultImageLoaded = new Promise<void>((resolve) => {
             defaultImage.src = './assets/test/image_7_diff.bmp';
-            modifiedImage.src = './assets/test/image_empty.bmp';
             defaultImage.onload = () => {
-                modifiedImage.onload = () => {
-                    resolve();
-                };
+                resolve();
             };
         });
 
-        // Draw images to canvas.
-        loadImage.then(() => {
-            defaultCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            modifiedCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            defaultCanvas.canvas.width = defaultImage.width;
-            defaultCanvas.canvas.height = defaultImage.height;
-            modifiedCanvas.canvas.width = defaultImage.width;
-            modifiedCanvas.canvas.height = defaultImage.height;
-            defaultCanvas.drawImage(defaultImage, 0, 0);
-            modifiedCanvas.drawImage(modifiedImage, 0, 0);
-            done();
+        const modifiedImageLoaded = new Promise<void>((resolve) => {
+            modifiedImage.src = './assets/test/image_empty.bmp';
+            modifiedImage.onload = () => {
+                resolve();
+            };
         });
+
+        // Both images have to be loaded before the tests can run.
+        // It is only loaded once so it is not a performance timeout issue.
+        await Promise.all([defaultImageLoaded, modifiedImageLoaded]);
+
+        defaultCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        modifiedCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        defaultCanvas.canvas.width = defaultImage.width;
+        defaultCanvas.canvas.height = defaultImage.height;
+        modifiedCanvas.canvas.width = defaultImage.width;
+        modifiedCanvas.canvas.height = defaultImage.height;
+        defaultCanvas.drawImage(defaultImage, 0, 0);
+        modifiedCanvas.drawImage(modifiedImage, 0, 0);
+    });
+
+    beforeEach(() => TestBed.configureTestingModule({}));
+
+    beforeEach(async () => {
+        service = TestBed.inject(DifferenceDetectorService);
     });
 
     it('should be created', () => {

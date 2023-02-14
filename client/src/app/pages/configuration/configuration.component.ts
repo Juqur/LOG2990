@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Level, levels } from '@app/levels';
+import { Component, OnInit } from '@angular/core';
+import { Level } from '@app/levels';
+import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -13,15 +14,17 @@ import { Constants } from '@common/constants';
  * @author Louis Félix St-Amour & Galen Hu
  * @class ScaleContainerComponent
  */
-export class ConfigurationComponent {
-    levels = [...levels];
+export class ConfigurationComponent implements OnInit {
+    levels: Level[];
     currentPage: number = 0;
     levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
-    lastPage = Math.round(levels.length / this.levelsPerPage - 1);
-    showGlobalVariable = false;
-    levelToShow: Level[] = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+    lastPage: number;
+
+    levelToShow: Level[];
+
+    constructor(private communicationService: CommunicationService) {}
 
     /**
      * This function increments the currentPage counter and updates the new levels to
@@ -61,5 +64,17 @@ export class ConfigurationComponent {
      */
     isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
+    }
+
+    ngOnInit(): void {
+        this.communicationService.getLevels('/image/AllLevels').subscribe((value) => {
+            const data = value;
+            this.levels = [];
+            for (const level of data) {
+                this.levels.push(level);
+            }
+            this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+            this.lastPage = Math.round(this.levels.length / this.levelsPerPage - 1);
+        });
     }
 }

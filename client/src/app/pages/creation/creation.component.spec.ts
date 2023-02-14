@@ -1,11 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
+import { RouterTestingModule } from '@angular/router/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { MouseService } from '@app/services/mouse.service';
+// import { PopUpServiceService } from '@app/services/pop-up-service.service';
 import { CreationComponent } from './creation.component';
 import SpyObj = jasmine.SpyObj;
 
@@ -14,7 +16,7 @@ describe('CreationComponent', () => {
 
     // Nécessaire pour des futurs tests
     // let canvasSharingService: CanvasSharingService;
-
+    // let popUpService: PopUpServiceService;
     let fixture: ComponentFixture<CreationComponent>;
     let mouseServiceSpy: SpyObj<MouseService>;
 
@@ -26,14 +28,14 @@ describe('CreationComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, PlayAreaComponent, ScaleContainerComponent],
             providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }],
-            imports: [AppMaterialModule, MatSliderModule, FormsModule],
+            imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationComponent);
 
         // Nécessaire pour des futurs tests
         // canvasSharingService = TestBed.inject(CanvasSharingService);
-
+        // popUpService = TestBed.inject(PopUpServiceService);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -122,6 +124,7 @@ describe('CreationComponent', () => {
 
     it('verifyImageFormat should return false if the image format is incorrect', (done) => {
         const mockFile = new File([''], 'mock.mp4', { type: 'video/mp4' });
+        spyOn(component, 'errorDialog');
         component.verifyImageFormat(mockFile).then((result) => {
             expect(result).toBe(false);
             done();

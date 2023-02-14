@@ -9,7 +9,7 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
-    { path: 'game', component: GamePageComponent },
+    { path: 'game/:id', component: GamePageComponent },
     { path: 'selection', component: SelectionPageComponent },
     { path: 'config', component: ConfigurationComponent },
     { path: 'creation', component: CreationComponent },

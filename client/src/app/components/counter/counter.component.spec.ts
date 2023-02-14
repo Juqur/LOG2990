@@ -1,6 +1,8 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MouseService } from '@app/services/mouse.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppMaterialModule } from '@app/modules/material.module';
 
 import { CounterComponent } from './counter.component';
 import SpyObj = jasmine.SpyObj;
@@ -14,7 +16,7 @@ describe('CounterComponent', () => {
         mouseServiceMock = jasmine.createSpyObj('MouseService', ['getDifferenceCounter']);
 
         await TestBed.configureTestingModule({
-            imports: [HttpClientModule],
+            imports: [HttpClientModule, AppMaterialModule, RouterTestingModule],
             declarations: [CounterComponent],
             providers: [{ provide: MouseService, useValue: mouseServiceMock }],
         }).compileComponents();
