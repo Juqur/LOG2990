@@ -30,10 +30,6 @@ export class CommunicationService {
         return this.http.get<Level>(`${this.baseUrl}api` + path + levelId);
     }
 
-    getDifferenceCount(differenceFile: string): Observable<number> {
-        return this.http.get<number>(`${this.baseUrl}api/image/differenceCount/${differenceFile}`);
-    }
-
     postDifference(differenceFile: string, position: number): Observable<number[]> {
         return this.http
             .post<number[]>(`${this.baseUrl}api/image/differenceArray`, { differenceFile, position }, { observe: 'response', responseType: 'json' })

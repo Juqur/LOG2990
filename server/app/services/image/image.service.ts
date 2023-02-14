@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class ImageService {
@@ -19,32 +18,6 @@ export class ImageService {
         const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
         return JSON.parse(promises.toString()) as Level[];
     }
-
-    /**
-     * Gets the number of differences between the two images
-     *
-     * @param fileName The name of the file that has the differences
-     * @returns the number of differences between the two images
-     */
-    // async differencesCount(fileName: string): Promise<number> {
-    //     const filePath = path.resolve(this.pathDifference + fileName + '.json');
-    //     console.log(filePath);
-    //     const promises = await fsp.readFile(filePath, 'utf8');
-    //     return (JSON.parse(promises.toString()) as number[][]).length;
-    // }
-
-    async differencesCount(fileName: string): Promise<number> {
-        const filePath = path.resolve(this.pathDifference + fileName + '.json');
-        const promises = await fsp.readFile(filePath, 'utf8');
-        const differences = (JSON.parse(promises.toString()) as number[][]).length;
-        return differences;
-    }
-
-    // async getDifferencesImage(req: Request, res: Response): Promise<void> {
-    //     const fileName = req.params.fileName;
-    //     const filePath = path.join(__dirname, '..', '..', '..', 'assets', 'images', 'differences', `${fileName}.json`);
-    //     res.sendFile(filePath);
-    // }
 
     /**
      * Finds the difference between the original image and the modified image

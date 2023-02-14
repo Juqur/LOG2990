@@ -1,6 +1,6 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
@@ -19,21 +19,6 @@ export class ImageController {
     })
     async getLevels() {
         return this.imageService.getLevels();
-    }
-
-    /**
-     * Gets the difference count between the two images
-     *
-     * @param differenceFile The name of the file that has the differences
-     * @returns the number of differences between the two images
-     */
-    @Get('/differenceCount')
-    @ApiOkResponse({
-        description: 'Returns the number of differences between the two images',
-        type: Message,
-    })
-    async differenceCount(@Param('differenceFile') differenceFile: string) {
-        return this.imageService.differencesCount(differenceFile);
     }
 
     /**
