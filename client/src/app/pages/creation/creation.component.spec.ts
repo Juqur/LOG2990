@@ -326,4 +326,20 @@ describe('CreationComponent', () => {
         expect(clearSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.defaultCanvasRef.width, canvasSharingService.defaultCanvasRef.height);
         expect(reinitSpy).toHaveBeenCalled();
     });
+
+    it('resetDiff should call reinitGame and clear the canvas', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const clearSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'clearRect');
+        const reinitSpy = spyOn(component, 'reinitGame');
+        component.resetDiff();
+        expect(clearSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.diffCanvasRef.width, canvasSharingService.diffCanvasRef.height);
+        expect(reinitSpy).toHaveBeenCalled();
+    });
+
+    it('sliderChange should change value of the radius ', () => {
+        for (let i = 0; i < Constants.RADIUS_TABLE.length; i++) {
+            component.sliderChange(i);
+            expect(component.radius).toBe(Constants.RADIUS_TABLE[i]);
+        }
+    });
 });
