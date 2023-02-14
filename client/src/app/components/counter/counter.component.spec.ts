@@ -1,5 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppMaterialModule } from '@app/modules/material.module';
 
 import { CounterComponent } from './counter.component';
 
@@ -9,7 +11,7 @@ describe('CounterComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientModule],
+            imports: [HttpClientModule, AppMaterialModule, RouterTestingModule],
             declarations: [CounterComponent],
         }).compileComponents();
 

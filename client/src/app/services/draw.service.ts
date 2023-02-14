@@ -55,12 +55,12 @@ export class DrawService {
     drawError(mouseService: MouseService) {
         this.context.font = '36px system-ui';
         this.context.fillStyle = 'red';
-        this.context.fillText('ERROR', mouseService.getX(), mouseService.getY());
+        this.context.fillText('ERREUR', mouseService.getX(), mouseService.getY());
     }
 
     drawSuccess(mouseService: MouseService) {
         this.context.font = '36px system-ui';
         this.context.fillStyle = 'green';
-        this.context.fillText('SUCCESS', mouseService.getX(), mouseService.getY());
+        this.context.fillText('TROUVÉ', mouseService.getX(), mouseService.getY());
     }
 }

@@ -26,10 +26,20 @@ export class CommunicationService {
         return this.http.get(`${this.baseUrl}api` + path);
     }
 
-    postDifference(path: string, differenceFile: string, position: number): Observable<number[]> {
+    getLevel(levelId: number): Observable<Level> {
+        return this.http.get<Level>(`${this.baseUrl}api` + '/image/' + levelId);
+    }
+
+    postDifference(path: string, gameId: string | null, position: number): Observable<number[]> {
         return this.http
-            .post<number[]>(`${this.baseUrl}api` + path, { differenceFile, position }, { observe: 'response', responseType: 'json' })
+            .post<number[]>(`${this.baseUrl}api` + path, { gameId, position }, { observe: 'response', responseType: 'json' })
             .pipe(map((response) => response.body || []));
+    }
+
+    postNewGame(path: string, imageId: string) {
+        return this.http
+            .post<string>(`${this.baseUrl}api` + path, { imageId }, { observe: 'response', responseType: 'json' })
+            .pipe(map((response) => response.body));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

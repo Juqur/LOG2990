@@ -10,14 +10,13 @@ import { Constants } from '@common/constants';
 export class CarouselComponent {
     @Input() level: Level = {
         id: 0,
-        imageOriginal: '',
-        imageDiff: '',
         name: 'no name',
         playerSolo: ['player 1', 'player 2', 'player 3'],
         timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
         playerMulti: ['player 1', 'player 2', 'player 3'],
         timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
         isEasy: true,
+        nbDifferences: 7,
     };
 
     @Input() index: number = Constants.minusOne;

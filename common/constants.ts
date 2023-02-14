@@ -68,6 +68,7 @@ export namespace Constants {
     export const INIT_HINTS_NB = 3;
     export const HINT_PENALTY = 5;
     export const COUNTDOWN_TIME_WIN = 5;
+    export const DEFAULTTESTNUMBER = 7;
 }
 
 export enum MouseButton {

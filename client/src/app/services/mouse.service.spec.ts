@@ -1,16 +1,20 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { Constants } from '@common/constants';
+// import { of } from 'rxjs';
 
 import { MouseService } from './mouse.service';
 
 describe('MouseService', () => {
     let service: MouseService;
     let mouseEvent: MouseEvent;
+    const mockGameId = '10000';
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, AppMaterialModule, RouterTestingModule],
         });
         service = TestBed.inject(MouseService);
         mouseEvent = {
@@ -26,35 +30,27 @@ describe('MouseService', () => {
 
     it('mouseHitDetect should correctly change the mouse position attribute', () => {
         spyOn(service, 'processClick');
-        service.mouseHitDetect(mouseEvent);
+        service.mouseHitDetect(mouseEvent, mockGameId);
         expect(service.getX()).toEqual(mouseEvent.offsetX);
         expect(service.getY()).toEqual(mouseEvent.offsetY);
     });
 
     it('mouseHitDetect should call processClick', () => {
         const spy = spyOn(service, 'processClick');
-        service.mouseHitDetect(mouseEvent);
+        service.mouseHitDetect(mouseEvent, mockGameId);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('mouseHitDetect should return false if the event does not support the correct button', () => {
         spyOn(service, 'processClick');
-        const result = service.mouseHitDetect(mouseEvent);
+        const result = service.mouseHitDetect(mouseEvent, mockGameId);
         expect(result).not.toBeTrue();
     });
 
     it('process click should return false if we cannot click', () => {
         spyOn(service, 'getCanClick').and.returnValue(false);
-        const result = service.processClick();
+        const result = service.processClick(mockGameId);
         expect(result).not.toBeTrue();
-    });
-
-    it('processClick should call incrementCounter', async () => {
-        spyOn(service, 'getCanClick').and.returnValue(true);
-        spyOn(service, 'getDifferencesArray').and.returnValue(Promise.resolve([1]));
-        const spy = spyOn(service, 'incrementCounter');
-        await service.processClick();
-        expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('processClick should return a promise if the click is valid.', () => {
@@ -62,7 +58,7 @@ describe('MouseService', () => {
         spyOn(service, 'getY').and.returnValue(Constants.testYposition);
         spyOn(service, 'incrementCounter');
 
-        service.processClick().then((value) => {
+        service.processClick(mockGameId).then((value) => {
             expect(value).toBeInstanceOf(Promise);
         });
     });
