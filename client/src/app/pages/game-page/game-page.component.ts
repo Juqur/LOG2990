@@ -11,6 +11,7 @@ import { Constants } from '@common/constants';
     providers: [CommunicationService],
 })
 export class GamePageComponent implements OnInit {
+    playerName: string;
     levelId: number;
     currentLevel: Level; // doit recuperer du server
     isClassicGamemode: boolean = true;
@@ -31,9 +32,14 @@ export class GamePageComponent implements OnInit {
             // recoit le bon id!!
             this.levelId = params.id;
         });
+<<<<<<< HEAD
 
         this.communicationService.getLevel('/image/', this.levelId).subscribe((value) => {
             this.currentLevel = value;
+=======
+        this.route.queryParams.subscribe((params) => {
+            this.playerName = params['playerName'];
+>>>>>>> master
         });
     }
 }

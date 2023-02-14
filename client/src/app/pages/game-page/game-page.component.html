@@ -4,8 +4,8 @@
             <button mat-button [routerLink]="closePath"><span>Abandonner</span></button>
             <app-game-timer></app-game-timer>
             <div id="diff-counter">
-                <div class="player-counter">
-                    <span class="diff-self">Val Valière :</span>
+                <div *ngIf=playerName class="player-counter">
+                    <span class="diff-self">{{playerName + ': '}}</span>
                     <app-counter></app-counter>
                     <span class="diff-self">différences trouvées</span>
                 </div>
