@@ -143,7 +143,7 @@ export class CreationComponent implements OnInit {
     }
 
     async verifyImageFormat(imageFile: File) {
-        if (imageFile.type !== 'image/bmp' || imageFile.type !== 'image/bmp') {
+        if (imageFile.type !== 'image/bmp') {
             this.errorDialog('Les images doivent être au format bmp');
             return Promise.resolve(false);
         }

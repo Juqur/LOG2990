@@ -168,28 +168,6 @@ describe('CreationComponent', () => {
         expect(target.value).toBe('');
     });
 
-    it('verifyImageFormat should return true if the image format is correct', (done) => {
-        const imageSrc = './assets/test/image_7_diff.bmp';
-        fetch(imageSrc)
-            .then(async (res) => res.blob())
-            .then((blob) => {
-                const goodFile = new File([blob], 'image_7_.bmp', { type: 'image/bmp' });
-                component.verifyImageFormat(goodFile).then((result) => {
-                    expect(result).toBe(true);
-                    done();
-                });
-            });
-    });
-
-    it('verifyImageFormat should return false if the image format is incorrect', (done) => {
-        const mockFile = new File([''], 'mock.mp4', { type: 'video/mp4' });
-        spyOn(component, 'errorDialog');
-        component.verifyImageFormat(mockFile).then((result) => {
-            expect(result).toBe(false);
-            done();
-        });
-    });
-
     it('showDefaultImage should call errorDialog if there is no default image file', () => {
         const errorSpy = spyOn(component, 'errorDialog');
         const imageCreationSpy = spyOn(URL, 'createObjectURL');
@@ -238,14 +216,14 @@ describe('CreationComponent', () => {
             done();
         }, Constants.thousand);
     });
-    it('showDefaultImage should not show default image on canvas if there is no canvas context', (done) => {
+    it('showDefaultImage should call errorDialog and not show  image on canvas if there is no canvas context', (done) => {
         component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
         canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
         const mockFile = new File([''], 'mock.bmp');
         component.defaultImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const drawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
+        const drawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage');
         const errorSpy = spyOn(component, 'errorDialog');
         component.defaultCanvasCtx = null;
         component.showDefaultImage();
@@ -255,14 +233,14 @@ describe('CreationComponent', () => {
             done();
         }, Constants.thousand);
     });
-    it('showDiffImage should should call errorDialog and not show diff image on canvas if there is no canvas context', (done) => {
+    it('showDiffImage should call errorDialog and not show image on canvas if there is no canvas context', (done) => {
         component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
         canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
         const mockFile = new File([''], 'mock.bmp');
         component.diffImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const drawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
+        const drawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage');
         const errorSpy = spyOn(component, 'errorDialog');
         component.diffCanvasCtx = null;
         component.showDiffImage();
@@ -271,5 +249,58 @@ describe('CreationComponent', () => {
             expect(drawSpy).toHaveBeenCalledTimes(0);
             done();
         }, Constants.thousand);
+    });
+    it('showDefaultImage should call dialog and not show image if the image res is incorrect', (done) => {
+        component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.defaultImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_wrong_res.bmp');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const drawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage');
+        const errorSpy = spyOn(component, 'errorDialog');
+        component.showDefaultImage();
+        setTimeout(() => {
+            expect(errorSpy).toHaveBeenCalledOnceWith('Les images doivent être de taille 640x480');
+            expect(drawSpy).toHaveBeenCalledTimes(0);
+            done();
+        }, Constants.thousand);
+    });
+    it('showDiffImage should call dialog and not show image if the image res is incorrect', (done) => {
+        component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.diffImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_wrong_res.bmp');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const drawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage');
+        const errorSpy = spyOn(component, 'errorDialog');
+        component.showDiffImage();
+        setTimeout(() => {
+            expect(errorSpy).toHaveBeenCalledOnceWith('Les images doivent être de taille 640x480');
+            expect(drawSpy).toHaveBeenCalledTimes(0);
+            done();
+        }, Constants.thousand);
+    });
+
+    it('verifyImageFormat should return true if the image format is correct', (done) => {
+        const imageSrc = './assets/test/image_7_diff.bmp';
+        fetch(imageSrc)
+            .then(async (res) => res.blob())
+            .then((blob) => {
+                const goodFile = new File([blob], 'image_7_.bmp', { type: 'image/bmp' });
+                component.verifyImageFormat(goodFile).then((result) => {
+                    expect(result).toBe(true);
+                    done();
+                });
+            });
+    });
+    it('verifyImageFormat should return false if the image format is incorrect', (done) => {
+        const mockFile = new File([''], 'mock.mp4', { type: 'video/mp4' });
+        spyOn(component, 'errorDialog');
+        component.verifyImageFormat(mockFile).then((result) => {
+            expect(result).toBe(false);
+            done();
+        });
     });
 });
