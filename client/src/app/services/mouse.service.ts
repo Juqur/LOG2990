@@ -22,14 +22,13 @@ export class MouseService {
      * @param event the mouse event
      * @returns a boolean indicating if the click was valid.
      */
-    mouseHitDetect(event: MouseEvent): Promise<number[]> {
+    async mouseHitDetect(event: MouseEvent): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
             return this.processClick();
         }
         return Promise.resolve([]);
     }
-
     /**
      * This function should process the click and react accordingly.
      * The information on the click should be sent to the server in order to
@@ -46,9 +45,6 @@ export class MouseService {
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
             const differencesArray = await this.getDifferencesArray(url, position);
-            console.log('===');
-            console.log(differencesArray);
-            console.log('===');
 
             if (differencesArray.length > 0) {
                 this.incrementCounter();
@@ -62,10 +58,6 @@ export class MouseService {
         return await lastValueFrom(this.communicationService.postDifference(url, '7', position));
     }
 
-    setProcess(differencesArray: number[]) {
-        // this.arrayOfDifference = differencesArray;
-        console.log(differencesArray);
-    }
     /**
      * Takes a mouse event in order to calculate the position of the mouse
      * and stores it inside tbe mousePosition variable.

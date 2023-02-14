@@ -47,30 +47,6 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     /**
-     * The function in charge of receiving the click event.
-     * It is also the function in charge of giving the player a penality
-     * if he click on a pixel that wasn't a difference.
-     *
-     * @param event the mouse click event on the canvas we want to process.
-     */
-    // mouseHitDetect(event: MouseEvent) {
-    //     if (this.mouseService.getCanClick()) {
-    //         if (this.mouseService.mouseHitDetect(event, this.area)) {
-    //             this.timeout(Constants.millisecondsInOneSecond).then(() => {
-    //                 this.drawPlayArea(this.image);
-    //             });
-    //         } else {
-    //             this.drawService.drawError(this.mouseService);
-    //             this.mouseService.changeClickState();
-    //             this.timeout(Constants.millisecondsInOneSecond).then(() => {
-    //                 this.mouseService.changeClickState();
-    //                 this.drawPlayArea(this.image);
-    //             });
-    //         }
-    //     }
-    // }
-
-    /**
      * The function in charge of loading the image on the canvas.
      * It is also used to reload the image and erase any text or modifications we may
      * have added to it.
@@ -113,7 +89,7 @@ export class PlayAreaComponent implements AfterViewInit {
             return;
         }
         area.forEach((pixelData) => {
-            x = (pixelData % this.width) / Constants.PIXEL_SIZE;
+            x = (pixelData / Constants.PIXEL_SIZE) % this.width;
             y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
 
             context.fillStyle = 'red';
