@@ -27,13 +27,14 @@ describe('ImageService', () => {
     });
 
     it('getArray should read the tested file', () => {
+        const fileName = 'clusters-test';
         const expectedArray = [
             [1, 0, 1, 1],
             [1, 1, 1],
             [0, 1, 0],
         ];
 
-        service.getArray('clusters-test').then((result) => {
+        service.getArray(fileName).then((result) => {
             expect(result).toStrictEqual(expectedArray);
         });
     });
@@ -43,38 +44,33 @@ describe('ImageService', () => {
     });
 
     it('returnArray should return the correct array', () => {
+        const fileName = 'clusters-test1';
         const expectedArray = TestConstants.EXPECTED_DIFFERENCE_ARRAY;
-        service.getArray('clusters-test1').then((readArray) => {
-            service.returnArray(readArray, 1).then((result) => {
-                expect(result).toEqual(expectedArray);
-            });
-        });
-    });
-
-    it('returnArray should return an empty array if the passed array is empty', () => {
-        const expectedArray: number[] = [];
-        const differenceArray: number[][] = [];
-        service.returnArray(differenceArray, 1).then((result) => {
+        service.getArray(fileName).then((readArray) => {
+            const result = service.returnArray(readArray, 1);
             expect(result).toEqual(expectedArray);
         });
     });
 
-    it('returnArray should return an empty array if the position is not found', () => {
-        const expectedArray: number[] = [];
+    it('returnArray should return undefined if the passed array is empty', () => {
+        const differenceArray: number[][] = [];
+        const result = service.returnArray(differenceArray, 1);
+        expect(result).toEqual(undefined);
+    });
+
+    it('returnArray should return undefined if the position is not found', () => {
         service.getArray('clusters-test1').then((readArray) => {
-            service.returnArray(readArray, 0).then((result) => {
-                expect(result).toEqual(expectedArray);
-            });
+            const result = service.returnArray(readArray, 0);
+            expect(result).toEqual(undefined);
         });
     });
 
-    // it('should return the correct array of differences', () => {
-    //     const fileName = 'clusters-test';
-    //     const position = 1;
-    //     const expectedArray = [4, 7, 8, 0];
+    it('findDifference should return the correct array of differences', async () => {
+        const fileName = 'clusters-test1';
+        const position = 1;
+        const expectedArray = TestConstants.EXPECTED_DIFFERENCE_ARRAY;
 
-    //     const result = service.findDifference(fileName, position);
-
-    //     expect(result).toEqual(expectedArray);
-    // });
+        const result = await service.findDifference(fileName, position);
+        expect(result).toStrictEqual(expectedArray);
+    });
 });
