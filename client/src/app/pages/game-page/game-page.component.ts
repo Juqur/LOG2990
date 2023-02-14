@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { DrawService } from '@app/services/draw.service';
 import { ActivatedRoute } from '@angular/router';
-import { area } from '@app/area';
+import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
+import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
@@ -17,12 +16,11 @@ export class GamePageComponent implements OnInit {
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
 
-    area = [...area];
-
     originalImageSrc: string = '';
     diffImageSrc: string = '';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
+    playerName: string;
     levelId: number;
     currentLevel: Level; // doit recuperer du server
     isClassicGamemode: boolean = true;
@@ -45,6 +43,11 @@ export class GamePageComponent implements OnInit {
             // recoit le bon id!!
             this.levelId = params.id;
         });
+
+        this.route.queryParams.subscribe((params) => {
+            this.playerName = params['playerName'];
+        });
+
         try {
             this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
             this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
