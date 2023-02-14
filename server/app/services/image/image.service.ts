@@ -1,6 +1,7 @@
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
+
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
