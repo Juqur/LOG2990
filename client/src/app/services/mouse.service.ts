@@ -21,14 +21,13 @@ export class MouseService {
      * @param event the mouse event
      * @returns a boolean indicating if the click was valid.
      */
-    mouseHitDetect(event: MouseEvent): boolean {
+    mouseHitDetect(event: MouseEvent, area: number[]): boolean {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            return this.processClick();
+            return this.processClick(area);
         }
         return false;
     }
-
     /**
      * This function should process the click and react accordingly.
      * The information on the click should be sent to the server in order to
@@ -36,7 +35,7 @@ export class MouseService {
      *
      * @returns a boolean indicating if the click was valid.
      */
-    processClick(): boolean {
+    processClick(area: number[]): boolean {
         if (this.getCanClick()) {
             const url = '/image/difference';
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
@@ -44,8 +43,9 @@ export class MouseService {
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
             let differencesArray: number[] = [];
-            this.communicationService.postDifference(url, '7-Rectangles', position).subscribe((tempDifferencesArray) => {
+            this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
                 differencesArray = tempDifferencesArray;
+                console.log(differencesArray);
             });
 
             if (differencesArray.length !== 0) {
@@ -54,7 +54,7 @@ export class MouseService {
             const testRes: Vec2[] = this.getTestVariable();
             if (testRes.length > 0) {
                 // Simply to add a section of the canvas that we can use to test on.
-                if (this.getX() > 0 && this.getX() < Constants.hundred && this.getY() > 0 && this.getY() < Constants.hundred) {
+                if (area.length > 0) {
                     this.incrementCounter();
                     return true;
                 }

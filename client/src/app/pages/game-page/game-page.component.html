@@ -17,7 +17,7 @@
             </div>
         </section>
         <section id="play-area-container">
-            <app-play-area *ngIf="defaultArea" [isDiff]="false" [image]="defaultImgSrc"></app-play-area>
+            <app-play-area [isDiff]="false" [image]="originalImageSrc" (click)="clickedOnOriginal($event)" #originalPlayArea></app-play-area>
             <div id="between-images">
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
@@ -25,7 +25,7 @@
                 <p>{{nbHints}}</p>
                 <span id="nb-hints">indices restants</span>
             </div>
-            <app-play-area *ngIf="diffArea" [isDiff]="true" [image]="diffImgSrc"></app-play-area>
+            <app-play-area [isDiff]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
         </section>
         <section id="bottom-area">
             <app-game-chat></app-game-chat>

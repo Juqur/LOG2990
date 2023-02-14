@@ -26,26 +26,26 @@ describe('MouseService', () => {
 
     it('mouseHitDetect should correctly change the mouse position attribute', () => {
         spyOn(service, 'processClick');
-        service.mouseHitDetect(mouseEvent);
+        service.mouseHitDetect(mouseEvent, []);
         expect(service.getX()).toEqual(mouseEvent.offsetX);
         expect(service.getY()).toEqual(mouseEvent.offsetY);
     });
 
     it('mouseHitDetect should call processClick', () => {
         const spy = spyOn(service, 'processClick');
-        service.mouseHitDetect(mouseEvent);
+        service.mouseHitDetect(mouseEvent, []);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('mouseHitDetect should return false if the event does not support the correct button', () => {
         spyOn(service, 'processClick');
-        const result: boolean = service.mouseHitDetect(mouseEvent);
+        const result = service.mouseHitDetect(mouseEvent, []);
         expect(result).not.toBeTrue();
     });
 
     it('process click should return false if we cannot click', () => {
         spyOn(service, 'getCanClick').and.returnValue(false);
-        const result: boolean = service.processClick();
+        const result = service.processClick([]);
         expect(result).not.toBeTrue();
     });
 
@@ -57,7 +57,7 @@ describe('MouseService', () => {
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         spyOn<any>(service, 'getTestVariable').and.returnValue([]);
-        const result: boolean = service.processClick();
+        const result = service.processClick([]);
         expect(result).not.toBeTrue();
     });
 
@@ -65,7 +65,7 @@ describe('MouseService', () => {
         spyOn(service, 'getX').and.returnValue(Constants.fifty);
         spyOn(service, 'getY').and.returnValue(Constants.fifty);
         const spy = spyOn(service, 'incrementCounter');
-        service.processClick();
+        service.processClick([1]);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -73,7 +73,7 @@ describe('MouseService', () => {
         spyOn(service, 'getX').and.returnValue(Constants.fifty);
         spyOn(service, 'getY').and.returnValue(Constants.fifty);
         spyOn(service, 'incrementCounter');
-        const result: boolean = service.processClick();
+        const result = service.processClick([1, 2, 3]);
         expect(result).toBeTrue();
     });
 
