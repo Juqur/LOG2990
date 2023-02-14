@@ -1,6 +1,4 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-// import { GamePageComponent } from '@app/pages/game-page/game-page.component';
-import { area } from '@app/area';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 import { Constants } from '@common/constants';
@@ -16,14 +14,10 @@ export class PlayAreaComponent implements AfterViewInit {
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
 
-    area = [...area];
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(
-        private readonly drawService: DrawService,
-        private canvasSharing: CanvasSharingService, // private readonly mouseService: MouseService,
-    ) {}
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
     get width(): number {
         return this.canvasSize.x;
