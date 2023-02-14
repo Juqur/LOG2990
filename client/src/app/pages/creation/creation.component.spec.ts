@@ -1,3 +1,4 @@
+import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
@@ -9,7 +10,6 @@ import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { MouseService } from '@app/services/mouse.service';
 // import { PopUpServiceService } from '@app/services/pop-up-service.service';
 import { CreationComponent } from './creation.component';
-import { HttpClient, HttpHandler } from '@angular/common/http';
 import SpyObj = jasmine.SpyObj;
 
 describe('CreationComponent', () => {
@@ -33,10 +33,6 @@ describe('CreationComponent', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationComponent);
-
-        // Nécessaire pour des futurs tests
-        // canvasSharingService = TestBed.inject(CanvasSharingService);
-        // popUpService = TestBed.inject(PopUpServiceService);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
