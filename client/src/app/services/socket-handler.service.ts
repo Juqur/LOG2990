@@ -6,12 +6,14 @@ export enum Gateways {
     Timer = 'timer',
     Chat = 'chat',
 }
+
 @Injectable({
     providedIn: 'root',
 })
 export class SocketHandler {
     socketTimer: Socket;
     socketChat: Socket;
+    private serverUrl: string = environment.serverUrl;
 
     isSocketAlive(type: Gateways) {
         switch (type) {
@@ -25,10 +27,10 @@ export class SocketHandler {
     connect(type: Gateways) {
         switch (type) {
             case Gateways.Timer:
-                this.socketTimer = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
+                this.socketTimer = io(this.serverUrl + type, { transports: ['websocket'], upgrade: false });
                 break;
             case Gateways.Chat:
-                this.socketChat = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
+                this.socketChat = io(this.serverUrl + type, { transports: ['websocket'], upgrade: false });
                 break;
         }
     }
