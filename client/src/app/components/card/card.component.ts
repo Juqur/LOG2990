@@ -66,9 +66,9 @@ export class CardComponent implements OnInit {
      */
     playSolo(): void {
         const saveDialogData: DialogData = {
-            textToSend: 'Veuillez entrer le nom du jeu',
+            textToSend: 'Veuillez entrer votre nom',
             inputData: {
-                inputLabel: 'Nom du jeu',
+                inputLabel: 'Nom du joueur',
                 submitFunction: (value) => {
                     //  Vérifier que le nom du jeu n'existe pas déjà
                     //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
@@ -79,13 +79,12 @@ export class CardComponent implements OnInit {
                 },
                 returnValue: '',
             },
-            closeButtonMessage: 'Débuter',
+            closeButtonMessage: 'Débuter la partie',
         };
         this.popUpService.openDialog(saveDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.playerName = result;
-                window.alert(this.playerName);
                 this.router.navigate([`/game/${this.level.id}/`], {
                     queryParams: { playerName: this.playerName },
                 });
