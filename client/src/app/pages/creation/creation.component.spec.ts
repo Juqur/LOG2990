@@ -4,7 +4,9 @@ import { MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
+import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { MouseService } from '@app/services/mouse.service';
+import { PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
 import { CreationComponent } from './creation.component';
 import SpyObj = jasmine.SpyObj;
@@ -14,21 +16,26 @@ describe('CreationComponent', () => {
     let canvasSharingService: CanvasSharingService;
     let fixture: ComponentFixture<CreationComponent>;
     let mouseServiceSpy: SpyObj<MouseService>;
+    // let differenceDetectorService: DifferenceDetectorService;
+    // let popUpServiceService: PopUpServiceService;
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
     });
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent],
-            providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }],
+            providers: [
+                CanvasSharingService,
+                { provide: MouseService, useValue: mouseServiceSpy },
+                { provide: DifferenceDetectorService, useValue: {} },
+                { provide: PopUpServiceService, useValue: {} },
+            ],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
-
         fixture = TestBed.createComponent(CreationComponent);
-
-        // Nécessaire pour des futurs tests
         canvasSharingService = TestBed.inject(CanvasSharingService);
-        // popUpService = TestBed.inject(PopUpServiceService);
+        // differenceDetectorService = TestBed.inject(DifferenceDetectorService);
+        // popUpServiceService = TestBed.inject(PopUpServiceService);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -250,19 +257,20 @@ describe('CreationComponent', () => {
     });
     it('resetDefault should call reinitGame and clear the canvas', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const clearSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'clearRect');
+        const clearDefaultSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'clearRect');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const clearDiffSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'clearRect');
         const reinitSpy = spyOn(component, 'reinitGame');
         component.resetDefault();
-        expect(clearSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.defaultCanvasRef.width, canvasSharingService.defaultCanvasRef.height);
-        expect(reinitSpy).toHaveBeenCalled();
-    });
-    it('resetDiff should call reinitGame and clear the canvas', () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const clearSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'clearRect');
-        const reinitSpy = spyOn(component, 'reinitGame');
         component.resetDiff();
-        expect(clearSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.diffCanvasRef.width, canvasSharingService.diffCanvasRef.height);
-        expect(reinitSpy).toHaveBeenCalled();
+        expect(clearDefaultSpy).toHaveBeenCalledOnceWith(
+            0,
+            0,
+            canvasSharingService.defaultCanvasRef.width,
+            canvasSharingService.defaultCanvasRef.height,
+        );
+        expect(clearDiffSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.diffCanvasRef.width, canvasSharingService.diffCanvasRef.height);
+        expect(reinitSpy).toHaveBeenCalledTimes(2);
     });
     it('sliderChange should change value of the radius ', () => {
         for (let i = 0; i < Constants.RADIUS_TABLE.length; i++) {
