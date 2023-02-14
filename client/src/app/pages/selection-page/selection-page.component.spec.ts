@@ -31,8 +31,6 @@ describe('SelectionPageComponent', () => {
         const level: Level = {
             id: 1,
             name: '',
-            imageOriginal: '',
-            imageDiff: '',
             playerMulti: [],
             playerSolo: [],
             timeMulti: [],
@@ -73,12 +71,14 @@ describe('SelectionPageComponent', () => {
     });
 
     it('should return true if isEndOfList', () => {
+        component.lastPage = 10;
         component.currentPage = component.lastPage;
         expect(component.isEndOfList()).toBeTrue();
     });
 
     it('nextPage() should increment the current page', () => {
         const tempPage = component.currentPage;
+        component.lastPage = 10;
         component.nextPage();
         expect(component.currentPage).toEqual(tempPage + 1);
         expect(component.firstShownLevel).toEqual(Constants.levelsPerPage);
@@ -87,6 +87,7 @@ describe('SelectionPageComponent', () => {
     });
 
     it('previousPage() should decrement the current page', () => {
+        component.lastPage = 10;
         component.currentPage = component.lastPage;
         const tempPage = component.currentPage;
         component.previousPage();

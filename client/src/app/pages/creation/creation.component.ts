@@ -151,8 +151,6 @@ export class CreationComponent implements OnInit {
         }
 
         return new Promise((resolve) => {
-            // Vérifie le header de l'image. Ce header contient les informations que l'on recherche :
-            // Le Nombre de bits par pixel (en little endian)
             const reader = new FileReader();
             reader.onload = (e) => {
                 const imgData = e.target?.result as ArrayBuffer;
@@ -185,8 +183,6 @@ export class CreationComponent implements OnInit {
     }
 
     detectDifference() {
-        // Lancer la validation des différences selon le rayon
-        // Ouvrir un popup qui affiche le résultat
         if (!this.defaultCanvasCtx || !this.diffCanvasCtx) return;
         this.nbDifferences = Constants.INIT_DIFF_NB;
 
@@ -197,7 +193,6 @@ export class CreationComponent implements OnInit {
         }
         this.nbDifferences = this.differences.clusters.length;
 
-        // Mets le dans le popup quand ce sera possible
         const canvasDialogData: DialogData = {
             textToSend: 'Image de différence (contient ' + this.nbDifferences + ' différences) :',
             imgSrc: this.differences.canvas.canvas.toDataURL(),
@@ -218,15 +213,12 @@ export class CreationComponent implements OnInit {
     saveGame() {
         if (this.isSaveable) {
             let gameName = '';
-            // Ouvre un popup qui demande à l'utilisateur de nommer le jeu
 
             const saveDialogData: DialogData = {
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
                     inputLabel: 'Nom du jeu',
                     submitFunction: (value) => {
-                        //  Vérifier que le nom du jeu n'existe pas déjà
-                        //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
                         if (value.length < Constants.ten) {
                             return true;
                         }
@@ -249,8 +241,6 @@ export class CreationComponent implements OnInit {
                 gameName = result;
                 this.savedLevel = {
                     id: 0,
-                    imageOriginal: '',
-                    imageDiff: '',
                     name: gameName,
                     playerSolo: [],
                     timeSolo: [],
@@ -259,17 +249,19 @@ export class CreationComponent implements OnInit {
                     isEasy: !this.differences?.isHard,
                 };
 
-                const formData = new FormData();
                 if (!this.defaultImageFile || !this.differences) {
                     return;
                 }
+                if (!this.defaultImageFile || !this.differences) {
+                    return;
+                }
+                const formData = new FormData();
                 formData.append('imageOriginal', this.defaultImageFile);
                 formData.append('imageDiff', this.diffImageFile);
                 formData.append('name', this.savedLevel.name);
                 formData.append('isEasy', this.savedLevel.isEasy.toString());
                 formData.append('clusters', JSON.stringify(this.differences.clusters));
 
-                // TODO : Sauvegarder le jeu sur le serveur
                 this.communicationService.postLevel(formData).subscribe((data) => {
                     if (data.title === 'error') {
                         this.errorDialog(data.body);

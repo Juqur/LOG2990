@@ -6,10 +6,10 @@ import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { ConfigurationComponent } from './configuration.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { of } from 'rxjs';
 import { Constants } from '@common/constants';
+import { ConfigurationComponent } from './configuration.component';
 
 describe('ConfigurationComponent', () => {
     let component: ConfigurationComponent;
@@ -30,11 +30,11 @@ describe('ConfigurationComponent', () => {
         communicationService = TestBed.inject(CommunicationService);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        communicationService = TestBed.inject(CommunicationService);
+
         const level: Level = {
             id: 1,
             name: '',
-            imageOriginal: '',
-            imageDiff: '',
             playerMulti: [],
             playerSolo: [],
             timeMulti: [],
@@ -81,6 +81,7 @@ describe('ConfigurationComponent', () => {
 
     it('nextPage() should increment the current page', () => {
         const tempPage = component.currentPage;
+        component.lastPage = 10;
         component.nextPage();
         expect(component.currentPage).toEqual(tempPage + 1);
         expect(component.firstShownLevel).toEqual(Constants.levelsPerPage);
@@ -89,6 +90,7 @@ describe('ConfigurationComponent', () => {
     });
 
     it('previousPage() should decrement the current page', () => {
+        component.lastPage = 10;
         component.currentPage = component.lastPage;
         const tempPage = component.currentPage;
         component.previousPage();
