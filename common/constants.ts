@@ -24,6 +24,8 @@ export namespace Constants {
     // Level mock values
     export const timeSolo: number[] = [60, 65, 70];
     export const timeMulti: number[] = [80, 83, 90];
+    export const testXposition: number = 96;
+    export const testYposition: number = 74;
 
     // Game timer
     export const millisecondsInOneSecond: number = 1000;
