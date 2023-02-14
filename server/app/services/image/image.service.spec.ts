@@ -1,3 +1,4 @@
+import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImageService } from './image.service';
 
@@ -25,13 +26,38 @@ describe('ImageService', () => {
         expect(result).toBe('../server/assets/test/');
     });
 
-    it('should return the correct array of differences', () => {
-        const fileName = 'clusters-test';
-        const position = 1;
-        const expectedArray = [4, 7, 8, 0];
+    it('getArray should read the tested file', () => {
+        const expectedArray = [
+            [1, 0, 1, 1],
+            [1, 1, 1],
+            [0, 1, 0],
+        ];
 
-        const result = service.findDifference(fileName, position);
-
-        expect(result).toEqual(expectedArray);
+        service.getArray('clusters-test').then((result) => {
+            expect(result).toStrictEqual(expectedArray);
+        });
     });
+
+    it('getArray should throw exception if file does not exist', async () => {
+        expect(service.getArray('')).rejects.toThrow();
+    });
+
+    it('returnArray should return the correct array', () => {
+        const expectedArray = TestConstants.EXPECTED_DIFFERENCE_ARRAY;
+        service.getArray('clusters-test1').then((readArray) => {
+            service.returnArray(readArray, 1).then((result) => {
+                expect(result).toEqual(expectedArray);
+            });
+        });
+    });
+
+    // it('should return the correct array of differences', () => {
+    //     const fileName = 'clusters-test';
+    //     const position = 1;
+    //     const expectedArray = [4, 7, 8, 0];
+
+    //     const result = service.findDifference(fileName, position);
+
+    //     expect(result).toEqual(expectedArray);
+    // });
 });
