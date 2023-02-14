@@ -1,7 +1,6 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Controller, Get, Body, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Body, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
@@ -20,7 +19,7 @@ export class ImageController {
         type: Message,
     })
     @Get('/')
-    async getCardData() {
+    async getLevels() {
         return this.imageService.getLevels();
     }
 
@@ -56,6 +55,12 @@ export class ImageController {
         return this.imageService.findDifference(body.differenceFile, body.position);
     }
 
+    /**
+     * Writes the level data onto a json file for the game information and the images into the assets folder
+     *
+     * @param formData The data of the level
+     * @returns the message of the result
+     */
     @Post('/postLevel')
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {

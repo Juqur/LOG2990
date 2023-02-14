@@ -9,6 +9,7 @@ import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { MouseService } from '@app/services/mouse.service';
 // import { PopUpServiceService } from '@app/services/pop-up-service.service';
 import { CreationComponent } from './creation.component';
+import { HttpClient, HttpHandler } from '@angular/common/http';
 import SpyObj = jasmine.SpyObj;
 
 describe('CreationComponent', () => {
@@ -27,7 +28,7 @@ describe('CreationComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, PlayAreaComponent, ScaleContainerComponent],
-            providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }],
+            providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }, HttpClient, HttpHandler],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
 
