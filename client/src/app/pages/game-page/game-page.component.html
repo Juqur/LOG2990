@@ -1,7 +1,7 @@
 <app-scale-container>
     <div class="container">
         <section id="top-area">
-            <button mat-button routerLink="/selection"><span>Abandonner</span></button>
+            <button mat-button [routerLink]="closePath"><span>Abandonner</span></button>
             <app-game-timer></app-game-timer>
             <div id="diff-counter">
                 <div *ngIf=playerName class="player-counter">
@@ -22,7 +22,7 @@
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
                 </button>
-                <p>{{nbHints}}</p>
+                <p>{{ nbHints }}</p>
                 <span id="nb-hints">indices restants</span>
             </div>
             <app-play-area *ngIf="diffArea" [isDiff]="true" [image]="diffImgSrc"></app-play-area>
@@ -30,15 +30,24 @@
         <section id="bottom-area">
             <app-game-chat></app-game-chat>
             <div id="info-game" *ngIf="currentLevel">
-                <div><span class="info-question">Jeu : </span><span class="info-answer">{{currentLevel.name}}</span></div>
-                <div><span class="info-question">Difficulté : </span><span class="info-answer">{{currentLevel.isEasy? 'Facile':'Difficile'}}</span></div>
-                <div><span class="info-question">Mode de jeu : </span><span class="info-answer">{{isClassicGamemode? 'Classique':'Temps Limité'}}</span></div>
                 <div>
-                    <span class="info-question">Différences totale: </span><span class="info-answer">{{nbDiff}}</span>
+                    <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>
                 </div>
-                <div><span class="info-question">Pénalité indice : </span><span class="info-answer">{{hintPenalty + ' secondes'}}</span></div>
+                <div>
+                    <span class="info-question">Difficulté : </span
+                    ><span class="info-answer">{{ currentLevel.isEasy ? 'Facile' : 'Difficile' }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Mode de jeu : </span
+                    ><span class="info-answer">{{ isClassicGamemode ? 'Classique' : 'Temps Limité' }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Différences totale: </span><span class="info-answer">{{ nbDiff }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + ' secondes' }}</span>
+                </div>
             </div>
         </section>
     </div>
 </app-scale-container>
-

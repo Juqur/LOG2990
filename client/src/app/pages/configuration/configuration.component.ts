@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Level, levels } from '@app/levels';
+import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
 
@@ -14,7 +14,7 @@ export class ConfigurationComponent implements OnInit {
     levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
     lastShownLevel = this.levelsPerPage;
-    lastPage = Math.round(levels.length / this.levelsPerPage - 1);
+    lastPage: number;
 
     levelToShow: Level[];
 
@@ -50,6 +50,7 @@ export class ConfigurationComponent implements OnInit {
                 this.levels.push(level);
             }
             this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+            this.lastPage = Math.round(this.levels.length / this.levelsPerPage - 1);
         });
     }
 }
