@@ -47,7 +47,6 @@ export class MouseService {
         if (this.getCanClick()) {
             this.communicationService.getDifferenceCount('7').subscribe((tempDifferenceCounter) => {
                 this.differenceCounter = tempDifferenceCounter;
-                console.log('Difference counter: ' + this.differenceCounter);
             });
 
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
