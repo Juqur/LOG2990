@@ -42,7 +42,7 @@ export class SelectionPageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.communicationService.getLevels('/image/AllLevels').subscribe((value) => {
+        this.communicationService.getLevels('/image/allLevels').subscribe((value) => {
             this.levels = value;
 
             this.lastShownLevel = Constants.levelsPerPage;

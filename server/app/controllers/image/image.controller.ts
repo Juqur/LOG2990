@@ -1,6 +1,6 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
@@ -8,7 +8,7 @@ import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 export class ImageController {
     constructor(private readonly imageService: ImageService) {}
 
-    @Get('/AllLevels')
+    @Get('/allLevels')
     /**
      * Gets the card data from the json files
      *
@@ -22,13 +22,19 @@ export class ImageController {
         return this.imageService.getLevels();
     }
 
+    /**
+     * Gets the difference count between the two images
+     *
+     * @param differenceFile The name of the file that has the differences
+     * @returns the number of differences between the two images
+     */
     @ApiOkResponse({
         description: 'Returns the number of differences between the two images',
         type: Message,
     })
-    @Get('/differenceCount')
-    async differenceCount(@Body() body: { differenceFile: string }) {
-        return this.imageService.differencesCount(body.differenceFile);
+    @Get('/differenceCount:differenceFile')
+    async differenceCount(@Param('differenceFile') differenceFile: string) {
+        return this.imageService.differencesCount(differenceFile);
     }
 
     /**
@@ -58,7 +64,7 @@ export class ImageController {
             required: ['differenceFile', 'position'],
         },
     })
-    @Post('/difference')
+    @Post('/differenceArray')
     async findImageDifference(@Body() body: { differenceFile: string; position: number }) {
         return this.imageService.findDifference(body.differenceFile, body.position);
     }

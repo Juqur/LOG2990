@@ -30,9 +30,14 @@ export class CommunicationService {
         return this.http.get<Level>(`${this.baseUrl}api` + path + levelId);
     }
 
+    getDifferenceCount(differenceFile: string): Observable<number> {
+        console.log("KENWA ENYA UNGWEEEEE");
+        return this.http.get<number>(`${this.baseUrl}api/image/differenceCount/${differenceFile}`);
+    }
+
     postDifference(differenceFile: string, position: number): Observable<number[]> {
         return this.http
-            .post<number[]>(`${this.baseUrl}api/image/difference`, { differenceFile, position }, { observe: 'response', responseType: 'json' })
+            .post<number[]>(`${this.baseUrl}api/image/differenceArray`, { differenceFile, position }, { observe: 'response', responseType: 'json' })
             .pipe(map((response) => response.body || []));
     }
 
