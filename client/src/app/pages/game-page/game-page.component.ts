@@ -24,10 +24,8 @@ export class GamePageComponent implements OnInit {
     defaultArea: boolean = true;
     diffArea: boolean = true;
     closePath: string = '/selection';
-    private communicationService: CommunicationService;
 
-    constructor(private route: ActivatedRoute) {}
-
+    constructor(private route: ActivatedRoute, private communicationService: CommunicationService) {}
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
