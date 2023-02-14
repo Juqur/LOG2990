@@ -8,10 +8,10 @@ import { ExampleService } from '@app/services/example/example.service';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 // import { MongooseModule } from '@nestjs/mongoose';
-import { ImageController } from './controllers/image/image.controller';
-import { ImageService } from './services/image/image.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ImageController } from './controllers/image/image.controller';
+import { ImageService } from './services/image/image.service';
 
 @Module({
     imports: [

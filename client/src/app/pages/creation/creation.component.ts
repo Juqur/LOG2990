@@ -245,8 +245,6 @@ export class CreationComponent implements OnInit {
                 gameName = result;
                 this.savedLevel = {
                     id: Constants.INIT_DIFF_NB,
-                    imageOriginal: '',
-                    imageDiff: '',
                     name: gameName,
                     playerSolo: [''],
                     timeSolo: Constants.timeSolo,

@@ -4,13 +4,14 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { Level } from '@app/levels';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
-    providers: [DrawService],
+    providers: [DrawService, CommunicationService],
 })
 export class GamePageComponent implements OnInit {
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
@@ -37,6 +38,7 @@ export class GamePageComponent implements OnInit {
     drawServiceOriginal: DrawService = new DrawService();
 
     constructor(private mouseService: MouseService, private route: ActivatedRoute) {}
+    closePath: string = '/selection';
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {

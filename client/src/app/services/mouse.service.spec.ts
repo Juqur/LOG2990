@@ -1,6 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { Constants } from '@common/constants';
+// import { of } from 'rxjs';
 
 import { MouseService } from './mouse.service';
 
@@ -10,7 +13,7 @@ describe('MouseService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, AppMaterialModule, RouterTestingModule],
         });
         service = TestBed.inject(MouseService);
         mouseEvent = {
@@ -49,14 +52,6 @@ describe('MouseService', () => {
         expect(result).not.toBeTrue();
     });
 
-    it('processClick should call incrementCounter', async () => {
-        spyOn(service, 'getCanClick').and.returnValue(true);
-        spyOn(service, 'getDifferencesArray').and.returnValue(Promise.resolve([1]));
-        const spy = spyOn(service, 'incrementCounter');
-        await service.processClick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    });
-
     it('processClick should return a promise if the click is valid.', () => {
         spyOn(service, 'getX').and.returnValue(Constants.testXposition);
         spyOn(service, 'getY').and.returnValue(Constants.testYposition);
@@ -70,6 +65,14 @@ describe('MouseService', () => {
     it('the difference counter should start at a value of 0', () => {
         const expectedValue = 0;
         expect(service.getDifferenceCounter()).toEqual(expectedValue);
+    });
+
+    it('processClick should call incrementCounter', async () => {
+        spyOn(service, 'getCanClick').and.returnValue(true);
+        spyOn(service, 'getDifferencesArray').and.returnValue(Promise.resolve([1]));
+        const spy = spyOn(service, 'incrementCounter');
+        await service.processClick();
+        expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('incrementCounter should increment the counter by a value of one', () => {

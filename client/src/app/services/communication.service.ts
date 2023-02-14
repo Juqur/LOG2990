@@ -26,6 +26,10 @@ export class CommunicationService {
         return this.http.get(`${this.baseUrl}api` + path);
     }
 
+    getLevel(path: string, levelId: number): Observable<Level> {
+        return this.http.get<Level>(`${this.baseUrl}api` + path + levelId);
+    }
+
     postDifference(path: string, differenceFile: string, position: number): Observable<number[]> {
         return this.http
             .post<number[]>(`${this.baseUrl}api` + path, { differenceFile, position }, { observe: 'response', responseType: 'json' })

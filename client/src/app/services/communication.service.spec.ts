@@ -12,7 +12,6 @@ describe('CommunicationService', () => {
         });
         service = TestBed.inject(CommunicationService);
         httpMock = TestBed.inject(HttpTestingController);
-        // eslint-disable-next-line dot-notation -- baseUrl is private and we need access for the test
     });
 
     afterEach(() => {
@@ -21,5 +20,24 @@ describe('CommunicationService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('Get level should call http get with a id', () => {
+        const fakeLevel = {
+            id: 1,
+            name: '',
+            playerSolo: [],
+            timeSolo: [],
+            playerMulti: [],
+            timeMulti: [],
+            isEasy: true,
+        };
+        service.getLevel('/image/', 1).subscribe((res) => {
+            expect(res).toEqual(fakeLevel);
+        });
+
+        const req = httpMock.expectOne('http://localhost:3000/api/image/1');
+        expect(req.request.method).toEqual('GET');
+        req.flush(fakeLevel);
     });
 });

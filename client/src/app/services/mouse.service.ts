@@ -3,17 +3,24 @@ import { Vec2 } from '@app/interfaces/vec2';
 import { CommunicationService } from '@app/services/communication.service';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
+import { DialogData, PopUpServiceService } from './pop-up-service.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MouseService {
+    winGameDialogData: DialogData = {
+        textToSend: 'Vous avez gagnez!',
+        closeButtonMessage: 'Retour au menu de sélection',
+    };
+    closePath: string = '/selection';
+
     private differenceCounter: number = 0;
     private mousePosition: Vec2 = { x: 0, y: 0 };
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
-    // private arrayOfDifference: number[] = [];
-    constructor(private communicationService: CommunicationService) {}
+
+    constructor(private communicationService: CommunicationService, public popUpService: PopUpServiceService) {}
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
@@ -45,8 +52,13 @@ export class MouseService {
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
             const differencesArray = await this.getDifferencesArray(url, position);
-            if (differencesArray.length > 0) {
+
+            if (differencesArray[0] === Constants.minusOne) {
+                this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+            }
+            if (differencesArray.length > 0 || differencesArray[0] !== Constants.minusOne) {
                 this.incrementCounter();
+                console.log('Difference found at position: ' + position);
                 return differencesArray;
             }
         }
