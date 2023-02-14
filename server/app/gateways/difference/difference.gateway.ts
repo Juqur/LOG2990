@@ -8,8 +8,9 @@ export class DifferenceGateway {
     constructor(private readonly logger: Logger) {}
 
     @SubscribeMessage(DifferenceEvents.ReceiveClick)
-    handleMessage(socket: Socket, message: string) {
-        this.logger.log(message);
-        socket.emit('sendCoord', 'Hello world!');
+    handleMessage(socket: Socket, value: number) {
+        this.logger.log(value);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        socket.emit('sendCoord', [-1]);
     }
 }

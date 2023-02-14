@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { CommunicationService } from '@app/services/communication.service';
 import { Constants, MouseButton } from '@common/constants';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
 import { Gateways, SocketHandler } from './socket-handler.service';
@@ -21,7 +20,10 @@ export class MouseService {
     private canClick: boolean = true;
     private differencesArray: number[] = [];
 
-    constructor(private communicationService: CommunicationService, public popUpService: PopUpServiceService, private socketHandler: SocketHandler) {
+    constructor(
+        /* private communicationService: CommunicationService,*/ public popUpService: PopUpServiceService,
+        private socketHandler: SocketHandler,
+    ) {
         if (!this.socketHandler.isSocketAlive(Gateways.Difference)) {
             this.socketHandler.connect(Gateways.Difference);
             this.socketHandler.on(
