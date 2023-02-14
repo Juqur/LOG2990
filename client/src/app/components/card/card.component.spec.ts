@@ -53,7 +53,6 @@ describe('CardComponent', () => {
         expect(component.displayDifficulty()).toEqual('Hard');
     });
     it('PlaySolo should ask for playerName', () => {   
-        
         popUpService.openDialog.and.returnValue({
             afterClosed: () => of({
               hasAccepted: true

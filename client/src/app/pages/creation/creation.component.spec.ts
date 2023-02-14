@@ -8,6 +8,7 @@ import { DifferenceDetectorService } from '@app/services/difference-detector.ser
 import { MouseService } from '@app/services/mouse.service';
 import { PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
+import { of } from 'rxjs';
 import { CreationComponent } from './creation.component';
 import SpyObj = jasmine.SpyObj;
 
@@ -21,6 +22,8 @@ describe('CreationComponent', () => {
 
     const diffService = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
     const popUpService = jasmine.createSpyObj('PopUpServiceService', ['openDialog']);
+    popUpService.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    popUpService.dialogRef.afterClosed.and.returnValue(of({hasAccepted: true}));
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
     });
@@ -36,10 +39,8 @@ describe('CreationComponent', () => {
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
         fixture = TestBed.createComponent(CreationComponent);
-        canvasSharingService = TestBed.inject(CanvasSharingService);
-        // differenceDetectorService = TestBed.inject(DifferenceDetectorService);
-        // popUpServiceService = TestBed.inject(PopUpServiceService);
         component = fixture.componentInstance;
+        canvasSharingService = TestBed.inject(CanvasSharingService);
         fixture.detectChanges();
     });
     it('should create', () => {
@@ -281,13 +282,49 @@ describe('CreationComponent', () => {
             expect(component.radius).toBe(Constants.RADIUS_TABLE[i]);
         }
     });
-    it('DetectDifference should call differencesService, and call popUpService if it returns null', () => {   
-        
+    it('DetectDifference should call errorDialog if there is no canvasCtx', () => {
+        const errorSpy = spyOn(component, 'errorDialog');
+        component.defaultCanvasCtx = null;
         component.detectDifference();
-        
-        expect(diffService.detectDifferences).toHaveBeenCalled();
-        expect(popUpService.openDialog).toHaveBeenCalled(); // CHANGE CA POUR ERROR DIALOG TANTOT
-    
+        expect(errorSpy).toHaveBeenCalledOnceWith('Canvas manquant');
     });
-    
+    it('DetectDifference should call popUpService if detectDifferencesService returns null', () => {
+        const errorSpy = spyOn(component, 'errorDialog');
+        diffService.detectDifferences.and.returnValue(null);
+        component.detectDifference();
+        expect(diffService.detectDifferences).toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledOnceWith('Veuillez fournir des images non vides');
+    });
+    it('DetectDifference should call detectDifferencesService and open dialog to show changes', () => {
+        const differences = {
+            clusters: [],
+            isHard: false,
+            canvas: document.createElement('canvas').getContext('2d'),
+        }
+        diffService.detectDifferences.and.returnValue(differences);
+        component.detectDifference();
+        expect(component.nbDifferences).not.toBeNull();
+        expect(diffService.detectDifferences).toHaveBeenCalled();
+        expect(popUpService.openDialog).toHaveBeenCalled();
+    });
+    it('saveGame should ask for game name by opening dialog', () => {
+        const mockFile = new File([''], 'mock.bmp');
+        component.diffImageFile = mockFile;
+        component.isSaveable = true;
+        popUpService.openDialog.and.returnValue({
+            afterClosed: () => of({
+              hasAccepted: true
+            })
+        });
+        popUpService.result = 'nom';
+        component.saveGame();
+        expect(popUpService.openDialog).toHaveBeenCalled();
+    });
+    it('saveGame should errorDialog if there is no img file', () => {
+        component.diffImageFile = null;
+        component.isSaveable = true;
+        const errorSpy = spyOn(component, 'errorDialog');
+        component.saveGame();
+        expect(errorSpy).toHaveBeenCalled();
+    });
 });
