@@ -2,14 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameServiceService } from '@app/services/game-service.service';
 import { Constants } from '@common/constants';
 
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
-    providers: [GameServiceService],
 })
 export class GamePageComponent implements OnInit {
     levelId: number;
