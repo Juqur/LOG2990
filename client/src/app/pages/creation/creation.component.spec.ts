@@ -2,11 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
-/*import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+/* import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';*/
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 // import { PopUpServiceService } from '@app/services/pop-up-service.service';
 import { CreationComponent } from './creation.component';
 import SpyObj = jasmine.SpyObj;
@@ -108,36 +109,6 @@ describe('CreationComponent', () => {
         expect(showDefaultSpy).toHaveBeenCalled();
         expect(showDiffSpy).toHaveBeenCalled();
     });
-    it('showDefaultImage should show default image on canvas if the image format is correct', (done) => {
-        component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
-        const mockFile = new File([''], 'mock.bmp');
-        component.defaultImageFile = mockFile;
-        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
-        const showSpy = spyOn(component, 'showDefaultImage').and.callThrough();
-        component.showDefaultImage();
-        setTimeout(() => {
-            expect(showSpy).toHaveBeenCalled();
-            expect(canvasSharingService.defaultCanvasRef.width).toEqual(640);
-            expect(canvasSharingService.defaultCanvasRef.height).toEqual(480);
-            done();
-        }, 1000);
-    });
-    it('showDiffImage should show diff image on canvas if the image format is correct', (done) => {
-        component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
-        const mockFile = new File([''], 'mock.bmp');
-        component.diffImageFile = mockFile;
-        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
-        const showSpy = spyOn(component, 'showDiffImage').and.callThrough();
-        component.showDiffImage();
-        setTimeout(() => {
-            expect(showSpy).toHaveBeenCalled();
-            expect(canvasSharingService.diffCanvasRef.width).toEqual(640);
-            expect(canvasSharingService.diffCanvasRef.height).toEqual(480);
-            done();
-        }, 1000);
-    });
     it('defaultImageSelector should not call showDefaultImage if there is not file input', () => {
         const showImgSpy = spyOn(component, 'showDefaultImage');
         const event = { target: {} } as unknown as Event;
@@ -218,5 +189,67 @@ describe('CreationComponent', () => {
             done();
         });
     });
-});
 
+    it('showDefaultImage should call errorDialog if there is no default image file', () => {
+        const errorSpy = spyOn(component, 'errorDialog');
+        const imageCreationSpy = spyOn(URL, 'createObjectURL');
+        component.defaultImageFile = null;
+        component.showDefaultImage();
+        expect(imageCreationSpy).toHaveBeenCalledTimes(0);
+        expect(errorSpy).toHaveBeenCalledOnceWith('aucun fichier de base');
+    });
+    it('showDiffImage should call errorDialog if there is no diff image file', () => {
+        const errorSpy = spyOn(component, 'errorDialog');
+        const imageCreationSpy = spyOn(URL, 'createObjectURL');
+        component.diffImageFile = null;
+        component.showDiffImage();
+        expect(imageCreationSpy).toHaveBeenCalledTimes(0);
+        expect(errorSpy).toHaveBeenCalledOnceWith('aucun fichier de différence');
+    });
+    it('showDefaultImage should show default image on canvas if the image format is correct', (done) => {
+        component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.defaultImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
+        // const showSpy = spyOn(component, 'showDefaultImage').and.callThrough();
+        component.showDefaultImage();
+        setTimeout(() => {
+            // expect(canvasSharingService.defaultCanvasRef.getContext('2d')?.drawImage).toHaveBeenCalled();
+            expect(canvasSharingService.defaultCanvasRef.width).toEqual(Constants.EXPECTED_WIDTH);
+            expect(canvasSharingService.defaultCanvasRef.height).toEqual(Constants.EXPECTED_HEIGHT);
+            done();
+        }, Constants.thousand);
+    });
+    it('showDiffImage should show diff image on canvas if the image format is correct', (done) => {
+        component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.diffImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
+        // const showSpy = spyOn(component, 'showDiffImage').and.callThrough();
+        component.showDiffImage();
+        setTimeout(() => {
+            // expect(canvasSharingService.diffCanvasRef.getContext('2d')?.drawImage).toHaveBeenCalled();
+            expect(canvasSharingService.diffCanvasRef.width).toEqual(Constants.EXPECTED_WIDTH);
+            expect(canvasSharingService.diffCanvasRef.height).toEqual(Constants.EXPECTED_HEIGHT);
+            done();
+        }, Constants.thousand);
+    });
+    it('showDefaultImage should not show default image on canvas if there is no canvas context', (done) => {
+        component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.defaultImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
+        // const drawSpy = spyOn(component, 'showDefaultImage').and.callThrough();
+        spyOnAllFunctions(canvasSharingService.defaultCanvasRef.getContext('2d') as CanvasRenderingContext2D);
+        component.defaultCanvasCtx = null;
+        const errorSpy = spyOn(component, 'errorDialog');
+        component.showDefaultImage();
+        setTimeout(() => {
+            expect(errorSpy).toHaveBeenCalledOnceWith('aucun canvas de base');
+            done();
+        }, Constants.thousand);
+    });
+});
