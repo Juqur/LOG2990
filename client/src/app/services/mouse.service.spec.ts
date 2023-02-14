@@ -26,55 +26,45 @@ describe('MouseService', () => {
 
     it('mouseHitDetect should correctly change the mouse position attribute', () => {
         spyOn(service, 'processClick');
-        service.mouseHitDetect(mouseEvent, []);
+        service.mouseHitDetect(mouseEvent);
         expect(service.getX()).toEqual(mouseEvent.offsetX);
         expect(service.getY()).toEqual(mouseEvent.offsetY);
     });
 
     it('mouseHitDetect should call processClick', () => {
         const spy = spyOn(service, 'processClick');
-        service.mouseHitDetect(mouseEvent, []);
+        service.mouseHitDetect(mouseEvent);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('mouseHitDetect should return false if the event does not support the correct button', () => {
         spyOn(service, 'processClick');
-        const result = service.mouseHitDetect(mouseEvent, []);
+        const result = service.mouseHitDetect(mouseEvent);
         expect(result).not.toBeTrue();
     });
 
     it('process click should return false if we cannot click', () => {
         spyOn(service, 'getCanClick').and.returnValue(false);
-        const result = service.processClick([]);
+        const result = service.processClick();
         expect(result).not.toBeTrue();
     });
 
-    it('processClick should return false it the array is empty', () => {
-        /* TODO
-         * This test is subject to failure once the server connection has been implemented.
-         * Please refactor this test to correctly test that if the server returns an empty array,
-         * such that there are no difference where we clicked, that processClick returns false.
-         */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        spyOn<any>(service, 'getTestVariable').and.returnValue([]);
-        const result = service.processClick([]);
-        expect(result).not.toBeTrue();
-    });
-
-    it('processClick should call incrementCounter', () => {
-        spyOn(service, 'getX').and.returnValue(Constants.fifty);
-        spyOn(service, 'getY').and.returnValue(Constants.fifty);
+    it('processClick should call incrementCounter', async () => {
+        spyOn(service, 'getCanClick').and.returnValue(true);
+        spyOn(service, 'getDifferencesArray').and.returnValue(Promise.resolve([1]));
         const spy = spyOn(service, 'incrementCounter');
-        service.processClick([1]);
+        await service.processClick();
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('processClick should return true if the click is valid.', () => {
-        spyOn(service, 'getX').and.returnValue(Constants.fifty);
-        spyOn(service, 'getY').and.returnValue(Constants.fifty);
+    it('processClick should return a promise if the click is valid.', () => {
+        spyOn(service, 'getX').and.returnValue(Constants.testXposition);
+        spyOn(service, 'getY').and.returnValue(Constants.testYposition);
         spyOn(service, 'incrementCounter');
-        const result = service.processClick([1, 2, 3]);
-        expect(result).toBeTrue();
+
+        service.processClick().then((value) => {
+            expect(value).toBeInstanceOf(Promise);
+        });
     });
 
     it('the difference counter should start at a value of 0', () => {
