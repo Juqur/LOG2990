@@ -29,6 +29,7 @@ export class MouseService {
             this.socketHandler.on(
                 'sendCoord',
                 (data: unknown) => {
+                    window.alert(typeof data);
                     this.differencesArray = data as number[];
                 },
                 Gateways.Difference,
@@ -64,10 +65,6 @@ export class MouseService {
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
-
-            // this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
-            //     this.differencesArray = tempDifferencesArray;
-            // });
 
             this.socketHandler.send(Gateways.Difference, 'receiveClick', position);
             window.alert(this.differencesArray);

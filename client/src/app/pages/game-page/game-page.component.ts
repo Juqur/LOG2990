@@ -27,7 +27,7 @@ export class GamePageComponent implements OnInit {
     closePath: string = '/selection';
 
     constructor(private route: ActivatedRoute) {}
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
             this.levelId = params.id;
