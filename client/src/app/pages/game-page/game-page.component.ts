@@ -37,7 +37,7 @@ export class GamePageComponent implements OnInit {
     drawServiceDiff: DrawService = new DrawService();
     drawServiceOriginal: DrawService = new DrawService();
 
-    constructor(private mouseService: MouseService, private route: ActivatedRoute) {}
+    constructor(private mouseService: MouseService, private route: ActivatedRoute, private communicationService: CommunicationService) {}
     closePath: string = '/selection';
 
     ngOnInit(): void {
@@ -49,6 +49,17 @@ export class GamePageComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             this.playerName = params['playerName'];
         });
+
+        try {
+            this.communicationService.getLevel(this.levelId).subscribe((value) => {
+                this.currentLevel = value;
+                this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
+            });
+        } catch (error) {
+            this.communicationService.getLevel(7).subscribe((value) => {
+                this.currentLevel = value;
+            });
+        }
 
         try {
             this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
@@ -63,25 +74,9 @@ export class GamePageComponent implements OnInit {
             const diffDetected = this.mouseService.mouseHitDetect(event);
             diffDetected.then((result) => {
                 if (result.length > 0) {
-                    this.imagesData.concat(result);
-                    this.copyArea(result);
-                    this.originalPlayArea.flashArea(result);
-                    this.mouseService.changeClickState();
-                    this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-                        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                        this.mouseService.changeClickState();
-                    });
-                    this.foundADifference = true;
+                    this.handleAreaFoundInOriginal(result);
                 } else {
-                    this.drawServiceOriginal.context = this.originalPlayArea
-                        .getCanvas()
-                        .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-                    this.drawServiceOriginal.drawError(this.mouseService);
-                    this.mouseService.changeClickState();
-                    this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-                        this.mouseService.changeClickState();
-                        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                    });
+                    this.handleAreaNotFoundInOriginal();
                 }
             });
         }
@@ -92,38 +87,9 @@ export class GamePageComponent implements OnInit {
             const diffDetected = this.mouseService.mouseHitDetect(event);
             diffDetected.then((result) => {
                 if (result.length > 0) {
-                    this.imagesData.push(...result);
-                    this.diffPlayArea.flashArea(result);
-                    this.mouseService.changeClickState();
-                    this.diffPlayArea
-                        .timeout(Constants.millisecondsInOneSecond)
-                        .then(() => {
-                            this.diffPlayArea.drawPlayArea(this.diffImageSrc);
-                            this.mouseService.changeClickState();
-                        })
-                        .then(() => {
-                            setTimeout(() => {
-                                this.copyArea(this.imagesData);
-                            }, Constants.thirty);
-                        });
-                    this.foundADifference = true;
+                    this.handleAreaFoundInDiff(result);
                 } else {
-                    this.drawServiceDiff.context = this.diffPlayArea
-                        .getCanvas()
-                        .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-                    this.drawServiceDiff.drawError(this.mouseService);
-                    this.mouseService.changeClickState();
-                    this.diffPlayArea
-                        .timeout(Constants.millisecondsInOneSecond)
-                        .then(() => {
-                            this.mouseService.changeClickState();
-                            this.diffPlayArea.drawPlayArea(this.diffImageSrc);
-                        })
-                        .then(() => {
-                            setTimeout(() => {
-                                this.copyArea(this.imagesData);
-                            }, Constants.thirty);
-                        });
+                    this.handleAreaNotFoundInDiff();
                 }
             });
         }
@@ -156,6 +122,67 @@ export class GamePageComponent implements OnInit {
 
             context.fillStyle = rgba;
             context.fillRect(x, y, 1, 1);
+        });
+    }
+
+    handleAreaFoundInDiff(result: number[]) {
+        this.imagesData.push(...result);
+        this.diffPlayArea.flashArea(result);
+        this.mouseService.changeClickState();
+        this.diffPlayArea
+            .timeout(Constants.millisecondsInOneSecond)
+            .then(() => {
+                this.diffPlayArea.drawPlayArea(this.diffImageSrc);
+                this.mouseService.changeClickState();
+            })
+            .then(() => {
+                setTimeout(() => {
+                    this.copyArea(this.imagesData);
+                }, Constants.thirty);
+            });
+        this.foundADifference = true;
+    }
+
+    handleAreaNotFoundInDiff() {
+        this.drawServiceDiff.context = this.diffPlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.drawError(this.mouseService);
+        this.mouseService.changeClickState();
+        this.diffPlayArea
+            .timeout(Constants.millisecondsInOneSecond)
+            .then(() => {
+                this.mouseService.changeClickState();
+                this.diffPlayArea.drawPlayArea(this.diffImageSrc);
+            })
+            .then(() => {
+                setTimeout(() => {
+                    this.copyArea(this.imagesData);
+                }, Constants.thirty);
+            });
+    }
+
+    handleAreaFoundInOriginal(result: number[]) {
+        this.imagesData.concat(result);
+        this.copyArea(result);
+        this.originalPlayArea.flashArea(result);
+        this.mouseService.changeClickState();
+        this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+            this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+            this.mouseService.changeClickState();
+        });
+        this.foundADifference = true;
+    }
+
+    handleAreaNotFoundInOriginal() {
+        this.drawServiceOriginal.context = this.originalPlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceOriginal.drawError(this.mouseService);
+        this.mouseService.changeClickState();
+        this.originalPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+            this.mouseService.changeClickState();
+            this.originalPlayArea.drawPlayArea(this.originalImageSrc);
         });
     }
 }

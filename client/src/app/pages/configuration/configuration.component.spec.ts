@@ -44,6 +44,7 @@ describe('ConfigurationComponent', () => {
                 timeMulti: [],
                 timeSolo: [],
                 isEasy: false,
+                nbDifferences: 0,
             },
         ];
         spyOn(communicationService, 'getLevels').and.returnValue(of(levels));

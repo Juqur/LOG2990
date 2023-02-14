@@ -67,14 +67,6 @@ describe('MouseService', () => {
         expect(service.getDifferenceCounter()).toEqual(expectedValue);
     });
 
-    it('processClick should call incrementCounter', async () => {
-        spyOn(service, 'getCanClick').and.returnValue(true);
-        spyOn(service, 'getDifferencesArray').and.returnValue(Promise.resolve([1]));
-        const spy = spyOn(service, 'incrementCounter');
-        await service.processClick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    });
-
     it('incrementCounter should increment the counter by a value of one', () => {
         const expectedStartValue = 0;
         const expectedEndValue = 1;

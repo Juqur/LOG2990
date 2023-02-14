@@ -251,6 +251,7 @@ export class CreationComponent implements OnInit {
                     playerMulti: [''],
                     timeMulti: Constants.timeMulti,
                     isEasy: !this.differences?.isHard,
+                    nbDifferences: this.nbDifferences,
                 };
 
                 // TODO : Sauvegarder le jeu sur le serveur

@@ -19,6 +19,7 @@ export class MouseService {
     private mousePosition: Vec2 = { x: 0, y: 0 };
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
+    private numberOfDifference: number = 0;
 
     constructor(private communicationService: CommunicationService, public popUpService: PopUpServiceService) {}
 
@@ -52,13 +53,11 @@ export class MouseService {
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
             const differencesArray = await this.getDifferencesArray(url, position);
-
-            if (differencesArray[0] === Constants.minusOne) {
-                this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-            }
-            if (differencesArray.length > 0 || differencesArray[0] !== Constants.minusOne) {
+            if (differencesArray.length > 0) {
                 this.incrementCounter();
-                console.log('Difference found at position: ' + position);
+                if (this.getDifferenceCounter() >= this.numberOfDifference - 1) {
+                    this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+                }
                 return differencesArray;
             }
         }
@@ -120,5 +119,15 @@ export class MouseService {
      */
     getCanClick(): boolean {
         return this.canClick;
+    }
+
+    /**
+     * Sets the number of difference to the given value.
+     *
+     * @param numberOfDifference the number of difference to set.
+     * @returns void
+     * */
+    setNumberOfDifference(numberOfDifference: number): void {
+        this.numberOfDifference = numberOfDifference;
     }
 }
