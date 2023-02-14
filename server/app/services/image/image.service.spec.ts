@@ -44,26 +44,34 @@ describe('ImageService', () => {
         expect(service.getArray('')).rejects.toThrow();
     });
 
-    it('returnArray should return the correct array', () => {
+    it('returnIndex should return the correct index', () => {
         const fileName = 'clusters-test1';
-        const expectedArray = TestConstants.EXPECTED_DIFFERENCE_ARRAY;
+        const expectedIndex = 0;
         service.getArray(fileName).then((readArray) => {
-            const result = service.returnArray(readArray, 1);
-            expect(result).toEqual(expectedArray);
+            const result = service.returnIndex(readArray, 1);
+            expect(result).toStrictEqual(expectedIndex);
         });
     });
 
     it('returnArray should return undefined if the passed array is empty', () => {
         const differenceArray: number[][] = [];
-        const result = service.returnArray(differenceArray, 1);
-        expect(result).toEqual(undefined);
+        const result = service.returnIndex(differenceArray, 1);
+        expect(result).toStrictEqual(undefined);
     });
 
     it('returnArray should return undefined if the position is not found', () => {
         service.getArray('clusters-test1').then((readArray) => {
-            const result = service.returnArray(readArray, 0);
-            expect(result).toEqual(undefined);
+            const result = service.returnIndex(readArray, 0);
+            expect(result).toStrictEqual(undefined);
         });
+    });
+
+    it('findDifference should return an empty array if the index is undefined', async () => {
+        const fileName = 'clusters-test1';
+        const position = undefined;
+        const result = await service.findDifference(fileName, position);
+
+        expect(result).toStrictEqual([]);
     });
 
     it('findDifference should return the correct array of differences', async () => {
@@ -79,9 +87,9 @@ describe('ImageService', () => {
         const fileName = 'clusters-test1';
         const position = 1;
         const expectedArray = [Constants.minusOne];
-
-        jest.spyOn(service, 'getArray').mockReturnValue(undefined);
-        jest.spyOn(service, 'returnArray').mockReturnValue(undefined);
+        jest.spyOn(service, 'returnIndex').mockReturnValue(undefined);
+        const mockGetFoundDifferences = jest.fn().mockReturnValue(TestConstants.FOUND_DIFFERENCES_TEST);
+        Object.defineProperty(service, 'foundDifferences', { get: mockGetFoundDifferences });
 
         const result = await service.findDifference(fileName, position);
         expect(result).toStrictEqual(expectedArray);

@@ -4,7 +4,6 @@ import { promises as fs } from 'fs';
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
-
     foundDifferences: number[] = [];
 
     /**
@@ -25,17 +24,14 @@ export class ImageService {
      * @param position
      * @returns
      */
-    async returnArray(allDifferences: number[][], position: number): Promise<number[]> {
-        return allDifferences.find((differenceRow, index) => {
-            if (differenceRow.indexOf(position) !== Constants.minusOne) {
-                if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
-                    return false;
-                }
+    returnIndex(allDifferences: number[][], pixelClicked: number): number {
+        for (const difference of allDifferences) {
+            const index = allDifferences.indexOf(difference);
+            if (difference.includes(pixelClicked) && !this.foundDifferences.includes(index)) {
                 this.foundDifferences.push(index);
-                return true;
+                return index;
             }
-            return false;
-        });
+        }
     }
 
     /**
@@ -48,10 +44,17 @@ export class ImageService {
      */
     async findDifference(fileName: string, position: number): Promise<number[]> {
         const allDifferences = await this.getArray(fileName);
-        const foundDifferenceArray = await this.returnArray(allDifferences, position);
-        if (foundDifferenceArray === undefined && this.foundDifferences.length === allDifferences.length) {
+        let index = this.returnIndex(allDifferences, position);
+        index = index === undefined ? Constants.minusOne : index;
+        const foundDifferenceArray = allDifferences[index];
+        if (foundDifferenceArray !== undefined) {
+            return foundDifferenceArray;
+        }
+
+        if (this.foundDifferences.length === allDifferences.length) {
             return [Constants.minusOne];
         }
-        return foundDifferenceArray ? foundDifferenceArray : [];
+
+        return [];
     }
 }

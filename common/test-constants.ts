@@ -13,4 +13,5 @@ export namespace TestConstants {
 
     // Image Service Tests
     export const EXPECTED_DIFFERENCE_ARRAY = [1, 4, 7, 9, 11];
+    export const FOUND_DIFFERENCES_TEST = [0, 1, 2];
 }
