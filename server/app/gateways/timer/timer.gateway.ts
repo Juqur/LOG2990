@@ -4,8 +4,6 @@ import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_EMITTING_TIME } from './timer.gateway.constants';
 import { TimerEvents } from './timer.gateway.events';
 
-jest.useFakeTimers();
-
 @WebSocketGateway({ cors: true, namespace: '/timer' })
 @Injectable()
 export class TimerGateway implements OnGatewayDisconnect {

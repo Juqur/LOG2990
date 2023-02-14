@@ -6,7 +6,6 @@ import { GameTimerComponent } from './game-timer.component';
 describe('GameTimerComponent', () => {
     let component: GameTimerComponent;
     let fixture: ComponentFixture<GameTimerComponent>;
-    let socketHandler: jasmine.SpyObj<SocketHandler>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -17,7 +16,6 @@ describe('GameTimerComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(GameTimerComponent);
-        socketHandler = TestBed.inject(SocketHandler) as jasmine.SpyObj<SocketHandler>;
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

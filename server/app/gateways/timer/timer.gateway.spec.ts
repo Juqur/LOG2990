@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TimerGateway } from './timer.gateway';
 import { DELAY_BEFORE_EMITTING_TIME } from './timer.gateway.constants';
 
+jest.useFakeTimers();
+
 describe('TimerGateway', () => {
     let gateway: TimerGateway;
     let server;
