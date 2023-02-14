@@ -5,7 +5,6 @@ import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
-import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
 
@@ -36,7 +35,6 @@ export class CreationComponent implements OnInit {
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
-        private mouseService: MouseService,
         private diffService: DifferenceDetectorService,
         public popUpService: PopUpServiceService,
     ) {}
@@ -47,8 +45,8 @@ export class CreationComponent implements OnInit {
         this.diffCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.setDiffCanvasRef(this.diffCanvasCtx?.canvas as HTMLCanvasElement);
 
-        this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare, this.mouseService);
-        this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare, this.mouseService);
+        this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
+        this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
     }
 
     defaultImageSelector(event: Event) {
@@ -253,6 +251,7 @@ export class CreationComponent implements OnInit {
                     playerMulti: [''],
                     timeMulti: Constants.timeMulti,
                     isEasy: !this.differences?.isHard,
+                    nbDifferences: this.nbDifferences,
                 };
 
                 // TODO : Sauvegarder le jeu sur le serveur

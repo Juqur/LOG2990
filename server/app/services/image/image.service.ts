@@ -8,6 +8,37 @@ export class ImageService {
     foundDifferences: number[] = [];
 
     /**
+     * Gets the array of differences from the json file
+     *
+     * @param fileName The name of the file that has the differences
+     */
+    async getArray(fileName: string): Promise<number[][]> {
+        const promises = await fs.readFile(this.pathDifference + fileName + '.json', 'utf8');
+        return JSON.parse(promises.toString()) as number[][];
+    }
+
+    /**
+     * Iterates through the 2 dimension array to compare each pixel with the position
+     * of the clicked pixel and returns the array of pixels that are different
+     *
+     * @param allDifferences
+     * @param position
+     * @returns
+     */
+    async returnArray(allDifferences: number[][], position: number): Promise<number[]> {
+        return allDifferences.find((differenceRow, index) => {
+            if (differenceRow.indexOf(position) !== Constants.minusOne) {
+                if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
+                    return false;
+                }
+                // this.foundDifferences.push(index);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
      * Finds the difference between the original image and the modified image
      * Also checks if the difference was already found
      *
@@ -16,23 +47,12 @@ export class ImageService {
      * @returns the array of pixels that are different if there is a difference
      */
     async findDifference(fileName: string, position: number): Promise<number[]> {
-        const promises = await fs.readFile(this.pathDifference + fileName + '.json', 'utf8');
-        const allDifferences = JSON.parse(promises.toString()) as number[][];
+        const allDifferences = await this.getArray(fileName);
+        const foundDifferenceArray = this.returnArray(allDifferences, position);
 
-        const foundDifferenceArray = allDifferences.find((differenceRow, index) => {
-            if (differenceRow.indexOf(position) !== Constants.minusOne) {
-                if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
-                    return false;
-                } else {
-                    this.foundDifferences.push(index);
-                    return true;
-                }
-            }
-            return false;
-        });
-
-        // Iterates through the 2 dimension array to compare each pixel with the position
-        // of the clicked pixel and returns the array of pixels that are different
-        return foundDifferenceArray;
+        if (foundDifferenceArray === undefined && this.foundDifferences.length === allDifferences.length) {
+            return [Constants.minusOne];
+        }
+        return foundDifferenceArray ? foundDifferenceArray : [];
     }
 }
