@@ -37,7 +37,7 @@ export class GamePageComponent implements OnInit {
     drawServiceDiff: DrawService = new DrawService();
     drawServiceOriginal: DrawService = new DrawService();
     closePath: string = '/selection';
-    gameId: string | undefined;
+    gameId: string | null;
 
     constructor(private mouseService: MouseService, private route: ActivatedRoute, private communicationService: CommunicationService) {}
 
@@ -69,11 +69,16 @@ export class GamePageComponent implements OnInit {
         } catch (error) {
             throw new Error("Couldn't load images");
         }
+
+        this.communicationService.postNewGame('/game', String(this.levelId)).subscribe((gameId) => {
+            this.gameId = gameId;
+        });
     }
 
     clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
-            const diffDetected = this.mouseService.mouseHitDetect(event);
+            // Update this so it also does game id work.
+            const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
             diffDetected.then((result) => {
                 if (result.length > 0) {
                     this.handleAreaFoundInOriginal(result);
@@ -86,7 +91,7 @@ export class GamePageComponent implements OnInit {
 
     clickedOnDiff(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
-            const diffDetected = this.mouseService.mouseHitDetect(event);
+            const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
             diffDetected.then((result) => {
                 if (result.length > 0) {
                     this.handleAreaFoundInDiff(result);

@@ -45,10 +45,10 @@ export class MouseService {
      * @param event the mouse event
      * @returns a boolean indicating if the click was valid.
      */
-    async mouseHitDetect(event: MouseEvent): Promise<number[]> {
+    async mouseHitDetect(event: MouseEvent, gameId: string | null): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            return this.processClick();
+            return this.processClick(gameId);
         }
         return Promise.resolve([]);
     }
@@ -59,14 +59,14 @@ export class MouseService {
      *
      * @returns a boolean indicating if the click was valid.
      */
-    async processClick(): Promise<number[]> {
+    async processClick(gameId: string | null): Promise<number[]> {
         // let foundDifference: Promise<boolean> = Promise.resolve(false);
         if (this.getCanClick()) {
             const url = '/game/difference';
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
-            const differencesArray = await this.getDifferencesArray(url, position);
+            const differencesArray = await this.getDifferencesArray(url, position, gameId);
             if (differencesArray.length > 0) {
                 this.incrementCounter();
                 if (this.getDifferenceCounter() >= this.numberOfDifference - 1) {
@@ -78,8 +78,8 @@ export class MouseService {
         return [];
     }
 
-    async getDifferencesArray(url: string, position: number) {
-        return await lastValueFrom(this.communicationService.postDifference(url, '7', position));
+    async getDifferencesArray(url: string, position: number, gameId: string | null) {
+        return await lastValueFrom(this.communicationService.postDifference(url, gameId, position));
     }
 
     /**

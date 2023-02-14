@@ -5,7 +5,7 @@ import { promises as fs } from 'fs';
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
 
-    foundDifferences: number[] = [];
+    // foundDifferences: number[] = [];
 
     /**
      * Gets the array of differences from the json file
@@ -25,10 +25,10 @@ export class ImageService {
      * @param position
      * @returns
      */
-    async returnArray(allDifferences: number[][], position: number): Promise<number[]> {
+    async returnArray(allDifferences: number[][], foundDifferences: number[], position: number): Promise<number[]> {
         return allDifferences.find((differenceRow, index) => {
             if (differenceRow.indexOf(position) !== Constants.minusOne) {
-                if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
+                if (foundDifferences.find((difference) => difference === index) !== undefined) {
                     return false;
                 }
                 // this.foundDifferences.push(index);
@@ -46,11 +46,11 @@ export class ImageService {
      * @param position The position of the pixel clicked
      * @returns the array of pixels that are different if there is a difference
      */
-    async findDifference(fileName: string, position: number): Promise<number[]> {
+    async findDifference(fileName: string, foundDifferences: number[], position: number): Promise<number[]> {
         const allDifferences = await this.getArray(fileName);
-        const foundDifferenceArray = this.returnArray(allDifferences, position);
+        const foundDifferenceArray = this.returnArray(allDifferences, foundDifferences, position);
 
-        if (foundDifferenceArray === undefined && this.foundDifferences.length === allDifferences.length) {
+        if (foundDifferenceArray === undefined && foundDifferences.length === allDifferences.length) {
             return [Constants.minusOne];
         }
         return foundDifferenceArray ? foundDifferenceArray : [];
