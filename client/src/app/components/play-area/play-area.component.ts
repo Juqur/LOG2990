@@ -17,10 +17,7 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(
-        private readonly drawService: DrawService,
-        private canvasSharing: CanvasSharingService, // private readonly mouseService: MouseService,
-    ) {}
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
     get width(): number {
         return this.canvasSize.x;

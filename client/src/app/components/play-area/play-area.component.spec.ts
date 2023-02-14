@@ -10,11 +10,6 @@ describe('PlayAreaComponent', () => {
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
-    // const mouseEvent = {
-    //     offsetX: 100,
-    //     offsetY: 200,
-    //     button: 0,
-    // } as MouseEvent;
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
