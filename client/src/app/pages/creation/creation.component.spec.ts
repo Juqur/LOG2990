@@ -18,6 +18,9 @@ describe('CreationComponent', () => {
     let mouseServiceSpy: SpyObj<MouseService>;
     // let differenceDetectorService: DifferenceDetectorService;
     // let popUpServiceService: PopUpServiceService;
+
+    const diffService = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
+    const popUpService = jasmine.createSpyObj('PopUpServiceService', ['openDialog']);
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
     });
@@ -27,8 +30,8 @@ describe('CreationComponent', () => {
             providers: [
                 CanvasSharingService,
                 { provide: MouseService, useValue: mouseServiceSpy },
-                { provide: DifferenceDetectorService, useValue: {} },
-                { provide: PopUpServiceService, useValue: {} },
+                { provide: DifferenceDetectorService, useValue: diffService },
+                { provide: PopUpServiceService, useValue: popUpService },
             ],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
@@ -278,4 +281,13 @@ describe('CreationComponent', () => {
             expect(component.radius).toBe(Constants.RADIUS_TABLE[i]);
         }
     });
+    it('DetectDifference should call differencesService, and call popUpService if it returns null', () => {   
+        
+        component.detectDifference();
+        
+        expect(diffService.detectDifferences).toHaveBeenCalled();
+        expect(popUpService.openDialog).toHaveBeenCalled(); // CHANGE CA POUR ERROR DIALOG TANTOT
+    
+    });
+    
 });
