@@ -20,6 +20,17 @@ export class ImageService {
     }
 
     /**
+     * Gets the number of differences between the two images
+     *
+     * @param fileName The name of the file that has the differences
+     * @returns the number of differences between the two images
+     */
+    async differencesCount(fileName: string): Promise<number> {
+        const promises = await fsp.readFile(this.pathDifference + fileName + '.json', 'utf8');
+        return (JSON.parse(promises.toString()) as number[][]).length;
+    }
+
+    /**
      * Finds the difference between the original image and the modified image
      * Also checks if the difference was already found
      *

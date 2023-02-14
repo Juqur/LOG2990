@@ -16,11 +16,19 @@ export class ImageController {
      */
     @ApiOkResponse({
         description: 'Returns the card data',
-        type: Message,
     })
     @Get('/')
     async getLevels() {
         return this.imageService.getLevels();
+    }
+
+    @ApiOkResponse({
+        description: 'Returns the number of differences between the two images',
+        type: Message,
+    })
+    @Get('/differenceCount')
+    async differenceCount(@Body() body: { differenceFile: string }) {
+        return this.imageService.differencesCount(body.differenceFile);
     }
 
     /**
