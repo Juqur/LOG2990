@@ -30,7 +30,6 @@ export class ImageService {
     async findDifference(fileName: string, position: number): Promise<number[]> {
         const promises = await fsp.readFile(this.pathDifference + fileName + '.json', 'utf8');
         const allDifferences = JSON.parse(promises.toString()) as number[][];
-        // const foundDifferences: number[] = [];
         const foundDifferenceArray = allDifferences.find((differenceRow, index) => {
             if (differenceRow.indexOf(position) !== Constants.minusOne) {
                 if (this.foundDifferences.find((difference) => difference === index) !== undefined) {

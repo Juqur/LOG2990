@@ -14,7 +14,9 @@ describe('DrawService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(DrawService);
-        ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d', {
+            willReadFrequently: true,
+        }) as CanvasRenderingContext2D;
         service.context = ctxStub;
     });
 
@@ -22,34 +24,34 @@ describe('DrawService', () => {
         expect(service).toBeTruthy();
     });
 
-    it(' width should return the width of the grid canvas', () => {
+    it('width should return the width of the grid canvas', () => {
         expect(service.width).toEqual(CANVAS_WIDTH);
     });
 
-    it(' height should return the height of the grid canvas', () => {
+    it('height should return the height of the grid canvas', () => {
         expect(service.height).toEqual(CANVAS_HEIGHT);
     });
 
-    it(' drawWord should call fillText on the canvas', () => {
+    it('drawWord should call fillText on the canvas', () => {
         const fillTextSpy = spyOn(service.context, 'fillText').and.callThrough();
         service.drawWord('test');
         expect(fillTextSpy).toHaveBeenCalled();
     });
 
-    it(' drawWord should not call fillText if word is empty', () => {
+    it('drawWord should not call fillText if word is empty', () => {
         const fillTextSpy = spyOn(service.context, 'fillText').and.callThrough();
         service.drawWord('');
         expect(fillTextSpy).toHaveBeenCalledTimes(0);
     });
 
-    it(' drawWord should call fillText as many times as letters in a word', () => {
+    it('drawWord should call fillText as many times as letters in a word', () => {
         const fillTextSpy = spyOn(service.context, 'fillText').and.callThrough();
         const word = 'test';
         service.drawWord(word);
         expect(fillTextSpy).toHaveBeenCalledTimes(word.length);
     });
 
-    it(' drawWord should color pixels on the canvas', () => {
+    it('drawWord should color pixels on the canvas', () => {
         let imageData = service.context.getImageData(0, 0, service.width, service.height).data;
         const beforeSize = imageData.filter((x) => x !== 0).length;
         service.drawWord('test');
@@ -58,7 +60,7 @@ describe('DrawService', () => {
         expect(afterSize).toBeGreaterThan(beforeSize);
     });
 
-    it(' drawGrid should call moveTo and lineTo 4 times', () => {
+    it('drawGrid should call moveTo and lineTo 4 times', () => {
         const expectedCallTimes = 4;
         const moveToSpy = spyOn(service.context, 'moveTo').and.callThrough();
         const lineToSpy = spyOn(service.context, 'lineTo').and.callThrough();
@@ -67,7 +69,7 @@ describe('DrawService', () => {
         expect(lineToSpy).toHaveBeenCalledTimes(expectedCallTimes);
     });
 
-    it(' drawGrid should color pixels on the canvas', () => {
+    it('drawGrid should color pixels on the canvas', () => {
         let imageData = service.context.getImageData(0, 0, service.width, service.height).data;
         const beforeSize = imageData.filter((x) => x !== 0).length;
         service.drawGrid();
@@ -76,27 +78,27 @@ describe('DrawService', () => {
         expect(afterSize).toBeGreaterThan(beforeSize);
     });
 
-    it(' drawError should call mouseService getX and getY', () => {
+    it('drawError should call mouseService getX and getY', () => {
         const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
         service.drawError(mouseServiceSpy);
         expect(mouseServiceSpy.getX).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.getY).toHaveBeenCalledTimes(1);
     });
 
-    it(' drawError should have red text', () => {
+    it('drawError should have red text', () => {
         const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
         service.drawError(mouseServiceSpy);
         expect(service.context.fillStyle.toString()).toEqual('#ff0000');
     });
 
-    it(' drawSuccess should call mouseService getX and getY', () => {
+    it('drawSuccess should call mouseService getX and getY', () => {
         const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
         service.drawSuccess(mouseServiceSpy);
         expect(mouseServiceSpy.getX).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.getY).toHaveBeenCalledTimes(1);
     });
 
-    it(' drawSuccess should have green text', () => {
+    it('drawSuccess should have green text', () => {
         const mouseServiceSpy: SpyObj<MouseService> = jasmine.createSpyObj('MouseService', ['getX', 'getY']);
         service.drawSuccess(mouseServiceSpy);
         expect(service.context.fillStyle.toString()).toEqual('#008000');
