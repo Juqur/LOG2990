@@ -26,8 +26,8 @@ export class CommunicationService {
         return this.http.get(`${this.baseUrl}api` + path);
     }
 
-    getLevel(path: string, levelId: number): Observable<Level> {
-        return this.http.get<Level>(`${this.baseUrl}api` + path + levelId);
+    getLevel(levelId: number): Observable<Level> {
+        return this.http.get<Level>(`${this.baseUrl}api` + '/image/' + levelId);
     }
 
     postDifference(path: string, differenceFile: string, position: number): Observable<number[]> {

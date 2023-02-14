@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { Constants, MouseButton } from '@common/constants';
+import { lastValueFrom } from 'rxjs';
 import { CommunicationService } from './communication.service';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
 
@@ -18,7 +19,7 @@ export class MouseService {
     private mousePosition: Vec2 = { x: 0, y: 0 };
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
-    private differencesArray: number[] = [];
+    private numberOfDifference: number = 0;
 
     constructor(
         private communicationService: CommunicationService,
@@ -44,14 +45,13 @@ export class MouseService {
      * @param event the mouse event
      * @returns a boolean indicating if the click was valid.
      */
-    mouseHitDetect(event: MouseEvent): boolean {
+    async mouseHitDetect(event: MouseEvent): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
             return this.processClick();
         }
-        return false;
+        return Promise.resolve([]);
     }
-
     /**
      * This function should process the click and react accordingly.
      * The information on the click should be sent to the server in order to
@@ -59,35 +59,27 @@ export class MouseService {
      *
      * @returns a boolean indicating if the click was valid.
      */
-    processClick(): boolean {
+    async processClick(): Promise<number[]> {
+        // let foundDifference: Promise<boolean> = Promise.resolve(false);
         if (this.getCanClick()) {
             const url = '/game/difference';
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
-            this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
-                this.differencesArray = tempDifferencesArray;
-            });
-            // this.socketHandler.send(Gateways.Difference, 'receiveClick', position);
-            // window.alert(this.differencesArray);
-
-            if (this.differencesArray.length !== 0) {
-                if (this.differencesArray[0] === Constants.minusOne) {
+            const differencesArray = await this.getDifferencesArray(url, position);
+            if (differencesArray.length > 0) {
+                this.incrementCounter();
+                if (this.getDifferenceCounter() >= this.numberOfDifference - 1) {
                     this.popUpService.openDialog(this.winGameDialogData, this.closePath);
                 }
-                // TODO Gérer la suppression de la différence.
+                return differencesArray;
             }
-            const testRes: Vec2[] = this.getTestVariable();
-            if (testRes.length > 0) {
-                // Simply to add a section of the canvas that we can use to test on.
-                if (this.getX() > 0 && this.getX() < Constants.hundred && this.getY() > 0 && this.getY() < Constants.hundred) {
-                    this.incrementCounter();
-                    return true;
-                }
-            }
-            return false;
         }
-        return false;
+        return [];
+    }
+
+    async getDifferencesArray(url: string, position: number) {
+        return await lastValueFrom(this.communicationService.postDifference(url, '7', position));
     }
 
     /**
@@ -143,7 +135,13 @@ export class MouseService {
         return this.canClick;
     }
 
-    private getTestVariable(): Vec2[] {
-        return [{ x: 1, y: 2 }];
+    /**
+     * Sets the number of difference to the given value.
+     *
+     * @param numberOfDifference the number of difference to set.
+     * @returns void
+     * */
+    setNumberOfDifference(numberOfDifference: number): void {
+        this.numberOfDifference = numberOfDifference;
     }
 }

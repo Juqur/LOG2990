@@ -31,8 +31,9 @@ describe('CommunicationService', () => {
             playerMulti: [],
             timeMulti: [],
             isEasy: true,
+            nbDifferences: 0,
         };
-        service.getLevel('/image/', 1).subscribe((res) => {
+        service.getLevel(1).subscribe((res) => {
             expect(res).toEqual(fakeLevel);
         });
 
