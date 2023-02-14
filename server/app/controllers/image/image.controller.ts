@@ -52,8 +52,6 @@ export class ImageController {
     })
     @Post('/difference')
     async findImageDifference(@Body() body: { differenceFile: string; position: number }) {
-        const a = await this.imageService.findDifference(body.differenceFile, body.position);
-        console.log(a);
-        return a;
+        return await this.imageService.findDifference(body.differenceFile, body.position);
     }
 }
