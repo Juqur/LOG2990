@@ -136,7 +136,6 @@ export class GamePageComponent implements OnInit {
             .then(() => {
                 setTimeout(() => {
                     this.copyArea(this.imagesData);
-                    console.log('asdf');
                 }, Constants.thirty);
             });
     }
