@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 export enum Gateways {
     Timer = 'timer',
     Chat = 'chat',
+    Difference = 'difference',
 }
 @Injectable({
     providedIn: 'root',
@@ -12,6 +13,7 @@ export enum Gateways {
 export class SocketHandler {
     socketTimer: Socket;
     socketChat: Socket;
+    socketDifference: Socket;
 
     isSocketAlive(type: Gateways) {
         switch (type) {
@@ -19,6 +21,8 @@ export class SocketHandler {
                 return this.socketTimer && this.socketTimer.connected;
             case Gateways.Chat:
                 return this.socketChat && this.socketChat.connected;
+            case Gateways.Difference:
+                return this.socketDifference && this.socketDifference.connected;
         }
     }
 
@@ -29,6 +33,9 @@ export class SocketHandler {
                 break;
             case Gateways.Chat:
                 this.socketChat = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
+                break;
+            case Gateways.Difference:
+                this.socketDifference = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
                 break;
         }
     }
@@ -41,12 +48,16 @@ export class SocketHandler {
             case Gateways.Chat:
                 this.socketChat.disconnect();
                 break;
+            case Gateways.Difference:
+                this.socketDifference.disconnect();
+                break;
         }
     }
 
     disconnectAll() {
         this.socketChat.disconnect();
         this.socketTimer.disconnect();
+        this.socketDifference.disconnect();
     }
 
     on<T>(event: string, action: (data: T) => void, type: Gateways): void {
@@ -56,6 +67,9 @@ export class SocketHandler {
                 break;
             case Gateways.Chat:
                 this.socketChat.on(event, action);
+                break;
+            case Gateways.Difference:
+                this.socketDifference.on(event, action);
                 break;
         }
     }
@@ -76,6 +90,12 @@ export class SocketHandler {
                     this.socketChat.emit(event);
                 }
                 break;
+            case Gateways.Difference:
+                if (data) {
+                    this.socketDifference.emit(event, data);
+                } else {
+                    this.socketDifference.emit(event);
+                }
         }
     }
 }
