@@ -212,10 +212,11 @@ describe('CreationComponent', () => {
         const mockFile = new File([''], 'mock.bmp');
         component.defaultImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
-        // const showSpy = spyOn(component, 'showDefaultImage').and.callThrough();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const drawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
         component.showDefaultImage();
         setTimeout(() => {
-            // expect(canvasSharingService.defaultCanvasRef.getContext('2d')?.drawImage).toHaveBeenCalled();
+            expect(drawSpy).toHaveBeenCalled();
             expect(canvasSharingService.defaultCanvasRef.width).toEqual(Constants.EXPECTED_WIDTH);
             expect(canvasSharingService.defaultCanvasRef.height).toEqual(Constants.EXPECTED_HEIGHT);
             done();
@@ -227,10 +228,11 @@ describe('CreationComponent', () => {
         const mockFile = new File([''], 'mock.bmp');
         component.diffImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
-        // const showSpy = spyOn(component, 'showDiffImage').and.callThrough();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const drawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
         component.showDiffImage();
         setTimeout(() => {
-            // expect(canvasSharingService.diffCanvasRef.getContext('2d')?.drawImage).toHaveBeenCalled();
+            expect(drawSpy).toHaveBeenCalled();
             expect(canvasSharingService.diffCanvasRef.width).toEqual(Constants.EXPECTED_WIDTH);
             expect(canvasSharingService.diffCanvasRef.height).toEqual(Constants.EXPECTED_HEIGHT);
             done();
@@ -242,13 +244,31 @@ describe('CreationComponent', () => {
         const mockFile = new File([''], 'mock.bmp');
         component.defaultImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
-        // const drawSpy = spyOn(component, 'showDefaultImage').and.callThrough();
-        spyOnAllFunctions(canvasSharingService.defaultCanvasRef.getContext('2d') as CanvasRenderingContext2D);
-        component.defaultCanvasCtx = null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const drawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
         const errorSpy = spyOn(component, 'errorDialog');
+        component.defaultCanvasCtx = null;
         component.showDefaultImage();
         setTimeout(() => {
             expect(errorSpy).toHaveBeenCalledOnceWith('aucun canvas de base');
+            expect(drawSpy).toHaveBeenCalledTimes(0);
+            done();
+        }, Constants.thousand);
+    });
+    it('showDiffImage should should call errorDialog and not show diff image on canvas if there is no canvas context', (done) => {
+        component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
+        const mockFile = new File([''], 'mock.bmp');
+        component.diffImageFile = mockFile;
+        spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const drawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
+        const errorSpy = spyOn(component, 'errorDialog');
+        component.diffCanvasCtx = null;
+        component.showDiffImage();
+        setTimeout(() => {
+            expect(errorSpy).toHaveBeenCalledOnceWith('aucun canvas de différence');
+            expect(drawSpy).toHaveBeenCalledTimes(0);
             done();
         }, Constants.thousand);
     });
