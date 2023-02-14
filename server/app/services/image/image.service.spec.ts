@@ -12,16 +12,23 @@ describe('ImageService', () => {
         service = module.get<ImageService>(ImageService);
     });
 
-    beforeEach(() => {});
+    beforeEach(() => {
+        (service as unknown)['pathDifference'] = '../server/assets/test/';
+    });
 
     it('should be defined', () => {
         expect(service).toBeDefined();
     });
 
+    it('should return the mocked value for pathDifference()', () => {
+        const result = service['pathDifference'];
+        expect(result).toBe('../server/assets/test/');
+    });
+
     it('should return the correct array of differences', () => {
-        const fileName = 'test';
+        const fileName = 'clusters-test';
         const position = 1;
-        const expectedArray = [1, 2, 3];
+        const expectedArray = [4, 7, 8, 0];
 
         const result = service.findDifference(fileName, position);
 
