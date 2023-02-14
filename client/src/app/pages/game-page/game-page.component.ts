@@ -88,7 +88,6 @@ export class GamePageComponent implements OnInit {
             diffDetected.then((result) => {
                 if (result.length > 0) {
                     this.imagesData.push(...result);
-                    console.log(result);
                     this.diffPlayArea.flashArea(result);
                     this.mouseService.changeClickState();
                     this.diffPlayArea
@@ -100,7 +99,6 @@ export class GamePageComponent implements OnInit {
                         .then(() => {
                             setTimeout(() => {
                                 this.copyArea(this.imagesData);
-                                console.log(this.imagesData);
                             }, Constants.thirty);
                         });
                     this.foundADifference = true;
@@ -119,7 +117,6 @@ export class GamePageComponent implements OnInit {
                         .then(() => {
                             setTimeout(() => {
                                 this.copyArea(this.imagesData);
-                                console.log(this.imagesData);
                             }, Constants.thirty);
                         });
                 }

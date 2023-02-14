@@ -45,7 +45,6 @@ export class MouseService {
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
             const differencesArray = await this.getDifferencesArray(url, position);
-
             if (differencesArray.length > 0) {
                 this.incrementCounter();
                 return differencesArray;
