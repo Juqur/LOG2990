@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Level, levels } from '@app/levels';
+import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
 
@@ -10,28 +10,26 @@ import { Constants } from '@common/constants';
 })
 export class SelectionPageComponent implements OnInit {
     page = 'selection';
-    levels: Level[];
+    levels: Level[] = [];
     currentPage: number = 0;
-    levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
-    lastShownLevel = this.levelsPerPage;
-    lastPage = Math.round(levels.length / this.levelsPerPage - 1);
-
+    lastShownLevel: number = 0;
+    lastPage: number = 0;
     levelToShow: Level[];
 
     constructor(private communicationService: CommunicationService) {}
 
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
-        this.firstShownLevel = this.currentPage * this.levelsPerPage;
-        this.lastShownLevel = this.firstShownLevel + this.levelsPerPage;
+        this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
+        this.lastShownLevel = this.firstShownLevel + Constants.levelsPerPage;
         this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     }
 
     previousPage(): void {
         if (this.currentPage > 0) this.currentPage--;
-        this.firstShownLevel = this.currentPage * this.levelsPerPage;
-        this.lastShownLevel = this.firstShownLevel + this.levelsPerPage;
+        this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
+        this.lastShownLevel = this.firstShownLevel + Constants.levelsPerPage;
         this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     }
 
@@ -45,12 +43,11 @@ export class SelectionPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.communicationService.getLevels('/image/AllLevels').subscribe((value) => {
-            const data = value;
-            this.levels = [];
-            for (const level of data) {
-                this.levels.push(level);
-            }
+            this.levels = value;
+
+            this.lastShownLevel = Constants.levelsPerPage;
             this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
+            this.lastPage = Math.round(this.levels.length / Constants.levelsPerPage - 1);
         });
     }
 }

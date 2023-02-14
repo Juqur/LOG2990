@@ -70,5 +70,23 @@
         "playerMulti": ["Bot1", "Bot2", "Bot3"],
         "timeMulti": [80, 83, 90],
         "isEasy": true
+    },
+    {
+        "id": 9,
+        "name": "ERRORPOG",
+        "playerSolo": ["Bot1", "Bot2", "Bot3"],
+        "timeSolo": [60, 65, 70],
+        "playerMulti": ["Bot1", "Bot2", "Bot3"],
+        "timeMulti": [80, 83, 90],
+        "isEasy": true
+    },
+    {
+        "id": 10,
+        "name": "lama",
+        "playerSolo": ["Bot1", "Bot2", "Bot3"],
+        "timeSolo": [60, 65, 70],
+        "playerMulti": ["Bot1", "Bot2", "Bot3"],
+        "timeMulti": [80, 83, 90],
+        "isEasy": true
     }
 ]
