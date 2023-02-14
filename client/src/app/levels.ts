@@ -6,4 +6,5 @@ export interface Level {
     playerMulti: string[];
     timeMulti: number[];
     isEasy: boolean;
+    nbDifferences: number;
 }

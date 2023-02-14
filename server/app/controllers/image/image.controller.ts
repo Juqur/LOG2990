@@ -1,7 +1,8 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { Level } from 'assets/data/level';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
 @Controller('image')
@@ -19,6 +20,15 @@ export class ImageController {
     })
     async getLevels() {
         return this.imageService.getLevels();
+    }
+
+    @ApiOkResponse({
+        description: 'Returns data for a level',
+        type: Message,
+    })
+    @Get('/:id')
+    async getSingleGameData(@Param('id') id: string): Promise<Level> {
+        return this.imageService.getLevel(parseInt(id, 10));
     }
 
     /**
@@ -50,7 +60,7 @@ export class ImageController {
     })
     @Post('/differenceArray')
     async findImageDifference(@Body() body: { differenceFile: string; position: number }) {
-        return this.imageService.findDifference(body.differenceFile, body.position);
+        return await this.imageService.findDifference(body.differenceFile, body.position);
     }
 
     /**

@@ -1,5 +1,6 @@
 // import { Test, TestingModule } from '@nestjs/testing';
 // import { ImageService } from './../../../app/services/image/image.service';
+// import { FormDataInterceptor } from './form-data.interceptor';
 // import { ImageController } from './image.controller';
 
 describe('ImageController', () => {
@@ -7,7 +8,7 @@ describe('ImageController', () => {
     // beforeEach(async () => {
     //     const module: TestingModule = await Test.createTestingModule({
     //         controllers: [ImageController],
-    //         providers: [ImageService],
+    //         providers: [ImageService, FormDataInterceptor],
     //     }).compile();
     //     controller = module.get<ImageController>(ImageController);
     // });
@@ -15,7 +16,8 @@ describe('ImageController', () => {
     // it('should be defined', () => {
     //     expect(controller).toBeDefined();
     // });
-    it('true should be equal to true', () => {
-        expect(true).toEqual(true);
+
+    it('should true return true', () => {
+        expect(true).toBe(true);
     });
 });

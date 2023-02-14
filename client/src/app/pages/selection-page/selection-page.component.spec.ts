@@ -28,7 +28,7 @@ describe('SelectionPageComponent', () => {
         communicationService = TestBed.inject(CommunicationService);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        const level: Level = {
+        const level = {
             id: 1,
             name: '',
             playerMulti: [],
@@ -36,6 +36,7 @@ describe('SelectionPageComponent', () => {
             timeMulti: [],
             timeSolo: [],
             isEasy: false,
+            nbDifferences: 0,
         };
         levels = [level, level, level, level, level, level, level, level];
         component.levels = levels;
