@@ -52,7 +52,6 @@ export class MouseService {
             let differencesArray: number[] = [];
             this.communicationService.postDifference('7', position).subscribe((tempDifferencesArray) => {
                 differencesArray = tempDifferencesArray;
-                console.log(differencesArray);
             });
 
             if (differencesArray.length !== 0) {
