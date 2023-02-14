@@ -55,7 +55,7 @@ export class MouseService {
             const differencesArray = await this.getDifferencesArray(url, position);
             if (differencesArray.length > 0) {
                 this.incrementCounter();
-                if (this.getDifferenceCounter() >= this.numberOfDifference - 1) {
+                if (this.getDifferenceCounter() >= this.numberOfDifference) {
                     this.popUpService.openDialog(this.winGameDialogData, this.closePath);
                 }
                 return differencesArray;
