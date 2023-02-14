@@ -317,4 +317,13 @@ describe('CreationComponent', () => {
                 });
             });
     });
+
+    it('resetDefault should call reinitGame and clear the canvas', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const clearSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'clearRect');
+        const reinitSpy = spyOn(component, 'reinitGame');
+        component.resetDefault();
+        expect(clearSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.defaultCanvasRef.width, canvasSharingService.defaultCanvasRef.height);
+        expect(reinitSpy).toHaveBeenCalled();
+    });
 });
