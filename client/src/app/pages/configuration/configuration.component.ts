@@ -47,7 +47,7 @@ export class ConfigurationComponent implements OnInit {
 
             this.lastShownLevel = Constants.levelsPerPage;
             this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
-            this.lastPage = Math.round(this.levels.length / Constants.levelsPerPage - 1);
+            this.lastPage = Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
         });
     }
 }
