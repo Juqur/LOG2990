@@ -68,6 +68,7 @@ export class MouseService {
                 differencesArray = tempDifferencesArray;
             });
             this.socketHandler.send(Gateways.Difference, 'receiveClick', 'Hello from client');
+            window.alert(this.test);
 
             if (differencesArray.length !== 0) {
                 if (differencesArray[0] === Constants.minusOne) {
