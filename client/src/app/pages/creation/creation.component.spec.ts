@@ -303,4 +303,18 @@ describe('CreationComponent', () => {
             done();
         });
     });
+    it('verifyImageFormat should return false if the image bitDept is incorrect', (done) => {
+        const errorSpy = spyOn(component, 'errorDialog');
+        const imageSrc = './assets/test/image_wrong_bit_depth.bmp';
+        fetch(imageSrc)
+            .then(async (res) => res.blob())
+            .then((blob) => {
+                const goodFile = new File([blob], 'image_wrong_bit_depth.bmp', { type: 'image/bmp' });
+                component.verifyImageFormat(goodFile).then((result) => {
+                    expect(result).toBe(false);
+                    expect(errorSpy).toHaveBeenCalledOnceWith('Les images doivent être de 24 bits par pixel');
+                    done();
+                });
+            });
+    });
 });
