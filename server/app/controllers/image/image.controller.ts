@@ -8,16 +8,15 @@ import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 export class ImageController {
     constructor(private readonly imageService: ImageService) {}
 
-    @Get('/allLevels')
     /**
      * Gets the card data from the json files
      *
      * @returns the array of card data
      */
+    @Get('/allLevels')
     @ApiOkResponse({
         description: 'Returns the card data',
     })
-    @Get('/')
     async getLevels() {
         return this.imageService.getLevels();
     }
@@ -28,11 +27,11 @@ export class ImageController {
      * @param differenceFile The name of the file that has the differences
      * @returns the number of differences between the two images
      */
+    @Get('/differenceCount')
     @ApiOkResponse({
         description: 'Returns the number of differences between the two images',
         type: Message,
     })
-    @Get('/differenceCount:differenceFile')
     async differenceCount(@Param('differenceFile') differenceFile: string) {
         return this.imageService.differencesCount(differenceFile);
     }

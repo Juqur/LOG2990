@@ -1,11 +1,10 @@
+import { Message } from '@app/model/schema/message.schema';
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
-import { promises as fsp } from 'fs';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Level, LevelData } from 'assets/data/level';
-import { Message } from '@app/model/schema/message.schema';
-import { Response, Request } from 'express';
+import * as fs from 'fs';
+import { promises as fsp } from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class ImageService {
@@ -41,13 +40,11 @@ export class ImageService {
         return differences;
     }
 
-    
     // async getDifferencesImage(req: Request, res: Response): Promise<void> {
     //     const fileName = req.params.fileName;
     //     const filePath = path.join(__dirname, '..', '..', '..', 'assets', 'images', 'differences', `${fileName}.json`);
     //     res.sendFile(filePath);
     // }
-
 
     /**
      * Finds the difference between the original image and the modified image

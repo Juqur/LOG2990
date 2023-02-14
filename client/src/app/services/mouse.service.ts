@@ -45,7 +45,6 @@ export class MouseService {
      */
     processClick(): boolean {
         if (this.getCanClick()) {
-            console.log("AAAAAAAAAAAAAAAAAAAAAAA CHE WAMBA KE BABI CHE WAWA");
             this.communicationService.getDifferenceCount('7').subscribe((tempDifferenceCounter) => {
                 this.differenceCounter = tempDifferenceCounter;
                 console.log('Difference counter: ' + this.differenceCounter);

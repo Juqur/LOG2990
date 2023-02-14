@@ -31,7 +31,6 @@ export class CommunicationService {
     }
 
     getDifferenceCount(differenceFile: string): Observable<number> {
-        console.log("KENWA ENYA UNGWEEEEE");
         return this.http.get<number>(`${this.baseUrl}api/image/differenceCount/${differenceFile}`);
     }
 
