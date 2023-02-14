@@ -27,6 +27,7 @@ describe('ImageController', () => {
             playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
             timeMulti: Constants.timeMulti,
             isEasy: true,
+            nbDifferences: 7,
         };
         const result = controller.getSingleGameData('5');
         expect(result).toEqual(expectedLevel);
