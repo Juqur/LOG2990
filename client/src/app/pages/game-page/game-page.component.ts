@@ -57,6 +57,7 @@ export class GamePageComponent implements OnInit {
                 this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
             });
         } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             this.communicationService.getLevel(7).subscribe((value) => {
                 this.currentLevel = value;
             });
