@@ -36,6 +36,12 @@ export class CommunicationService {
             .pipe(map((response) => response.body || []));
     }
 
+    postNewGame(path: string, userName: string, imageID: string) {
+        return this.http
+            .post<string>(`${this.baseUrl}api` + path, { userName, imageID }, { observe: 'response', responseType: 'json' })
+            .pipe(map((response) => response.body || undefined));
+    }
+
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);
     }

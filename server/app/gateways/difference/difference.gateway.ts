@@ -1,3 +1,4 @@
+import { ImageServiceProvider } from '@app/providers/image.service.provider';
 import { ImageService } from '@app/services/image/image.service';
 import { Logger } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
@@ -6,7 +7,11 @@ import { DifferenceEvents } from './difference.gateway.events';
 
 @WebSocketGateway({ cors: true, namespace: '/difference' })
 export class DifferenceGateway {
-    constructor(private readonly logger: Logger, private imageService: ImageService) {}
+    private readonly imageService: ImageService;
+
+    constructor(private readonly logger: Logger, private imageServiceProvider: ImageServiceProvider) {
+        this.imageService = imageServiceProvider.create();
+    }
 
     @SubscribeMessage(DifferenceEvents.ReceiveClick)
     async handleMessage(socket: Socket, value: number) {

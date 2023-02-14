@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { Constants, MouseButton } from '@common/constants';
+import { CommunicationService } from './communication.service';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
-import { Gateways, SocketHandler } from './socket-handler.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,20 +21,20 @@ export class MouseService {
     private differencesArray: number[] = [];
 
     constructor(
-        /* private communicationService: CommunicationService,*/ public popUpService: PopUpServiceService,
-        private socketHandler: SocketHandler,
+        private communicationService: CommunicationService,
+        public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
     ) {
-        if (!this.socketHandler.isSocketAlive(Gateways.Difference)) {
-            this.socketHandler.connect(Gateways.Difference);
-            this.socketHandler.on(
-                'sendCoord',
-                (data: unknown) => {
-                    window.alert(typeof data);
-                    this.differencesArray = data as number[];
-                },
-                Gateways.Difference,
-            );
-        }
+        // if (!this.socketHandler.isSocketAlive(Gateways.Difference)) {
+        //     this.socketHandler.connect(Gateways.Difference);
+        //     this.socketHandler.on(
+        //         'sendCoord',
+        //         (data: unknown) => {
+        //             window.alert(typeof data);
+        //             this.differencesArray = data as number[];
+        //         },
+        //         Gateways.Difference,
+        //     );
+        // }
     }
 
     /**
@@ -61,13 +61,15 @@ export class MouseService {
      */
     processClick(): boolean {
         if (this.getCanClick()) {
-            // const url = '/image/difference';
-            // This is to send to the server at the appropriate path the position of the pixel that was clicked.
+            const url = '/game/difference';
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
-            this.socketHandler.send(Gateways.Difference, 'receiveClick', position);
-            window.alert(this.differencesArray);
+            this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
+                this.differencesArray = tempDifferencesArray;
+            });
+            // this.socketHandler.send(Gateways.Difference, 'receiveClick', position);
+            // window.alert(this.differencesArray);
 
             if (this.differencesArray.length !== 0) {
                 if (this.differencesArray[0] === Constants.minusOne) {

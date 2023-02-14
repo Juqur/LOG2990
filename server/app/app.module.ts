@@ -10,8 +10,11 @@ import { ConfigModule } from '@nestjs/config';
 // import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { GameController } from './controllers/game/game.controller';
 import { ImageController } from './controllers/image/image.controller';
 import { DifferenceGateway } from './gateways/difference/difference.gateway';
+import { ImageServiceProvider } from './providers/image.service.provider';
+import { GameStateService } from './services/game/game.service';
 import { ImageService } from './services/image/image.service';
 
 @Module({
@@ -29,7 +32,17 @@ import { ImageService } from './services/image/image.service';
         // }),
         // MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
-    controllers: [DateController, ExampleController, ImageController],
-    providers: [ChatGateway, TimerGateway, DateService, ExampleService, ImageService, Logger, DifferenceGateway],
+    controllers: [DateController, ExampleController, ImageController, GameController],
+    providers: [
+        ChatGateway,
+        TimerGateway,
+        DateService,
+        ExampleService,
+        ImageService,
+        Logger,
+        DifferenceGateway,
+        ImageServiceProvider,
+        GameStateService,
+    ],
 })
 export class AppModule {}

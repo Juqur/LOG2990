@@ -21,12 +21,13 @@ export class GamePageComponent implements OnInit {
     nbHints: number = Constants.INIT_HINTS_NB;
     imagesData: unknown[] = [];
     defaultImgSrc = '';
-    diffImgSrc = '';
+    diffImgSrc = '..';
     defaultArea: boolean = true;
     diffArea: boolean = true;
     closePath: string = '/selection';
+    gameId: string | undefined;
 
-    constructor(private route: ActivatedRoute) {}
+    constructor(private route: ActivatedRoute, private communicationService: CommunicationService) {}
     async ngOnInit(): Promise<void> {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
@@ -35,5 +36,12 @@ export class GamePageComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             this.playerName = params['playerName'];
         });
+
+        this.communicationService.postNewGame('/game', this.playerName, String(this.levelId)).subscribe((gameId) => {
+            this.gameId = gameId;
+        });
+
+        this.defaultImgSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
+        this.diffImgSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
     }
 }
