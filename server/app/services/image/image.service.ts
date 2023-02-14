@@ -31,7 +31,7 @@ export class ImageService {
                 if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
                     return false;
                 }
-                // this.foundDifferences.push(index);
+                this.foundDifferences.push(index);
                 return true;
             }
             return false;
