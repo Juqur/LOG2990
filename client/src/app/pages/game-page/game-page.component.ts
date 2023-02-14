@@ -8,6 +8,7 @@ import { Constants } from '@common/constants';
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
+    providers: [CommunicationService],
 })
 export class GamePageComponent implements OnInit {
     levelId: number;
@@ -23,8 +24,10 @@ export class GamePageComponent implements OnInit {
     defaultArea: boolean = true;
     diffArea: boolean = true;
     closePath: string = '/selection';
+    private communicationService: CommunicationService;
 
-    constructor(private route: ActivatedRoute, private communicationService: CommunicationService) {}
+    constructor(private route: ActivatedRoute) {}
+
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
