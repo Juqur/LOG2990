@@ -26,20 +26,14 @@ export class GamePageComponent implements OnInit {
     diffArea: boolean = true;
     closePath: string = '/selection';
 
-    constructor(private route: ActivatedRoute, private communicationService: CommunicationService) {}
+    constructor(private route: ActivatedRoute) {}
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
             this.levelId = params.id;
         });
-<<<<<<< HEAD
-
-        this.communicationService.getLevel('/image/', this.levelId).subscribe((value) => {
-            this.currentLevel = value;
-=======
         this.route.queryParams.subscribe((params) => {
             this.playerName = params['playerName'];
->>>>>>> master
         });
     }
 }
