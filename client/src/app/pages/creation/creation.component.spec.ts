@@ -155,6 +155,7 @@ describe('CreationComponent', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
         component.showDefaultImage();
+        component.showDiffImage();
         setTimeout(() => {
             expect(defaultDrawSpy).toHaveBeenCalled();
             expect(diffDrawSpy).toHaveBeenCalled();
