@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ImageController } from './controllers/image/image.controller';
+import { DifferenceGateway } from './gateways/difference/difference.gateway';
 import { ImageService } from './services/image/image.service';
 
 @Module({
@@ -29,6 +30,6 @@ import { ImageService } from './services/image/image.service';
         // MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
     controllers: [DateController, ExampleController, ImageController],
-    providers: [ChatGateway, TimerGateway, DateService, ExampleService, ImageService, Logger],
+    providers: [ChatGateway, TimerGateway, DateService, ExampleService, ImageService, Logger, DifferenceGateway],
 })
 export class AppModule {}
