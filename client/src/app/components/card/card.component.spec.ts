@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { CardComponent } from './card.component';
 
@@ -9,9 +11,11 @@ describe('CardComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CardComponent, CarouselComponent],
+            imports: [MatDialogModule, RouterTestingModule],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CardComponent);
+
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
