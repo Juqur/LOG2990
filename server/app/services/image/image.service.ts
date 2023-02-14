@@ -1,10 +1,10 @@
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
+
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
-
     foundDifferences: number[] = [];
 
     /**
@@ -27,12 +27,16 @@ export class ImageService {
      * @returns the array of pixels that are different if there is a difference
      */
     returnArray(allDifferences: number[][], position: number): number[] {
-        for (const difference of allDifferences) {
-            if (difference.includes(position)) {
-                this.foundDifferences = difference;
-                return difference;
+        return allDifferences.find((differenceRow, index) => {
+            if (differenceRow.indexOf(position) !== Constants.minusOne) {
+                if (this.foundDifferences.find((difference) => difference === index) !== undefined) {
+                    return false;
+                }
+                this.foundDifferences.push(index);
+                return true;
             }
-        }
+            return false;
+        });
     }
 
     /**
@@ -45,7 +49,6 @@ export class ImageService {
      */
     async findDifference(fileName: string, position: number): Promise<number[]> {
         const allDifferences = await this.getArray(fileName);
-
         const foundDifferenceArray = this.returnArray(allDifferences, position);
         if (foundDifferenceArray === undefined && this.foundDifferences.length === allDifferences.length) {
             return [Constants.minusOne];

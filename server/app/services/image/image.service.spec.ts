@@ -1,3 +1,4 @@
+import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImageService } from './image.service';
@@ -69,6 +70,18 @@ describe('ImageService', () => {
         const fileName = 'clusters-test1';
         const position = 1;
         const expectedArray = TestConstants.EXPECTED_DIFFERENCE_ARRAY;
+
+        const result = await service.findDifference(fileName, position);
+        expect(result).toStrictEqual(expectedArray);
+    });
+
+    it('findDifference should return [-1] when all differences have been found', async () => {
+        const fileName = 'clusters-test1';
+        const position = 1;
+        const expectedArray = [Constants.minusOne];
+
+        jest.spyOn(service, 'getArray').mockReturnValue(undefined);
+        jest.spyOn(service, 'returnArray').mockReturnValue(undefined);
 
         const result = await service.findDifference(fileName, position);
         expect(result).toStrictEqual(expectedArray);
