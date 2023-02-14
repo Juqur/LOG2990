@@ -19,7 +19,7 @@ export class MouseService {
     private mousePosition: Vec2 = { x: 0, y: 0 };
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
-    private test: string;
+    private differencesArray: number[] = [];
 
     constructor(private communicationService: CommunicationService, public popUpService: PopUpServiceService, private socketHandler: SocketHandler) {
         if (!this.socketHandler.isSocketAlive(Gateways.Difference)) {
@@ -27,7 +27,7 @@ export class MouseService {
             this.socketHandler.on(
                 'sendCoord',
                 (data: unknown) => {
-                    this.test = data as string;
+                    this.differencesArray = data as number[];
                 },
                 Gateways.Difference,
             );
@@ -58,20 +58,20 @@ export class MouseService {
      */
     processClick(): boolean {
         if (this.getCanClick()) {
-            const url = '/image/difference';
+            // const url = '/image/difference';
             // This is to send to the server at the appropriate path the position of the pixel that was clicked.
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
-            let differencesArray: number[] = [];
-            this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
-                differencesArray = tempDifferencesArray;
-            });
-            this.socketHandler.send(Gateways.Difference, 'receiveClick', 'Hello from client');
-            window.alert(this.test);
+            // this.communicationService.postDifference(url, '7', position).subscribe((tempDifferencesArray) => {
+            //     this.differencesArray = tempDifferencesArray;
+            // });
 
-            if (differencesArray.length !== 0) {
-                if (differencesArray[0] === Constants.minusOne) {
+            this.socketHandler.send(Gateways.Difference, 'receiveClick', position);
+            window.alert(this.differencesArray);
+
+            if (this.differencesArray.length !== 0) {
+                if (this.differencesArray[0] === Constants.minusOne) {
                     this.popUpService.openDialog(this.winGameDialogData, this.closePath);
                 }
                 // TODO Gérer la suppression de la différence.
