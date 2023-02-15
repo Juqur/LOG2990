@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameTimerComponent } from './game-timer.component';
@@ -11,6 +12,7 @@ describe('GameTimerComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [GameTimerComponent],
             providers: [SocketHandler],
+            imports: [RouterTestingModule],
         }).compileComponents();
     });
 
