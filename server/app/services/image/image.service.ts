@@ -12,8 +12,6 @@ export class ImageService {
     readonly pathOriginal: string = '../server/assets/images/originals/';
     readonly pathData: string = '../server/assets/data/';
 
-    // foundDifferences: number[] = [];
-
     async getLevels(): Promise<Level[]> {
         const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
         return JSON.parse(promises.toString()) as Level[];
@@ -30,12 +28,6 @@ export class ImageService {
      * @param fileName The name of the file that has the differences
      * @returns the number of differences between the two images
      */
-    // async differencesCount(fileName: string): Promise<number> {
-    //     const filePath = path.resolve(this.pathDifference + fileName + '.json');
-    //     console.log(filePath);
-    //     const promises = await fsp.readFile(filePath, 'utf8');
-    //     return (JSON.parse(promises.toString()) as number[][]).length;
-    // }
 
     async differencesCount(fileName: string): Promise<number> {
         const filePath = this.pathDifference + fileName + '.json';
