@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -39,12 +38,25 @@ export class GamePageComponent implements OnInit {
     closePath: string = '/selection';
     gameId: string | null;
 
-    constructor(private mouseService: MouseService, private route: ActivatedRoute, private communicationService: CommunicationService) {}
+    // eslint-disable-next-line max-params
+    constructor(
+        private mouseService: MouseService,
+        private route: ActivatedRoute,
+        private communicationService: CommunicationService,
+        private router: Router,
+    ) {}
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
             this.levelId = params.id;
+        });
+
+        this.router.events.subscribe((event: Event) => {
+            if (event instanceof NavigationStart) {
+                this.mouseService.resetCounter();
+                this.ngOnInit();
+            }
         });
 
         this.route.queryParams.subscribe((params) => {
@@ -54,6 +66,7 @@ export class GamePageComponent implements OnInit {
         try {
             this.communicationService.getLevel(this.levelId).subscribe((value) => {
                 this.currentLevel = value;
+                this.nbDiff = value.nbDifferences;
                 this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
             });
         } catch (error) {

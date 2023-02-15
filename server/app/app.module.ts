@@ -9,6 +9,7 @@ import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 // import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
 import { GameController } from './controllers/game/game.controller';
 import { ImageController } from './controllers/image/image.controller';
@@ -18,6 +19,7 @@ import { ImageService } from './services/image/image.service';
 
 @Module({
     imports: [
+        NestjsFormDataModule,
         ConfigModule.forRoot({ isGlobal: true }),
         ServeStaticModule.forRoot({
             rootPath: join('assets/images'),
