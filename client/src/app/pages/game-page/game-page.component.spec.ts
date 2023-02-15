@@ -74,25 +74,6 @@ describe('GamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('ngOnInit should set the levelId', (done) => {
-    //     const levelId = 1;
-    //     subject.next(levelId);
-    //     subject.subscribe((val) => {
-    //         expect(val).toBe(levelId);
-    //         done();
-    //     });
-
-    // });
-
-    // it('ngOnInit should set the playerName', (done) => {
-    //     const playerName = 'John Doe';
-    //     subject.next(playerName);
-    //     subject.subscribe((val) => {
-    //         expect(val).toBe(playerName);
-    //         done();
-    //     });
-    // });
-
     it('should call handleAreaFoundInOriginal if difference is found in original', fakeAsync(() => {
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([1]));
