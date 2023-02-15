@@ -18,6 +18,7 @@ export const levels = [
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: Constants.timeMulti,
         isEasy: true,
+        nbDifferences:7,
     },
     {
         id: 2,
@@ -27,6 +28,7 @@ export const levels = [
         playerMulti: ['Brother 郝', 'Hervé Harvey', 'Marcel Martel'],
         timeMulti: Constants.timeMulti,
         isEasy: false,
+        nbDifferences:7,
     },
     {
         id: 3,
@@ -36,6 +38,7 @@ export const levels = [
         playerMulti: ['Eliza Vezina', 'Caillou Roche', 'Marcel Martel'],
         timeMulti: Constants.timeMulti,
         isEasy: true,
+        nbDifferences:7,
     },
     {
         id: 4,
@@ -45,6 +48,7 @@ export const levels = [
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: Constants.timeMulti,
         isEasy: true,
+        nbDifferences:7,
     },
     {
         id: 5,
@@ -54,6 +58,7 @@ export const levels = [
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: Constants.timeMulti,
         isEasy: true,
+        nbDifferences:7,
     },
     {
         id: 6,
@@ -63,6 +68,7 @@ export const levels = [
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: Constants.timeMulti,
         isEasy: true,
+        nbDifferences:7,
     },
     {
         id: 7,
