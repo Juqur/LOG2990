@@ -7,6 +7,7 @@ export interface Level {
     playerMulti: string[];
     timeMulti: number[];
     isEasy: boolean;
+    nbDifferences: number;
 }
 
 export interface LevelData {
@@ -15,4 +16,5 @@ export interface LevelData {
     imageDiff: FileSystemStoredFile;
     isEasy: string;
     clusters: number[][];
+    nbDifferences: number;
 }

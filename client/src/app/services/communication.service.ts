@@ -26,17 +26,17 @@ export class CommunicationService {
         return this.http.get(`${this.baseUrl}api` + path);
     }
 
-    getLevel(path: string, levelId: number): Observable<Level> {
-        return this.http.get<Level>(`${this.baseUrl}api` + path + levelId);
+    getLevel(levelId: number): Observable<Level> {
+        return this.http.get<Level>(`${this.baseUrl}api` + '/image/' + levelId);
     }
 
     getDifferenceCount(differenceFile: string): Observable<number> {
         return this.http.get<number>(`${this.baseUrl}api/image/differenceCount/${differenceFile}`);
     }
 
-    postDifference(differenceFile: string, position: number): Observable<number[]> {
+    postDifference(gameId: string | null, position: number): Observable<number[]> {
         return this.http
-            .post<number[]>(`${this.baseUrl}api/image/differenceArray`, { differenceFile, position }, { observe: 'response', responseType: 'json' })
+            .post<number[]>(`${this.baseUrl}api/game/difference`, { gameId, position }, { observe: 'response', responseType: 'json' })
             .pipe(map((response) => response.body || []));
     }
 
@@ -46,6 +46,12 @@ export class CommunicationService {
         return this.http
             .post<Message>(`${this.baseUrl}api/image/postLevel`, level, { headers })
             .pipe(catchError(this.handleError<Message>('basicPost')));
+    }
+
+    postNewGame(path: string, imageId: string) {
+        return this.http
+            .post<string>(`${this.baseUrl}api` + path, { imageId }, { observe: 'response', responseType: 'json' })
+            .pipe(map((response) => response.body));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

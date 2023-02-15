@@ -7,8 +7,8 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { of } from 'rxjs';
 import { Constants } from '@common/constants';
+import { of } from 'rxjs';
 import { ConfigurationComponent } from './configuration.component';
 
 describe('ConfigurationComponent', () => {
@@ -40,6 +40,7 @@ describe('ConfigurationComponent', () => {
             timeMulti: [],
             timeSolo: [],
             isEasy: false,
+            nbDifferences: 0,
         };
         levels = [level, level, level, level, level, level, level, level];
         component.levels = levels;

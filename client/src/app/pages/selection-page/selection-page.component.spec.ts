@@ -36,6 +36,7 @@ describe('SelectionPageComponent', () => {
             timeMulti: [],
             timeSolo: [],
             isEasy: false,
+            nbDifferences: 0,
         };
         levels = [level, level, level, level, level, level, level, level];
         component.levels = levels;

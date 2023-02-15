@@ -16,6 +16,7 @@ export class CarouselComponent {
         playerMulti: ['player 1', 'player 2', 'player 3'],
         timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
         isEasy: true,
+        nbDifferences: 7,
     };
 
     @Input() index: number = Constants.minusOne;
