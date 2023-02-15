@@ -15,13 +15,12 @@ import { Constants } from '@common/constants';
  * @class ScaleContainerComponent
  */
 export class ConfigurationComponent implements OnInit {
-    levels: Level[];
+    page = 'selection';
+    levels: Level[] = [];
     currentPage: number = 0;
-    levelsPerPage: number = Constants.levelsPerPage;
     firstShownLevel: number = 0;
-    lastShownLevel = this.levelsPerPage;
-    lastPage: number;
-
+    lastShownLevel: number = 0;
+    lastPage: number = 0;
     levelToShow: Level[];
 
     constructor(private communicationService: CommunicationService) {}
@@ -32,7 +31,9 @@ export class ConfigurationComponent implements OnInit {
      */
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
-        this.updateLevels();
+        this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
+        this.lastShownLevel = this.firstShownLevel + Constants.levelsPerPage;
+        this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     }
 
     /**
@@ -40,15 +41,8 @@ export class ConfigurationComponent implements OnInit {
      */
     previousPage(): void {
         if (this.currentPage > 0) this.currentPage--;
-        this.updateLevels();
-    }
-
-    /**
-     * Updates the levels shown on the page.
-     */
-    updateLevels() {
-        this.firstShownLevel = this.currentPage * this.levelsPerPage;
-        this.lastShownLevel = this.firstShownLevel + this.levelsPerPage;
+        this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
+        this.lastShownLevel = this.firstShownLevel + Constants.levelsPerPage;
         this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     }
 
@@ -67,14 +61,12 @@ export class ConfigurationComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.communicationService.getLevels('/image/AllLevels').subscribe((value) => {
-            const data = value;
-            this.levels = [];
-            for (const level of data) {
-                this.levels.push(level);
-            }
+        this.communicationService.getLevels('/image/allLevels').subscribe((value) => {
+            this.levels = value;
+
+            this.lastShownLevel = Constants.levelsPerPage;
             this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
-            this.lastPage = Math.round(this.levels.length / this.levelsPerPage - 1);
+            this.lastPage = Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
         });
     }
 }

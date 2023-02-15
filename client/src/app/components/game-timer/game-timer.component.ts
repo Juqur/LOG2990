@@ -50,7 +50,7 @@ export class GameTimerComponent implements OnInit {
     ngOnInit(): void {
         if (!this.socketHandler.isSocketAlive(Gateways.Timer)) {
             this.socketHandler.connect(Gateways.Timer);
-            this.socketHandler.send(Gateways.Timer, 'soloClassic', 'test');
+            this.socketHandler.send(Gateways.Timer, 'soloClassic');
             this.socketHandler.on(
                 'timer',
                 (data: unknown) => {

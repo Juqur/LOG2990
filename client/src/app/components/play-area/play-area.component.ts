@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
-import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -19,16 +18,13 @@ import { Constants } from '@common/constants';
 export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
-    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
+    currentImage: HTMLImageElement;
 
     buttonPressed = '';
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(
-        private readonly drawService: DrawService,
-        private canvasSharing: CanvasSharingService,
-        private readonly mouseService: MouseService,
-    ) {}
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
     /**
      * Getter for the canvas width
@@ -62,33 +58,8 @@ export class PlayAreaComponent implements AfterViewInit {
         this.drawPlayArea(this.image);
     }
 
-    /**
-     * The function in charge of receiving the click event.
-     * It is also the function in charge of giving the player a penalty
-     * if he click on a pixel that wasn't a difference.
-     *
-     * If we clicked on a difference it will paint success on the canvas and error if we
-     * didn't click on a difference. For both the message will disappear after one second
-     * and in the case of error, it will also prevent further clicks during that time.
-     *
-     * @param event the mouse click event on the canvas we want to process.
-     */
-    mouseHitDetect(event: MouseEvent) {
-        if (this.mouseService.getCanClick()) {
-            if (this.mouseService.mouseHitDetect(event)) {
-                this.drawService.drawSuccess(this.mouseService);
-                this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.drawPlayArea(this.image);
-                });
-            } else {
-                this.drawService.drawError(this.mouseService);
-                this.mouseService.changeClickState();
-                this.timeout(Constants.millisecondsInOneSecond).then(() => {
-                    this.mouseService.changeClickState();
-                    this.drawPlayArea(this.image);
-                });
-            }
-        }
+    getCanvas() {
+        return this.canvas;
     }
 
     /**
@@ -101,24 +72,47 @@ export class PlayAreaComponent implements AfterViewInit {
     drawPlayArea(image: string) {
         if (this.canvas) {
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
-            const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
                 this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
-                this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             } else {
                 // Diff canvas (right canvas)
                 this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
-                this.drawService.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             }
-            const currentImage = new Image();
-            currentImage.src = image;
-            currentImage.onload = () => {
-                context.drawImage(currentImage, 0, 0, this.width, this.height);
+            this.currentImage = new Image();
+            this.currentImage.crossOrigin = 'anonymous';
+            this.currentImage.src = image;
+            this.currentImage.onload = () => {
+                context.drawImage(this.currentImage, 0, 0, this.width, this.height);
             };
             this.canvas.nativeElement.style.backgroundColor = 'white';
             this.canvas.nativeElement.focus();
         }
+    }
+
+    /**
+     * flash the area of the canvas red
+     *
+     * @param area the area to flash
+     */
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    flashArea(area: number[]) {
+        let x = 0;
+        let y = 0;
+        const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        if (!context) {
+            return;
+        }
+        area.forEach((pixelData) => {
+            x = (pixelData / Constants.PIXEL_SIZE) % this.width;
+            y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
+
+            context.fillStyle = 'red';
+            context.fillRect(x, y, 1, 1);
+        });
     }
 
     /**
