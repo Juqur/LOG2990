@@ -1,3 +1,4 @@
+import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
@@ -27,15 +28,11 @@ describe('CreationComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, PlayAreaComponent, ScaleContainerComponent],
-            providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }],
+            providers: [CanvasSharingService, { provide: MouseService, useValue: mouseServiceSpy }, HttpClient, HttpHandler],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationComponent);
-
-        // Nécessaire pour des futurs tests
-        // canvasSharingService = TestBed.inject(CanvasSharingService);
-        // popUpService = TestBed.inject(PopUpServiceService);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
+import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
-import { CommunicationService } from '@app/services/communication.service';
 import { Constants } from '@common/constants';
-
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -37,13 +36,27 @@ export class GamePageComponent implements OnInit {
     drawServiceDiff: DrawService = new DrawService();
     drawServiceOriginal: DrawService = new DrawService();
     closePath: string = '/selection';
+    gameId: string | null;
 
-    constructor(private mouseService: MouseService, private route: ActivatedRoute, private communicationService: CommunicationService) {}
+    // eslint-disable-next-line max-params
+    constructor(
+        private mouseService: MouseService,
+        private route: ActivatedRoute,
+        private communicationService: CommunicationService,
+        private router: Router,
+    ) {}
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             // recoit le bon id!!
             this.levelId = params.id;
+        });
+
+        this.router.events.subscribe((event: Event) => {
+            if (event instanceof NavigationStart) {
+                this.mouseService.resetCounter();
+                this.ngOnInit();
+            }
         });
 
         this.route.queryParams.subscribe((params) => {
@@ -53,10 +66,12 @@ export class GamePageComponent implements OnInit {
         try {
             this.communicationService.getLevel(this.levelId).subscribe((value) => {
                 this.currentLevel = value;
+                this.nbDiff = value.nbDifferences;
                 this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
             });
         } catch (error) {
-            this.communicationService.getLevel(Constants.DEFAULTTESTNUMBER).subscribe((value) => {
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            this.communicationService.getLevel(7).subscribe((value) => {
                 this.currentLevel = value;
             });
         }
@@ -67,11 +82,16 @@ export class GamePageComponent implements OnInit {
         } catch (error) {
             throw new Error("Couldn't load images");
         }
+
+        this.communicationService.postNewGame('/game', String(this.levelId)).subscribe((gameId) => {
+            this.gameId = gameId;
+        });
     }
 
     clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
-            const diffDetected = this.mouseService.mouseHitDetect(event);
+            // Update this so it also does game id work.
+            const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
             diffDetected.then((result) => {
                 if (result.length > 0) {
                     this.handleAreaFoundInOriginal(result);
@@ -84,7 +104,7 @@ export class GamePageComponent implements OnInit {
 
     clickedOnDiff(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
-            const diffDetected = this.mouseService.mouseHitDetect(event);
+            const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
             diffDetected.then((result) => {
                 if (result.length > 0) {
                     this.handleAreaFoundInDiff(result);
