@@ -3,11 +3,11 @@ import { Difference } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
-import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
     selector: 'app-creation',
@@ -260,6 +260,7 @@ export class CreationComponent implements OnInit {
                 formData.append('name', this.savedLevel.name);
                 formData.append('isEasy', this.savedLevel.isEasy.toString());
                 formData.append('clusters', JSON.stringify(this.differences.clusters));
+                formData.append('nbDifferences', this.savedLevel.nbDifferences.toString());
 
                 this.communicationService.postLevel(formData).subscribe((data) => {
                     if (data.title === 'error') {

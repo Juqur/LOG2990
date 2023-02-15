@@ -131,4 +131,8 @@ export class MouseService {
     setNumberOfDifference(numberOfDifference: number): void {
         this.numberOfDifference = numberOfDifference;
     }
+
+    resetCounter(): void {
+        this.differenceCounter = 0;
+    }
 }
