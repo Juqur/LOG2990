@@ -71,7 +71,6 @@ describe('GamePageComponent', () => {
         const levelId = 123;
         subject.next(levelId);
         subject.subscribe((val) => {
-            // console.log(val);
             expect(val).toBe(levelId);
         });
     });
