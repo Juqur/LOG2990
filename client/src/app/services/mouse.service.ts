@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
+import { AudioService } from '@app/services/audio.service';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
 import { CommunicationService } from './communication.service';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
-import { AudioService } from '@app/services/audio.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MouseService {
     winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagnez!',
+        textToSend: 'Vous avez gagné!',
         closeButtonMessage: 'Retour au menu de sélection',
     };
     closePath: string = '/selection';

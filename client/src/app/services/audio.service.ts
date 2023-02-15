@@ -3,6 +3,12 @@ import { Injectable } from '@angular/core';
 @Injectable({
     providedIn: 'root',
 })
+/**
+ * This component is a wrapper to pose on the pages to format the display of elements in a uniform manner.
+ *
+ * @author Pierre Tran
+ * @class AudioService
+ */
 export class AudioService {
     soundtrack: HTMLAudioElement;
 

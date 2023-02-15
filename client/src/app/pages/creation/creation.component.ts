@@ -19,6 +19,12 @@ import { Constants } from '@common/constants';
     templateUrl: './creation.component.html',
     styleUrls: ['./creation.component.scss'],
 })
+/**
+ * This component represents the creation, the page where we can create new levels/games.
+ *
+ * @author Simon Gagné
+ * @class CreationComponent
+ */
 export class CreationComponent implements OnInit {
     defaultImageFile: File | null = null;
     diffImageFile: File | null = null;
@@ -43,6 +49,7 @@ export class CreationComponent implements OnInit {
         public popUpService: PopUpServiceService,
         private communicationService: CommunicationService,
     ) {}
+
     /**
      * The method initiates two empty canvas on the page. The canvases are represented by two
      * PlayArea components.
@@ -56,6 +63,7 @@ export class CreationComponent implements OnInit {
         this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
         this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
     }
+
     /**
      * The method is in charge of taking the default image given in the input, verifying that it is
      * of the correct format and then displaying it.
@@ -74,6 +82,7 @@ export class CreationComponent implements OnInit {
             else this.showDefaultImage();
         });
     }
+
     /**
      * The method is in charge of taking the modified image given in the input, verifying that it is
      * of the correct format and then displaying it.
@@ -92,6 +101,7 @@ export class CreationComponent implements OnInit {
             else this.showDiffImage();
         });
     }
+
     /**
      * This method is in charge of selecting the image given to the input verifying that it is
      * of the correct format and display as both the default and different image.
@@ -114,6 +124,7 @@ export class CreationComponent implements OnInit {
             }
         });
     }
+
     /**
      * This method clears the value of the input, effectively removing the file that was given.
      *
@@ -123,6 +134,7 @@ export class CreationComponent implements OnInit {
         const target = event.target as HTMLInputElement;
         target.value = '';
     }
+
     /**
      * This method is used to display the default image on the default canvas.
      */
@@ -149,6 +161,7 @@ export class CreationComponent implements OnInit {
             this.defaultCanvasCtx = this.canvasShare.defaultCanvasRef.getContext('2d');
         };
     }
+
     /**
      * This method is used to display the different image on the different canvas.
      */
@@ -174,6 +187,7 @@ export class CreationComponent implements OnInit {
             this.diffCanvasCtx = this.canvasShare.diffCanvasRef.getContext('2d');
         };
     }
+
     /**
      * Verifies if an image file is of the good format, that is the file is in PNG and of type image/bmp
      * The image must also have only 24 bits per pixels.
@@ -210,6 +224,7 @@ export class CreationComponent implements OnInit {
             .getContext('2d')
             ?.clearRect(0, 0, this.canvasShare.defaultCanvasRef.width, this.canvasShare.defaultCanvasRef.height);
     }
+
     /**
      * This method clears all modifications made to the different image.
      */
@@ -217,6 +232,7 @@ export class CreationComponent implements OnInit {
         this.reinitGame();
         this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, this.canvasShare.diffCanvasRef.height);
     }
+
     /**
      * Changes the value of the radius depending on a value given as parameter. The possible options
      * are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters
@@ -226,6 +242,7 @@ export class CreationComponent implements OnInit {
     sliderChange(value: number) {
         this.radius = this.radiusTable[value];
     }
+
     /**
      * This methods starts the detection of differences between the two images and
      * launches a popUp display the result as a white and black image where the black
@@ -271,6 +288,9 @@ export class CreationComponent implements OnInit {
         this.defaultImageUrl = '';
         this.isSaveable = false;
     }
+
+    /**
+     * THis method is used to save the game, it opens a popUp asking the user
     /**
      * This method is used to save the game, it opens a popUp asking the user
      * to give a name to their new game and saves it.
@@ -327,6 +347,7 @@ export class CreationComponent implements OnInit {
                         const dialogData: DialogData = {
                             textToSend: data.body,
                             closeButtonMessage: 'Fermer',
+                            // eslint-disable-next-line max-lines
                         };
                         this.popUpService.openDialog(dialogData, '/config');
                     }
@@ -334,6 +355,7 @@ export class CreationComponent implements OnInit {
             });
         }
     }
+
     /**
      * This method is used to display an dialog with an error message.
      *

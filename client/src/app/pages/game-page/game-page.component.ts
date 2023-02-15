@@ -13,6 +13,12 @@ import { AudioService } from '@app/services/audio.service';
     styleUrls: ['./game-page.component.scss'],
     providers: [DrawService, CommunicationService],
 })
+/**
+ * This component represents the game, it is the component that creates a game page.
+ *
+ * @author Simon Gagné
+ * @class GamePageComponent
+ */
 export class GamePageComponent implements OnInit {
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
