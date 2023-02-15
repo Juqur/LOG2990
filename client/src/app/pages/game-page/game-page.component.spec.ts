@@ -11,6 +11,7 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { AudioService } from '@app/services/audio.service';
 // import { CommunicationService } from '@app/services/communication.service';
 // import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
@@ -25,6 +26,7 @@ describe('GamePageComponent', () => {
     let subject: Subject<any>;
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
+    let audioServiceSpy: SpyObj<AudioService>;
 
     const mouseEvent = {
         offsetX: 100,
@@ -35,6 +37,7 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
+        audioServiceSpy = jasmine.createSpyObj('AudioService', ['playSound']);
         subject = new Subject();
 
         await TestBed.configureTestingModule({
@@ -54,6 +57,7 @@ describe('GamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { params: subject.asObservable(), queryParams: subject.asObservable() } },
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
+                { provide: AudioService, useValue: audioServiceSpy },
             ],
         }).compileComponents();
 
@@ -127,6 +131,7 @@ describe('GamePageComponent', () => {
         const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
         const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
         component.handleAreaFoundInDiff(result);
+        expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         expect(component.imagesData).toEqual(result);
         expect(component.foundADifference).toBe(true);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
@@ -141,14 +146,15 @@ describe('GamePageComponent', () => {
         component.handleAreaFoundInOriginal(result);
         expect(component.imagesData).toEqual(result);
         expect(component.foundADifference).toBe(true);
+        expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
     });
 
-    // it('handleAreaNotFoundInOriginal should call multiple functions', () => {
+    it('handleAreaNotFoundInOriginal should call multiple functions', () => {
         
-    // });
+    });
 
     // it('handleAreaNotFoundInDiff should call multiple functions', () => {
         
