@@ -4,6 +4,7 @@ import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
 import { CommunicationService } from './communication.service';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
+import { AudioService } from '@app/services/audio.service';
 
 @Injectable({
     providedIn: 'root',
@@ -24,6 +25,7 @@ export class MouseService {
     constructor(
         private communicationService: CommunicationService,
         public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
+        private audioService: AudioService,
     ) {}
 
     /**
@@ -58,6 +60,7 @@ export class MouseService {
                 this.incrementCounter();
                 if (this.getDifferenceCounter() >= this.numberOfDifference) {
                     this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+                    this.audioService.playSound('./assets/audio/Bing_Chilling_vine_boom.mp3');
                 }
                 return differencesArray;
             }
