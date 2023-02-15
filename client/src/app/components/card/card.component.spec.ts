@@ -13,15 +13,17 @@ describe('CardComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const popUpService = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
     popUpService.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
-    popUpService.dialogRef.afterClosed.and.returnValue(of({hasAccepted: true}));
+    popUpService.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CardComponent, CarouselComponent],
-            imports: [MatDialogModule, RouterTestingModule.withRoutes([{ path: 'example', component: CardComponent}])],
-            providers: [{ provide: PopUpServiceService, useValue: popUpService },
+            imports: [MatDialogModule, RouterTestingModule.withRoutes([{ path: 'example', component: CardComponent }])],
+            providers: [
+                { provide: PopUpServiceService, useValue: popUpService },
                 { provide: Router, useValue: routerSpy },
-                { provide: MAT_DIALOG_DATA, useValue: {} },],
+                { provide: MAT_DIALOG_DATA, useValue: {} },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CardComponent);
@@ -52,16 +54,16 @@ describe('CardComponent', () => {
         component.level.isEasy = false;
         expect(component.displayDifficulty()).toEqual('Hard');
     });
-    it('PlaySolo should ask for playerName', () => {   
+    it('PlaySolo should ask for playerName', () => {
         popUpService.openDialog.and.returnValue({
-            afterClosed: () => of({
-              hasAccepted: true
-            })
+            afterClosed: () =>
+                of({
+                    hasAccepted: true,
+                }),
         });
         popUpService.result = 'nom';
         component.level.id = 1;
         component.playSolo();
         expect(popUpService.openDialog).toHaveBeenCalled();
     });
-
 });

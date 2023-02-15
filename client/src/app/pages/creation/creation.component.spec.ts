@@ -26,7 +26,7 @@ describe('CreationComponent', () => {
     const diffService = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
     const popUpService = jasmine.createSpyObj('PopUpServiceService', ['openDialog']);
     popUpService.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
-    popUpService.dialogRef.afterClosed.and.returnValue(of({hasAccepted: true}));
+    popUpService.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
     });
@@ -34,7 +34,9 @@ describe('CreationComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, ScaleContainerComponent, PlayAreaComponent],
             providers: [
-                CanvasSharingService, HttpClient, HttpHandler,
+                CanvasSharingService,
+                HttpClient,
+                HttpHandler,
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: DifferenceDetectorService, useValue: diffService },
                 { provide: PopUpServiceService, useValue: popUpService },
@@ -303,7 +305,7 @@ describe('CreationComponent', () => {
             clusters: [],
             isHard: false,
             canvas: document.createElement('canvas').getContext('2d'),
-        }
+        };
         diffService.detectDifferences.and.returnValue(differences);
         component.detectDifference();
         expect(component.nbDifferences).not.toBeNull();
@@ -315,9 +317,10 @@ describe('CreationComponent', () => {
         component.diffImageFile = mockFile;
         component.isSaveable = true;
         popUpService.openDialog.and.returnValue({
-            afterClosed: () => of({
-              hasAccepted: true
-            })
+            afterClosed: () =>
+                of({
+                    hasAccepted: true,
+                }),
         });
         popUpService.result = 'nom';
         component.saveGame();

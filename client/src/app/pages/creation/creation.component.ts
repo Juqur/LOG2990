@@ -8,7 +8,6 @@ import { DifferenceDetectorService } from '@app/services/difference-detector.ser
 import { DrawService } from '@app/services/draw.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
-
 /**
  * This component represents the creation, the page where we can create new levels/games.
  *
@@ -29,16 +28,13 @@ export class CreationComponent implements OnInit {
     nbDifferences = Constants.INIT_DIFF_NB;
     isSaveable = false;
     differences: Difference | undefined;
-
     defaultArea: PlayAreaComponent | null = null;
     modifiedArea: PlayAreaComponent | null = null;
     defaultCanvasCtx: CanvasRenderingContext2D | null = null;
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
-
     defaultImageUrl = '';
     msg = '';
     savedLevel: Level;
-
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
@@ -46,12 +42,10 @@ export class CreationComponent implements OnInit {
         public popUpService: PopUpServiceService,
         private communicationService: CommunicationService,
     ) {}
-
     /**
      * The method initiates two empty canvas on the page. The canvases are represented by two
      * PlayArea components.
      */
-
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.setDefaultCanvasRef(this.defaultCanvasCtx?.canvas as HTMLCanvasElement);
@@ -61,7 +55,6 @@ export class CreationComponent implements OnInit {
         this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
         this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
     }
-
     /**
      * The method is in charge of taking the default image given in the input, verifying that it is
      * of the correct format and then displaying it.
@@ -80,7 +73,6 @@ export class CreationComponent implements OnInit {
             else this.showDefaultImage();
         });
     }
-
     /**
      * The method is in charge of taking the modified image given in the input, verifying that it is
      * of the correct format and then displaying it.
@@ -99,7 +91,6 @@ export class CreationComponent implements OnInit {
             else this.showDiffImage();
         });
     }
-
     /**
      * This method is in charge of selecting the image given to the input verifying that it is
      * of the correct format and display as both the default and different image.
@@ -122,7 +113,6 @@ export class CreationComponent implements OnInit {
             }
         });
     }
-
     /**
      * This method clears the value of the input, effectively removing the file that was given.
      *
@@ -132,7 +122,6 @@ export class CreationComponent implements OnInit {
         const target = event.target as HTMLInputElement;
         target.value = '';
     }
-
     /**
      * This method is used to display the default image on the default canvas.
      */
@@ -159,7 +148,6 @@ export class CreationComponent implements OnInit {
             this.defaultCanvasCtx = this.canvasShare.defaultCanvasRef.getContext('2d');
         };
     }
-
     /**
      * This method is used to display the different image on the different canvas.
      */
@@ -185,7 +173,6 @@ export class CreationComponent implements OnInit {
             this.diffCanvasCtx = this.canvasShare.diffCanvasRef.getContext('2d');
         };
     }
-
     /**
      * Verifies if an image file is of the good format, that is the file is in PNG and of type image/bmp
      * The image must also have only 24 bits per pixels.
@@ -198,14 +185,12 @@ export class CreationComponent implements OnInit {
             this.errorDialog('Les images doivent être au format bmp');
             return Promise.resolve(false);
         }
-
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const imgData = e.target?.result as ArrayBuffer;
                 const view = new DataView(imgData);
                 const bitNb = view.getUint16(Constants.BMP_BPP_POS, true);
-
                 if (bitNb !== Constants.BMP_BPP) {
                     resolve(false);
                     this.errorDialog('Les images doivent être de 24 bits par pixel');
@@ -215,8 +200,7 @@ export class CreationComponent implements OnInit {
             reader.readAsArrayBuffer(imageFile);
         });
     }
-
-     /**
+    /**
      * This methods clears all modifications made to the default image.
      */
     resetDefault() {
@@ -225,7 +209,6 @@ export class CreationComponent implements OnInit {
             .getContext('2d')
             ?.clearRect(0, 0, this.canvasShare.defaultCanvasRef.width, this.canvasShare.defaultCanvasRef.height);
     }
-
     /**
      * This method clears all modifications made to the different image.
      */
@@ -233,7 +216,6 @@ export class CreationComponent implements OnInit {
         this.reinitGame();
         this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, this.canvasShare.diffCanvasRef.height);
     }
-
     /**
      * Changes the value of the radius depending on a value given as parameter. The possible options
      * are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters
@@ -243,28 +225,23 @@ export class CreationComponent implements OnInit {
     sliderChange(value: number) {
         this.radius = this.radiusTable[value];
     }
-
-     /**
+    /**
      * This methods starts the detection of differences between the two images and
      * launches a popUp display the result as a white and black image where the black
      * sections are differences while the white are regions shared between images.
      */
     detectDifference() {
-        // Lancer la validation des différences selon le rayon
-        // Ouvrir un popup qui affiche le résultat
         if (!this.defaultCanvasCtx || !this.diffCanvasCtx) {
             this.errorDialog('Canvas manquant');
             return;
         }
         this.nbDifferences = Constants.INIT_DIFF_NB;
-
         this.differences = this.diffService.detectDifferences(this.defaultCanvasCtx, this.diffCanvasCtx, this.radius);
         if (!this.differences) {
             this.errorDialog('Veuillez fournir des images non vides');
             return;
         }
         this.nbDifferences = this.differences.clusters.length;
-
         this.nbDifferences = this.differences.clusters.length;
         let respecteNb = '';
         if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
@@ -273,7 +250,6 @@ export class CreationComponent implements OnInit {
             this.isSaveable = false;
             respecteNb = '(Le nombre de différences doit être compris entre 3 et 9)';
         }
-
         const canvasDialogData: DialogData = {
             textToSend: 'Image de différence (contient ' + this.nbDifferences + ' différences) ' + respecteNb + ' :',
             imgSrc: this.differences.canvas.canvas.toDataURL(),
@@ -281,7 +257,6 @@ export class CreationComponent implements OnInit {
         };
         this.popUpService.openDialog(canvasDialogData);
     }
-
     /**
      * This methods reinitializes the game games values to prevent the user from saving
      * using obsolete values after a change.
@@ -291,7 +266,6 @@ export class CreationComponent implements OnInit {
         this.defaultImageUrl = '';
         this.isSaveable = false;
     }
-
     /**
      * This method is used to save the game, it opens a popUp asking the user
      * to give a name to their new game and saves it.
@@ -299,7 +273,6 @@ export class CreationComponent implements OnInit {
     saveGame() {
         if (this.isSaveable) {
             let gameName = '';
-
             const saveDialogData: DialogData = {
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
@@ -341,7 +314,6 @@ export class CreationComponent implements OnInit {
                 formData.append('isEasy', this.savedLevel.isEasy.toString());
                 formData.append('clusters', JSON.stringify(this.differences.clusters));
                 formData.append('nbDifferences', this.savedLevel.nbDifferences.toString());
-
                 this.communicationService.postLevel(formData).subscribe((data) => {
                     if (data.title === 'error') {
                         this.errorDialog(data.body);
@@ -357,9 +329,9 @@ export class CreationComponent implements OnInit {
             });
         }
     }
-
     /**
      * This method is used to display an dialog with an error message.
+     *
      * @param msg the error message we want to display.
      */
     errorDialog(msg = 'Une erreur est survenue') {
