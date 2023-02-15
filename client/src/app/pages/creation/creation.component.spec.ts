@@ -24,7 +24,7 @@ describe('CreationComponent', () => {
 
     const diffService = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
     const popUpService = jasmine.createSpyObj('PopUpServiceService', ['openDialog']);
-    popUpService.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    popUpService.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
     popUpService.dialogRef.afterClosed.and.returnValue(of({hasAccepted: true}));
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
@@ -328,5 +328,11 @@ describe('CreationComponent', () => {
         const errorSpy = spyOn(component, 'errorDialog');
         component.saveGame();
         expect(errorSpy).toHaveBeenCalled();
+    });
+    it('errorDialog should close the currently opened dialog and open dialog', () => {
+        component.errorDialog('un');
+        component.errorDialog('deux');
+        expect(popUpService.openDialog).toHaveBeenCalled();
+        expect(popUpService.dialogRef.close).toHaveBeenCalled();
     });
 });
