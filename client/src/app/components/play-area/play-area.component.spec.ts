@@ -1,8 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 import SpyObj = jasmine.SpyObj;
 
 describe('PlayAreaComponent', () => {
@@ -54,5 +55,40 @@ describe('PlayAreaComponent', () => {
     it('getCanvas should return the canvas element', () => {
         const canvas = component.getCanvas();
         expect(canvas).toEqual(component.canvas);
+    });
+
+    it('getCanvas should return the canvas element', () => {
+        const canvas = component.getCanvas();
+        expect(canvas).toEqual(component.canvas);
+    });
+
+    it('drawPlayArea should call context.drawImage', fakeAsync(() => {
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        component.drawPlayArea('http://localhost:3000/originals/1.bmp');
+        component.currentImage.dispatchEvent(new Event('load'));
+
+        expect(drawImageSpy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should call fillRect', () => {
+        const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
+        const area = [0, 1, 2, 3];
+        component.flashArea(area);
+        expect(fillRectSpy).toHaveBeenCalledTimes(area.length);
+    });
+
+    it('should not call fillRect if there is no canvas', () => {
+        spyOn(component.canvas.nativeElement, 'getContext').and.returnValue(null);
+
+        const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
+        const area = [0, 1, 2, 3];
+        component.flashArea(area);
+        expect(fillRectSpy).not.toHaveBeenCalled();
+    });
+
+    it('timeout should call setTimeout', () => {
+        const timeoutSpy = spyOn(window, 'setTimeout');
+        component.timeout(Constants.millisecondsInOneSecond);
+        expect(timeoutSpy).toHaveBeenCalledTimes(1);
     });
 });
