@@ -265,15 +265,21 @@ export class CreationComponent implements OnInit {
         }
         this.nbDifferences = this.differences.clusters.length;
 
+        this.nbDifferences = this.differences.clusters.length;
+        let respecteNb = '';
+        if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
+            this.isSaveable = true;
+        } else {
+            this.isSaveable = false;
+            respecteNb = '(Le nombre de différences doit être compris entre 3 et 9)';
+        }
+
         const canvasDialogData: DialogData = {
-            textToSend: 'Image de différence (contient ' + this.nbDifferences + ' différences) :',
+            textToSend: 'Image de différence (contient ' + this.nbDifferences + ' différences) ' + respecteNb + ' :',
             imgSrc: this.differences.canvas.canvas.toDataURL(),
             closeButtonMessage: 'Fermer',
         };
         this.popUpService.openDialog(canvasDialogData);
-        if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
-            this.isSaveable = true;
-        } else this.isSaveable = false;
     }
 
     /**
@@ -325,11 +331,7 @@ export class CreationComponent implements OnInit {
                     isEasy: !this.differences?.isHard,
                     nbDifferences: this.nbDifferences,
                 };
-
-                if (!this.defaultImageFile || !this.differences) {
-                    return;
-                }
-                if (!this.defaultImageFile || !this.differences) {
+                if (!this.defaultImageFile || !this.diffImageFile || !this.differences) {
                     return;
                 }
                 const formData = new FormData();

@@ -34,7 +34,7 @@ describe('CreationComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, ScaleContainerComponent, PlayAreaComponent],
             providers: [
-                CanvasSharingService,
+                CanvasSharingService, HttpClient, HttpHandler,
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: DifferenceDetectorService, useValue: diffService },
                 { provide: PopUpServiceService, useValue: popUpService },
