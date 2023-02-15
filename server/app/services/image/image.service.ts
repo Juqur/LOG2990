@@ -12,8 +12,6 @@ export class ImageService {
     readonly pathOriginal: string = '../server/assets/images/originals/';
     readonly pathData: string = '../server/assets/data/';
 
-    // foundDifferences: number[] = [];
-
     async getLevels(): Promise<Level[]> {
         const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
         return JSON.parse(promises.toString()) as Level[];
@@ -24,19 +22,13 @@ export class ImageService {
         const allLevels = JSON.parse(promises.toString()) as Level[];
         return allLevels.find((level) => level.id === id);
     }
+
     /**
      * Gets the number of differences between the two images
      *
      * @param fileName The name of the file that has the differences
      * @returns the number of differences between the two images
      */
-    // async differencesCount(fileName: string): Promise<number> {
-    //     const filePath = path.resolve(this.pathDifference + fileName + '.json');
-    //     console.log(filePath);
-    //     const promises = await fsp.readFile(filePath, 'utf8');
-    //     return (JSON.parse(promises.toString()) as number[][]).length;
-    // }
-
     async differencesCount(fileName: string): Promise<number> {
         const filePath = this.pathDifference + fileName + '.json';
         const promises = await fsp.readFile(filePath, 'utf8');
@@ -60,7 +52,7 @@ export class ImageService {
      *
      * @param allDifferences
      * @param position
-     * @returns
+     * @returns the array of pixels that are different
      */
     returnIndex(allDifferences: number[][], foundDifferences: number[], pixelClicked: number): number {
         for (const difference of allDifferences) {
@@ -96,6 +88,12 @@ export class ImageService {
         return [];
     }
 
+    /**
+     * Writes the level data in the json file
+     *
+     * @param newLevel the level to be uploaded
+     * @returns the message that the level was successfully uploaded
+     */
     async writeLevelData(newLevel: unknown): Promise<Message> {
         const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
         const allDifferences = JSON.parse(promises.toString()) as Level[];
@@ -129,6 +127,11 @@ export class ImageService {
         return message;
     }
 
+    /** Internal method that handles errors when writing the level data in the json file.
+     *
+     * @param err The error to be handled
+     * @returns the message that the level was not successfully uploaded
+     */
     private handleErrors(err: Error): Message {
         const message: Message = new Message();
         message.body = 'Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur:' + err.message;
