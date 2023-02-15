@@ -38,7 +38,7 @@ export class ImageService {
     // }
 
     async differencesCount(fileName: string): Promise<number> {
-        const filePath = path.resolve(this.pathDifference + fileName + '.json');
+        const filePath = this.pathDifference + fileName + '.json';
         const promises = await fsp.readFile(filePath, 'utf8');
         const differences = (JSON.parse(promises.toString()) as number[][]).length;
         return differences;
