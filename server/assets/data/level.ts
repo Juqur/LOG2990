@@ -72,5 +72,16 @@ export const levels = [
         playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
         timeMulti: Constants.timeMulti,
         isEasy: true,
+        nbDifferences:7,
     },
+    {
+        id: 8,
+        name: 'mirage',
+        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
+        timeSolo: Constants.timeSolo,
+        playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
+        timeMulti: Constants.timeMulti,
+        isEasy: true,
+        nbDifferences: 8
+    }
 ];
