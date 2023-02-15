@@ -13,6 +13,7 @@ export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
+    currentImage: HTMLImageElement;
 
     buttonPressed = '';
 
@@ -58,11 +59,11 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             }
-            const currentImage = new Image();
-            currentImage.crossOrigin = 'anonymous';
-            currentImage.src = image;
-            currentImage.onload = () => {
-                context.drawImage(currentImage, 0, 0, this.width, this.height);
+            this.currentImage = new Image();
+            this.currentImage.crossOrigin = 'anonymous';
+            this.currentImage.src = image;
+            this.currentImage.onload = () => {
+                context.drawImage(this.currentImage, 0, 0, this.width, this.height);
             };
             this.canvas.nativeElement.style.backgroundColor = 'white';
             this.canvas.nativeElement.focus();
