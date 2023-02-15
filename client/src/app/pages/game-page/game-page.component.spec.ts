@@ -15,6 +15,7 @@ import { AudioService } from '@app/services/audio.service';
 // import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 import { Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import SpyObj = jasmine.SpyObj;
@@ -95,7 +96,7 @@ describe('GamePageComponent', () => {
     it('should call handleAreaFoundInOriginal if difference is found in original', fakeAsync(() => {
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([1]));
-        let spy = spyOn(component, 'handleAreaFoundInOriginal');
+        const spy = spyOn(component, 'handleAreaFoundInOriginal');
         component.clickedOnOriginal(mouseEvent);
         tick();
         expect(spy).toHaveBeenCalledTimes(1);
@@ -104,7 +105,7 @@ describe('GamePageComponent', () => {
     it('should call handleAreaNotFoundInOriginal if difference is not found in original', fakeAsync(() => {
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([]));
-        let spy = spyOn(component, 'handleAreaNotFoundInOriginal');
+        const spy = spyOn(component, 'handleAreaNotFoundInOriginal');
         component.clickedOnOriginal(mouseEvent);
         tick();
         expect(spy).toHaveBeenCalledTimes(1);
@@ -113,7 +114,7 @@ describe('GamePageComponent', () => {
     it('should call handleAreaFoundInDiff if difference is found in diff', fakeAsync(() => {
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([1]));
-        let spy = spyOn(component, 'handleAreaFoundInDiff');
+        const spy = spyOn(component, 'handleAreaFoundInDiff');
         component.clickedOnDiff(mouseEvent);
         tick();
         expect(spy).toHaveBeenCalledTimes(1);
@@ -122,7 +123,7 @@ describe('GamePageComponent', () => {
     it('should call handleAreaFoundInDiff if difference is not found in diff', fakeAsync(() => {
         mouseServiceSpy.getCanClick.and.returnValue(true);
         mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([]));
-        let spy = spyOn(component, 'handleAreaNotFoundInDiff');
+        const spy = spyOn(component, 'handleAreaNotFoundInDiff');
         component.clickedOnDiff(mouseEvent);
         tick();
         expect(spy).toHaveBeenCalledTimes(1);
@@ -160,7 +161,6 @@ describe('GamePageComponent', () => {
         const spyResetCanvas = spyOn(component, 'resetCanvas');
         component.handleAreaNotFoundInOriginal();
         expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        // expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
@@ -169,7 +169,6 @@ describe('GamePageComponent', () => {
         const spyResetCanvas = spyOn(component, 'resetCanvas');
         component.handleAreaNotFoundInDiff();
         expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        // expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
@@ -184,11 +183,11 @@ describe('GamePageComponent', () => {
         const spyOriginalDrawPlayArea = spyOn(component.originalPlayArea, 'drawPlayArea');
         const copyAreaSpy = spyOn(component, 'copyArea');
         component.resetCanvas();
-        tick(1000);
+        tick(Constants.millisecondsInOneSecond);
         expect(spyDiffDrawPlayArea).toHaveBeenCalledTimes(1);
         expect(spyOriginalDrawPlayArea).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        tick(30);
+        tick(Constants.thirty);
         expect(copyAreaSpy).toHaveBeenCalledTimes(1);
     }));
 });
