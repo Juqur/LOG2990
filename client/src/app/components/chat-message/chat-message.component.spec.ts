@@ -50,7 +50,7 @@ describe('ChatMessageComponent', () => {
         expect(component.displayName).toEqual('I am a s...');
     });
 
-    it('Chat message should cut name if name is to long', () => {
+    it('Chat message should cut name if name is too long', () => {
         component.message = {
             sender: 'I am a super long name',
             text: 'Hello world',

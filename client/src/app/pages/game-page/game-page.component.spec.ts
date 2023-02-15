@@ -8,7 +8,6 @@ import { GameTimerComponent } from '@app/components/game-timer/game-timer.compon
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageComponent } from './game-page.component';
 
@@ -20,7 +19,6 @@ describe('GamePageComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [
                 GamePageComponent,
-                SidebarComponent,
                 PlayAreaComponent,
                 GameTimerComponent,
                 ScaleContainerComponent,
