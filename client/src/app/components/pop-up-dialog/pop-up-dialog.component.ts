@@ -7,6 +7,12 @@ import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.se
     templateUrl: './pop-up-dialog.component.html',
     styleUrls: ['./pop-up-dialog.component.scss'],
 })
+/**
+ * This component represents a pop-up.
+ *
+ * @author Charles Degrandpré
+ * @class PopUpDialogComponent
+ */
 export class PopUpDialogComponent {
     @ViewChild('pop-up-input') elRef: ElementRef;
     inputWasValid: boolean | undefined = false;
@@ -18,18 +24,16 @@ export class PopUpDialogComponent {
     }
 
     /**
-     * Function in charge of closing the pop up once we either click outside it or
-     * when we click on the close button.
+     * Function in charge of closing the pop up once we click on the close button.
      */
     onCloseClick(): void {
         this.dialogRef.close();
     }
 
     /**
-     * Function in charge of submitting the text of the input once we have typed it out.
+     * Function in charge of verifying if an input was valid and save the value in inputValue attribute.
      *
-     * @param event The keyboard event to process
-     * @param input The HTMLInput element associated with the input.
+     * @param value the new value of the input.
      */
     submitText(value: string) {
         this.inputValue = value;

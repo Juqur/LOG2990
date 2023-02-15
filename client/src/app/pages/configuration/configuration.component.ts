@@ -8,6 +8,12 @@ import { Constants } from '@common/constants';
     templateUrl: './configuration.component.html',
     styleUrls: ['./configuration.component.scss'],
 })
+/**
+ * This component is a wrapper to pose on the pages to format the display of elements in a uniform manner.
+ *
+ * @author Louis Félix St-Amour & Galen Hu
+ * @class ScaleContainerComponent
+ */
 export class ConfigurationComponent implements OnInit {
     page = 'selection';
     levels: Level[] = [];
@@ -19,6 +25,10 @@ export class ConfigurationComponent implements OnInit {
 
     constructor(private communicationService: CommunicationService) {}
 
+    /**
+     * This function increments the currentPage counter and updates the new levels to
+     * show on the current page.
+     */
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
         this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
@@ -26,6 +36,9 @@ export class ConfigurationComponent implements OnInit {
         this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     }
 
+    /**
+     * This function decrements and updates the new levels shown on the current page.
+     */
     previousPage(): void {
         if (this.currentPage > 0) this.currentPage--;
         this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
@@ -33,11 +46,17 @@ export class ConfigurationComponent implements OnInit {
         this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
     }
 
-    isBeginningOfList() {
+    /**
+     * @returns a boolean indicating if we are at the beginning of the list
+     */
+    isBeginningOfList(): boolean {
         return this.currentPage <= 0;
     }
 
-    isEndOfList() {
+    /**
+     * @returns a boolean indicating if we are at the end of the list
+     */
+    isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
     }
 

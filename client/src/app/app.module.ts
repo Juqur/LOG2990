@@ -17,7 +17,6 @@ import { ChatMessageComponent } from './components/chat-message/chat-message.com
 import { CounterComponent } from './components/counter/counter.component';
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
-import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
 import { MessageBoxComponent } from './components/message-box/message-box.component';
 import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.component';
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
@@ -40,7 +39,6 @@ import { CreationComponent } from './pages/creation/creation.component';
         CardComponent,
         GameTimerComponent,
         GameChatComponent,
-        ImageDifferenceComponent,
         ChatMessageComponent,
         MessageBoxComponent,
         CarouselComponent,

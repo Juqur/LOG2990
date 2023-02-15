@@ -9,6 +9,12 @@ import { environment } from 'src/environments/environment';
 @Injectable({
     providedIn: 'root',
 })
+/**
+ * This service is used in order to share the canvases to components that need both in easy access
+ *
+ * @author Simon Gagné
+ * @class CanvasSharingService
+ */
 export class CommunicationService {
     private readonly baseUrl: string = environment.serverUrl;
 

@@ -5,6 +5,12 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
     templateUrl: './scale-container.component.html',
     styleUrls: ['./scale-container.component.scss'],
 })
+/**
+ * This component is a wrapper to pose on the pages to format the display of elements in a uniform manner.
+ *
+ * @author Pierre Tran
+ * @class ScaleContainerComponent
+ */
 export class ScaleContainerComponent implements OnInit {
     @ViewChild('screen', { static: true }) screen: ElementRef;
     @ViewChild('container', { static: true }) container: ElementRef;
