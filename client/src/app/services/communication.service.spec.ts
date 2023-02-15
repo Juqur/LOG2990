@@ -124,4 +124,33 @@ describe('CommunicationService', () => {
         expect(req.request.method).toEqual('POST');
         req.flush(fakeMessage);
     });
+
+    it('postDifference should return an empty array if response body is falsy', () => {
+        const fakeGameId = '1';
+        const fakePosition = 2;
+        const fakeResponse = [] as number[];
+
+        service.postDifference(fakeGameId, fakePosition).subscribe((res) => {
+            expect(res).toEqual(fakeResponse);
+        });
+
+        const req = httpMock.expectOne(`${service['baseUrl']}api/game/difference`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body).toEqual({ gameId: '1', position: 2 });
+        req.flush(null);
+    });
+
+    it('should make an http POST request new game', () => {
+        const path = '/new';
+        const imageName = 'someImage';
+
+        service.postNewGame(path, imageName).subscribe((res) => {
+            expect(res).toEqual(imageName);
+        });
+
+        const req = httpMock.expectOne(`${service['baseUrl']}api/new`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body).toEqual({ imageId: 'someImage' });
+        req.flush(imageName);
+    });
 });
