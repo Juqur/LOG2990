@@ -31,7 +31,6 @@ export class ImageController {
 
     @ApiOkResponse({
         description: 'Returns data for a level',
-        type: Message,
     })
     @Get('/:id')
     async getSingleGameData(@Param('id') id: string): Promise<Level> {
@@ -41,7 +40,6 @@ export class ImageController {
     @Get('/differenceCount')
     @ApiOkResponse({
         description: 'Returns the number of differences between the two images',
-        type: Message,
     })
     async differenceCount(@Param('differenceFile') differenceFile: string) {
         return this.imageService.differencesCount(differenceFile);

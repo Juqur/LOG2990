@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Event, NavigationEnd, Router } from '@angular/router';
 import { Constants } from '@common/constants';
 import { Gateways, SocketHandler } from 'src/app/services/socket-handler.service';
 
@@ -18,7 +19,7 @@ export class GameTimerComponent implements OnInit {
     gameTime: number = 0;
     gameTimeFormatted: string;
 
-    constructor(private socketHandler: SocketHandler) {}
+    constructor(private socketHandler: SocketHandler, private router: Router) {}
 
     /**
      * Sets the game time variable to the new time value and calls formatTime.
@@ -48,6 +49,12 @@ export class GameTimerComponent implements OnInit {
      * listen on any 'timer' event for which we want to update the timer value.
      */
     ngOnInit(): void {
+        this.router.events.subscribe((event: Event) => {
+            if (event instanceof NavigationEnd) {
+                this.socketHandler.disconnect(Gateways.Timer);
+            }
+        });
+        this.setTimer(0);
         if (!this.socketHandler.isSocketAlive(Gateways.Timer)) {
             this.socketHandler.connect(Gateways.Timer);
             this.socketHandler.send(Gateways.Timer, 'soloClassic');

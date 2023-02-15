@@ -64,7 +64,7 @@
     padding-top: 10px;
     font-weight: 500;
     font-size: 1.3em;
-    color: #F63B3B;
+    color: #f63b3b;
 }
 
 .mat-icon {
@@ -108,7 +108,7 @@
     margin-right: 50px;
 }
 
-#diff-nb-note{
+#diff-nb-note {
     font-weight: bolder;
     font-size: 1.7em;
 }
@@ -141,6 +141,11 @@
     opacity: 0.5;
 }
 
-input[type="file"] {
+.error {
+    color: red;
+    font-size: 1.5em;
+}
+
+input[type='file'] {
     display: none;
 }

@@ -40,6 +40,7 @@ export class CreationComponent implements OnInit {
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
     defaultImageUrl = '';
     msg = '';
+    differenceAmountMsg = '';
     savedLevel: Level;
     // eslint-disable-next-line max-params
     constructor(
@@ -272,6 +273,10 @@ export class CreationComponent implements OnInit {
             imgSrc: this.differences.canvas.canvas.toDataURL(),
             closeButtonMessage: 'Fermer',
         };
+        this.differenceAmountMsg = '';
+        if (this.nbDifferences >= Constants.MAX_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
+        if (this.nbDifferences <= Constants.MIN_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
+
         this.popUpService.openDialog(canvasDialogData);
     }
     /**
