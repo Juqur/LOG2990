@@ -13,7 +13,7 @@ import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AudioService } from '@app/services/audio.service';
 // import { CommunicationService } from '@app/services/communication.service';
-// import { DrawService } from '@app/services/draw.service';
+import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
@@ -27,6 +27,7 @@ describe('GamePageComponent', () => {
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
     let audioServiceSpy: SpyObj<AudioService>;
+    let drawServiceSpy: SpyObj<DrawService>;
 
     const mouseEvent = {
         offsetX: 100,
@@ -38,6 +39,7 @@ describe('GamePageComponent', () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['playSound']);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError']);
         subject = new Subject();
 
         await TestBed.configureTestingModule({
@@ -58,6 +60,7 @@ describe('GamePageComponent', () => {
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: AudioService, useValue: audioServiceSpy },
+                { provide: DrawService, useValue: drawServiceSpy },
             ],
         }).compileComponents();
 
@@ -77,7 +80,6 @@ describe('GamePageComponent', () => {
     //         expect(val).toBe(levelId);
     //         done();
     //     });
-
 
     // });
 
@@ -143,6 +145,7 @@ describe('GamePageComponent', () => {
         const result = [1, 2, 3];
         const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
         const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
+        const spyResetCanvas = spyOn(component, 'resetCanvas');
         component.handleAreaFoundInOriginal(result);
         expect(component.imagesData).toEqual(result);
         expect(component.foundADifference).toBe(true);
@@ -150,26 +153,42 @@ describe('GamePageComponent', () => {
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
+        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
 
     it('handleAreaNotFoundInOriginal should call multiple functions', () => {
-        
+        const spyResetCanvas = spyOn(component, 'resetCanvas');
+        component.handleAreaNotFoundInOriginal();
+        expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
+        // expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
+        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
 
-    // it('handleAreaNotFoundInDiff should call multiple functions', () => {
-        
-    // });
+    it('handleAreaNotFoundInDiff should call multiple functions', () => {
+        const spyResetCanvas = spyOn(component, 'resetCanvas');
+        component.handleAreaNotFoundInDiff();
+        expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
+        // expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
+        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
+    });
 
-    // it('pick should get the color of the canvas', () => {
-    //     const rgb = component.pick(1, 1);
-    //     expect(rgb).toEqual('rgba(0, 0, 0, 0)');
-    // });
+    it('pick should get the color of the canvas', () => {
+        const rgb = component.pick(1, 1);
+        expect(rgb).toEqual('rgba(0, 0, 0, 0)');
+    });
 
-    // it('copyArea should make a copy of a part of the originalArea', () => {
-    //     component.copyArea([1]);
-    // });
-
-    // it('resetCanvas should refresh the area and copy a part of the original canvas', () => {
-    //     component.resetCanvas();
-    // });
+    it('resetCanvas should refresh the area and copy a part of the original canvas', fakeAsync(() => {
+        const spyDiffDrawPlayArea = spyOn(component.diffPlayArea, 'drawPlayArea');
+        const spyOriginalDrawPlayArea = spyOn(component.originalPlayArea, 'drawPlayArea');
+        const copyAreaSpy = spyOn(component, 'copyArea');
+        component.resetCanvas();
+        tick(1000);
+        expect(spyDiffDrawPlayArea).toHaveBeenCalledTimes(1);
+        expect(spyOriginalDrawPlayArea).toHaveBeenCalledTimes(1);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
+        tick(30);
+        expect(copyAreaSpy).toHaveBeenCalledTimes(1);
+    }));
 });
