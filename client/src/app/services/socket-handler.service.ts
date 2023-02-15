@@ -27,6 +27,8 @@ export class SocketHandler {
     connect(type: Gateways) {
         switch (type) {
             case Gateways.Timer:
+                console.log(this.serverUrl + type);
+                console.log(environment.serverUrl + type);
                 this.socketTimer = io(this.serverUrl + type, { transports: ['websocket'], upgrade: false });
                 break;
             case Gateways.Chat:
