@@ -46,6 +46,8 @@ export namespace Constants {
     export const MIN_DIFFICULTY_RATIO = 0.15;
     export const MIN_DIFFERENCES = 7;
     export const FULL_ALPHA = 255;
+    export const MAX_DIFFERENCES_LIMIT = 9;
+    export const MIN_DIFFERENCES_LIMIT = 3;
 
     // Detection of difference constants
     export const PIXEL_SIZE: number = 4;
