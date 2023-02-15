@@ -347,12 +347,12 @@ export class CreationComponent implements OnInit {
                         const dialogData: DialogData = {
                             textToSend: data.body,
                             closeButtonMessage: 'Fermer',
+                            // eslint-disable-next-line max-lines
                         };
                         this.popUpService.openDialog(dialogData, '/config');
                     }
                 });
             });
-            // eslint-disable-next-line max-lines
         }
     }
 
