@@ -133,7 +133,7 @@ export class ImageService {
      * @param err The error to be handled
      * @returns the message that the level was not successfully uploaded
      */
-    private handleErrors(err: Error): Message {
+    handleErrors(err: Error): Message {
         const message: Message = new Message();
         message.body = 'Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur:' + err.message;
         message.title = 'error';
