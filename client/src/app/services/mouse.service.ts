@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { CommunicationService } from '@app/services/communication.service';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
+import { CommunicationService } from './communication.service';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
+import { AudioService } from '@app/services/audio.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,7 +22,11 @@ export class MouseService {
     private canClick: boolean = true;
     private numberOfDifference: number = 0;
 
-    constructor(private communicationService: CommunicationService, public popUpService: PopUpServiceService) {}
+    constructor(
+        private communicationService: CommunicationService,
+        public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
+        private audioService: AudioService,
+    ) {}
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
@@ -30,10 +35,10 @@ export class MouseService {
      * @param event the mouse event
      * @returns a boolean indicating if the click was valid.
      */
-    async mouseHitDetect(event: MouseEvent): Promise<number[]> {
+    async mouseHitDetect(event: MouseEvent, gameId: string | null): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            return this.processClick();
+            return this.processClick(gameId);
         }
         return Promise.resolve([]);
     }
@@ -44,19 +49,18 @@ export class MouseService {
      *
      * @returns a boolean indicating if the click was valid.
      */
-    async processClick(): Promise<number[]> {
+    async processClick(gameId: string | null): Promise<number[]> {
         // let foundDifference: Promise<boolean> = Promise.resolve(false);
         if (this.getCanClick()) {
-            const url = '/image/difference';
-            // This is to send to the server at the appropriate path the position of the pixel that was clicked.
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
-            const differencesArray = await this.getDifferencesArray(url, position);
+            const differencesArray = await this.getDifferencesArray(position, gameId);
             if (differencesArray.length > 0) {
                 this.incrementCounter();
                 if (this.getDifferenceCounter() >= this.numberOfDifference) {
                     this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+                    this.audioService.playSound('./assets/audio/Bing_Chilling_vine_boom.mp3');
                 }
                 return differencesArray;
             }
@@ -64,8 +68,8 @@ export class MouseService {
         return [];
     }
 
-    async getDifferencesArray(url: string, position: number) {
-        return await lastValueFrom(this.communicationService.postDifference(url, '7', position));
+    async getDifferencesArray(position: number, gameId: string | null) {
+        return await lastValueFrom(this.communicationService.postDifference(gameId, position));
     }
 
     /**
@@ -129,5 +133,9 @@ export class MouseService {
      * */
     setNumberOfDifference(numberOfDifference: number): void {
         this.numberOfDifference = numberOfDifference;
+    }
+
+    resetCounter(): void {
+        this.differenceCounter = 0;
     }
 }
