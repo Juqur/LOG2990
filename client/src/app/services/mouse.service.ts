@@ -24,19 +24,7 @@ export class MouseService {
     constructor(
         private communicationService: CommunicationService,
         public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
-    ) {
-        // if (!this.socketHandler.isSocketAlive(Gateways.Difference)) {
-        //     this.socketHandler.connect(Gateways.Difference);
-        //     this.socketHandler.on(
-        //         'sendCoord',
-        //         (data: unknown) => {
-        //             window.alert(typeof data);
-        //             this.differencesArray = data as number[];
-        //         },
-        //         Gateways.Difference,
-        //     );
-        // }
-    }
+    ) {}
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
@@ -62,11 +50,10 @@ export class MouseService {
     async processClick(gameId: string | null): Promise<number[]> {
         // let foundDifference: Promise<boolean> = Promise.resolve(false);
         if (this.getCanClick()) {
-            const url = '/game/difference';
             const position: number =
                 this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
 
-            const differencesArray = await this.getDifferencesArray(url, position, gameId);
+            const differencesArray = await this.getDifferencesArray(position, gameId);
             if (differencesArray.length > 0) {
                 this.incrementCounter();
                 if (this.getDifferenceCounter() >= this.numberOfDifference) {
@@ -78,8 +65,8 @@ export class MouseService {
         return [];
     }
 
-    async getDifferencesArray(url: string, position: number, gameId: string | null) {
-        return await lastValueFrom(this.communicationService.postDifference(url, gameId, position));
+    async getDifferencesArray(position: number, gameId: string | null) {
+        return await lastValueFrom(this.communicationService.postDifference(gameId, position));
     }
 
     /**
@@ -143,5 +130,9 @@ export class MouseService {
      * */
     setNumberOfDifference(numberOfDifference: number): void {
         this.numberOfDifference = numberOfDifference;
+    }
+
+    resetCounter(): void {
+        this.differenceCounter = 0;
     }
 }
