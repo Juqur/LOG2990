@@ -1,6 +1,5 @@
 import { GameStateService } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 
@@ -10,7 +9,7 @@ describe('GameController', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [GameController],
-            providers: [GameStateService, ImageService, Logger],
+            providers: [GameStateService, ImageService],
         }).compile();
 
         controller = module.get<GameController>(GameController);

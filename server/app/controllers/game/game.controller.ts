@@ -1,10 +1,10 @@
 import { GameStateService } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 
 @Controller('game')
 export class GameController {
-    constructor(private gameStateService: GameStateService, private imageService: ImageService, private logger: Logger) {}
+    constructor(private gameStateService: GameStateService, private imageService: ImageService) {}
 
     @Post()
     createNewGame(@Body() body: { imageId: string }) {
@@ -15,10 +15,7 @@ export class GameController {
 
     @Post('/difference')
     async findImageDifference(@Body() body: { gameId: string; position: number }) {
-        this.logger.log(body.gameId);
-        this.logger.log(body.position);
         const gameState = this.gameStateService.getGameState(body.gameId);
-        this.logger.log(gameState);
         return await this.imageService.findDifference(gameState.imageId, gameState.foundDifferences, body.position);
     }
 
