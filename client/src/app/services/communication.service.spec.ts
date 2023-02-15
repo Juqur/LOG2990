@@ -98,4 +98,30 @@ describe('CommunicationService', () => {
         expect(req.request.method).toEqual('GET');
         req.flush(count);
     });
+
+    it('should make an http POST request for difference count', () => {
+        const differenceFile = 'someFile';
+        const expectedDifferences = [0, 1, 2];
+
+        service.postDifference(differenceFile, 1).subscribe((response) => {
+            expect(response).toEqual(expectedDifferences);
+        });
+
+        const req = httpMock.expectOne(`${service['baseUrl']}api/game/difference`);
+        expect(req.request.method).toEqual('POST');
+        req.flush(expectedDifferences);
+    });
+
+    it('should make an http POST request for level', () => {
+        const level: FormData = new FormData();
+        const fakeMessage = { title: 'Hello, world!', body: 'Successfully received' } as Message;
+
+        service.postLevel(level).subscribe((response) => {
+            expect(response).toEqual(fakeMessage);
+        });
+
+        const req = httpMock.expectOne(`${service['baseUrl']}api/image/postLevel`);
+        expect(req.request.method).toEqual('POST');
+        req.flush(fakeMessage);
+    });
 });
