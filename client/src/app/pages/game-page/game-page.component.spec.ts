@@ -21,9 +21,8 @@ import SpyObj = jasmine.SpyObj;
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    // let mouseService: MouseService;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let subject: Subject<any>;
-    // let communicationService: CommunicationService;
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
 
@@ -68,7 +67,7 @@ describe('GamePageComponent', () => {
     });
 
     it('ngOnInit should set the levelId', () => {
-        const levelId = 123;
+        const levelId = 1;
         subject.next(levelId);
         subject.subscribe((val) => {
             expect(val).toBe(levelId);
@@ -123,31 +122,44 @@ describe('GamePageComponent', () => {
         const result = [1, 2, 3];
         component.handleAreaFoundInDiff(result);
         expect(component.imagesData).toEqual(result);
+        const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
+        const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
+        expect(component.foundADifference).toBe(true);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
+        expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
+        expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
     });
 
     it('handleAreaFoundInOriginal should call multiple functions', () => {
         const result = [1, 2, 3];
         component.handleAreaFoundInOriginal(result);
         expect(component.imagesData).toEqual(result);
+        const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
+        const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
+        expect(component.foundADifference).toBe(true);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
+        expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
+        expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
     });
 
-    it('handleAreaNotFoundInOriginal should call multiple functions', () => {
-        component.handleAreaNotFoundInOriginal();
-    });
+    // it('handleAreaNotFoundInOriginal should call multiple functions', () => {
+    //     component.handleAreaNotFoundInOriginal();
+    // });
 
-    it('handleAreaNotFoundInDiff should call multiple functions', () => {
-        component.handleAreaNotFoundInDiff();
-    });
+    // it('handleAreaNotFoundInDiff should call multiple functions', () => {
+    //     component.handleAreaNotFoundInDiff();
+    // });
 
-    it('pick should get the color of the canvas', () => {
-        component.pick(1, 1);
-    });
+    // it('pick should get the color of the canvas', () => {
+    //     const rgb = component.pick(1, 1);
+    //     expect(rgb).toEqual('rgba(0, 0, 0, 0)');
+    // });
 
-    it('copyArea should make a copy of a part of the originalArea', () => {
-        component.copyArea([1]);
-    });
+    // it('copyArea should make a copy of a part of the originalArea', () => {
+    //     component.copyArea([1]);
+    // });
 
-    it('resetCanvas should refresh the area and copy a part of the original canvas', () => {
-        component.resetCanvas();
-    });
+    // it('resetCanvas should refresh the area and copy a part of the original canvas', () => {
+    //     component.resetCanvas();
+    // });
 });

@@ -14,8 +14,8 @@ import { Constants } from '@common/constants';
     providers: [DrawService, CommunicationService],
 })
 export class GamePageComponent implements OnInit {
-    @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
-    @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
+    @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
+    @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
 
     originalImageSrc: string = '';
     diffImageSrc: string = '';
@@ -98,9 +98,6 @@ export class GamePageComponent implements OnInit {
     pick(x: number, y: number): string {
         const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const pixel = context.getImageData(x, y, 1, 1);
-        if (!pixel) {
-            return 'white';
-        }
         const data = pixel.data;
 
         const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / Constants.FULL_ALPHA})`;
