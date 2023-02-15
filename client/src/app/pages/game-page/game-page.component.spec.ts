@@ -154,6 +154,7 @@ describe('GamePageComponent', () => {
 
     it('handleAreaNotFoundInOriginal should call multiple functions', () => {
         
+        expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
     });
 
     // it('handleAreaNotFoundInDiff should call multiple functions', () => {
