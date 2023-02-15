@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class ImageService {
@@ -44,12 +43,6 @@ export class ImageService {
         const differences = (JSON.parse(promises.toString()) as number[][]).length;
         return differences;
     }
-
-    // async getDifferencesImage(req: Request, res: Response): Promise<void> {
-    //     const fileName = req.params.fileName;
-    //     const filePath = path.join(__dirname, '..', '..', '..', 'assets', 'images', 'differences', `${fileName}.json`);
-    //     res.sendFile(filePath);
-    // }
 
     /**
      * Gets the array of differences from the json file
