@@ -22,6 +22,7 @@ export class ImageService {
         const allLevels = JSON.parse(promises.toString()) as Level[];
         return allLevels.find((level) => level.id === id);
     }
+
     /**
      * Gets the number of differences between the two images
      *
@@ -52,19 +53,16 @@ export class ImageService {
      *
      * @param allDifferences
      * @param position
-     * @returns
+     * @returns the array of pixels that are different
      */
-    async returnArray(allDifferences: number[][], foundDifferences: number[], position: number): Promise<number[]> {
-        return allDifferences.find((differenceRow, index) => {
-            if (differenceRow.indexOf(position) !== Constants.minusOne) {
-                if (foundDifferences.find((difference) => difference === index) !== undefined) {
-                    return false;
-                }
+    returnIndex(allDifferences: number[][], foundDifferences: number[], pixelClicked: number): number {
+        for (const difference of allDifferences) {
+            const index = allDifferences.indexOf(difference);
+            if (difference.includes(pixelClicked) && !foundDifferences.includes(index)) {
                 foundDifferences.push(index);
-                return true;
+                return index;
             }
-            return false;
-        });
+        }
     }
 
     /**
@@ -77,10 +75,26 @@ export class ImageService {
      */
     async findDifference(fileName: string, foundDifferences: number[], position: number): Promise<number[]> {
         const allDifferences = await this.getArray(fileName);
-        const foundDifferenceArray = this.returnArray(allDifferences, foundDifferences, position);
-        return foundDifferenceArray ? foundDifferenceArray : [];
+        let index = this.returnIndex(allDifferences, foundDifferences, position);
+        index = index === undefined ? Constants.minusOne : index;
+        const foundDifferenceArray = allDifferences[index];
+        if (foundDifferenceArray !== undefined) {
+            return foundDifferenceArray;
+        }
+
+        if (foundDifferences.length === allDifferences.length) {
+            return [Constants.minusOne];
+        }
+
+        return [];
     }
 
+    /**
+     * Writes the level data in the json file
+     *
+     * @param newLevel the level to be uploaded
+     * @returns the message that the level was successfully uploaded
+     */
     async writeLevelData(newLevel: unknown): Promise<Message> {
         const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
         const allDifferences = JSON.parse(promises.toString()) as Level[];
@@ -114,9 +128,14 @@ export class ImageService {
         return message;
     }
 
+    /** Internal method that handles errors when writing the level data in the json file.
+     *
+     * @param err The error to be handled
+     * @returns the message that the level was not successfully uploaded
+     */
     private handleErrors(err: Error): Message {
         const message: Message = new Message();
-        message.body = 'Echec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur:' + err.message;
+        message.body = 'Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur:' + err.message;
         message.title = 'error';
         return message;
     }
