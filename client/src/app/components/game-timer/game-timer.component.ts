@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { Event, NavigationEnd, Router } from '@angular/router';
 import { Constants } from '@common/constants';
 import { Gateways, SocketHandler } from 'src/app/services/socket-handler.service';
 
@@ -30,9 +30,6 @@ export class GameTimerComponent implements OnInit {
 
     ngOnInit(): void {
         this.router.events.subscribe((event: Event) => {
-            if (event instanceof NavigationStart) {
-                this.ngOnInit();
-            }
             if (event instanceof NavigationEnd) {
                 this.socketHandler.disconnect(Gateways.Timer);
             }
