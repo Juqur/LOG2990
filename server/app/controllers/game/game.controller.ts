@@ -15,10 +15,7 @@ export class GameController {
 
     @Post('/difference')
     async findImageDifference(@Body() body: { gameId: string; position: number }) {
-        this.logger.log(body.gameId);
-        this.logger.log(body.position);
         const gameState = this.gameStateService.getGameState(body.gameId);
-        this.logger.log(gameState);
         return await this.imageService.findDifference(gameState.imageId, gameState.foundDifferences, body.position);
     }
 
