@@ -3,6 +3,7 @@ import { Difference } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
@@ -43,6 +44,7 @@ export class CreationComponent implements OnInit {
         private canvasShare: CanvasSharingService,
         private diffService: DifferenceDetectorService,
         public popUpService: PopUpServiceService,
+        private communicationService: CommunicationService,
     ) {}
 
     /**
@@ -198,8 +200,6 @@ export class CreationComponent implements OnInit {
         }
 
         return new Promise((resolve) => {
-            // Vérifie le header de l'image. Ce header contient les informations que l'on recherche :
-            // Le Nombre de bits par pixel (en little endian)
             const reader = new FileReader();
             reader.onload = (e) => {
                 const imgData = e.target?.result as ArrayBuffer;
@@ -265,7 +265,6 @@ export class CreationComponent implements OnInit {
         }
         this.nbDifferences = this.differences.clusters.length;
 
-        // Mets le dans le popup quand ce sera possible
         const canvasDialogData: DialogData = {
             textToSend: 'Image de différence (contient ' + this.nbDifferences + ' différences) :',
             imgSrc: this.differences.canvas.canvas.toDataURL(),
@@ -294,15 +293,12 @@ export class CreationComponent implements OnInit {
     saveGame() {
         if (this.isSaveable) {
             let gameName = '';
-            // Ouvre un popup qui demande à l'utilisateur de nommer le jeu
 
             const saveDialogData: DialogData = {
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
                     inputLabel: 'Nom du jeu',
                     submitFunction: (value) => {
-                        //  Vérifier que le nom du jeu n'existe pas déjà
-                        //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
                         if (value.length < Constants.ten) {
                             return true;
                         }
@@ -320,17 +316,42 @@ export class CreationComponent implements OnInit {
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 gameName = result;
                 this.savedLevel = {
-                    id: Constants.INIT_DIFF_NB,
+                    id: 0,
                     name: gameName,
-                    playerSolo: [''],
-                    timeSolo: Constants.timeSolo,
-                    playerMulti: [''],
-                    timeMulti: Constants.timeMulti,
+                    playerSolo: [],
+                    timeSolo: [],
+                    playerMulti: [],
+                    timeMulti: [],
                     isEasy: !this.differences?.isHard,
                     nbDifferences: this.nbDifferences,
                 };
 
-                // TODO : Sauvegarder le jeu sur le serveur
+                if (!this.defaultImageFile || !this.differences) {
+                    return;
+                }
+                if (!this.defaultImageFile || !this.differences) {
+                    return;
+                }
+                const formData = new FormData();
+                formData.append('imageOriginal', this.defaultImageFile);
+                formData.append('imageDiff', this.diffImageFile);
+                formData.append('name', this.savedLevel.name);
+                formData.append('isEasy', this.savedLevel.isEasy.toString());
+                formData.append('clusters', JSON.stringify(this.differences.clusters));
+                formData.append('nbDifferences', this.savedLevel.nbDifferences.toString());
+
+                this.communicationService.postLevel(formData).subscribe((data) => {
+                    if (data.title === 'error') {
+                        this.errorDialog(data.body);
+                        return;
+                    } else if (data.title === 'success') {
+                        const dialogData: DialogData = {
+                            textToSend: data.body,
+                            closeButtonMessage: 'Fermer',
+                        };
+                        this.popUpService.openDialog(dialogData, '/config');
+                    }
+                });
             });
         }
     }
@@ -340,7 +361,6 @@ export class CreationComponent implements OnInit {
      * @param msg the error message we want to display.
      */
     errorDialog(msg = 'Une erreur est survenue') {
-        // Ferme le popup si il est ouvert, pour éviter d'en avoir plusieurs ouverts en même temps
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();
         const errorDialogData: DialogData = {
             textToSend: msg,

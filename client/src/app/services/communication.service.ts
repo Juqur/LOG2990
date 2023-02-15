@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Level } from '@app/levels';
 import { Message } from '@common/message';
@@ -30,10 +30,22 @@ export class CommunicationService {
         return this.http.get<Level>(`${this.baseUrl}api` + '/image/' + levelId);
     }
 
-    postDifference(path: string, gameId: string | null, position: number): Observable<number[]> {
+    getDifferenceCount(differenceFile: string): Observable<number> {
+        return this.http.get<number>(`${this.baseUrl}api/image/differenceCount/${differenceFile}`);
+    }
+
+    postDifference(gameId: string | null, position: number): Observable<number[]> {
         return this.http
-            .post<number[]>(`${this.baseUrl}api` + path, { gameId, position }, { observe: 'response', responseType: 'json' })
+            .post<number[]>(`${this.baseUrl}api/game/difference`, { gameId, position }, { observe: 'response', responseType: 'json' })
             .pipe(map((response) => response.body || []));
+    }
+
+    postLevel(level: FormData): Observable<Message> {
+        const headers = new HttpHeaders();
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        return this.http
+            .post<Message>(`${this.baseUrl}api/image/postLevel`, level, { headers })
+            .pipe(catchError(this.handleError<Message>('basicPost')));
     }
 
     postNewGame(path: string, imageId: string) {
