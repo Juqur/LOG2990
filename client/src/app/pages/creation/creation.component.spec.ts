@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
@@ -29,7 +31,7 @@ describe('CreationComponent', () => {
     });
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [CreationComponent],
+            declarations: [CreationComponent, ScaleContainerComponent, PlayAreaComponent],
             providers: [
                 CanvasSharingService,
                 { provide: MouseService, useValue: mouseServiceSpy },
