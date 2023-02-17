@@ -118,6 +118,10 @@ export class SocketHandler {
      * @param data The data provided with the event. This parameter is options and may not be provided.
      */
     send<T>(type: Gateways, event: string, data?: T): void {
-        this.getSocket(type).emit(event, data); // Do we need to add data as optional?
+        if (data) {
+            this.getSocket(type).emit(event, data);
+        } else {
+            this.getSocket(type).emit(event);
+        }
     }
 }
