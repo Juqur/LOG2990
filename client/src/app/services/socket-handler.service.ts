@@ -10,15 +10,15 @@ export enum Gateways {
     Chat = 'chat',
 }
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * The service in charge of manipulating socket connections.
  *
  * @author Junaid Qureshi
  * @class SocketHandler
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class SocketHandler {
     socketTimer: Socket;
     socketChat: Socket;

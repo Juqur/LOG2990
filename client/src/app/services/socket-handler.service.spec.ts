@@ -3,7 +3,7 @@ import { SocketTestHelper } from '@app/classes/socket-test-helper';
 import { io, Socket } from 'socket.io-client';
 import { Gateways, SocketHandler } from './socket-handler.service';
 
-fdescribe('SocketClientService', () => {
+describe('SocketClientService', () => {
     let service: SocketHandler;
 
     beforeEach(() => {
@@ -26,21 +26,9 @@ fdescribe('SocketClientService', () => {
         // Socket of the Karma's localhost.
         const socket = io(window.location.host);
         service.setSocket(Gateways.Timer, socket);
+        service.setSocket(Gateways.Chat, socket);
         expect(service.socketTimer).toBe(socket);
-    });
-
-    it('should disconnect', () => {
-        const spySocketTimer = spyOn(service.socketTimer, 'disconnect');
-        service.disconnect(Gateways.Timer);
-        expect(spySocketTimer).toHaveBeenCalledTimes(1);
-    });
-
-    it('should disconnect all', () => {
-        const spySocketTimer = spyOn(service.socketTimer, 'disconnect');
-        const spySocketChat = spyOn(service.socketChat, 'disconnect');
-        service.disconnectAll();
-        expect(spySocketTimer).toHaveBeenCalledTimes(1);
-        expect(spySocketChat).toHaveBeenCalledTimes(1);
+        expect(service.socketChat).toBe(socket);
     });
 
     it('isSocketAlive should return true if the socket is still connected', () => {
@@ -59,6 +47,32 @@ fdescribe('SocketClientService', () => {
         (service.socketTimer as unknown) = undefined;
         const isAlive = service.isSocketAlive(Gateways.Timer);
         expect(isAlive).toBeFalsy();
+    });
+
+    it('connect should connect to the given gateway', () => {
+        const spy = spyOn(service, 'setSocket').and.callFake(() => {
+            service.socketTimer.connected = true;
+        });
+
+        service.connect(Gateways.Timer);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(Gateways.Timer, jasmine.any(Socket));
+        expect(service.socketTimer).toBeDefined();
+        expect(service.socketTimer.connected).toBeTruthy();
+    });
+
+    it('should disconnect', () => {
+        const spySocketTimer = spyOn(service.socketTimer, 'disconnect');
+        service.disconnect(Gateways.Timer);
+        expect(spySocketTimer).toHaveBeenCalledTimes(1);
+    });
+
+    it('should disconnect all', () => {
+        const spySocketTimer = spyOn(service.socketTimer, 'disconnect');
+        const spySocketChat = spyOn(service.socketChat, 'disconnect');
+        service.disconnectAll();
+        expect(spySocketTimer).toHaveBeenCalledTimes(1);
+        expect(spySocketChat).toHaveBeenCalledTimes(1);
     });
 
     it('on should call socket.on with an event', () => {
