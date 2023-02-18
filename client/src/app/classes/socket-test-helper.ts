@@ -3,6 +3,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/ban-types
 type CallbackSignature = (params: any) => {};
 export class SocketTestHelper {
     private callbacks = new Map<string, CallbackSignature[]>();

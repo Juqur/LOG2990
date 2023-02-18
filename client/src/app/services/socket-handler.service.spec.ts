@@ -77,6 +77,7 @@ describe('SocketClientService', () => {
 
     it('on should call socket.on with an event', () => {
         const event = 'helloWorld';
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const action = () => {};
         const spy = spyOn(service.socketTimer, 'on');
         service.on(Gateways.Timer, event, action);
