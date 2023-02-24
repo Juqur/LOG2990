@@ -1,4 +1,4 @@
-import { Constants } from '@common/constants';
+import { FileSystemStoredFile } from 'nestjs-form-data';
 export interface Level {
     id: number;
     name: string;
@@ -7,70 +7,14 @@ export interface Level {
     playerMulti: string[];
     timeMulti: number[];
     isEasy: boolean;
+    nbDifferences: number;
 }
 
-export const levels = [
-    {
-        id: 1,
-        name: ':skull:',
-        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: Constants.timeSolo,
-        playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: Constants.timeMulti,
-        isEasy: true,
-    },
-    {
-        id: 2,
-        name: '现在我有冰淇淋',
-        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: Constants.timeSolo,
-        playerMulti: ['Brother 郝', 'Hervé Harvey', 'Marcel Martel'],
-        timeMulti: Constants.timeMulti,
-        isEasy: false,
-    },
-    {
-        id: 3,
-        name: 'Le flibuster mysogine',
-        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: Constants.timeSolo,
-        playerMulti: ['Eliza Vezina', 'Caillou Roche', 'Marcel Martel'],
-        timeMulti: Constants.timeMulti,
-        isEasy: true,
-    },
-    {
-        id: 4,
-        name: 'Figma rouleau de printemps',
-        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: Constants.timeSolo,
-        playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: Constants.timeMulti,
-        isEasy: true,
-    },
-    {
-        id: 5,
-        name: 'Yuheng of Liyue Qixing',
-        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: Constants.timeSolo,
-        playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: Constants.timeMulti,
-        isEasy: true,
-    },
-    {
-        id: 6,
-        name: 'KEKW',
-        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: Constants.timeSolo,
-        playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: Constants.timeMulti,
-        isEasy: true,
-    },
-    {
-        id: 7,
-        name: '7-Rectangles',
-        playerSolo: ['Guylaine Tremblay', 'Gaston G. Marcotte', 'Gontrand Gone'],
-        timeSolo: Constants.timeSolo,
-        playerMulti: ['Glenn Gagnon', 'Herve Harvey', 'Yvons Payé'],
-        timeMulti: Constants.timeMulti,
-        isEasy: true,
-    },
-];
+export interface LevelData {
+    name: string;
+    imageOriginal: FileSystemStoredFile;
+    imageDiff: FileSystemStoredFile;
+    isEasy: string;
+    clusters: number[][];
+    nbDifferences: number;
+}

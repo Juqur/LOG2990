@@ -7,12 +7,14 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import { ConfigurationComponent } from './configuration.component';
 
 describe('ConfigurationComponent', () => {
     let component: ConfigurationComponent;
     let fixture: ComponentFixture<ConfigurationComponent>;
+    let levels: Level[];
     let communicationService: CommunicationService;
 
     beforeEach(async () => {
@@ -25,9 +27,27 @@ describe('ConfigurationComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(ConfigurationComponent);
+        communicationService = TestBed.inject(CommunicationService);
         component = fixture.componentInstance;
         fixture.detectChanges();
         communicationService = TestBed.inject(CommunicationService);
+
+        const level: Level = {
+            id: 1,
+            name: '',
+            playerMulti: [],
+            playerSolo: [],
+            timeMulti: [],
+            timeSolo: [],
+            isEasy: false,
+            nbDifferences: 0,
+        };
+        levels = [level, level, level, level, level, level, level, level];
+        component.levels = levels;
+        component.currentPage = 0;
+        component.lastShownLevel = Constants.levelsPerPage;
+        component.levelToShow = component.levels.slice(component.firstShownLevel, component.lastShownLevel);
+        component.lastPage = Math.round(component.levels.length / Constants.levelsPerPage - 1);
     });
 
     it('should create', () => {
@@ -35,20 +55,29 @@ describe('ConfigurationComponent', () => {
     });
 
     it('should set levels and levelToShow after ngOnInit', () => {
-        const levels: Level[] = [
-            {
-                id: 1,
-                name: '',
-                playerMulti: [],
-                playerSolo: [],
-                timeMulti: [],
-                timeSolo: [],
-                isEasy: false,
-            },
-        ];
         spyOn(communicationService, 'getLevels').and.returnValue(of(levels));
         component.ngOnInit();
         expect(component.levels).toEqual(levels);
+    });
+
+    it('should set LastPage after ngOnInit', () => {
+        spyOn(communicationService, 'getLevels').and.returnValue(of(levels));
+        component.ngOnInit();
+        expect(component.lastPage).toEqual(1);
+    });
+
+    it('should set levels and levelToShow after ngOnInit', () => {
+        expect(component.levels).toEqual(levels);
+    });
+
+    it('should return true if isBeginningOfList', () => {
+        component.currentPage = 0;
+        expect(component.isBeginningOfList()).toBeTrue();
+    });
+
+    it('should return true if isEndOfList', () => {
+        component.currentPage = component.lastPage;
+        expect(component.isEndOfList()).toBeTrue();
     });
 
     it('nextPage() should increment the current page', () => {
@@ -56,6 +85,9 @@ describe('ConfigurationComponent', () => {
         component.lastPage = 10;
         component.nextPage();
         expect(component.currentPage).toEqual(tempPage + 1);
+        expect(component.firstShownLevel).toEqual(Constants.levelsPerPage);
+        expect(component.lastShownLevel).toEqual(Constants.levelsPerPage * 2);
+        expect(component.levelToShow).toEqual([levels[4], levels[5], levels[6], levels[7]]);
     });
 
     it('previousPage() should decrement the current page', () => {

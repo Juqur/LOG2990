@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
@@ -14,10 +14,10 @@ import { Constants } from '@common/constants';
  * Component that displays a preview
  * of a level and its difficulty
  *
- * @author Galen HU
+ * @author Galen Hu
  * @class CardComponent
  */
-export class CardComponent implements OnInit {
+export class CardComponent {
     @Input() level: Level = {
         id: 0,
         name: 'no name',
@@ -26,6 +26,7 @@ export class CardComponent implements OnInit {
         playerMulti: ['player 1', 'player 2', 'player 3'],
         timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
         isEasy: true,
+        nbDifferences: 7,
     };
 
     @Input() page: string = 'no page';
@@ -38,18 +39,10 @@ export class CardComponent implements OnInit {
     /**
      * Display the difficulty of the level
      *
-     * @returns the difficulty of the level
+     * @returns the path difficulty image
      */
-    displayDifficulty(): string {
-        if (this.level.isEasy === true) {
-            return 'Easy';
-        } else {
-            return 'Hard';
-        }
-    }
-
-    displayDifficultyIcon(isEasy: boolean): string {
-        if (isEasy === true) {
+    displayDifficultyIcon(): string {
+        if (this.level.isEasy) {
             return '../../../assets/images/easy.png';
         } else {
             return '../../../assets/images/hard.png';
@@ -88,9 +81,5 @@ export class CardComponent implements OnInit {
                 });
             }
         });
-    }
-
-    ngOnInit(): void {
-        this.difficulty = this.displayDifficulty();
     }
 }

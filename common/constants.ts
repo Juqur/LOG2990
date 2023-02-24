@@ -24,6 +24,8 @@ export namespace Constants {
     // Level mock values
     export const timeSolo: number[] = [60, 65, 70];
     export const timeMulti: number[] = [80, 83, 90];
+    export const testXposition: number = 96;
+    export const testYposition: number = 74;
 
     // Game timer
     export const millisecondsInOneSecond: number = 1000;
@@ -44,6 +46,8 @@ export namespace Constants {
     export const MIN_DIFFICULTY_RATIO = 0.15;
     export const MIN_DIFFERENCES = 7;
     export const FULL_ALPHA = 255;
+    export const MAX_DIFFERENCES_LIMIT = 9;
+    export const MIN_DIFFERENCES_LIMIT = 3;
 
     // Detection of difference constants
     export const PIXEL_SIZE: number = 4;
@@ -66,6 +70,7 @@ export namespace Constants {
     export const INIT_HINTS_NB = 3;
     export const HINT_PENALTY = 5;
     export const COUNTDOWN_TIME_WIN = 5;
+    export const DEFAULTTESTNUMBER = 7;
 }
 
 export enum MouseButton {

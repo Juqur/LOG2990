@@ -6,20 +6,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CardComponent } from '@app/components/card/card.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { ChatMessageComponent } from './components/chat-message/chat-message.component';
 import { CounterComponent } from './components/counter/counter.component';
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
-import { ImageDifferenceComponent } from './components/image-difference/image-difference.component';
 import { MessageBoxComponent } from './components/message-box/message-box.component';
 import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.component';
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
@@ -37,14 +34,11 @@ import { CreationComponent } from './pages/creation/creation.component';
         AppComponent,
         GamePageComponent,
         MainPageComponent,
-        MaterialPageComponent,
         PlayAreaComponent,
-        SidebarComponent,
         SelectionPageComponent,
         CardComponent,
         GameTimerComponent,
         GameChatComponent,
-        ImageDifferenceComponent,
         ChatMessageComponent,
         MessageBoxComponent,
         CarouselComponent,

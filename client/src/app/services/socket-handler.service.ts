@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
+/**
+ * The different possible gateways to connect sockets to.
+ */
 export enum Gateways {
     Timer = 'timer',
     Chat = 'chat',
@@ -10,12 +13,26 @@ export enum Gateways {
 @Injectable({
     providedIn: 'root',
 })
+/**
+ * The service in charge of manipulating socket connections.
+ *
+ * @author Junaid Qureshi
+ * @class SocketHandler
+ */
 export class SocketHandler {
     socketTimer: Socket;
     socketChat: Socket;
     private serverUrl: string = environment.serverUrl;
 
-    isSocketAlive(type: Gateways) {
+    /**
+     * This method verifies if a socket is connected at the given gateway.
+     * It first checks if we created a socket of a given gateway and if that socket is currently
+     * connected.
+     *
+     * @param type The gateway we wish to check if the socket is connected.
+     * @returns a boolean indicating if a socket is alive at a given gateway.
+     */
+    isSocketAlive(type: Gateways): boolean {
         switch (type) {
             case Gateways.Timer:
                 return this.socketTimer && this.socketTimer.connected;
@@ -24,12 +41,22 @@ export class SocketHandler {
         }
     }
 
+    /**
+     * Connects a socket to a given gateway.
+     *
+     * @param type the gateway to connect to.
+     */
     connect(type: Gateways) {
         switch (type) {
             case Gateways.Timer:
-                console.log(this.serverUrl + type);
-                console.log(environment.serverUrl + type);
-                this.socketTimer = io(this.serverUrl + type, { transports: ['websocket'], upgrade: false });
+                /**
+                 * The following line does this: it tries to create a socket connected to the server
+                 * at the given url, which in our case is a combination of server.url and the gateway type.
+                 * We then specify what transport method we would like to use, websocket in our case, and if
+                 * the connection should try to upgrade to a better transport method if possible, which we put
+                 * as false.
+                 */
+                this.socketTimer = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
                 break;
             case Gateways.Chat:
                 this.socketChat = io(this.serverUrl + type, { transports: ['websocket'], upgrade: false });
@@ -37,6 +64,11 @@ export class SocketHandler {
         }
     }
 
+    /**
+     * Disconnects the socket of a give gateway.
+     *
+     * @param type the gateway to disconnect from.
+     */
     disconnect(type: Gateways) {
         switch (type) {
             case Gateways.Timer:
@@ -48,11 +80,22 @@ export class SocketHandler {
         }
     }
 
+    /**
+     * Disconnect all sockets to every gateway.
+     */
     disconnectAll() {
         this.socketChat.disconnect();
         this.socketTimer.disconnect();
     }
 
+    /**
+     * Associates a given event with an action and a gateway and executes said action on even for the
+     * given gateway.
+     *
+     * @param event the event to process
+     * @param action the action to perform on that event
+     * @param type the socket on which this should all be performed.
+     */
     on<T>(event: string, action: (data: T) => void, type: Gateways): void {
         switch (type) {
             case Gateways.Timer:
@@ -64,6 +107,13 @@ export class SocketHandler {
         }
     }
 
+    /**
+     * The method emits an event on a given gateway and the data linked to that event if provided.
+     *
+     * @param type the gateway on which to send the event
+     * @param event the event to emit via the socket.
+     * @param data the data provided with the event. This parameter is options and may not be provided.
+     */
     send<T>(type: Gateways, event: string, data?: T): void {
         switch (type) {
             case Gateways.Timer:
