@@ -4,8 +4,8 @@
             <button mat-button [routerLink]="closePath"><span>Abandonner</span></button>
             <app-game-timer></app-game-timer>
             <div id="diff-counter">
-                <div *ngIf=playerName class="player-counter">
-                    <span class="diff-self">{{playerName + ': '}}</span>
+                <div *ngIf="playerName" class="player-counter">
+                    <span class="diff-self">{{ playerName + ': ' }}</span>
                     <app-counter></app-counter>
                     <span class="diff-self">différences trouvées</span>
                 </div>
@@ -26,6 +26,7 @@
                 <span id="nb-hints">indices restants</span>
             </div>
             <app-play-area [isDiff]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
+            <app-play-area #tempDiffPlayArea style="display: none"></app-play-area>
         </section>
         <section id="bottom-area">
             <app-game-chat></app-game-chat>

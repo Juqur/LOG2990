@@ -2,11 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
+import { AudioService } from '@app/services/audio.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-import { AudioService } from '@app/services/audio.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -16,16 +16,16 @@ import { AudioService } from '@app/services/audio.service';
 /**
  * This component represents the game, it is the component that creates a game page.
  *
- * @author Simon Gagné
+ * @author Simon Gagné et Galen Hu
  * @class GamePageComponent
  */
 export class GamePageComponent implements OnInit {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
+    @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
 
     originalImageSrc: string = '';
     diffImageSrc: string = '';
-    diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
     playerName: string;
     levelId: number;
@@ -45,6 +45,8 @@ export class GamePageComponent implements OnInit {
     closePath: string = '/selection';
     gameId: string | null;
 
+    tempCanvasContext: CanvasRenderingContext2D;
+
     // eslint-disable-next-line max-params
     constructor(
         private mouseService: MouseService,
@@ -56,7 +58,6 @@ export class GamePageComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
-            // recoit le bon id!!
             this.levelId = params.id;
         });
 
@@ -136,7 +137,7 @@ export class GamePageComponent implements OnInit {
     copyArea(area: number[]) {
         let x = 0;
         let y = 0;
-        const context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const context = this.tempDiffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         area.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % this.originalPlayArea.width;
             y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
@@ -154,15 +155,33 @@ export class GamePageComponent implements OnInit {
         this.diffPlayArea
             .timeout(Constants.millisecondsInOneSecond)
             .then(() => {
-                this.diffPlayArea.drawPlayArea(this.diffImageSrc);
+                this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
                 this.mouseService.changeClickState();
             })
             .then(() => {
                 setTimeout(() => {
                     this.copyArea(this.imagesData);
-                }, Constants.thirty);
+                }, 0);
+            })
+            .then(() => {
+                setTimeout(() => {
+                    this.copyDiffPlayAreaContext();
+                }, 0);
             });
+    }
+
+    pasteCanvas() {
+        this.tempCanvasContext = this.diffPlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+    }
+
+    copyDiffPlayAreaContext() {
+        const context2 = this.tempDiffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const context = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const imageData = context2.getImageData(0, 0, context2.canvas.width, context2.canvas.height);
+        context.putImageData(imageData, 0, 0);
     }
 
     handleAreaFoundInDiff(result: number[]) {
@@ -180,7 +199,9 @@ export class GamePageComponent implements OnInit {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.drawError(this.mouseService);
-        this.mouseService.changeClickState();
+        this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+            this.mouseService.changeClickState();
+        });
         this.resetCanvas();
     }
     handleAreaFoundInOriginal(result: number[]) {
@@ -199,6 +220,9 @@ export class GamePageComponent implements OnInit {
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError(this.mouseService);
         this.mouseService.changeClickState();
-        this.resetCanvas();
+        this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+            this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+            this.mouseService.changeClickState();
+        });
     }
 }
