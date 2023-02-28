@@ -15,20 +15,34 @@ import { Constants } from '@common/constants';
  * @class ChatMessageComponent
  */
 export class ChatMessageComponent implements OnInit {
-    @Input() message: Message = { sender: 'No name', text: 'No text', playerId: -1 };
-    @Input() index: number = Constants.minusOne;
+    @Input() private textMessage: Message = { sender: 'No name', text: 'No text', playerId: -1 };
+    // @Input() private index: number = Constants.minusOne;
 
-    displayName: string;
+    private displayName: string;
+
+    /**
+     * Getter for the display name attribute.
+     */
+    get name(): string {
+        return this.displayName;
+    }
+
+    /**
+     * Getter for the textMessage attribute
+     */
+    get message(): Message {
+        return this.textMessage;
+    }
 
     /**
      * Limits the length of the name displayed to Constants.maxNameLengthShown. This has no impact
      * on the length of the name saved.
      */
-    formatNameLength() {
-        if (this.message.sender.length > Constants.maxNameLength) {
-            this.displayName = this.message.sender.substring(0, Constants.maxNameLengthShown) + '...';
+    formatNameLength(): void {
+        if (this.textMessage.sender.length > Constants.maxNameLength) {
+            this.displayName = this.textMessage.sender.substring(0, Constants.maxNameLengthShown) + '...';
         } else {
-            this.displayName = this.message.sender;
+            this.displayName = this.textMessage.sender;
         }
     }
 
