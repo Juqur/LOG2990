@@ -15,10 +15,8 @@ import { Constants } from '@common/constants';
  * @class ChatMessageComponent
  */
 export class ChatMessageComponent implements OnInit {
-    @Input() private textMessage: Message = { sender: 'No name', text: 'No text', playerId: -1 };
-    // @Input() private index: number = Constants.minusOne;
-
     private displayName: string;
+    private textMessage: Message;
 
     /**
      * Getter for the display name attribute.
@@ -32,6 +30,11 @@ export class ChatMessageComponent implements OnInit {
      */
     get message(): Message {
         return this.textMessage;
+    }
+
+    @Input()
+    set message(message: Message) {
+        this.textMessage = message;
     }
 
     /**

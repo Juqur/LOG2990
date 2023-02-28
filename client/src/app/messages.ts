@@ -4,4 +4,4 @@ export interface Message {
     playerId: number;
 }
 
-export const messages = [];
+export const messages: Message[] = [];

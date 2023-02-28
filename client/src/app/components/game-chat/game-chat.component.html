@@ -5,7 +5,7 @@ Inspired by https://dribbble.com/supahfunk
     <div class="chat">
         <div class="messages">
             <div *ngFor="let message of messages; index as i" class="zero-padding">
-                <app-chat-message [message]="message" [index]="i"></app-chat-message>
+                <app-chat-message [message]="message"></app-chat-message>
             </div>
         </div>
         <app-message-box class="zero-padding"></app-message-box>
