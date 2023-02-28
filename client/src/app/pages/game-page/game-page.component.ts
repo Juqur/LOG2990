@@ -2,11 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
+import { AudioService } from '@app/services/audioService/audio.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-import { AudioService } from '@app/services/audio.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',

@@ -10,7 +10,7 @@ import { MessageBoxComponent } from '@app/components/message-box/message-box.com
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { AudioService } from '@app/services/audio.service';
+import { AudioService } from '@app/services/audioService/audio.service';
 // import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';

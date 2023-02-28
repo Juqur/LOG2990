@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { AudioService } from '@app/services/audio.service';
+import { AudioService } from '@app/services/audioService/audio.service';
 
 describe('MainPageComponent', () => {
     let component: MainPageComponent;

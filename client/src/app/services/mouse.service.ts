@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { AudioService } from '@app/services/audio.service';
+import { AudioService } from '@app/services/audioService/audio.service';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
 import { CommunicationService } from './communication.service';
