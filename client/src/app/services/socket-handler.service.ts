@@ -13,15 +13,14 @@ export enum Gateways {
 /**
  * The service in charge of manipulating socket connections.
  *
- * @author Junaid Qureshi
+ * @author Junaid Qureshi & Pierre Tran
  * @class SocketHandler
  */
 @Injectable({
     providedIn: 'root',
 })
 export class SocketHandler {
-    socketTimer: Socket;
-    socketChat: Socket;
+    sockets: Map<string, Socket> = new Map<string, Socket>();
 
     /**
      * Gets the socket of its kind, according to the given gateway.
@@ -29,31 +28,8 @@ export class SocketHandler {
      * @param type The socket's gateway.
      * @returns The socket of the given gateway.
      */
-    getSocket(type: Gateways): Socket {
-        switch (type) {
-            case Gateways.Timer:
-                return this.socketTimer;
-            case Gateways.Chat:
-                return this.socketChat;
-        }
-    }
-
-    /**
-     * Sets the socket of its kind to an existing socket.
-     *
-     * @param type The socket's gateway.
-     * @param socket The socket to set.
-     * @returns The socket of the given gateway.
-     */
-    setSocket(type: Gateways, socket: Socket): void {
-        switch (type) {
-            case Gateways.Timer:
-                this.socketTimer = socket;
-                break;
-            case Gateways.Chat:
-                this.socketChat = socket;
-                break;
-        }
+    getSocket(gateway: string): Socket | undefined {
+        return this.sockets.get(gateway);
     }
 
     /**
@@ -64,9 +40,9 @@ export class SocketHandler {
      * @param type The gateway we wish to check if the socket is connected.
      * @returns a boolean indicating if a socket is alive at a given gateway.
      */
-    isSocketAlive(type: Gateways): boolean {
-        const socket = this.getSocket(type);
-        return socket && socket.connected;
+    isSocketAlive(gateway: string): boolean {
+        const socket = this.getSocket(gateway);
+        return socket !== undefined && socket.connected;
     }
 
     /**
@@ -77,8 +53,8 @@ export class SocketHandler {
      *
      * @param type The gateway to connect to.
      */
-    connect(type: Gateways) {
-        this.setSocket(type, io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false }));
+    connect(type: string) {
+        this.sockets.set(type, io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false }));
     }
 
     /**
@@ -86,16 +62,15 @@ export class SocketHandler {
      *
      * @param type The gateway to disconnect from.
      */
-    disconnect(type: Gateways) {
-        return this.getSocket(type).disconnect();
+    disconnect(gateway: string) {
+        this.getSocket(gateway)?.disconnect();
     }
 
     /**
      * Disconnect all sockets to every gateway.
      */
     disconnectAll() {
-        this.socketChat.disconnect();
-        this.socketTimer.disconnect();
+        this.sockets.forEach((socket) => socket.disconnect());
     }
 
     /**
@@ -106,8 +81,8 @@ export class SocketHandler {
      * @param event The event to process
      * @param action The action to perform on that event
      */
-    on<T>(type: Gateways, event: string, action: (data: T) => void): void {
-        this.getSocket(type).on(event, action);
+    on<T>(gateway: string, event: string, action: (data: T) => void): void {
+        this.getSocket(gateway)?.on(event, action);
     }
 
     /**
@@ -117,11 +92,11 @@ export class SocketHandler {
      * @param event The event to emit via the socket.
      * @param data The data provided with the event. This parameter is options and may not be provided.
      */
-    send<T>(type: Gateways, event: string, data?: T): void {
-        if (data) {
-            this.getSocket(type).emit(event, data);
+    send<T>(gateway: string, event: string, data?: T): void {
+        if (data !== undefined) {
+            this.getSocket(gateway)?.emit(event, data);
         } else {
-            this.getSocket(type).emit(event);
+            this.getSocket(gateway)?.emit(event);
         }
     }
 }

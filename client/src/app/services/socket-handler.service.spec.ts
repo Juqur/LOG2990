@@ -1,16 +1,19 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketTestHelper } from '@app/classes/socket-test-helper';
-import { io, Socket } from 'socket.io-client';
-import { Gateways, SocketHandler } from './socket-handler.service';
+import { Socket } from 'socket.io-client';
+import { SocketHandler } from './socket-handler.service';
 
 describe('SocketClientService', () => {
     let service: SocketHandler;
+    const socketGateway1 = 'socket1';
+    const socketGateway2 = 'socket2';
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(SocketHandler);
-        service.socketTimer = new SocketTestHelper() as unknown as Socket;
-        service.socketChat = new SocketTestHelper() as unknown as Socket;
+
+        service.sockets.set(socketGateway1, new SocketTestHelper() as unknown as Socket);
+        service.sockets.set(socketGateway2, new SocketTestHelper() as unknown as Socket);
     });
 
     it('should be created', () => {
@@ -18,87 +21,90 @@ describe('SocketClientService', () => {
     });
 
     it('getSocket should return the socket of the given gateway', () => {
-        expect(service.getSocket(Gateways.Timer)).toBe(service.socketTimer);
-        expect(service.getSocket(Gateways.Chat)).toBe(service.socketChat);
-    });
-
-    it('setSocket should set the socket of the given gateway', () => {
-        // Socket of the Karma's localhost.
-        const socket = io(window.location.host);
-        service.setSocket(Gateways.Timer, socket);
-        service.setSocket(Gateways.Chat, socket);
-        expect(service.socketTimer).toBe(socket);
-        expect(service.socketChat).toBe(socket);
+        const socket = service.getSocket(socketGateway1);
+        expect(socket).toBeDefined();
+        expect(socket?.valueOf()).toEqual(jasmine.any(SocketTestHelper));
     });
 
     it('isSocketAlive should return true if the socket is still connected', () => {
-        service.socketTimer.connected = true;
-        const isAlive = service.isSocketAlive(Gateways.Timer);
+        const socket = service.sockets.get(socketGateway1) as Socket;
+        socket.connected = true;
+        const isAlive = service.isSocketAlive(socketGateway1);
         expect(isAlive).toBeTruthy();
     });
 
     it('isSocketAlive should return false if the socket is no longer connected', () => {
-        service.socketTimer.connected = false;
-        const isAlive = service.isSocketAlive(Gateways.Timer);
+        const socket = service.sockets.get(socketGateway1) as Socket;
+        socket.connected = false;
+        const isAlive = service.isSocketAlive(socketGateway1);
         expect(isAlive).toBeFalsy();
     });
 
     it('isSocketAlive should return false if the socket is not defined', () => {
-        (service.socketTimer as unknown) = undefined;
-        const isAlive = service.isSocketAlive(Gateways.Timer);
+        const spy = spyOn(service, 'getSocket').and.returnValue(undefined);
+        const isAlive = service.isSocketAlive(socketGateway1);
+        expect(spy).toHaveBeenCalledTimes(1);
         expect(isAlive).toBeFalsy();
     });
 
     it('connect should connect to the given gateway', () => {
-        const spy = spyOn(service, 'setSocket').and.callFake(() => {
-            service.socketTimer.connected = true;
+        const spy = spyOn(service, 'connect').and.callFake(() => {
+            (service.sockets.get(socketGateway1) as Socket).connected = true;
         });
 
-        service.connect(Gateways.Timer);
+        service.connect(socketGateway1);
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(Gateways.Timer, jasmine.any(Socket));
-        expect(service.socketTimer).toBeDefined();
-        expect(service.socketTimer.connected).toBeTruthy();
+        expect(service.sockets.get(socketGateway1)).toBeDefined();
+        expect(service.sockets.get(socketGateway1)?.connected).toBeTruthy();
     });
 
     it('should disconnect', () => {
-        const spySocketTimer = spyOn(service.socketTimer, 'disconnect');
-        service.disconnect(Gateways.Timer);
-        expect(spySocketTimer).toHaveBeenCalledTimes(1);
+        const socket = service.getSocket(socketGateway1) as Socket;
+        const spy = spyOn(socket, 'disconnect');
+        service.disconnect(socketGateway1);
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not disconnect if socket is undefined', () => {
+        const socket = service.getSocket(socketGateway1) as Socket;
+        const spyDisconnect = spyOn(socket, 'disconnect');
+        spyOn(service, 'getSocket').and.returnValue(undefined);
+        service.disconnect(socketGateway1);
+        expect(spyDisconnect).not.toHaveBeenCalled();
     });
 
     it('should disconnect all', () => {
-        const spySocketTimer = spyOn(service.socketTimer, 'disconnect');
-        const spySocketChat = spyOn(service.socketChat, 'disconnect');
+        const spy = spyOn(SocketTestHelper.prototype, 'disconnect');
         service.disconnectAll();
-        expect(spySocketTimer).toHaveBeenCalledTimes(1);
-        expect(spySocketChat).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(2);
     });
 
     it('on should call socket.on with an event', () => {
-        const event = 'helloWorld';
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        const action = () => {};
-        const spy = spyOn(service.socketTimer, 'on');
-        service.on(Gateways.Timer, event, action);
+        const socket = service.getSocket(socketGateway1) as Socket;
+        const event = 'placeholder';
+        const action = jasmine.createSpy('action');
+        const spy = spyOn(socket, 'on');
+        service.on(socketGateway1, event, action);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event, action);
     });
 
     it('send should call emit with data when using send', () => {
-        const event = 'helloWorld';
-        const data = 42;
-        const spy = spyOn(service.socketTimer, 'emit');
-        service.send(Gateways.Timer, event, data);
+        const socket = service.getSocket(socketGateway1) as Socket;
+        const event = 'placeholder';
+        const data = 0;
+        const spy = spyOn(socket, 'emit');
+        service.send(socketGateway1, event, data);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event, data);
     });
 
     it('send should call emit without data when using send if data is undefined', () => {
-        const event = 'helloWorld';
+        const socket = service.getSocket(socketGateway1) as Socket;
+        const event = 'placeholder';
         const data = undefined;
-        const spy = spyOn(service.socketTimer, 'emit');
-        service.send(Gateways.Timer, event, data);
+        const spy = spyOn(socket, 'emit');
+        service.send(socketGateway1, event, data);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event);
     });
