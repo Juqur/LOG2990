@@ -4,7 +4,7 @@ Inspired by https://dribbble.com/supahfunk
 <section class="avenue-messenger">
     <div class="chat">
         <div class="messages">
-            <div *ngFor="let message of messages; index as i" class="zero-padding">
+            <div *ngFor="let message of messages" class="zero-padding">
                 <app-chat-message [message]="message"></app-chat-message>
             </div>
         </div>
