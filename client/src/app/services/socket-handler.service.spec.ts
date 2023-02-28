@@ -5,6 +5,7 @@ import { SocketHandler } from './socket-handler.service';
 
 describe('SocketClientService', () => {
     let service: SocketHandler;
+    let socketTest: Socket;
     const socketGateway1 = 'socket1';
     const socketGateway2 = 'socket2';
 
@@ -14,6 +15,7 @@ describe('SocketClientService', () => {
 
         service.sockets.set(socketGateway1, new SocketTestHelper() as unknown as Socket);
         service.sockets.set(socketGateway2, new SocketTestHelper() as unknown as Socket);
+        socketTest = service.sockets.get(socketGateway1) as Socket;
     });
 
     it('should be created', () => {
@@ -27,15 +29,13 @@ describe('SocketClientService', () => {
     });
 
     it('isSocketAlive should return true if the socket is still connected', () => {
-        const socket = service.sockets.get(socketGateway1) as Socket;
-        socket.connected = true;
+        socketTest.connected = true;
         const isAlive = service.isSocketAlive(socketGateway1);
         expect(isAlive).toBeTruthy();
     });
 
     it('isSocketAlive should return false if the socket is no longer connected', () => {
-        const socket = service.sockets.get(socketGateway1) as Socket;
-        socket.connected = false;
+        socketTest.connected = false;
         const isAlive = service.isSocketAlive(socketGateway1);
         expect(isAlive).toBeFalsy();
     });
@@ -49,7 +49,7 @@ describe('SocketClientService', () => {
 
     it('connect should connect to the given gateway', () => {
         const spy = spyOn(service, 'connect').and.callFake(() => {
-            (service.sockets.get(socketGateway1) as Socket).connected = true;
+            socketTest.connected = true;
         });
 
         service.connect(socketGateway1);
@@ -59,15 +59,13 @@ describe('SocketClientService', () => {
     });
 
     it('should disconnect', () => {
-        const socket = service.getSocket(socketGateway1) as Socket;
-        const spy = spyOn(socket, 'disconnect');
+        const spy = spyOn(socketTest, 'disconnect');
         service.disconnect(socketGateway1);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should not disconnect if socket is undefined', () => {
-        const socket = service.getSocket(socketGateway1) as Socket;
-        const spyDisconnect = spyOn(socket, 'disconnect');
+        const spyDisconnect = spyOn(socketTest, 'disconnect');
         spyOn(service, 'getSocket').and.returnValue(undefined);
         service.disconnect(socketGateway1);
         expect(spyDisconnect).not.toHaveBeenCalled();
@@ -80,30 +78,27 @@ describe('SocketClientService', () => {
     });
 
     it('on should call socket.on with an event', () => {
-        const socket = service.getSocket(socketGateway1) as Socket;
         const event = 'placeholder';
         const action = jasmine.createSpy('action');
-        const spy = spyOn(socket, 'on');
+        const spy = spyOn(socketTest, 'on');
         service.on(socketGateway1, event, action);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event, action);
     });
 
     it('send should call emit with data when using send', () => {
-        const socket = service.getSocket(socketGateway1) as Socket;
         const event = 'placeholder';
         const data = 0;
-        const spy = spyOn(socket, 'emit');
+        const spy = spyOn(socketTest, 'emit');
         service.send(socketGateway1, event, data);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event, data);
     });
 
     it('send should call emit without data when using send if data is undefined', () => {
-        const socket = service.getSocket(socketGateway1) as Socket;
         const event = 'placeholder';
         const data = undefined;
-        const spy = spyOn(socket, 'emit');
+        const spy = spyOn(socketTest, 'emit');
         service.send(socketGateway1, event, data);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event);
