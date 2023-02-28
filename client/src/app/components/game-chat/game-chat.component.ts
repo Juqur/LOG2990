@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { messages } from '@app/messages';
+import { Component, OnInit } from '@angular/core';
+import { Message, messages } from '@app/messages';
+import { Gateways, SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
     selector: 'app-game-chat',
@@ -13,19 +14,33 @@ import { messages } from '@app/messages';
  * @author Charles Degrandpré
  * @class GameChatComponent
  */
-export class GameChatComponent {
-    messages = messages;
+export class GameChatComponent implements OnInit {
+    messages: Message[] = messages;
+
+    constructor(private socketHandler: SocketHandler) {}
 
     /**
      * Method in charge of creating a new message once it has been received by the server.
      *
-     * TODO
-     * Figure out the value type and information necessary to be received to perform this action.
      */
-    receiveMessage() {
-        // TODO
-        // Method to catch that a message has been received, wether that message is
-        // a server wide message or not. THis should add the message to the .messages
-        // div component in the HTML.
+    receiveMessage(message: Message) {
+        this.messages.push(message);
+    }
+
+    ngOnInit(): void {
+        if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
+            this.socketHandler.connect(Gateways.Game);
+            this.socketHandler.send(Gateways.Game, 'soloClassic');
+            this.socketHandler.on(Gateways.Game, 'message', (data: Message) => {
+                this.receiveMessage(data);
+            });
+        }
+        if (!this.socketHandler.isSocketAlive(Gateways.Chat)) {
+            this.socketHandler.connect(Gateways.Chat);
+            this.socketHandler.send(Gateways.Chat, 'soloClassic');
+            this.socketHandler.on(Gateways.Chat, 'message', (data: Message) => {
+                this.receiveMessage(data);
+            });
+        }
     }
 }

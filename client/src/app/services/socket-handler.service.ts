@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 export enum Gateways {
     Timer = 'timer',
     Chat = 'chat',
+    Game = 'game',
 }
 
 /**
@@ -22,6 +23,7 @@ export enum Gateways {
 export class SocketHandler {
     socketTimer: Socket;
     socketChat: Socket;
+    socketGame: Socket;
 
     /**
      * Gets the socket of its kind, according to the given gateway.
@@ -35,6 +37,8 @@ export class SocketHandler {
                 return this.socketTimer;
             case Gateways.Chat:
                 return this.socketChat;
+            case Gateways.Game:
+                return this.socketGame;
         }
     }
 
@@ -53,6 +57,8 @@ export class SocketHandler {
             case Gateways.Chat:
                 this.socketChat = socket;
                 break;
+            case Gateways.Game:
+                this.socketGame = socket;
         }
     }
 
@@ -99,7 +105,7 @@ export class SocketHandler {
     }
 
     /**
-     * Associates a given event with an action and a gateway and executes said action on even for the
+     * Associates a given event with an action and a gateway and executes said action on event for the
      * given gateway.
      *
      * @param type The socket on which this should all be performed.
