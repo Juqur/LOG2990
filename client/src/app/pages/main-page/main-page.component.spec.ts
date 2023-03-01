@@ -24,7 +24,7 @@ describe('MainPageComponent', () => {
     });
 
     it('should handle volume icon when calling volumeOnClick', () => {
-        spyOn(component['audioService'], 'playSound');
+        spyOn(AudioService, 'quickPlay');
         component.volumeOnClick();
         expect(component.icon).toEqual('volume_up');
         component.volumeOnClick();
@@ -32,7 +32,7 @@ describe('MainPageComponent', () => {
     });
 
     it('creditsOnClick should handle credits display', () => {
-        spyOn(component['audioService'], 'playSound');
+        spyOn(AudioService, 'quickPlay');
         expect(component.showCredits).toBeTruthy();
         component.creditsOnClick();
         expect(component.showCredits).toBeFalsy();

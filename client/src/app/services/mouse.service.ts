@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { AudioService } from '@app/services/audioService/audio.service';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
+import { AudioService } from './audioService/audio.service';
 import { CommunicationService } from './communication.service';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
 
@@ -25,7 +25,6 @@ export class MouseService {
     constructor(
         private communicationService: CommunicationService,
         public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
-        private audioService: AudioService,
     ) {}
 
     /**
@@ -60,7 +59,7 @@ export class MouseService {
                 this.incrementCounter();
                 if (this.getDifferenceCounter() >= this.numberOfDifference) {
                     this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-                    this.audioService.playSound('./assets/audio/Bing_Chilling_vine_boom.mp3');
+                    AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
                 }
                 return differencesArray;
             }

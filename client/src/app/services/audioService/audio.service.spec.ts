@@ -14,48 +14,53 @@ describe('AudioService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('create should create an audio HTML element', () => {
-        const audio = service.create('./assets/audio/click.mp3');
-        expect(audio).toBeInstanceOf(HTMLAudioElement);
+    it('Create should create a new HTMLAudioElement', () => {
+        service.create('./assets/audio/click.mp3');
+        expect(service['soundtrack']).toBeInstanceOf(HTMLAudioElement);
+        expect(service['soundtrack']).toBeTruthy();
     });
 
-    it('play should play the audio and the autoplay is allowed', () => {
-        const audio = service.create('./assets/audio/click.mp3');
-        const spyAudioPlay = spyOn(audio, 'play').and.returnValue(Promise.resolve());
-        service.play(audio);
-        expect(spyAudioPlay).toHaveBeenCalled();
+    it('play should play the audio if the audioElement is defined', () => {
+        service['soundtrack'] = new Audio('./assets/audio/click.mp3');
+        service['soundtrack'].load();
+        const spyAudioPlay = spyOn(Audio.prototype, 'play').and.returnValue(Promise.resolve());
+        service.play();
+        expect(spyAudioPlay).toHaveBeenCalledTimes(1);
     });
 
-    it('play should not play the audio if it is undefined and the autoplay is denied', () => {
-        const audio = service.create('');
-        const spyAudioPlay = spyOn(audio, 'play').and.returnValue(
-            Promise.reject().catch(() => {
-                /* Do nothing */
-            }),
-        );
-        service.play(undefined);
+    it('play should not play the audio if it has not been initialized.', () => {
+        const spyAudioPlay = spyOn(Audio.prototype, 'play').and.returnValue(Promise.resolve());
+        service.play();
         expect(spyAudioPlay).not.toHaveBeenCalled();
     });
 
-    it('playSound should call create and play', () => {
-        const spyCreate = spyOn(service, 'create');
-        const spyPlay = spyOn(service, 'play');
-        service.playSound('./assets/audio/click.mp3');
-        expect(spyCreate).toHaveBeenCalled();
-        expect(spyPlay).toHaveBeenCalled();
-    });
-
-    it('mute should mute a specific audio HTML element', () => {
-        const audio = service.create('./assets/audio/soundtrack.mp3');
-        service.play(audio);
-        service.mute(audio);
-        expect(audio.muted).toBeTruthy();
-    });
-
-    it('mute should mute the soundtrack', () => {
-        service.soundtrack = service.create('./assets/audio/soundtrack.mp3');
-        service.play(service.soundtrack);
+    it('Mute should mute the AudioElement', () => {
+        service['soundtrack'] = new Audio('');
+        service['soundtrack'].load();
         service.mute();
-        expect(service.soundtrack.muted).toBeTruthy();
+        expect(service['soundtrack'].muted).toBeTrue();
+    });
+
+    it('Loop should loop the current AudioElement', () => {
+        service['soundtrack'] = new Audio('');
+        service['soundtrack'].load();
+        service.loop();
+        expect(service['soundtrack'].loop).toBeTrue();
+    });
+
+    it('Reset should call audio.load', () => {
+        service['soundtrack'] = new Audio('');
+        service['soundtrack'].load();
+        const spy = spyOn(Audio.prototype, 'load');
+        service.reset();
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('quickPlay should call play and load', () => {
+        const spyPlay = spyOn(Audio.prototype, 'play');
+        const spyLoad = spyOn(Audio.prototype, 'load');
+        AudioService.quickPlay('./assets/audio/click.mp3');
+        expect(spyPlay).toHaveBeenCalledTimes(1);
+        expect(spyLoad).toHaveBeenCalledTimes(1);
     });
 });

@@ -4,36 +4,45 @@ import { Injectable } from '@angular/core';
     providedIn: 'root',
 })
 /**
- * This component is a wrapper to pose on the pages to format the display of elements in a uniform manner.
+ * This service is in charge of the manipulation of an audio element. It is used in combination with
+ * a single audio file and offers methods to interact with said audio file.
  *
  * @author Pierre Tran
  * @class AudioService
  */
 export class AudioService {
-    soundtrack: HTMLAudioElement;
+    private soundtrack: HTMLAudioElement;
 
     /**
-     * Creates an audio element.
+     * This method play a sound file and then terminates it when it has completed playing.
+     * It used to play ping sounds or click sounds that aren't meant to be played for long and aren't
+     * supposed to be paused or looped.
      *
-     * @param path The path to the audio file.
-     * @returns The audio element.
+     * @param path the source file path as a string
      */
-    create(path: string): HTMLAudioElement {
-        const audio = new Audio();
-        audio.src = path;
+    static quickPlay(path: string): void {
+        const audio = new Audio(path);
         audio.load();
-        return audio;
+        audio.play();
     }
 
     /**
-     * Plays the audio file at the given path.
-     * We can't assume the audio will play. It may be blocked by the browser.
-     * See https://developer.chrome.com/blog/autoplay/
+     * Initializes the soudtrack attribute to a new HTMLAudioElement containing the new src.
      *
      * @param path The path to the audio file.
      */
-    play(audio?: HTMLAudioElement) {
-        const promise = audio?.play();
+    create(filePath: string): void {
+        this.soundtrack = new Audio(filePath);
+        this.soundtrack.load();
+    }
+
+    /**
+     * Plays the audio associated with the soundtrack.
+     * We can't assume the audio will play. It may be blocked by the browser.
+     * See https://developer.chrome.com/blog/autoplay/
+     */
+    play(): void {
+        const promise = this.soundtrack?.play();
         if (promise) {
             promise
                 .then(() => {
@@ -46,26 +55,29 @@ export class AudioService {
     }
 
     /**
-     * Instances an audio and plays it once.
-     * Multiple sounds can be played at the same time.
-     *
-     * @param path The path to the audio file.
+     * Mutes or unmute the audio of the soundtrack.
+     * If this method has been called before the initialization of the audio element, then it shouldn't mute.
      */
-    playSound(path: string): void {
-        const audio = this.create(path);
-        this.play(audio);
+    mute(): void {
+        if (this.soundtrack) {
+            this.soundtrack.muted = !this.soundtrack.muted;
+        }
     }
 
     /**
-     * Mutes or unmute the audio. If an audio element is provided, it will be muted.
-     *
-     * @param audio The audio element to mute. If not provided, the soundtrack will be muted.
+     * Loops or un loops the audio element. If this method is called before the
+     * initialization of the audio element then it should not loop.
      */
-    mute(audio?: HTMLAudioElement) {
-        if (audio) {
-            audio.muted = !audio.muted;
-        } else {
-            this.soundtrack.muted = !this.soundtrack.muted;
+    loop(): void {
+        if (this.soundtrack) {
+            this.soundtrack.loop = !this.soundtrack.loop;
         }
+    }
+
+    /**
+     * Method used to reset teh audio back to it's base state.
+     */
+    reset(): void {
+        this.soundtrack.load();
     }
 }
