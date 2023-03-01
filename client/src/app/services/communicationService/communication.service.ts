@@ -11,10 +11,10 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 /**
- * This service is used in order to share the canvases to components that need both in easy access
+ * This service is used in order to make HTTP requests to the server.
  *
- * @author Simon Gagné
- * @class CanvasSharingService
+ * @author Junaid Qureshi
+ * @class CommunicationService
  */
 export class CommunicationService {
     private readonly baseUrl: string = environment.serverUrl;
