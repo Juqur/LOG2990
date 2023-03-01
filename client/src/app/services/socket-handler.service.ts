@@ -43,7 +43,7 @@ export class SocketHandler {
      *
      * @param type The gateway to connect to.
      */
-    connect(type: string) {
+    connect(type: string): void {
         this.sockets.set(type, io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false }));
     }
 
@@ -52,14 +52,14 @@ export class SocketHandler {
      *
      * @param type The gateway to disconnect from.
      */
-    disconnect(gateway: string) {
+    disconnect(gateway: string): void {
         this.getSocket(gateway)?.disconnect();
     }
 
     /**
      * Disconnect all sockets to every gateway.
      */
-    disconnectAll() {
+    disconnectAll(): void {
         this.sockets.forEach((socket) => socket.disconnect());
     }
 
