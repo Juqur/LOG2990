@@ -12,7 +12,7 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AudioService } from '@app/services/audio.service';
 // import { CommunicationService } from '@app/services/communication.service';
-import { DrawService } from '@app/services/draw.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 import { Subject } from 'rxjs';
