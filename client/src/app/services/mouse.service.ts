@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { NavigationStart, Router } from '@angular/router';
 import { Vec2 } from '@app/interfaces/vec2';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
@@ -21,11 +22,19 @@ export class MouseService {
     // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
     private numberOfDifference: number = 0;
+    private endGameAudio = new AudioService();
 
     constructor(
         private communicationService: CommunicationService,
         public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
-    ) {}
+        router: Router,
+    ) {
+        router.events.forEach((event) => {
+            if (event instanceof NavigationStart) {
+                this.endGameAudio.mute();
+            }
+        });
+    }
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
@@ -59,7 +68,10 @@ export class MouseService {
                 this.incrementCounter();
                 if (this.getDifferenceCounter() >= this.numberOfDifference) {
                     this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-                    AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+                    this.endGameAudio.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+                    this.endGameAudio.reset();
+                    this.endGameAudio.play();
+                    // AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
                 }
                 return differencesArray;
             }
