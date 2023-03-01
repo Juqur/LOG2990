@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 export enum Gateways {
     Timer = 'timer',
     Chat = 'chat',
+    Game = 'game',
 }
 @Injectable({
     providedIn: 'root',
@@ -21,6 +22,7 @@ export enum Gateways {
 export class SocketHandler {
     socketTimer: Socket;
     socketChat: Socket;
+    socketGame: Socket;
 
     /**
      * This method verifies if a socket is connected at the given gateway.
@@ -28,7 +30,6 @@ export class SocketHandler {
      * connected.
      *
      * @param type The gateway we wish to check if the socket is connected.
-     * @returns a boolean indicating if a socket is alive at a given gateway.
      */
     isSocketAlive(type: Gateways): boolean {
         switch (type) {
@@ -36,6 +37,8 @@ export class SocketHandler {
                 return this.socketTimer && this.socketTimer.connected;
             case Gateways.Chat:
                 return this.socketChat && this.socketChat.connected;
+            case Gateways.Game:
+                return this.socketGame && this.socketGame.connected;
         }
     }
 
@@ -59,6 +62,9 @@ export class SocketHandler {
             case Gateways.Chat:
                 this.socketChat = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
                 break;
+            case Gateways.Game:
+                this.socketGame = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
+                break;
         }
     }
 
@@ -75,6 +81,9 @@ export class SocketHandler {
             case Gateways.Chat:
                 this.socketChat.disconnect();
                 break;
+            case Gateways.Game:
+                this.socketGame.disconnect();
+                break;
         }
     }
 
@@ -84,6 +93,7 @@ export class SocketHandler {
     disconnectAll() {
         this.socketChat.disconnect();
         this.socketTimer.disconnect();
+        this.socketGame.disconnect();
     }
 
     /**
@@ -94,13 +104,16 @@ export class SocketHandler {
      * @param action the action to perform on that event
      * @param type the socket on which this should all be performed.
      */
-    on<T>(event: string, action: (data: T) => void, type: Gateways): void {
+    on<T>(type: Gateways, event: string, action: (data: T) => void): void {
         switch (type) {
             case Gateways.Timer:
                 this.socketTimer.on(event, action);
                 break;
             case Gateways.Chat:
                 this.socketChat.on(event, action);
+                break;
+            case Gateways.Game:
+                this.socketGame.on(event, action);
                 break;
         }
     }
@@ -126,6 +139,13 @@ export class SocketHandler {
                     this.socketChat.emit(event, data);
                 } else {
                     this.socketChat.emit(event);
+                }
+                break;
+            case Gateways.Game:
+                if (data) {
+                    this.socketGame.emit(event, data);
+                } else {
+                    this.socketGame.emit(event);
                 }
                 break;
         }

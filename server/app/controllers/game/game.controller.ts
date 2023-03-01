@@ -9,14 +9,14 @@ export class GameController {
     @Post()
     createNewGame(@Body() body: { imageId: string }) {
         const gameId = this.generateGameId();
-        this.gameStateService.createGameState(gameId, { imageId: body.imageId, foundDifferences: [] });
+        this.gameStateService.createGameState(gameId, { gameId: body.imageId, foundDifferences: [] });
         return JSON.stringify(gameId);
     }
 
     @Post('/difference')
     async findImageDifference(@Body() body: { gameId: string; position: number }) {
         const gameState = this.gameStateService.getGameState(body.gameId);
-        return await this.imageService.findDifference(gameState.imageId, gameState.foundDifferences, body.position);
+        return await this.imageService.findDifference(gameState.gameId, gameState.foundDifferences, body.position);
     }
 
     generateGameId(): string {

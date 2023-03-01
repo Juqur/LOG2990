@@ -7,6 +7,8 @@ import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 import { AudioService } from '@app/services/audio.service';
+import { Gateways, SocketHandler } from '@app/services/socket-handler.service';
+import { GamePageService } from '@app/services/game-page/game-page.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -52,6 +54,8 @@ export class GamePageComponent implements OnInit {
         private communicationService: CommunicationService,
         private router: Router,
         private audioService: AudioService,
+        private socketHandler: SocketHandler,
+        private gamePageService: GamePageService,
     ) {}
 
     ngOnInit(): void {
@@ -91,15 +95,23 @@ export class GamePageComponent implements OnInit {
             throw new Error("Couldn't load images");
         }
 
-        this.communicationService.postNewGame('/game', String(this.levelId)).subscribe((gameId) => {
-            this.gameId = gameId;
-        });
+        if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
+            this.socketHandler.connect(Gateways.Game);
+            this.socketHandler.send(Gateways.Game, 'onJoinMultiplayerGame', this.levelId);
+
+            this.socketHandler.on(Gateways.Game, 'onProcessClick', (data) => {
+                console.log('onProcessClick', data);
+            });
+        }
     }
 
     clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
             // Update this so it also does game id work.
-            const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
+            const mousePosition = this.mouseService.getMousePosition(event);
+            if (!mousePosition) return;
+            const diffDetected = this.gamePageService.validateClick(this.gameId, mousePosition);
+
             diffDetected.then((result) => {
                 if (result.length > 0) {
                     this.handleAreaFoundInOriginal(result);

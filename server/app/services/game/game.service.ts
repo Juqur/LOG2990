@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class GameStateService {
     private gameStates = new Map<string, GameState>();
+    private playerRoomMap = new Map<string, number>();
 
     createGameState(gameId: string, gameState: GameState): void {
         this.gameStates.set(gameId, gameState);
@@ -18,6 +19,6 @@ export class GameStateService {
 }
 
 export interface GameState {
-    imageId: string;
+    gameId: string;
     foundDifferences: number[];
 }
