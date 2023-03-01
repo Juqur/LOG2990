@@ -12,10 +12,9 @@ describe('SocketClientService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(SocketHandler);
-
-        service.sockets.set(socketGateway1, new SocketTestHelper() as unknown as Socket);
-        service.sockets.set(socketGateway2, new SocketTestHelper() as unknown as Socket);
-        socketTest = service.sockets.get(socketGateway1) as Socket;
+        service['sockets'].set(socketGateway1, new SocketTestHelper() as unknown as Socket);
+        service['sockets'].set(socketGateway2, new SocketTestHelper() as unknown as Socket);
+        socketTest = service['sockets'].get(socketGateway1) as Socket;
     });
 
     it('should be created', () => {
@@ -48,7 +47,7 @@ describe('SocketClientService', () => {
     });
 
     it('connect should connect to the given gateway', () => {
-        const spy = spyOn(service.sockets, 'set');
+        const spy = spyOn(service['sockets'], 'set');
         service.connect(socketGateway1);
         expect(spy).toHaveBeenCalledTimes(1);
     });

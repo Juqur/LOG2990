@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class SocketHandler {
-    sockets: Map<string, Socket> = new Map<string, Socket>();
+    private sockets: Map<string, Socket> = new Map<string, Socket>();
 
     /**
      * Gets the socket of its kind, according to the given gateway.
