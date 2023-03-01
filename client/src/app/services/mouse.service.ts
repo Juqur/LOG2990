@@ -1,32 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { AudioService } from '@app/services/audio.service';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
-import { CommunicationService } from './communication.service';
-import { DialogData, PopUpServiceService } from './pop-up-service.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MouseService {
-    winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu de sélection',
-    };
-    closePath: string = '/selection';
 
-    private differenceCounter: number = 0;
     private mousePosition: Vec2 = { x: 0, y: 0 };
-    // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
-    private numberOfDifference: number = 0;
 
-    constructor(
-        private communicationService: CommunicationService,
-        public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
-        private audioService: AudioService,
-    ) {}
+
+    /**
+     * Takes the mouse event to calculate the position of the mouse
+     * and returns the absolute position of the mouse in the canvas.
+     *
+     * @param event the mouse event
+     * @returns the position of the mouse in the canvas
+     */
+    getMousePosition(event: MouseEvent) {
+        if (event.button === MouseButton.Left && this.canClick) {
+            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            return this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
+        }
+        return null;
+    }
 
     /**
      * Takes a mouse event in order to calculate the position of the mouse
