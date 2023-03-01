@@ -3,14 +3,6 @@ import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
 /**
- * The different possible gateways to connect sockets to.
- */
-export enum Gateways {
-    Timer = 'timer',
-    Chat = 'chat',
-}
-
-/**
  * The service in charge of manipulating socket connections.
  *
  * @author Junaid Qureshi & Pierre Tran
