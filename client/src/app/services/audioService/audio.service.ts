@@ -22,7 +22,6 @@ export class AudioService {
      */
     static quickPlay(path: string): void {
         const audio = new Audio(path);
-        audio.load();
         audio.play();
     }
 
@@ -32,7 +31,8 @@ export class AudioService {
      * @param path The path to the audio file.
      */
     create(filePath: string): void {
-        this.soundtrack = new Audio(filePath);
+        this.soundtrack = new Audio();
+        this.soundtrack.src = filePath;
         this.soundtrack.load();
     }
 
@@ -75,9 +75,9 @@ export class AudioService {
     }
 
     /**
-     * Method used to reset teh audio back to it's base state.
+     * Method used to reset the audio back to it's base state.
      */
     reset(): void {
-        this.soundtrack.load();
+        this.soundtrack?.load();
     }
 }

@@ -56,11 +56,9 @@ describe('AudioService', () => {
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('quickPlay should call play and load', () => {
+    it('quickPlay should call play', () => {
         const spyPlay = spyOn(Audio.prototype, 'play');
-        const spyLoad = spyOn(Audio.prototype, 'load');
         AudioService.quickPlay('./assets/audio/click.mp3');
         expect(spyPlay).toHaveBeenCalledTimes(1);
-        expect(spyLoad).toHaveBeenCalledTimes(1);
     });
 });
