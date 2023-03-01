@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { CanvasSharingService } from '@app/services/canvas-sharing.service';
+import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DrawService } from '@app/services/draw.service';
 import { Constants } from '@common/constants';
 
@@ -75,11 +75,11 @@ export class PlayAreaComponent implements AfterViewInit {
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
-                this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
+                this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             } else {
                 // Diff canvas (right canvas)
-                this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
+                this.canvasSharing.diffCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             }
             this.currentImage = new Image();
