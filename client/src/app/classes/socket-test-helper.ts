@@ -18,8 +18,8 @@ export class SocketTestHelper {
         return;
     }
 
-    // eslint-disable-next-line no-unused-vars
     emit(event: string, ...params: any): void {
-        return;
+        void event;
+        void params;
     }
 }

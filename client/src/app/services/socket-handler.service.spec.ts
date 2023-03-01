@@ -48,14 +48,9 @@ describe('SocketClientService', () => {
     });
 
     it('connect should connect to the given gateway', () => {
-        const spy = spyOn(service, 'connect').and.callFake(() => {
-            socketTest.connected = true;
-        });
-
+        const spy = spyOn(service.sockets, 'set');
         service.connect(socketGateway1);
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(service.sockets.get(socketGateway1)).toBeDefined();
-        expect(service.sockets.get(socketGateway1)?.connected).toBeTruthy();
     });
 
     it('should disconnect', () => {
@@ -86,6 +81,16 @@ describe('SocketClientService', () => {
         expect(spy).toHaveBeenCalledWith(event, action);
     });
 
+    it('on should not call socket.on if the socket is undefined', () => {
+        const event = 'placeholder';
+        const action = jasmine.createSpy('action');
+        const spy = spyOn(socketTest, 'on');
+        spyOn(service, 'getSocket').and.returnValue(undefined);
+
+        service.on(socketGateway1, event, action);
+        expect(spy).not.toHaveBeenCalled();
+    });
+
     it('send should call emit with data when using send', () => {
         const event = 'placeholder';
         const data = 0;
@@ -102,5 +107,16 @@ describe('SocketClientService', () => {
         service.send(socketGateway1, event, data);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event);
+    });
+
+    it('send should not call emit if socket is undefined', () => {
+        const event = 'placeholder';
+        const data = 0;
+        const spy = spyOn(socketTest, 'emit');
+        spyOn(service, 'getSocket').and.returnValue(undefined);
+
+        service.send(socketGateway1, event);
+        service.send(socketGateway1, event, data);
+        expect(spy).not.toHaveBeenCalled();
     });
 });
