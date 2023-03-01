@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
  * This service is in charge of the manipulation of an audio element. It is used in combination with
  * a single audio file and offers methods to interact with said audio file.
  *
- * @author Pierre Tran
+ * @author Pierre Tran & Charles Degrandpré
  * @class AudioService
  */
 export class AudioService {
