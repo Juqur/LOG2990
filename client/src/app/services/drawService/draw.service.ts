@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { MouseService } from './mouse.service';
-
-// TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-export const DEFAULT_WIDTH = 640;
-export const DEFAULT_HEIGHT = 480;
+import { MouseService } from '@app/services/mouse.service';
+import { Constants } from '@common/constants';
 
 @Injectable({
     providedIn: 'root',
 })
 export class DrawService {
     context: CanvasRenderingContext2D;
-    private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize: Vec2 = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
 
     get width(): number {
         return this.canvasSize.x;
