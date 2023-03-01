@@ -26,10 +26,8 @@ export class SocketHandler {
 
     /**
      * This method verifies if a socket is connected at the given gateway.
-     * It first checks if we created a socket of a given gateway and if that socket is currently
-     * connected.
      *
-     * @param type The gateway we wish to check if the socket is connected.
+     * @param type The gateway we wish to check if the socket is connected or even exists.
      * @returns a boolean indicating if a socket is alive at a given gateway.
      */
     isSocketAlive(gateway: string): boolean {
@@ -69,7 +67,7 @@ export class SocketHandler {
      * Associates a given event with an action and a gateway and executes said action on even for the
      * given gateway.
      *
-     * @param type The socket on which this should all be performed.
+     * @param type The gateway on which this should all be performed.
      * @param event The event to process
      * @param action The action to perform on that event
      */
