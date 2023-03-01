@@ -3,7 +3,7 @@ import { Vec2 } from '@app/interfaces/vec2';
 import { AudioService } from '@app/services/audio.service';
 import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
-import { CommunicationService } from './communication.service';
+import { CommunicationService } from './communicationService/communication.service';
 import { DialogData, PopUpServiceService } from './pop-up-service.service';
 
 @Injectable({
