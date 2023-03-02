@@ -51,15 +51,12 @@ export class GameTimerComponent implements OnInit {
     ngOnInit(): void {
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationEnd) {
-                this.socketHandler.disconnect(Gateways.Timer);
+                this.socketHandler.disconnect(Gateways.Game);
             }
         });
         this.setTimer(0);
-        if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
-            this.socketHandler.connect(Gateways.Game);
-        }
-        this.socketHandler.on(Gateways.Game, 'timer', (data: unknown) => {
-            this.setTimer(data as number);
+        this.socketHandler.on(Gateways.Game, 'sendTime', (data: number) => {
+            this.setTimer(data);
         });
     }
 }

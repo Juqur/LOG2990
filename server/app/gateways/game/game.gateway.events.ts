@@ -6,4 +6,5 @@ export enum GameEvents {
     OnSecondPlayerJoined = 'onSecondPlayerJoined',
     UpdateDifferenceAmount = 'updateDifferenceAmount',
     OnProcessedClick = 'onProcessedClick',
+    SendTime = 'sendTime',
 }

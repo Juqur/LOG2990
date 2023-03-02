@@ -136,7 +136,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
                     this.secondPlayerCount = gameData.amountOfDifferencesSecondPlayer;
                 }
                 this.playerCount = gameData.amountOfDifferences;
-                console.log('player count: ' + this.playerCount);
                 const response = this.gamePageService.validateResponse(gameData.differences);
                 if (!this.defaultArea) {
                     if (response !== 0) {
