@@ -31,7 +31,13 @@ export interface InputData {
 @Injectable({
     providedIn: 'root',
 })
-export class PopUpServiceService {
+/**
+ * This component is a wrapper to pose on the pages to format the display of elements in a uniform manner.
+ *
+ * @author Charles Degrandpré
+ * @class PopUpService
+ */
+export class PopUpService {
     result: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dialogRef: MatDialogRef<PopUpDialogComponent, any>;

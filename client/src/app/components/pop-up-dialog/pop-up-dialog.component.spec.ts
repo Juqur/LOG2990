@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogData, InputData, PopUpServiceService } from '@app/services/popUpService/pop-up-service.service';
+import { DialogData, InputData, PopUpService } from '@app/services/popUpService/pop-up.service';
 
 import { PopUpDialogComponent } from './pop-up-dialog.component';
 import SpyObj = jasmine.SpyObj;
@@ -8,7 +8,7 @@ import SpyObj = jasmine.SpyObj;
 describe('PopUpDialogComponent', () => {
     let component: PopUpDialogComponent;
     let fixture: ComponentFixture<PopUpDialogComponent>;
-    let matDialogueRefMock: SpyObj<MatDialogRef<PopUpServiceService>>;
+    let matDialogueRefMock: SpyObj<MatDialogRef<PopUpService>>;
     let dialogData: DialogData;
     let inputMockData: SpyObj<InputData>;
 

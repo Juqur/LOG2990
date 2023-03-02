@@ -1,6 +1,6 @@
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogData, PopUpServiceService } from '@app/services/popUpService/pop-up-service.service';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 
 @Component({
     selector: 'app-pop-up-dialog',
@@ -17,7 +17,7 @@ export class PopUpDialogComponent {
     @ViewChild('pop-up-input') elRef: ElementRef;
     inputWasValid: boolean | undefined = false;
     inputValue: string = '';
-    constructor(public dialogRef: MatDialogRef<PopUpServiceService>, @Inject(MAT_DIALOG_DATA) public data: DialogData) {
+    constructor(public dialogRef: MatDialogRef<PopUpService>, @Inject(MAT_DIALOG_DATA) public data: DialogData) {
         if (!data.inputData) {
             this.inputWasValid = true;
         }
