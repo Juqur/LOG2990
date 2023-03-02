@@ -9,6 +9,7 @@ import { Constants } from '@common/constants';
 import { AudioService } from '@app/services/audio.service';
 import { Gateways, SocketHandler } from '@app/services/socket-handler.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
+import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -24,6 +25,12 @@ import { GamePageService } from '@app/services/game-page/game-page.service';
 export class GamePageComponent implements OnInit {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
+
+    winGameDialogData: DialogData = {
+        textToSend: 'Vous avez gagné!',
+        closeButtonMessage: 'Retour au menu de sélection',
+    };
+    closePath: string = '/selection';
 
     originalImageSrc: string = '';
     diffImageSrc: string = '';
@@ -44,8 +51,6 @@ export class GamePageComponent implements OnInit {
 
     drawServiceDiff: DrawService = new DrawService();
     drawServiceOriginal: DrawService = new DrawService();
-    closePath: string = '/selection';
-    gameId: string | null;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -56,17 +61,26 @@ export class GamePageComponent implements OnInit {
         private audioService: AudioService,
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
+        private popUpService: PopUpServiceService,
     ) {}
 
+    /**
+     * This method is called when the component is initialized.
+     * It subscribes to the router events to reset the counter when the user navigates to the game page, and to reset the socket information.
+     * It also subscribes to the route parameters and query to get the level id and player name.
+     * It also connects to the the game socket and handles the response.
+     */
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
-            // recoit le bon id!!
             this.levelId = params.id;
         });
 
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationStart) {
-                this.mouseService.resetCounter();
+                this.gamePageService.resetCounter();
+                if (this.socketHandler.isSocketAlive(Gateways.Game)) {
+                    this.socketHandler.send(Gateways.Game, 'onJoinNewGame', this.levelId);
+                }
                 this.ngOnInit();
             }
         });
@@ -79,7 +93,7 @@ export class GamePageComponent implements OnInit {
             this.communicationService.getLevel(this.levelId).subscribe((value) => {
                 this.currentLevel = value;
                 this.nbDiff = value.nbDifferences;
-                this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
+                this.gamePageService.setNumberOfDifference(this.currentLevel.nbDifferences);
             });
         } catch (error) {
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
@@ -94,44 +108,57 @@ export class GamePageComponent implements OnInit {
         } catch (error) {
             throw new Error("Couldn't load images");
         }
-
+        this.handleSocket();
+    }
+    /**
+     * This method handles the socket connection.
+     * It connects to the game socket and sends the level id to the server.
+     * It also handles the response from the server.
+     * It checks if the difference is in the original image or in the diff image, and if the game is finished.
+     */
+    handleSocket() {
         if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
             this.socketHandler.connect(Gateways.Game);
-            this.socketHandler.send(Gateways.Game, 'onJoinMultiplayerGame', this.levelId);
-
-            this.socketHandler.on(Gateways.Game, 'onProcessClick', (data) => {
-                console.log('onProcessClick', data);
+            this.socketHandler.send(Gateways.Game, 'onJoinNewGame', this.levelId);
+            this.socketHandler.on(Gateways.Game, 'onProcessedClick', (data) => {
+                const differenceArray = data as number[];
+                const response = this.gamePageService.validateResponse(differenceArray);
+                if (!this.defaultArea) {
+                    if (response === 1) {
+                        this.handleAreaFoundInDiff(differenceArray);
+                    } else if (response === 0) {
+                        this.handleAreaNotFoundInDiff();
+                    }
+                } else {
+                    if (response === 1) {
+                        this.handleAreaFoundInOriginal(differenceArray);
+                    } else if (response === 0) {
+                        this.handleAreaNotFoundInOriginal();
+                    }
+                }
+                if (response === Constants.minusOne) {
+                    this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+                    this.audioService.playSound('./assets/audio/Bing_Chilling_vine_boom.mp3');
+                }
             });
         }
     }
 
     clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
-            // Update this so it also does game id work.
             const mousePosition = this.mouseService.getMousePosition(event);
-            if (!mousePosition) return;
-            const diffDetected = this.gamePageService.validateClick(this.gameId, mousePosition);
-
-            diffDetected.then((result) => {
-                if (result.length > 0) {
-                    this.handleAreaFoundInOriginal(result);
-                } else {
-                    this.handleAreaNotFoundInOriginal();
-                }
-            });
+            if (!mousePosition || !this.levelId) return;
+            this.gamePageService.sendClick(mousePosition);
+            this.defaultArea = true;
         }
     }
 
     clickedOnDiff(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
-            const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
-            diffDetected.then((result) => {
-                if (result.length > 0) {
-                    this.handleAreaFoundInDiff(result);
-                } else {
-                    this.handleAreaNotFoundInDiff();
-                }
-            });
+            const mousePosition = this.mouseService.getMousePosition(event);
+            if (!mousePosition || !this.levelId) return;
+            this.gamePageService.sendClick(mousePosition);
+            this.defaultArea = false;
         }
     }
 

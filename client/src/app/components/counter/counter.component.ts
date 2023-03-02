@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MouseService } from '@app/services/mouse.service';
+import { GamePageService } from '@app/services/game-page/game-page.service';
 
 @Component({
     selector: 'app-counter',
@@ -14,7 +14,7 @@ import { MouseService } from '@app/services/mouse.service';
  * @class CounterComponent
  */
 export class CounterComponent {
-    constructor(private mouseService: MouseService) {}
+    constructor(private gamePageService: GamePageService) {}
 
     /**
      * Returns the value of the counter from the mouseService.
@@ -22,6 +22,6 @@ export class CounterComponent {
      * @returns the value of the counter.
      */
     get mouseCount() {
-        return this.mouseService.getDifferenceCounter();
+        return this.gamePageService.getDifferenceCounter();
     }
 }

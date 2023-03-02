@@ -73,20 +73,15 @@ export class ImageService {
      * @param position The position of the pixel clicked
      * @returns the array of pixels that are different if there is a difference
      */
-    async findDifference(fileName: string, foundDifferences: number[], position: number): Promise<number[]> {
+    async findDifference(fileName: string, foundDifferences: number[], position: number): Promise<{ foundDifference: number[]; won: boolean }> {
         const allDifferences = await this.getArray(fileName);
         let index = this.returnIndex(allDifferences, foundDifferences, position);
         index = index === undefined ? Constants.minusOne : index;
         const foundDifferenceArray = allDifferences[index];
         if (foundDifferenceArray !== undefined) {
-            return foundDifferenceArray;
+            return { foundDifference: foundDifferenceArray, won: allDifferences.length === foundDifferences.length };
         }
-
-        if (foundDifferences.length === allDifferences.length) {
-            return [Constants.minusOne];
-        }
-
-        return [];
+        return { foundDifference: [], won: false };
     }
 
     /**

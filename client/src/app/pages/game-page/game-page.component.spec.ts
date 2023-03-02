@@ -11,7 +11,6 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AudioService } from '@app/services/audio.service';
-// import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
@@ -71,42 +70,6 @@ describe('GamePageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('should call handleAreaFoundInOriginal if difference is found in original', fakeAsync(() => {
-        mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([1]));
-        const spy = spyOn(component, 'handleAreaFoundInOriginal');
-        component.clickedOnOriginal(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should call handleAreaNotFoundInOriginal if difference is not found in original', fakeAsync(() => {
-        mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([]));
-        const spy = spyOn(component, 'handleAreaNotFoundInOriginal');
-        component.clickedOnOriginal(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should call handleAreaFoundInDiff if difference is found in diff', fakeAsync(() => {
-        mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([1]));
-        const spy = spyOn(component, 'handleAreaFoundInDiff');
-        component.clickedOnDiff(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should call handleAreaFoundInDiff if difference is not found in diff', fakeAsync(() => {
-        mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([]));
-        const spy = spyOn(component, 'handleAreaNotFoundInDiff');
-        component.clickedOnDiff(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
 
     it('handleAreaFoundInDiff should call multiple functions', () => {
         const result = [1, 2, 3];
