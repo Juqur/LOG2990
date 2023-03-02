@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { messages } from '@app/messages';
+import { Message, messages } from '@app/messages';
 
 @Component({
     selector: 'app-game-chat',
@@ -14,7 +14,14 @@ import { messages } from '@app/messages';
  * @class GameChatComponent
  */
 export class GameChatComponent {
-    messages = messages;
+    private listMessages: Message[] = messages;
+
+    /**
+     * Getter for the list of messages
+     */
+    get messages(): Message[] {
+        return this.listMessages;
+    }
 
     /**
      * Method in charge of creating a new message once it has been received by the server.
