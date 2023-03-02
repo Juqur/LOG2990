@@ -9,7 +9,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { MouseService } from '@app/services/mouse.service';
-import { PopUpServiceService } from '@app/services/pop-up-service.service';
+import { PopUpServiceService } from '@app/services/popUpService/pop-up-service.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import { CreationComponent } from './creation.component';
