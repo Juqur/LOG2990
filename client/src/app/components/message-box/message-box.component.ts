@@ -12,16 +12,21 @@ import { Component } from '@angular/core';
  * @class MessageBoxComponent
  */
 export class MessageBoxComponent {
-    displayName: string = 'Charles';
-    messageToSend: string = '';
+    private displayName: string = '';
+
+    /**
+     * Getter for the display name attribute.
+     */
+    get name(): string {
+        return this.displayName;
+    }
 
     /**
      * This method is used to send a message to the server.
      *
      * @param messageInput the HTML input containing the message.
      */
-    sendMessage(messageInput: HTMLTextAreaElement) {
-        this.messageToSend = messageInput.value;
+    sendMessage(messageInput: HTMLTextAreaElement): void {
         messageInput.value = '';
         // TODO
         // Send HTTP request to server in order to send the message.
