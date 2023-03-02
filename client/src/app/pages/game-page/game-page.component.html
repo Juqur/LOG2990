@@ -6,12 +6,12 @@
             <div id="diff-counter">
                 <div *ngIf=playerName class="player-counter">
                     <span class="diff-self">{{playerName + ': '}}</span>
-                    <app-counter></app-counter>
+                    <span> {{playerCount}} </span>
                     <span class="diff-self">différences trouvées</span>
                 </div>
-                <div *ngIf="isMultiplayer" class="player-counter">
-                    <span class="diff-friend">Eugène Poubelle :</span>
-                    <span> 12321313123 </span>
+                <div *ngIf="secondPlayerName" class="player-counter">
+                    <span class="diff-friend">{{secondPlayerName}} :</span>
+                    <span> {{secondPlayerCount}} </span>
                     <span class="diff-friend">différences trouvées</span>
                 </div>
             </div>

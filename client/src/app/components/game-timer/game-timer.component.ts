@@ -55,12 +55,11 @@ export class GameTimerComponent implements OnInit {
             }
         });
         this.setTimer(0);
-        if (!this.socketHandler.isSocketAlive(Gateways.Timer)) {
-            this.socketHandler.connect(Gateways.Timer);
-            this.socketHandler.send(Gateways.Timer, 'soloClassic');
-            this.socketHandler.on(Gateways.Timer, 'timer', (data: unknown) => {
-                this.setTimer(data as number);
-            });
+        if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
+            this.socketHandler.connect(Gateways.Game);
         }
+        this.socketHandler.on(Gateways.Game, 'timer', (data: unknown) => {
+            this.setTimer(data as number);
+        });
     }
 }

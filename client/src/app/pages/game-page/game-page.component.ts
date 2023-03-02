@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
@@ -10,6 +10,13 @@ import { AudioService } from '@app/services/audio.service';
 import { Gateways, SocketHandler } from '@app/services/socket-handler.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
+
+interface GameData {
+    differences: number[];
+    amountOfDifferences: number;
+    amountOfDifferencesSecondPlayer?: number;
+}
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -22,7 +29,7 @@ import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.se
  * @author Simon Gagné
  * @class GamePageComponent
  */
-export class GamePageComponent implements OnInit {
+export class GamePageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
 
@@ -37,10 +44,12 @@ export class GamePageComponent implements OnInit {
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
     playerName: string;
+    playerCount: number = 0;
+    secondPlayerName: string = '';
+    secondPlayerCount: number = 0;
     levelId: number;
     currentLevel: Level; // doit recuperer du server
     isClassicGamemode: boolean = true;
-    isMultiplayer: boolean = false;
     nbDiff: number = Constants.INIT_DIFF_NB; // Il faudrait avoir cette info dans le level
     hintPenalty = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
@@ -57,7 +66,7 @@ export class GamePageComponent implements OnInit {
         private mouseService: MouseService,
         private route: ActivatedRoute,
         private communicationService: CommunicationService,
-        private router: Router,
+
         private audioService: AudioService,
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
@@ -70,16 +79,14 @@ export class GamePageComponent implements OnInit {
      * It also subscribes to the route parameters and query to get the level id and player name.
      * It also connects to the the game socket and handles the response.
      */
+
+    ngOnDestroy(): void {
+        this.socketHandler.disconnect(Gateways.Game);
+    }
     ngOnInit(): void {
+        console.log('Game page initialized');
         this.route.params.subscribe((params) => {
             this.levelId = params.id;
-        });
-
-        this.router.events.subscribe((event: Event) => {
-            if (event instanceof NavigationEnd && event.url.includes('game')) {
-                this.gamePageService.resetCounter();
-                this.ngOnInit();
-            }
         });
         this.route.queryParams.subscribe((params) => {
             this.playerName = params['playerName'];
@@ -115,18 +122,31 @@ export class GamePageComponent implements OnInit {
     handleSocket() {
         if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
             this.socketHandler.connect(Gateways.Game);
+            this.socketHandler.on(Gateways.Game, 'onSecondPlayerJoined', (data) => {
+                const names = data as string[];
+                if (names[0] === this.playerName) {
+                    this.secondPlayerName = names[1];
+                } else {
+                    this.secondPlayerName = names[0];
+                }
+            });
             this.socketHandler.on(Gateways.Game, 'onProcessedClick', (data) => {
-                const differenceArray = data as number[];
-                const response = this.gamePageService.validateResponse(differenceArray);
+                const gameData = data as GameData;
+                if (gameData.amountOfDifferencesSecondPlayer) {
+                    this.secondPlayerCount = gameData.amountOfDifferencesSecondPlayer;
+                }
+                this.playerCount = gameData.amountOfDifferences;
+                console.log('player count: ' + this.playerCount);
+                const response = this.gamePageService.validateResponse(gameData.differences);
                 if (!this.defaultArea) {
-                    if (response > 0) {
-                        this.handleAreaFoundInDiff(differenceArray);
+                    if (response !== 0) {
+                        this.handleAreaFoundInDiff(gameData.differences);
                     } else {
                         this.handleAreaNotFoundInDiff();
                     }
                 } else {
-                    if (response > 0) {
-                        this.handleAreaFoundInOriginal(differenceArray);
+                    if (response !== 0) {
+                        this.handleAreaFoundInOriginal(gameData.differences);
                     } else {
                         this.handleAreaNotFoundInOriginal();
                     }
@@ -137,7 +157,7 @@ export class GamePageComponent implements OnInit {
                 }
             });
         }
-        this.socketHandler.send(Gateways.Game, 'onJoinNewGame', this.levelId);
+        this.socketHandler.send(Gateways.Game, 'onJoinMultiplayerGame', { game: this.levelId, playerName: this.playerName });
     }
     /**
      * This method handles the case where the user clicks on the original image

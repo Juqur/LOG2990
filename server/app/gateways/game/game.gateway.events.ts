@@ -3,6 +3,7 @@ export enum GameEvents {
     OnJoinMultiplayerGame = 'onJoinMultiplayerGame',
     OnClick = 'onClick',
     OnLeave = 'onLeave',
-
+    OnSecondPlayerJoined = 'onSecondPlayerJoined',
+    UpdateDifferenceAmount = 'updateDifferenceAmount',
     OnProcessedClick = 'onProcessedClick',
 }

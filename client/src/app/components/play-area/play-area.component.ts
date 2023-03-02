@@ -103,7 +103,6 @@ export class PlayAreaComponent implements AfterViewInit {
         let x = 0;
         let y = 0;
         const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        console.log(context);
         if (!context) {
             return;
         }

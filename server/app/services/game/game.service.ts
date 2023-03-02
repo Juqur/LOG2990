@@ -21,4 +21,6 @@ export class GameStateService {
 export interface GameState {
     gameId: string;
     foundDifferences: number[];
+    playerName: string;
+    secondPlayerId: string;
 }
