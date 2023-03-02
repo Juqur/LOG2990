@@ -84,7 +84,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.disconnect(Gateways.Game);
     }
     ngOnInit(): void {
-        console.log('Game page initialized');
         this.route.params.subscribe((params) => {
             this.levelId = params.id;
         });
@@ -99,18 +98,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.gamePageService.setNumberOfDifference(this.currentLevel.nbDifferences);
             });
         } catch (error) {
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            this.communicationService.getLevel(7).subscribe((value) => {
-                this.currentLevel = value;
-            });
+            throw new Error("Couldn't load level: " + error);
         }
 
-        try {
-            this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
-            this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
-        } catch (error) {
-            throw new Error("Couldn't load images");
-        }
+        this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
+        this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
+
         this.handleSocket();
     }
     /**
@@ -227,7 +220,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * This method refreshes the difference canvas
      */
     resetCanvas() {
-        console.log('reset');
         this.diffPlayArea
             .timeout(Constants.millisecondsInOneSecond)
             .then(() => {

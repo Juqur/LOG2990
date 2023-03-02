@@ -9,12 +9,14 @@ import { GameTimerComponent } from '@app/components/game-timer/game-timer.compon
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
+import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AudioService } from '@app/services/audio.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import SpyObj = jasmine.SpyObj;
 
@@ -27,12 +29,13 @@ describe('GamePageComponent', () => {
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
     let audioServiceSpy: SpyObj<AudioService>;
     let drawServiceSpy: SpyObj<DrawService>;
-
-    const mouseEvent = {
-        offsetX: 100,
-        offsetY: 200,
-        button: 0,
-    } as MouseEvent;
+    const socketHandlerSpy = {
+        on: jasmine.createSpy(),
+        isSocketAlive: jasmine.createSpy().and.returnValue(false),
+        send: jasmine.createSpy(),
+        connect: jasmine.createSpy(),
+        disconnect: jasmine.createSpy(),
+    };
 
     beforeEach(async () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
@@ -59,6 +62,7 @@ describe('GamePageComponent', () => {
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: AudioService, useValue: audioServiceSpy },
                 { provide: DrawService, useValue: drawServiceSpy },
+                { provide: SocketHandler, useValue: socketHandlerSpy },
             ],
         }).compileComponents();
 
@@ -69,6 +73,55 @@ describe('GamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should retrieve the game id from the url', () => {
+        const testParam = { id: 123 };
+        subject.next(testParam);
+        expect(component.levelId).toEqual(testParam.id);
+    });
+
+    it('should load level and update properties', () => {
+        const testLevel: Level = {
+            id: 1,
+            name: 'test',
+            playerSolo: [],
+            timeSolo: [],
+            playerMulti: [],
+            timeMulti: [],
+            isEasy: false,
+            nbDifferences: 0,
+        };
+        const getLevelSpy = spyOn(component['communicationService'], 'getLevel').and.returnValue(of(testLevel));
+        const setNumberOfDifferenceSpy = spyOn(component['gamePageService'], 'setNumberOfDifference');
+        component.ngOnInit();
+
+        expect(getLevelSpy).toHaveBeenCalledWith(component.levelId);
+        expect(component.currentLevel).toEqual(testLevel);
+        expect(component.nbDiff).toEqual(testLevel.nbDifferences);
+        expect(setNumberOfDifferenceSpy).toHaveBeenCalledWith(testLevel.nbDifferences);
+    });
+
+    it('should throw error if level cannot be loaded', () => {
+        const errorMessage = 'test error';
+        spyOn(component['communicationService'], 'getLevel').and.throwError(errorMessage);
+
+        expect(() => {
+            component.ngOnInit();
+        }).toThrowError("Couldn't load level: Error: " + errorMessage);
+    });
+
+    it('should properly assign names in a multiplayer game', () => {
+        const data = ['name1', 'name2'];
+        component['playerName'] = 'name1';
+        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+            if (eventName === 'onSecondPlayerJoined') {
+                callback(data);
+            }
+        });
+        component.handleSocket();
+        expect(data).toEqual(['name1', 'name2']);
+        expect(component['secondPlayerName']).toEqual('name2');
     });
 
     it('handleAreaFoundInDiff should call multiple functions', () => {

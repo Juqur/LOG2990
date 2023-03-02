@@ -44,7 +44,16 @@ export class GameGateway {
         }, DELAY_BEFORE_EMITTING_TIME);
         this.timeIntervalMap.set(socket.id, interval);
     }
-    
+
+    /**
+     * This method is called when a player joins a multiplayer game.
+     * If the player is the second player to join the game, it adds the player to the room of the other player.
+     * Or else it creates a new room and adds the player to it.
+     * It also sets the player's game data and starts the timer when both players are in the room.
+     *
+     * @param socket the socket of the player
+     * @param data the data of the player, including the gameId and the playerName
+     */
     @SubscribeMessage(GameEvents.OnJoinMultiplayerGame)
     onJoinMultiplayerGame(socket: Socket, data: { game: string; playerName: string }) {
         for (const [playerId, gameId] of this.playerGameMap.entries()) {
@@ -78,7 +87,15 @@ export class GameGateway {
         this.playerGameMap.set(socket.id, { gameId: data.game, foundDifferences: [], playerName: data.playerName, secondPlayerId: '' });
         socket.join(roomId.toString());
     }
-
+    /**
+     * This method is called when a player clicks on the play area.
+     * It checks whether the player has clicked on a difference or not.
+     * It also sends the data to the other player if the player is in a multiplayer game.
+     * It also deletes the player from the room and the game data when the player has won.
+     *
+     * @param socket the socket of the player
+     * @param data the data of the player, including the position of the click
+     */
     @SubscribeMessage(GameEvents.OnClick)
     async onClick(socket: Socket, data: { position: number }) {
         const gameState = this.playerGameMap.get(socket.id);
@@ -100,6 +117,12 @@ export class GameGateway {
         }
     }
 
+    /**
+     * This method is called when a player disconnects.
+     * It deletes the player from all the maps
+     *
+     * @param socket the socket of the player
+     */
     handleDisconnect(socket: Socket) {
         this.playerRoomMap.delete(socket.id);
         this.playerGameMap.delete(socket.id);

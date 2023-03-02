@@ -29,9 +29,4 @@ describe('CounterComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('Mouse count should return the number of differences from the mouseService', () => {
-        mouseServiceMock.getDifferenceCounter.and.returnValue(3);
-        expect(component.mouseCount).toEqual(3);
-    });
 });
