@@ -103,13 +103,13 @@ export class PlayAreaComponent implements AfterViewInit {
         let x = 0;
         let y = 0;
         const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        console.log(context);
         if (!context) {
             return;
         }
         area.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % this.width;
             y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
-
             context.fillStyle = 'red';
             context.fillRect(x, y, 1, 1);
         });

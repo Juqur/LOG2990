@@ -4,7 +4,6 @@ import { GameEvents } from './game.gateway.events';
 import { GameState } from '@app/services/game/game.service';
 import { Injectable } from '@nestjs/common';
 import { ImageService } from '@app/services/image/image.service';
-import { Constants } from '@common/constants';
 
 @WebSocketGateway({ cors: true })
 @Injectable()
@@ -20,7 +19,9 @@ export class GameGateway {
         const roomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
         this.playerRoomMap.set(socket.id, roomId);
         this.playerGameMap.set(socket.id, { gameId: game, foundDifferences: [] });
+        console.log(this.playerRoomMap);
         socket.join(roomId.toString());
+        console.log('Player joined', socket.id);
     }
 
     @SubscribeMessage(GameEvents.OnClick)
@@ -59,9 +60,5 @@ export class GameGateway {
     handleDisconnect(socket: Socket) {
         this.playerRoomMap.delete(socket.id);
         this.playerGameMap.delete(socket.id);
-    }
-
-    handleConnection(socket: Socket) {
-      console.log('Player connected', socket.id);
     }
 }

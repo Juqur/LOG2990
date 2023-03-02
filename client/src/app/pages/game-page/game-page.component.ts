@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
@@ -76,15 +76,11 @@ export class GamePageComponent implements OnInit {
         });
 
         this.router.events.subscribe((event: Event) => {
-            if (event instanceof NavigationStart) {
+            if (event instanceof NavigationEnd && event.url.includes('game')) {
                 this.gamePageService.resetCounter();
-                if (this.socketHandler.isSocketAlive(Gateways.Game)) {
-                    this.socketHandler.send(Gateways.Game, 'onJoinNewGame', this.levelId);
-                }
                 this.ngOnInit();
             }
         });
-
         this.route.queryParams.subscribe((params) => {
             this.playerName = params['playerName'];
         });
@@ -119,20 +115,19 @@ export class GamePageComponent implements OnInit {
     handleSocket() {
         if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
             this.socketHandler.connect(Gateways.Game);
-            this.socketHandler.send(Gateways.Game, 'onJoinNewGame', this.levelId);
             this.socketHandler.on(Gateways.Game, 'onProcessedClick', (data) => {
                 const differenceArray = data as number[];
                 const response = this.gamePageService.validateResponse(differenceArray);
                 if (!this.defaultArea) {
-                    if (response === 1) {
+                    if (response > 0) {
                         this.handleAreaFoundInDiff(differenceArray);
-                    } else if (response === 0) {
+                    } else {
                         this.handleAreaNotFoundInDiff();
                     }
                 } else {
-                    if (response === 1) {
+                    if (response > 0) {
                         this.handleAreaFoundInOriginal(differenceArray);
-                    } else if (response === 0) {
+                    } else {
                         this.handleAreaNotFoundInOriginal();
                     }
                 }
@@ -142,8 +137,14 @@ export class GamePageComponent implements OnInit {
                 }
             });
         }
+        this.socketHandler.send(Gateways.Game, 'onJoinNewGame', this.levelId);
     }
-
+    /**
+     * This method handles the case where the user clicks on the original image
+     * It will send the click to the server
+     *
+     * @param event The mouse event
+     */
     clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
             const mousePosition = this.mouseService.getMousePosition(event);
@@ -152,8 +153,13 @@ export class GamePageComponent implements OnInit {
             this.defaultArea = true;
         }
     }
-
-    clickedOnDiff(event: MouseEvent) {
+    /**
+     * This method handles the case where the user clicks on the difference image
+     * It will send the click to the server
+     *
+     * @param event The mouse event
+     */
+    clickedOnDiff(event: MouseEvent): void {
         if (this.mouseService.getCanClick()) {
             const mousePosition = this.mouseService.getMousePosition(event);
             if (!mousePosition || !this.levelId) return;
@@ -161,7 +167,13 @@ export class GamePageComponent implements OnInit {
             this.defaultArea = false;
         }
     }
-
+    /**
+     * This method returns the original pixel color
+     *
+     * @param x The x coordinate of the pixel
+     * @param y The y coordinate of the pixel
+     * @returns The color of the original pixel
+     */
     pick(x: number, y: number): string {
         const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const pixel = context.getImageData(x, y, 1, 1);
@@ -171,7 +183,11 @@ export class GamePageComponent implements OnInit {
         return rgba;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+    /**
+     * This method copies the area found in the original image to the difference image
+     *
+     * @param area The area to be copied
+     */
     copyArea(area: number[]) {
         let x = 0;
         let y = 0;
@@ -188,8 +204,11 @@ export class GamePageComponent implements OnInit {
             context.fillRect(x, y, 1, 1);
         });
     }
-
+    /**
+     * This method refreshes the difference canvas
+     */
     resetCanvas() {
+        console.log('reset');
         this.diffPlayArea
             .timeout(Constants.millisecondsInOneSecond)
             .then(() => {
