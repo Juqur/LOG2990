@@ -23,6 +23,13 @@ export class GameGateway {
 
     constructor(private imageService: ImageService) {}
 
+    /**
+     * This method is called when a player joins a new game. It creates a new room and adds the player to it.
+     * It also sets the player's game data and starts the timer.
+     * 
+     * @param socket the socket of the player
+     * @param data the data of the player, including the gameId and the playerName
+     */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinNewGame(socket: Socket, data: { game: string; playerName: string }) {
         const roomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -33,16 +40,18 @@ export class GameGateway {
         const interval = setInterval(() => {
             const time = this.timeMap.get(socket.id);
             this.timeMap.set(socket.id, time + 1);
-            socket.emit('timer', time + 1);
+            socket.emit(GameEvents.SendTime, time + 1);
         }, DELAY_BEFORE_EMITTING_TIME);
         this.timeIntervalMap.set(socket.id, interval);
     }
-
+    
     @SubscribeMessage(GameEvents.OnJoinMultiplayerGame)
     onJoinMultiplayerGame(socket: Socket, data: { game: string; playerName: string }) {
         for (const [playerId, gameId] of this.playerGameMap.entries()) {
             if (playerId !== socket.id && gameId.gameId === data.game) {
-                if (this.server.sockets.adapter.rooms.get(this.playerRoomMap.get(playerId).toString()).size === 1) {
+                const room = this.playerRoomMap.get(playerId).toString();
+                const names = [this.playerGameMap.get(playerId).playerName, data.playerName];
+                if (this.server.sockets.adapter.rooms.get(room).size === 1) {
                     this.playerRoomMap.set(socket.id, this.playerRoomMap.get(playerId));
                     this.playerGameMap.set(socket.id, {
                         gameId: data.game,
@@ -51,9 +60,15 @@ export class GameGateway {
                         secondPlayerId: playerId,
                     });
                     this.playerGameMap.get(playerId).secondPlayerId = socket.id;
-                    socket.join(this.playerRoomMap.get(playerId).toString());
-                    const names = [this.playerGameMap.get(playerId).playerName, data.playerName];
-                    this.server.to(this.playerRoomMap.get(playerId).toString()).emit(GameEvents.OnSecondPlayerJoined, names);
+                    socket.join(room);
+                    this.timeMap.set(room, 0);
+                    const interval = setInterval(() => {
+                        const time = this.timeMap.get(room);
+                        this.timeMap.set(room, time + 1);
+                        this.server.to(room).emit(GameEvents.SendTime, time + 1);
+                    }, DELAY_BEFORE_EMITTING_TIME);
+                    this.timeIntervalMap.set(room, interval);
+                    this.server.to(room).emit(GameEvents.OnSecondPlayerJoined, names);
                     return;
                 }
             }
@@ -88,5 +103,11 @@ export class GameGateway {
     handleDisconnect(socket: Socket) {
         this.playerRoomMap.delete(socket.id);
         this.playerGameMap.delete(socket.id);
+        if (this.timeIntervalMap.has(socket.id)) {
+            this.timeIntervalMap.get(socket.id).unref();
+            this.timeIntervalMap.delete(socket.id);
+        }
+        this.timeIntervalMap.delete(socket.id);
+        this.timeMap.delete(socket.id);
     }
 }
