@@ -32,13 +32,14 @@ export interface InputData {
     providedIn: 'root',
 })
 /**
- * This component is a wrapper to pose on the pages to format the display of elements in a uniform manner.
+ * This service is used to interact with a pop-up-dialog component to generate a custom pop up on the screen.
+ * It is only used to start the pop-up-dialog and retrieve the information that may or may not have been given
+ * by the pop-up input field.
  *
  * @author Charles Degrandpré
  * @class PopUpService
  */
 export class PopUpService {
-    result: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dialogRef: MatDialogRef<PopUpDialogComponent, any>;
     constructor(public dialog: MatDialog, private router: Router) {}
@@ -52,17 +53,14 @@ export class PopUpService {
      * @param dataToSend a DialogData instance which has three attributes.
      * @param routToGo the route to send the user to once the pop-up is closed.
      */
-    openDialog(dataToSend: DialogData, routToGo?: string) {
+    openDialog(dataToSend: DialogData, routToGo?: string): void {
         this.dialogRef = this.dialog.open(PopUpDialogComponent, {
             disableClose: true,
             width: '500px',
             data: dataToSend,
         });
 
-        this.dialogRef.afterClosed().subscribe((result) => {
-            if (dataToSend.inputData) {
-                this.result = result;
-            }
+        this.dialogRef.afterClosed().subscribe(() => {
             if (routToGo) {
                 this.router.navigate([routToGo]);
             }

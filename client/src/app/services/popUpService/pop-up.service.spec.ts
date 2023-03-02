@@ -92,6 +92,8 @@ describe('PopUpServiceService', () => {
 
         service.openDialog(dialogData);
 
-        expect(service.result).toEqual('Hello');
+        service.dialogRef.afterClosed().subscribe((result) => {
+            expect(result).toEqual('Hello');
+        });
     });
 });
