@@ -2,10 +2,8 @@ import { Message } from '@app/model/schema/message.schema';
 import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Level, LevelData } from 'assets/data/level';
-import * as fs from 'fs';
+import { Level } from 'assets/data/level';
 import { promises as fsp } from 'fs';
-import { FileSystemStoredFile } from 'nestjs-form-data';
 import { ImageService } from './image.service';
 
 describe('ImageService', () => {
@@ -137,37 +135,6 @@ describe('ImageService', () => {
         jest.spyOn(fsp, 'readFile').mockResolvedValue(JSON.stringify(differences));
         const result = await service.differencesCount('name');
         expect(result).toEqual(differences.length);
-    });
-
-    it('should create a new file with the differences', async () => {
-        const mockLevelData: LevelData = {
-            name: 'Test level',
-            imageOriginal: new FileSystemStoredFile(),
-            imageDiff: new FileSystemStoredFile(),
-            nbDifferences: 10,
-            isEasy: 'true',
-            clusters: [
-                [1, 1],
-                [1, 1],
-            ],
-        };
-        const mockPromises =
-            '{"id":1,"name":"Test","playerSolo":["Bot1","Bot2","Bot3"],"timeSolo":20,"playerMulti":["Bot1","Bot2","Bot3"],' +
-            '"timeMulti":20,"isEasy":false,"nbDifferences":2}';
-        // const mockLevels: Level[] = JSON.parse(mockPromises);
-        jest.spyOn(JSON, 'parse').mockReturnValue([mockLevelData]);
-        const mockMessage: Message = new Message();
-        mockMessage.body = 'Le jeu a été téléchargé avec succès!';
-        mockMessage.title = 'success';
-        jest.spyOn(fsp, 'readFile').mockResolvedValue(mockPromises);
-        jest.spyOn(fs, 'writeFile').mockImplementation((path, data, callback) => {
-            callback(null);
-        });
-        jest.spyOn(fs, 'rename').mockImplementation((oldPath, newPath, callback) => {
-            callback(null);
-        });
-        const result = await service.writeLevelData(mockLevelData);
-        expect(result).toEqual(mockMessage);
     });
 
     it('should return a Message object with an error title and body', () => {

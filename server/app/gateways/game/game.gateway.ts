@@ -26,7 +26,7 @@ export class GameGateway {
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
      * It also sets the player's game data and starts the timer.
-     * 
+     *
      * @param socket the socket of the player
      * @param data the data of the player, including the gameId and the playerName
      */
