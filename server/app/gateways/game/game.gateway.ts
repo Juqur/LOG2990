@@ -60,6 +60,8 @@ export class GameGateway {
             if (playerId !== socket.id && gameId.gameId === data.game) {
                 const room = this.playerRoomMap.get(playerId).toString();
                 const names = [this.playerGameMap.get(playerId).playerName, data.playerName];
+                console.log(room);
+                console.log(this.server.sockets.adapter.rooms.get(room).size);
                 if (this.server.sockets.adapter.rooms.get(room).size === 1) {
                     this.playerRoomMap.set(socket.id, this.playerRoomMap.get(playerId));
                     this.playerGameMap.set(socket.id, {
