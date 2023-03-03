@@ -1,15 +1,21 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GameEvents } from './game.gateway.events';
-import { GameState } from '@app/services/game/game.service';
 import { Injectable } from '@nestjs/common';
 import { ImageService } from '@app/services/image/image.service';
 import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 
-interface GameData {
+export interface GameData {
     differences: number[];
     amountOfDifferences: number;
     amountOfDifferencesSecondPlayer?: number;
+}
+
+export interface GameState {
+    gameId: string;
+    foundDifferences: number[];
+    playerName: string;
+    secondPlayerId: string;
 }
 
 @WebSocketGateway({ cors: true })
@@ -32,7 +38,7 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinNewGame(socket: Socket, data: { game: string; playerName: string }) {
-        const roomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+        const roomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); // TODO MAKE SURE THIS IS UNIQUE
         this.playerRoomMap.set(socket.id, roomId);
         this.playerGameMap.set(socket.id, { gameId: data.game, foundDifferences: [], playerName: data.playerName, secondPlayerId: '' });
         socket.join(roomId.toString());
@@ -60,8 +66,6 @@ export class GameGateway {
             if (playerId !== socket.id && gameId.gameId === data.game) {
                 const room = this.playerRoomMap.get(playerId).toString();
                 const names = [this.playerGameMap.get(playerId).playerName, data.playerName];
-                console.log(room);
-                console.log(this.server.sockets.adapter.rooms.get(room).size);
                 if (this.server.sockets.adapter.rooms.get(room).size === 1) {
                     this.playerRoomMap.set(socket.id, this.playerRoomMap.get(playerId));
                     this.playerGameMap.set(socket.id, {
