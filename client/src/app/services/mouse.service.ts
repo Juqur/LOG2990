@@ -31,7 +31,7 @@ export class MouseService {
     ) {
         router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
-                this.endGameAudio.mute();
+                this.endGameAudio.reset();
             }
         });
     }
