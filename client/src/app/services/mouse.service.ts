@@ -5,7 +5,7 @@ import { Constants, MouseButton } from '@common/constants';
 import { lastValueFrom } from 'rxjs';
 import { AudioService } from './audioService/audio.service';
 import { CommunicationService } from './communication.service';
-import { DialogData, PopUpServiceService } from './pop-up-service.service';
+import { DialogData, PopUpService } from './popUpService/pop-up.service';
 
 @Injectable({
     providedIn: 'root',
@@ -26,7 +26,7 @@ export class MouseService {
 
     constructor(
         private communicationService: CommunicationService,
-        public popUpService: PopUpServiceService /* private socketHandler: SocketHandler */,
+        public popUpService: PopUpService /* private socketHandler: SocketHandler */,
         router: Router,
     ) {
         router.events.forEach((event) => {

@@ -3,7 +3,7 @@ import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
-import { PopUpServiceService } from '@app/services/pop-up-service.service';
+import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { of } from 'rxjs';
 import { CardComponent } from './card.component';
 
@@ -20,7 +20,7 @@ describe('CardComponent', () => {
             declarations: [CardComponent, CarouselComponent],
             imports: [MatDialogModule, RouterTestingModule.withRoutes([{ path: 'example', component: CardComponent }])],
             providers: [
-                { provide: PopUpServiceService, useValue: popUpService },
+                { provide: PopUpService, useValue: popUpService },
                 { provide: Router, useValue: routerSpy },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
