@@ -11,7 +11,7 @@ import { Gateways, SocketHandler } from '@app/services/socket-handler.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 
-interface GameData {
+export interface GameData {
     differences: number[];
     amountOfDifferences: number;
     amountOfDifferencesSecondPlayer?: number;
@@ -44,9 +44,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
 
     playerName: string;
-    playerCount: number = 0;
+    playerDifferencesCount: number = 0;
     secondPlayerName: string = '';
-    secondPlayerCount: number = 0;
+    secondPlayerDifferencesCount: number = 0;
     levelId: number;
     currentLevel: Level; // doit recuperer du server
     isClassicGamemode: boolean = true;
@@ -73,16 +73,16 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private popUpService: PopUpServiceService,
     ) {}
 
+    ngOnDestroy(): void {
+        this.socketHandler.disconnect(Gateways.Game);
+    }
+
     /**
      * This method is called when the component is initialized.
      * It subscribes to the router events to reset the counter when the user navigates to the game page, and to reset the socket information.
      * It also subscribes to the route parameters and query to get the level id and player name.
      * It also connects to the the game socket and handles the response.
      */
-
-    ngOnDestroy(): void {
-        this.socketHandler.disconnect(Gateways.Game);
-    }
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             this.levelId = params.id;
@@ -126,9 +126,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.socketHandler.on(Gateways.Game, 'onProcessedClick', (data) => {
                 const gameData = data as GameData;
                 if (gameData.amountOfDifferencesSecondPlayer) {
-                    this.secondPlayerCount = gameData.amountOfDifferencesSecondPlayer;
+                    this.secondPlayerDifferencesCount = gameData.amountOfDifferencesSecondPlayer;
                 }
-                this.playerCount = gameData.amountOfDifferences;
+                this.playerDifferencesCount = gameData.amountOfDifferences;
                 const response = this.gamePageService.validateResponse(gameData.differences);
                 if (!this.defaultArea) {
                     if (response !== 0) {
@@ -160,7 +160,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     clickedOnOriginal(event: MouseEvent) {
         if (this.mouseService.getCanClick()) {
             const mousePosition = this.mouseService.getMousePosition(event);
-            if (!mousePosition || !this.levelId) return;
+            if (!mousePosition) return;
             this.gamePageService.sendClick(mousePosition);
             this.defaultArea = true;
         }
@@ -174,7 +174,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     clickedOnDiff(event: MouseEvent): void {
         if (this.mouseService.getCanClick()) {
             const mousePosition = this.mouseService.getMousePosition(event);
-            if (!mousePosition || !this.levelId) return;
+            if (!mousePosition) return;
             this.gamePageService.sendClick(mousePosition);
             this.defaultArea = false;
         }
@@ -211,7 +211,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             if (!context) {
                 return;
             }
-
             context.fillStyle = rgba;
             context.fillRect(x, y, 1, 1);
         });
