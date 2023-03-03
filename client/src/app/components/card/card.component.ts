@@ -29,10 +29,22 @@ export class CardComponent {
         nbDifferences: 7,
     };
 
-    @Input() page: string = 'no page';
+    @Input() isSelectionPage: boolean = true;
 
-    playerName: string = 'player 1';
-    difficulty: string;
+    private saveDialogData: DialogData = {
+        textToSend: 'Veuillez entrer votre nom',
+        inputData: {
+            inputLabel: 'Nom du joueur',
+            submitFunction: (value) => {
+                if (value.length >= 1 && value.length <= Constants.twenty) {
+                    return true;
+                }
+                return false;
+            },
+            returnValue: '',
+        },
+        closeButtonMessage: 'Débuter la partie',
+    };
 
     constructor(private router: Router, public popUpService: PopUpService) {}
 
@@ -56,28 +68,11 @@ export class CardComponent {
      *
      */
     playSolo(): void {
-        const saveDialogData: DialogData = {
-            textToSend: 'Veuillez entrer votre nom',
-            inputData: {
-                inputLabel: 'Nom du joueur',
-                submitFunction: (value) => {
-                    //  Vérifier que le nom du jeu n'existe pas déjà
-                    //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
-                    if (value.length >= 1) {
-                        return true;
-                    }
-                    return false;
-                },
-                returnValue: '',
-            },
-            closeButtonMessage: 'Débuter la partie',
-        };
-        this.popUpService.openDialog(saveDialogData);
+        this.popUpService.openDialog(this.saveDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
-                this.playerName = result;
                 this.router.navigate([`/game/${this.level.id}/`], {
-                    queryParams: { playerName: this.playerName },
+                    queryParams: { playerName: result },
                 });
             }
         });

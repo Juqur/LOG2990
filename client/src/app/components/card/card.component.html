@@ -4,7 +4,7 @@
     </div>
     <div class="image-container">
         <img src="http://localhost:3000/originals/{{ level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
-        <img src="{{ displayDifficultyIcon() }}" alt="{{ difficulty }}" class="difficulty-icon" />
+        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon" />
     </div>
     <div class="card-content">
         <div class="carousel-container">
@@ -12,11 +12,11 @@
             <app-carousel [level]="this.level"></app-carousel>
         </div>
         <div class="card-action">
-            <div class="action-button-container" *ngIf="page === 'selection'">
+            <div class="action-button-container" *ngIf="isSelectionPage">
                 <button (click)="playSolo()" mat-raised-button class="action-button">Jouer</button>
                 <button mat-raised-button class="action-button">Créer</button>
             </div>
-            <div class="action-button-container" *ngIf="page === 'configuration'">
+            <div class="action-button-container" *ngIf="!isSelectionPage">
                 <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
                 <button mat-raised-button class="action-button delete-button">Effacer</button>
             </div>
