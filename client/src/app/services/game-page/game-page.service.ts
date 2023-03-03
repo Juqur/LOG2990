@@ -26,15 +26,7 @@ export class GamePageService {
         this.socketHandler.send(Gateways.Game, 'onClick', { position });
     }
 
-    resetCounter(): void {
-        this.differencesFound = 0;
-    }
-
     setNumberOfDifference(nbDiff: number): void {
         this.numberOfDifference = nbDiff;
-    }
-
-    getDifferenceCounter(): number {
-        return this.differencesFound;
     }
 }

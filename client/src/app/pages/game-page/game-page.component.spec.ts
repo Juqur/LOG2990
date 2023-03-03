@@ -4,7 +4,6 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
-import { CounterComponent } from '@app/components/counter/counter.component';
 import { GameChatComponent } from '@app/components/game-chat/game-chat.component';
 import { GameTimerComponent } from '@app/components/game-timer/game-timer.component';
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
@@ -68,7 +67,6 @@ describe('GamePageComponent', () => {
                 GameTimerComponent,
                 ScaleContainerComponent,
                 GameChatComponent,
-                CounterComponent,
                 ChatMessageComponent,
                 MessageBoxComponent,
             ],
