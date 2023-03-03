@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 
 import { Gateways, SocketHandler } from './socket-handler.service';
 
-fdescribe('SocketClientService', () => {
+describe('SocketClientService', () => {
     let service: SocketHandler;
 
     beforeEach(() => {
