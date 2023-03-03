@@ -2,11 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
+import { AudioService } from '@app/services/audioService/audio.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-import { AudioService } from '@app/services/audio.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -50,8 +50,7 @@ export class GamePageComponent implements OnInit {
         private mouseService: MouseService,
         private route: ActivatedRoute,
         private communicationService: CommunicationService,
-        private router: Router,
-        private audioService: AudioService,
+        private router: Router, // private audioService: AudioService,
     ) {}
 
     ngOnInit(): void {
@@ -166,7 +165,9 @@ export class GamePageComponent implements OnInit {
     }
 
     handleAreaFoundInDiff(result: number[]) {
-        this.audioService.playSound('./assets/audio/success.mp3');
+        AudioService.quickPlay('./assets/audio/success.mp3');
+
+        // this.audioService.playSound('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.diffPlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
@@ -175,7 +176,9 @@ export class GamePageComponent implements OnInit {
         this.foundADifference = true;
     }
     handleAreaNotFoundInDiff() {
-        this.audioService.playSound('./assets/audio/failed.mp3');
+        AudioService.quickPlay('./assets/audio/failed.mp3');
+
+        // this.audioService.playSound('./assets/audio/failed.mp3');
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -184,7 +187,9 @@ export class GamePageComponent implements OnInit {
         this.resetCanvas();
     }
     handleAreaFoundInOriginal(result: number[]) {
-        this.audioService.playSound('./assets/audio/success.mp3');
+        AudioService.quickPlay('./assets/audio/success.mp3');
+
+        // this.audioService.playSound('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);
         this.diffPlayArea.flashArea(result);
@@ -193,7 +198,9 @@ export class GamePageComponent implements OnInit {
         this.foundADifference = true;
     }
     handleAreaNotFoundInOriginal() {
-        this.audioService.playSound('./assets/audio/failed.mp3');
+        AudioService.quickPlay('./assets/audio/failed.mp3');
+
+        // this.audioService.playSound('./assets/audio/failed.mp3');
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
