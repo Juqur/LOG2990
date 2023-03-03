@@ -13,23 +13,28 @@ describe('GameGateway', () => {
     let server: SinonStubbedInstance<Server>;
 
     beforeEach(async () => {
-        socket = createStubInstance<Socket>(Socket);
-        Object.defineProperty(socket, 'id', { value: '0' });
-        secondSocket = createStubInstance<Socket>(Socket);
-        Object.defineProperty(secondSocket, 'id', { value: '1' });
-        server = createStubInstance<Server>(Server);
-        Object.defineProperty(server, 'sockets', { value: {} as Namespace });
-        Object.defineProperty(server.sockets, 'adapter', { value: {} as IoAdapter });
         const broadcastMock = {} as BroadcastOperator<unknown, unknown>;
         broadcastMock.emit = jest.fn();
         broadcastMock.to = jest.fn();
-        Object.defineProperty(socket, 'broadcast', { value: broadcastMock });
-        jest.spyOn(server, 'to').mockReturnValue(broadcastMock);
-        jest.spyOn(socket.broadcast, 'to').mockReturnValue(broadcastMock);
+
         const roomMap = new Map();
         roomMap.set('0', { size: 1 });
+
+        socket = createStubInstance<Socket>(Socket);
+        server = createStubInstance<Server>(Server);
+        secondSocket = createStubInstance<Socket>(Socket);
+
+        Object.defineProperty(socket, 'id', { value: '0' });
+        Object.defineProperty(secondSocket, 'id', { value: '1' });
+        Object.defineProperty(server, 'sockets', { value: {} as Namespace });
+        Object.defineProperty(server.sockets, 'adapter', { value: {} as IoAdapter });
+        Object.defineProperty(socket, 'broadcast', { value: broadcastMock });
         Object.defineProperty(server.sockets.adapter, 'rooms', { value: roomMap });
+
+        jest.spyOn(server, 'to').mockReturnValue(broadcastMock);
+        jest.spyOn(socket.broadcast, 'to').mockReturnValue(broadcastMock);
         jest.spyOn(global.Math, 'random').mockReturnValue(0);
+
         const module: TestingModule = await Test.createTestingModule({
             providers: [GameGateway, ImageService],
         }).compile();

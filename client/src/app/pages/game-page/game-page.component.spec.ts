@@ -11,7 +11,7 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { AudioService } from '@app/services/audio.service';
+import { AudioService } from '@app/services/audioService/audio.service';
 import { DrawService } from '@app/services/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouse.service';
@@ -29,7 +29,6 @@ describe('GamePageComponent', () => {
     let subject: Subject<any>;
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
-    let audioServiceSpy: SpyObj<AudioService>;
     let drawServiceSpy: SpyObj<DrawService>;
     let popUpServiceSpy: SpyObj<PopUpServiceService>;
     let gamePageServiceSpy: SpyObj<GamePageService>;
@@ -50,13 +49,17 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog']);
-        gamePageServiceSpy = jasmine.createSpyObj('GamePageService', ['sendClick', 'validateResponse', 'setNumberOfDifference']);
+        gamePageServiceSpy = jasmine.createSpyObj('GamePageService', [
+            'sendClick',
+            'validateResponse',
+            'setNumberOfDifference',
+            'setDifferenceFound',
+        ]);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
         playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
-        audioServiceSpy = jasmine.createSpyObj('AudioService', ['playSound']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError']);
         subject = new Subject();
 
@@ -75,7 +78,7 @@ describe('GamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { params: subject.asObservable(), queryParams: subject.asObservable() } },
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
-                { provide: AudioService, useValue: audioServiceSpy },
+                // { provide: AudioService, useValue: audioServiceSpy },
                 { provide: DrawService, useValue: drawServiceSpy },
                 { provide: SocketHandler, useValue: socketHandlerSpy },
                 { provide: PopUpServiceService, useValue: popUpServiceSpy },
@@ -228,8 +231,6 @@ describe('GamePageComponent', () => {
         component.handleSocket();
         expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winGameDialogData, '/selection');
-        expect(audioServiceSpy.playSound).toHaveBeenCalled();
-        expect(audioServiceSpy.playSound).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
     });
 
     it('should send mouse position to the server if you click on the original picture', () => {
@@ -279,11 +280,13 @@ describe('GamePageComponent', () => {
         const result = [1, 2, 3];
         const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
         const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
+        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
         component.handleAreaFoundInDiff(result);
         expect(component.imagesData).toEqual(result);
         expect(component.foundADifference).toBe(true);
         expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
+        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
     });
 
     it('handleAreaFoundInOriginal should call multiple functions', () => {
@@ -291,9 +294,11 @@ describe('GamePageComponent', () => {
         const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
         const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
         const spyResetCanvas = spyOn(component, 'resetCanvas');
+        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
         component.handleAreaFoundInOriginal(result);
         expect(component.imagesData).toEqual(result);
         expect(component.foundADifference).toBe(true);
+        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
@@ -301,13 +306,17 @@ describe('GamePageComponent', () => {
 
     it('handleAreaNotFoundInOriginal should call multiple functions', () => {
         const spyResetCanvas = spyOn(component, 'resetCanvas');
+        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
         component.handleAreaNotFoundInOriginal();
+        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
 
     it('handleAreaNotFoundInDiff should call multiple functions', () => {
         const spyResetCanvas = spyOn(component, 'resetCanvas');
+        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
         component.handleAreaNotFoundInDiff();
+        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
 

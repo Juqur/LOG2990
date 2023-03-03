@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Constants } from '@common/constants';
-import { Gateways, SocketHandler } from 'src/app/services/socket-handler.service';
+import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
     selector: 'app-game-timer',
@@ -49,7 +49,7 @@ export class GameTimerComponent implements OnInit {
      */
     ngOnInit(): void {
         this.setTimer(0);
-        this.socketHandler.on(Gateways.Game, 'sendTime', (data: number) => {
+        this.socketHandler.on('game', 'sendTime', (data: number) => {
             this.setTimer(data);
         });
     }

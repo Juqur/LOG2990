@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Constants } from '@common/constants';
-import { Gateways, SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +12,6 @@ export class GamePageService {
 
     validateResponse(differenceArray: number[]): number {
         if (differenceArray.length > 0 && differenceArray[0] !== Constants.minusOne) {
-            this.differencesFound++;
             if (this.differencesFound === this.numberOfDifference) {
                 return Constants.minusOne;
             }
@@ -23,10 +22,14 @@ export class GamePageService {
     }
 
     sendClick(position: number): void {
-        this.socketHandler.send(Gateways.Game, 'onClick', { position });
+        this.socketHandler.send('game', 'onClick', { position });
     }
 
     setNumberOfDifference(nbDiff: number): void {
         this.numberOfDifference = nbDiff;
+    }
+
+    setDifferenceFound(nbDiff: number): void {
+        this.differencesFound = nbDiff;
     }
 }

@@ -7,7 +7,6 @@ import { MouseService } from './mouse.service';
 
 describe('MouseService', () => {
     let service: MouseService;
-    let mouseEvent: MouseEvent;
     // const mockGameId = '10000';
 
     beforeEach(() => {
@@ -15,16 +14,10 @@ describe('MouseService', () => {
             imports: [HttpClientTestingModule, AppMaterialModule, RouterTestingModule],
         });
         service = TestBed.inject(MouseService);
-        mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
-        console.log(mouseEvent);
     });
 
     it('changeClickState should change the click state', () => {

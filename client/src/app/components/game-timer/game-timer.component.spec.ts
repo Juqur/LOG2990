@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Gateways, SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 import { GameTimerComponent } from './game-timer.component';
 
 describe('GameTimerComponent', () => {
@@ -58,7 +58,7 @@ describe('GameTimerComponent', () => {
     });
 
     it('should listen to the "sendTime" event on init', () => {
-        expect(socketHandlerMock.on).toHaveBeenCalledWith(Gateways.Game, 'sendTime', jasmine.any(Function));
+        expect(socketHandlerMock.on).toHaveBeenCalledWith('game', 'sendTime', jasmine.any(Function));
     });
 
     it('should update the timer when receiving "sendTime" event', () => {

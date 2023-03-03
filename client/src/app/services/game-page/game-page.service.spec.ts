@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Gateways, SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GamePageService } from './game-page.service';
 
@@ -21,6 +21,7 @@ describe('GamePageService', () => {
 
     it('should return -1 if the number of differences found is equal to the number of differences', () => {
         service.setNumberOfDifference(1);
+        service.setDifferenceFound(1);
         expect(service.validateResponse([1])).toEqual(Constants.minusOne);
     });
     it('should return 0 if a different is not found', () => {
@@ -33,6 +34,11 @@ describe('GamePageService', () => {
 
     it('should send a click to the server', () => {
         service.sendClick(1);
-        expect(socketHandler.send).toHaveBeenCalledWith(Gateways.Game, 'onClick', { position: 1 });
+        expect(socketHandler.send).toHaveBeenCalledWith('game', 'onClick', { position: 1 });
+    });
+
+    it('should set the number of differences', () => {
+        service.setDifferenceFound(1);
+        expect(service['differencesFound']).toEqual(1);
     });
 });

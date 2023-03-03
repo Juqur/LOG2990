@@ -11,7 +11,7 @@ describe('ChatMessageComponent', () => {
         }).compileComponents();
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
-        component.message = {
+        component['textMessage'] = {
             sender: 'I am a super long name',
             text: 'Hello world',
             playerId: 1,
@@ -24,33 +24,26 @@ describe('ChatMessageComponent', () => {
     });
 
     it('Chat message should display the name with the appropriate length', () => {
-        component.message = { sender: 'Charles', text: 'Hello world', playerId: 1 };
-        component.index = 0;
+        component['textMessage'] = { sender: 'Charles', text: 'Hello world', playerId: 1 };
 
         component.ngOnInit();
 
-        expect(component.displayName).toEqual('Charles');
+        expect(component['displayName']).toEqual('Charles');
     });
 
     it('Chat message should cut name if name is to long', () => {
-        component.index = 0;
-
         component.ngOnInit();
 
-        expect(component.displayName).toEqual('I am a s...');
+        expect(component['displayName']).toEqual('I am a s...');
     });
 
     it('Chat message should cut name if name is to long', () => {
-        component.index = 0;
-
         component.ngOnInit();
 
-        expect(component.displayName).toEqual('I am a s...');
+        expect(component['displayName']).toEqual('I am a s...');
     });
 
     it('A message should have the class player1 if the message has an id of 1', () => {
-        component.index = 0;
-
         spyOn(component, 'formatNameLength');
 
         component.ngOnInit();
@@ -62,14 +55,12 @@ describe('ChatMessageComponent', () => {
     it('A message should have the class player2 if the message has an id of 2', () => {
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
-        component.message = {
+        component['textMessage'] = {
             sender: 'I am a super long name',
             text: 'Hello world',
             playerId: 2,
         };
         fixture.detectChanges();
-        component.index = 0;
-
         spyOn(component, 'formatNameLength');
 
         component.ngOnInit();
