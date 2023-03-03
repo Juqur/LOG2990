@@ -1,5 +1,4 @@
 import { ChatGateway } from '@app/gateways/chat/chat.gateway';
-import { TimerGateway } from '@app/gateways/timer/timer.gateway';
 import { GameGateway } from '@app/gateways/game/game.gateway';
 // import { Course, courseSchema } from '@app/model/database/course';
 import { Logger, Module } from '@nestjs/common';
@@ -9,7 +8,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
 import { ImageController } from './controllers/image/image.controller';
-import { GameStateService } from './services/game/game.service';
 import { ImageService } from './services/image/image.service';
 
 @Module({
@@ -29,6 +27,6 @@ import { ImageService } from './services/image/image.service';
         // MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
     controllers: [ImageController],
-    providers: [ChatGateway, GameGateway, TimerGateway, ImageService, Logger, GameStateService],
+    providers: [ChatGateway, GameGateway, ImageService, Logger],
 })
 export class AppModule {}
