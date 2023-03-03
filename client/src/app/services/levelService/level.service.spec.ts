@@ -124,9 +124,39 @@ describe('LevelService', () => {
         expect(service['shownLevels']).toEqual(levelExpectedArray.slice(0, Constants.levelsPerPage));
     });
 
-    it('next page should increment page count and update the levels to show', () => {
+    it('next page should increment page count and call updatePageLevels', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const spy = spyOn<any>(service, 'updatePageLevels');
         service.nextPage();
         expect(service['currentShownPage']).toEqual(1);
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('previous page should decrement the page count and call updatePageLevels', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const spy = spyOn<any>(service, 'updatePageLevels');
+        service['currentShownPage'] = 1;
+        service['shownLevels'] = levelExpectedArray.slice(Constants.levelsPerPage, levelExpectedArray.length);
+        service.previousPage();
+        expect(service['currentShownPage']).toEqual(0);
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('is beginning of list should correctly determine if we are at the start page', () => {
+        expect(service.isBeginningOfList()).toEqual(true);
+        service['currentShownPage'] = 1;
+        expect(service.isBeginningOfList()).toEqual(false);
+    });
+
+    it('is end of list should correctly determine if we are at the last page', () => {
+        expect(service.isEndOfList()).toEqual(false);
+        service['currentShownPage'] = 1;
+        expect(service.isEndOfList()).toEqual(true);
+    });
+
+    it('updatePageLevels should correctly update the shownLevel attribute', () => {
+        service['currentShownPage'] = 1;
+        service['updatePageLevels']();
         expect(service['shownLevels']).toEqual(levelExpectedArray.slice(Constants.levelsPerPage, levelExpectedArray.length));
     });
 });
