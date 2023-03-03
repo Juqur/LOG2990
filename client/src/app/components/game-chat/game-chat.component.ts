@@ -28,18 +28,11 @@ export class GameChatComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (!this.socketHandler.isSocketAlive(Gateways.Game)) {
-            this.socketHandler.connect(Gateways.Game);
-            this.socketHandler.send(Gateways.Game, 'soloClassic');
-            this.socketHandler.on(Gateways.Game, 'message', (data: Message) => {
-                this.receiveMessage(data);
-            });
-        }
         if (!this.socketHandler.isSocketAlive(Gateways.Chat)) {
             this.socketHandler.connect(Gateways.Chat);
             this.socketHandler.send(Gateways.Chat, 'soloClassic');
-            this.socketHandler.on(Gateways.Chat, 'message', (data: Message) => {
-                this.receiveMessage(data);
+            this.socketHandler.on(Gateways.Chat, 'message', (message: Message) => {
+                this.receiveMessage(message);
             });
         }
     }
