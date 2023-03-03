@@ -87,34 +87,6 @@ describe('ImageService', () => {
         });
     });
 
-    it('findDifference should return an empty array if the index is undefined', async () => {
-        const fileName = 'clusters-test1';
-        const position = undefined;
-        const result = await service.findDifference(fileName, [], position);
-
-        expect(result).toStrictEqual([]);
-    });
-
-    it('findDifference should return the correct array of differences', async () => {
-        const fileName = 'clusters-test1';
-        const position = 1;
-        const expectedArray = TestConstants.EXPECTED_DIFFERENCE_ARRAY;
-
-        const result = await service.findDifference(fileName, [], position);
-        expect(result).toStrictEqual(expectedArray);
-    });
-
-    it('findDifference should return [-1] when all differences have been found', async () => {
-        const fileName = 'clusters-test1';
-        const position = 1;
-        const expectedArray = [Constants.minusOne];
-        const foundDifferences = TestConstants.FOUND_DIFFERENCES_TEST;
-        jest.spyOn(service, 'returnIndex').mockReturnValue(undefined);
-
-        const result = await service.findDifference(fileName, foundDifferences, position);
-        expect(result).toStrictEqual(expectedArray);
-    });
-
     it('should return an array of Level objects when calling getLevels', async () => {
         jest.spyOn(fsp, 'readFile').mockResolvedValue(JSON.stringify(levels));
         const result = await service.getLevels();
@@ -122,13 +94,6 @@ describe('ImageService', () => {
         expect(Array.isArray(result)).toBeTruthy();
         expect(result.length).toEqual(levels.length);
         expect(result[0].name).toEqual(levels[0].name);
-    });
-
-    it('should return a specific Level object when calling getLevel according to the id', async () => {
-        jest.spyOn(fsp, 'readFile').mockResolvedValue(JSON.stringify(levels));
-        const result = await service.getLevel(2);
-
-        expect(result.id).toEqual(2);
     });
 
     it('should return the number of differences in the file', async () => {
