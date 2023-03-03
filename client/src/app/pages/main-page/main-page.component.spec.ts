@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { AudioService } from '@app/services/audio.service';
+import { AudioService } from '@app/services/audioService/audio.service';
 
 describe('MainPageComponent', () => {
     let component: MainPageComponent;
@@ -24,7 +24,7 @@ describe('MainPageComponent', () => {
     });
 
     it('should handle volume icon when calling volumeOnClick', () => {
-        spyOn(component['audioService'], 'playSound');
+        spyOn(AudioService, 'quickPlay');
         component.volumeOnClick();
         expect(component.icon).toEqual('volume_up');
         component.volumeOnClick();
@@ -32,7 +32,7 @@ describe('MainPageComponent', () => {
     });
 
     it('creditsOnClick should handle credits display', () => {
-        spyOn(component['audioService'], 'playSound');
+        spyOn(AudioService, 'quickPlay');
         expect(component.showCredits).toBeTruthy();
         component.creditsOnClick();
         expect(component.showCredits).toBeFalsy();
