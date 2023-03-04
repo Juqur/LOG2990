@@ -53,7 +53,7 @@ export class PopUpService {
      * @param dataToSend a DialogData instance which has three attributes.
      * @param routToGo the route to send the user to once the pop-up is closed.
      */
-    openDialog(dataToSend: DialogData, routToGo?: string): void {
+    openDialog(dataToSend: DialogData, routeToGo?: string): void {
         this.dialogRef = this.dialog.open(PopUpDialogComponent, {
             disableClose: true,
             width: '500px',
@@ -61,8 +61,8 @@ export class PopUpService {
         });
 
         this.dialogRef.afterClosed().subscribe(() => {
-            if (routToGo) {
-                this.router.navigate([routToGo]);
+            if (routeToGo) {
+                this.router.navigate([routeToGo]);
             }
         });
     }
