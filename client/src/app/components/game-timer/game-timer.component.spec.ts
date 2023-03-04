@@ -19,7 +19,6 @@ describe('GameTimerComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(GameTimerComponent);
         component = fixture.componentInstance;
-        component.gameTime = 0;
         fixture.detectChanges();
     });
 
