@@ -94,11 +94,10 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     /**
-     * flash the area of the canvas red
+     * Fills a given area of the canvas in red.
      *
      * @param area the area to flash
      */
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     flashArea(area: number[]) {
         let x = 0;
         let y = 0;
@@ -116,10 +115,10 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     /**
-     * timeout function
+     * This function creates a new timeout with a given time in milliseconds as a parameter.
      *
      * @param ms a number of milliseconds
-     * @returns a promise that resolves after ms milliseconds
+     * @return promise that resolves after ms milliseconds
      */
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
