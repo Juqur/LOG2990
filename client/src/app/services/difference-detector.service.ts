@@ -10,9 +10,9 @@ export class DifferenceDetectorService {
     modifiedImage: ImageData;
     comparisonImage: ImageData;
     initialDifferentPixels: number[];
-    radius: number;
     counter: number = 0;
     visited: boolean[];
+    private radius: number;
 
     /**
      * Resets the properties of the service..
