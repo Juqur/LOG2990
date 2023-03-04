@@ -1,5 +1,5 @@
-<div #screen (window:resize)="resizeContainer()" class=flexible-fullscreen-body>
-    <div #container class="container" [ngStyle]="{ transform: 'translate(-50%, -50%) scale(' + this.scale + ')' }">
+<div #screen (window:resize)="resizeContainer()" id="flexible-fullscreen-body">
+    <div #container id="container" [ngStyle]="{ transform: 'translate(-50%, -50%) scale(' + this.scale + ')' }">
         <ng-content></ng-content>
     </div>
 </div>
