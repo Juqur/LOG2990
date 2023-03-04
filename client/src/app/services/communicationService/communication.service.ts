@@ -85,7 +85,7 @@ export class CommunicationService {
     /**
      *
      * @param imageId the id of the image linked to the new game we wish to start
-     * @returns
+     * @returns the id of the game we just created as a string
      */
     postNewGame(imageId: string): Observable<string | null> {
         return this.http.post<string>(`${this.baseUrl}api` + '/game', { imageId }, { observe: 'response', responseType: 'json' }).pipe(
