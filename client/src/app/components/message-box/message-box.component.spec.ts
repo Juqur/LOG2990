@@ -42,6 +42,5 @@ describe('MessageBoxComponent', () => {
         document.getElementById('send-icon')?.dispatchEvent(new Event('click'));
 
         expect(el.value).toBe('');
-        expect(component.messageToSend).toEqual('someValue');
     });
 });

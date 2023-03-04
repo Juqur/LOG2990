@@ -1,10 +1,9 @@
 <div class="message-box">
     <div id="sender" class="sender">
         <p>[</p>
-        <p id="sender-name">{{ displayName }}</p>
+        <p id="sender-name">{{ this.name }}</p>
         <p>]</p>
     </div>
-    <textarea type="text" id="message-input" class="message-input" placeholder="Type message..."
-        #messageInput></textarea>
+    <textarea type="text" id="message-input" class="message-input" placeholder="Type message..." #messageInput></textarea>
     <mat-icon id="send-icon" (click)="sendMessage(messageInput)">send</mat-icon>
 </div>

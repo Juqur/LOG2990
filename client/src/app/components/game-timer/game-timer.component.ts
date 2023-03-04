@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { Constants } from '@common/constants';
-import { Gateways, SocketHandler } from 'src/app/services/socket-handler.service';
+import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
     selector: 'app-game-timer',
@@ -51,20 +51,16 @@ export class GameTimerComponent implements OnInit {
     ngOnInit(): void {
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationEnd) {
-                this.socketHandler.disconnect(Gateways.Timer);
+                this.socketHandler.disconnect('timer');
             }
         });
         this.setTimer(0);
-        if (!this.socketHandler.isSocketAlive(Gateways.Timer)) {
-            this.socketHandler.connect(Gateways.Timer);
-            this.socketHandler.send(Gateways.Timer, 'soloClassic');
-            this.socketHandler.on(
-                'timer',
-                (data: unknown) => {
-                    this.setTimer(data as number);
-                },
-                Gateways.Timer,
-            );
+        if (!this.socketHandler.isSocketAlive('TimerGateway')) {
+            this.socketHandler.connect('timer');
+            this.socketHandler.send('timer', 'soloClassic');
+            this.socketHandler.on('timer', 'timer', (data: unknown) => {
+                this.setTimer(data as number);
+            });
         }
     }
 }
