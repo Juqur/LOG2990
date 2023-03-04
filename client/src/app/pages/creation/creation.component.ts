@@ -7,7 +7,7 @@ import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-
 import { CommunicationService } from '@app/services/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
-import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 /**
  * This component represents the creation, the page where we can create new levels/games.
@@ -47,7 +47,7 @@ export class CreationComponent implements OnInit {
     constructor(
         private canvasShare: CanvasSharingService,
         private diffService: DifferenceDetectorService,
-        public popUpService: PopUpServiceService,
+        public popUpService: PopUpService,
         private communicationService: CommunicationService,
     ) {}
 
