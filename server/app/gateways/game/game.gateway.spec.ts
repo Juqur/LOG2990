@@ -48,6 +48,9 @@ describe('GameGateway', () => {
         jest.clearAllMocks();
         gateway['playerRoomMap'].clear();
         gateway['playerGameMap'].clear();
+        for (const interval of gateway['timeIntervalMap'].values()) {
+            clearInterval(interval);
+        }
     });
 
     it('should be defined', () => {
