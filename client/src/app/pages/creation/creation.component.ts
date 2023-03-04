@@ -10,12 +10,7 @@ import { DrawService } from '@app/services/draw.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
 import { LevelFormData } from '@common/levelFormData';
-/**
- * This component represents the creation, the page where we can create new levels/games.
- *
- * @author Simon Gagné
- * @class CreationComponent
- */
+
 @Component({
     selector: 'app-creation',
     templateUrl: './creation.component.html',
@@ -282,7 +277,7 @@ export class CreationComponent implements OnInit {
         this.popUpService.openDialog(canvasDialogData);
     }
     /**
-     * This methods reinitializes the game games values to prevent the user from saving
+     * This methods re initializes the game games values to prevent the user from saving
      * using obsolete values after a change.
      */
     reinitGame() {
@@ -291,8 +286,6 @@ export class CreationComponent implements OnInit {
         this.isSaveable = false;
     }
 
-    /**
-     * THis method is used to save the game, it opens a popUp asking the user
     /**
      * This method is used to save the game, it opens a popUp asking the user
      * to give a name to their new game and saves it.
