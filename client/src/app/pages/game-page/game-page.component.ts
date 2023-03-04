@@ -3,7 +3,7 @@ import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router'
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { AudioService } from '@app/services/audioService/audio.service';
-import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
@@ -90,7 +90,7 @@ export class GamePageComponent implements OnInit {
             throw new Error("Couldn't load images");
         }
 
-        this.communicationService.postNewGame('/game', String(this.levelId)).subscribe((gameId) => {
+        this.communicationService.postNewGame(String(this.levelId)).subscribe((gameId) => {
             this.gameId = gameId;
         });
     }

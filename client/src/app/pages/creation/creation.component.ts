@@ -4,17 +4,13 @@ import { Difference } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
-import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
-/**
- * This component represents the creation, the page where we can create new levels/games.
- *
- * @author Simon Gagné
- * @class CreationComponent
- */
+import { LevelFormData } from '@common/levelFormData';
+
 @Component({
     selector: 'app-creation',
     templateUrl: './creation.component.html',
@@ -283,7 +279,7 @@ export class CreationComponent implements OnInit {
         this.popUpService.openDialog(canvasDialogData);
     }
     /**
-     * This methods reinitializes the game games values to prevent the user from saving
+     * This methods re initializes the game games values to prevent the user from saving
      * using obsolete values after a change.
      */
     reinitGame() {
@@ -292,8 +288,6 @@ export class CreationComponent implements OnInit {
         this.isSaveable = false;
     }
 
-    /**
-     * THis method is used to save the game, it opens a popUp asking the user
     /**
      * This method is used to save the game, it opens a popUp asking the user
      * to give a name to their new game and saves it.
@@ -335,14 +329,15 @@ export class CreationComponent implements OnInit {
                 if (!this.defaultImageFile || !this.diffImageFile || !this.differences) {
                     return;
                 }
-                const formData = new FormData();
-                formData.append('imageOriginal', this.defaultImageFile);
-                formData.append('imageDiff', this.diffImageFile);
-                formData.append('name', this.savedLevel.name);
-                formData.append('isEasy', this.savedLevel.isEasy.toString());
-                formData.append('clusters', JSON.stringify(this.differences.clusters));
-                formData.append('nbDifferences', this.savedLevel.nbDifferences.toString());
-                this.communicationService.postLevel(formData).subscribe((data) => {
+                const levelFormData: LevelFormData = {
+                    imageOriginal: this.defaultImageFile,
+                    imageDiff: this.diffImageFile,
+                    name: this.savedLevel.name,
+                    isEasy: this.savedLevel.isEasy.toString(),
+                    clusters: JSON.stringify(this.differences.clusters),
+                    nbDifferences: this.savedLevel.nbDifferences.toString(),
+                };
+                this.communicationService.postLevel(levelFormData).subscribe((data) => {
                     if (data.title === 'error') {
                         this.errorDialog(data.body);
                         return;
