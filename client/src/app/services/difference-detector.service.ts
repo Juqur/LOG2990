@@ -21,7 +21,7 @@ export class DifferenceDetectorService {
      * @param modifiedImage The other image to compare.
      * @param radius The radius of the pixels to change.
      */
-    initializeData(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number) {
+    initializeData(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): void {
         this.defaultImage = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
         this.modifiedImage = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
         this.comparisonImage = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
@@ -39,7 +39,7 @@ export class DifferenceDetectorService {
      * @param radius The radius of the pixels to change.
      * @return The clusters of pixels that are different.
      */
-    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number) {
+    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): Difference | undefined {
         // Ensures image format is valid.
         if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
             return undefined;
