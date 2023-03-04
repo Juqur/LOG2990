@@ -92,7 +92,7 @@ export class DifferenceDetectorService {
      * generates the new image with the differences.
      */
     comparePixels(): void {
-        for (let i = 0; i < this.defaultImage.data.length; i += Constants.CHANNELS_PER_PIXEL) {
+        for (let i = 0; i < this.defaultImage.data.length; i += Constants.PIXEL_SIZE) {
             const r = this.defaultImage.data[i];
             const g = this.defaultImage.data[i + 1];
             const b = this.defaultImage.data[i + 2];
@@ -119,13 +119,13 @@ export class DifferenceDetectorService {
 
         for (const pixel of this.initialDifferentPixels) {
             // Ensures the pixel is in the image.
-            if (!this.isInBounds(pixel) || NaN || pixel % Constants.CHANNELS_PER_PIXEL !== 0) {
+            if (!this.isInBounds(pixel) || NaN || pixel % Constants.PIXEL_SIZE !== 0) {
                 continue;
             }
 
             for (let i = -this.radius; i <= this.radius; i++) {
                 for (let j = -this.radius; j <= this.radius; j++) {
-                    const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.CHANNELS_PER_PIXEL + pixel;
+                    const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.PIXEL_SIZE + pixel;
                     const distance = Math.pow(i, 2) + Math.pow(j, 2);
                     if (this.isInBounds(pixelPosition) && distance <= Math.pow(this.radius, 2)) {
                         this.colorizePixel(pixelPosition);
@@ -209,7 +209,7 @@ export class DifferenceDetectorService {
         const adjacentPixels: number[] = [];
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
-                const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.CHANNELS_PER_PIXEL + pixel;
+                const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.PIXEL_SIZE + pixel;
                 // Checks if the pixel is inside the image.
                 if (!this.isInBounds(pixelPosition)) {
                     continue;
@@ -222,6 +222,7 @@ export class DifferenceDetectorService {
                 if (!this.isPixelColored(pixelPosition)) {
                     continue;
                 }
+
                 adjacentPixels.push(pixelPosition);
             }
         }
