@@ -75,7 +75,6 @@ describe('CommunicationService', () => {
     });
 
     it('should make an http POST request for level', () => {
-        // const level: FormData = new FormData();
         const blob = new Blob([''], { type: 'text/html' });
         const level: LevelFormData = {
             imageOriginal: blob as File,

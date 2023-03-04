@@ -83,6 +83,8 @@ export class CommunicationService {
     }
 
     /**
+     * This functions is used to send a request to the server to create a new game. It returns, if teh creation was
+     * successful the gameId which represents the game.
      *
      * @param imageId the id of the image linked to the new game we wish to start
      * @returns the id of the game we just created as a string
