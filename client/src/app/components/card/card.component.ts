@@ -36,10 +36,7 @@ export class CardComponent {
         inputData: {
             inputLabel: 'Nom du joueur',
             submitFunction: (value) => {
-                if (value.length >= 1 && value.length <= Constants.twenty) {
-                    return true;
-                }
-                return false;
+                return value.length >= 1 && value.length <= Constants.twenty;
             },
             returnValue: '',
         },
