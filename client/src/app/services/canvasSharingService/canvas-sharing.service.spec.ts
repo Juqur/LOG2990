@@ -10,15 +10,19 @@ describe('CanvasSharingService', () => {
         service = TestBed.inject(CanvasSharingService);
     });
 
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
+
     it('should set defaultCanvasRef', () => {
         const canvas = {} as HTMLCanvasElement;
-        service.setDefaultCanvasRef(canvas);
-        expect(service.defaultCanvasRef).toBe(canvas);
+        service.defaultCanvas = canvas;
+        expect(service.defaultCanvas).toBe(canvas);
     });
 
     it('should set diffCanvasRef', () => {
         const canvas = {} as HTMLCanvasElement;
-        service.setDiffCanvasRef(canvas);
-        expect(service.diffCanvasRef).toBe(canvas);
+        service.diffCanvas = canvas;
+        expect(service.diffCanvas).toBe(canvas);
     });
 });

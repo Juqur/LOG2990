@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Message, messages } from '@app/messages';
-import { Gateways, SocketHandler } from 'src/app/services/socket-handler.service';
+import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
     selector: 'app-game-chat',
@@ -28,10 +28,10 @@ export class GameChatComponent implements OnInit {
     }
 
     listenForMessages(): void {
-        if (!this.socketHandler.isSocketAlive(Gateways.Chat)) {
-            this.socketHandler.connect(Gateways.Chat);
-            this.socketHandler.send(Gateways.Chat, 'soloClassic');
-            this.socketHandler.on(Gateways.Chat, 'message', (message: Message) => {
+        if (!this.socketHandler.isSocketAlive('chat')) {
+            this.socketHandler.connect('chat');
+            this.socketHandler.send('chat', 'soloClassic');
+            this.socketHandler.on('chat', 'message', (message: Message) => {
                 this.receiveMessage(message);
             });
         }

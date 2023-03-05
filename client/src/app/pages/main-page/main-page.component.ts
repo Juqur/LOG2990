@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AudioService } from '@app/services/audio.service';
+import { AudioService } from '@app/services/audioService/audio.service';
 
 @Component({
     selector: 'app-main-page',
@@ -17,25 +17,26 @@ import { AudioService } from '@app/services/audio.service';
 export class MainPageComponent implements OnInit, OnDestroy {
     icon: string = 'volume_off';
     showCredits: boolean = true;
+    private audioServiceSoundtrack = new AudioService();
 
-    constructor(private router: Router, private audioService: AudioService) {}
+    constructor(private router: Router) {}
 
     /**
      * Initializes the audio playing on the main page. It sets it on loop and muted as
      * a default parameter.
      */
     ngOnInit(): void {
-        this.audioService.soundtrack = this.audioService.create('./assets/audio/soundtrack.mp3');
-        this.audioService.soundtrack.loop = true;
-        this.audioService.soundtrack.muted = true;
-        this.audioService.play(this.audioService.soundtrack);
+        this.audioServiceSoundtrack.create('./assets/audio/soundtrack.mp3');
+        this.audioServiceSoundtrack.loop();
+        this.audioServiceSoundtrack.mute();
+        this.audioServiceSoundtrack.play();
     }
 
     /**
      * Method used when the page is terminated, it resets the audio to it's base state.
      */
     ngOnDestroy(): void {
-        this.audioService.soundtrack.load();
+        this.audioServiceSoundtrack.reset();
     }
 
     /**
@@ -56,8 +57,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
      * Handles the click on the volume button.
      */
     volumeOnClick() {
-        this.audioService.playSound('./assets/audio/click.mp3');
-        this.audioService.mute();
+        AudioService.quickPlay('./assets/audio/click.mp3');
+        this.audioServiceSoundtrack.mute();
         this.icon = this.icon === 'volume_up' ? 'volume_off' : 'volume_up';
     }
 
@@ -65,7 +66,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
      * Handles the click on the credits button.
      */
     creditsOnClick() {
-        this.audioService.playSound('./assets/audio/click.mp3');
+        AudioService.quickPlay('./assets/audio/click.mp3');
         this.showCredits = !this.showCredits;
     }
 }
