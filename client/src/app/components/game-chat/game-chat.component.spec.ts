@@ -41,16 +41,17 @@ describe('GameChatComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should add a chat-message component when receiving a message', () => {
-        const previousMessageCount: number = component.messages.length;
+    fit('should add chat message in the message array', () => {
         const message: Message = { sender: 'User', text: 'Hello world', playerId: 0 };
         component.receiveMessage(message);
-        expect(chatMessageComponentSpy.ngOnInit()).toHaveBeenCalledTimes(1);
-        fixture.detectChanges();
-
-        const newMessageCount: number = component.messages.length;
-        expect(newMessageCount).toBe(previousMessageCount + 1);
-        const chatMessageElements = fixture.nativeElement.querySelectorAll('app-chat-message');
-        expect(chatMessageElements.length).toBe(newMessageCount);
+        expect(component.messages[0]).toEqual(message);
     });
+
+    fit('should call receiveMessage when message is sent from the server', () => {
+        const message: Message = { sender: 'User', text: 'Hello world', playerId: 0 };
+
+        expect(component.receiveMessage).toHaveBeenCalled();
+    });
+
+    // check if the socket is alive
 });

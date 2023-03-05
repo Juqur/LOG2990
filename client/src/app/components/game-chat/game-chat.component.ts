@@ -23,11 +23,11 @@ export class GameChatComponent implements OnInit {
      * Method in charge of creating a new message once it has been received by the server.
      *
      */
-    receiveMessage(message: Message) {
+    receiveMessage(message: Message): void {
         this.messages.push(message);
     }
 
-    ngOnInit(): void {
+    listenForMessages(): void {
         if (!this.socketHandler.isSocketAlive(Gateways.Chat)) {
             this.socketHandler.connect(Gateways.Chat);
             this.socketHandler.send(Gateways.Chat, 'soloClassic');
@@ -35,5 +35,9 @@ export class GameChatComponent implements OnInit {
                 this.receiveMessage(message);
             });
         }
+    }
+
+    ngOnInit(): void {
+        this.listenForMessages();
     }
 }
