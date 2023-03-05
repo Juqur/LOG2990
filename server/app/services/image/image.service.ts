@@ -5,6 +5,13 @@ import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
 
+/**
+ * This service is used to get the amount of differences left between the two images.
+ * Only used when the game is running.
+ *
+ * @author Louis-Félix St-Amour et Pierre Tran
+ * @class ImageService
+ */
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
