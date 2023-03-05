@@ -129,7 +129,6 @@ describe('ImageService', () => {
     it('should return a specific Level object when calling getLevel according to the id', async () => {
         jest.spyOn(fsp, 'readFile').mockResolvedValue(JSON.stringify(levels));
         const result = await service.getLevel(2);
-
         expect(result.id).toEqual(2);
     });
 
@@ -154,7 +153,6 @@ describe('ImageService', () => {
         const mockPromises =
             '{"id":1,"name":"Test","playerSolo":["Bot1","Bot2","Bot3"],"timeSolo":20,"playerMulti":["Bot1","Bot2","Bot3"],' +
             '"timeMulti":20,"isEasy":false,"nbDifferences":2}';
-        // const mockLevels: Level[] = JSON.parse(mockPromises);
         jest.spyOn(JSON, 'parse').mockReturnValue([mockLevelData]);
         const mockMessage: Message = new Message();
         mockMessage.body = 'Le jeu a été téléchargé avec succès!';
