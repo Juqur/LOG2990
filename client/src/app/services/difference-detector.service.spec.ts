@@ -36,7 +36,6 @@ describe('DifferenceDetectorService', () => {
         // Both images have to be loaded before the tests can run.
         // It is only loaded once so it is not a performance timeout issue.
         await Promise.all([defaultImageLoaded, modifiedImageLoaded]);
-
         defaultCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         modifiedCanvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCanvas.canvas.width = defaultImage.width;
