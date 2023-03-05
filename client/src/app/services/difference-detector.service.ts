@@ -2,6 +2,13 @@ import { Injectable } from '@angular/core';
 import { Difference } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 
+/**
+ * This service is used to establish the differences between two images.
+ * Only used when creating a new level.
+ *
+ * @author Pierre Tran & Junaid Qureshi
+ * @class DifferenceDetectorService
+ */
 @Injectable({
     providedIn: 'root',
 })
