@@ -1,9 +1,7 @@
 /* eslint-disable max-lines */
 import { Component, OnInit } from '@angular/core';
-import { Difference } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
-import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/draw.service';
@@ -23,25 +21,16 @@ import { LevelFormData } from '@common/levelFormData';
  * @class CreationComponent
  */
 export class CreationComponent implements OnInit {
-    defaultImageFile: File | null = null;
-    diffImageFile: File | null = null;
     sliderValue = Constants.SLIDER_DEFAULT;
-    radius = Constants.RADIUS_DEFAULT;
     radiusTable = Constants.RADIUS_TABLE;
-    nbDifferences = Constants.INIT_DIFF_NB;
     isSaveable = false;
-    differences: Difference | undefined;
-    defaultArea: PlayAreaComponent | null = null;
-    modifiedArea: PlayAreaComponent | null = null;
-    defaultCanvasCtx: CanvasRenderingContext2D | null = null;
-    diffCanvasCtx: CanvasRenderingContext2D | null = null;
     defaultImageUrl = '';
     msg = '';
     differenceAmountMsg = '';
     savedLevel: Level;
     // eslint-disable-next-line max-params
     constructor(
-        private canvasShare: CanvasSharingService,
+        // private canvasShare: CanvasSharingService,
         private diffService: DifferenceDetectorService,
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
@@ -52,8 +41,8 @@ export class CreationComponent implements OnInit {
      * PlayArea components.
      */
     ngOnInit(): void {
-        this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        this.canvasShare.defaultCanvas = this.defaultCanvasCtx?.canvas as HTMLCanvasElement;
+        // this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
+        // this.canvasShare.defaultCanvas = this.defaultCanvasCtx?.canvas as HTMLCanvasElement;
         this.diffCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.diffCanvas = this.diffCanvasCtx?.canvas as HTMLCanvasElement;
 
@@ -68,7 +57,7 @@ export class CreationComponent implements OnInit {
      * @param event event on the HTMLInputElement
      */
     defaultImageSelector(event: Event) {
-        this.reinitGame();
+        this.restartGame();
         const target = event.target as HTMLInputElement;
         if (!target.files) {
             return;
@@ -87,7 +76,7 @@ export class CreationComponent implements OnInit {
      * @param event event on the HTMLInputElement
      */
     diffImageSelector(event: Event) {
-        this.reinitGame();
+        this.restartGame();
         const target = event.target as HTMLInputElement;
         if (!target.files) {
             return;
@@ -106,7 +95,7 @@ export class CreationComponent implements OnInit {
      * @param event event on the HTMLInputElement
      */
     bothImagesSelector(event: Event) {
-        this.reinitGame();
+        this.restartGame();
         const target = event.target as HTMLInputElement;
         if (!target.files) {
             return;
@@ -220,7 +209,7 @@ export class CreationComponent implements OnInit {
      * This methods clears all modifications made to the default image.
      */
     resetDefault() {
-        this.reinitGame();
+        this.restartGame();
         this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
     }
 
@@ -228,7 +217,7 @@ export class CreationComponent implements OnInit {
      * This method clears all modifications made to the different image.
      */
     resetDiff() {
-        this.reinitGame();
+        this.restartGame();
         this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
     }
 
@@ -282,7 +271,7 @@ export class CreationComponent implements OnInit {
      * This methods re initializes the game games values to prevent the user from saving
      * using obsolete values after a change.
      */
-    reinitGame() {
+    restartGame() {
         this.nbDifferences = Constants.INIT_DIFF_NB;
         this.defaultImageUrl = '';
         this.isSaveable = false;
