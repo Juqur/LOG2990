@@ -34,7 +34,6 @@ export class ImageController {
      * @param differenceFile The name of the file that has the differences
      * @returns the number of differences between the two images
      */
-
     @ApiOkResponse({
         description: 'Returns data for a level',
     })
