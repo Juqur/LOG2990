@@ -6,7 +6,7 @@
         <section id="creation-area-container">
             <div class="img-zone-container">
                 <p class="info-txt">Image originale</p>
-                <app-play-area *ngIf="defaultArea" [isDiff]="false"></app-play-area>
+                <app-play-area *ngIf="creationService.creationSpecs.defaultArea" [isDiff]="false"></app-play-area>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
                         Téléverser Image Originale
@@ -17,10 +17,10 @@
                         name="default image"
                         id="default"
                         accept=".bmp"
-                        (change)="defaultImageSelector($event)"
-                        (click)="cleanSrc($event)"
+                        (change)="this.creationService.defaultImageSelector($event)"
+                        (click)="this.creationService.cleanSrc($event)"
                     />
-                    <button class="button-reset" color="orange" (click)="resetDefault()">
+                    <button class="button-reset" color="orange" (click)="this.creationService.resetDefault()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>
@@ -31,19 +31,33 @@
                     Téléverser Image Commune
                     <mat-icon>add_a_photo</mat-icon>
                 </label>
-                <input type="file" name="both images" id="both" accept=".bmp" (change)="bothImagesSelector($event)" (click)="cleanSrc($event)" />
+                <input
+                    type="file"
+                    name="both images"
+                    id="both"
+                    accept=".bmp"
+                    (change)="this.creationService.bothImagesSelector($event)"
+                    (click)="this.creationService.cleanSrc($event)"
+                />
                 <p>Les images doivent être en format BMP 24-bit et de taille 640x480</p>
             </div>
             <div class="img-zone-container">
                 <p class="info-txt">Image modifiée</p>
-                <app-play-area *ngIf="modifiedArea" [isDiff]="true"></app-play-area>
+                <app-play-area *ngIf="creationService.creationSpecs.diffArea" [isDiff]="true"></app-play-area>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
                         Téléverser Image Modifiée
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="diff image" id="diff" accept=".bmp" (change)="diffImageSelector($event)" (click)="cleanSrc($event)" />
-                    <button class="button-reset" color="orange" (click)="resetDiff()">
+                    <input
+                        type="file"
+                        name="diff image"
+                        id="diff"
+                        accept=".bmp"
+                        (change)="this.creationService.diffImageSelector($event)"
+                        (click)="this.creationService.cleanSrc($event)"
+                    />
+                    <button class="button-reset" color="orange" (click)="this.creationService.resetDiff()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>
@@ -58,16 +72,21 @@
                     [min]="0"
                     [max]="3"
                     tickInterval="1"
-                    [(ngModel)]="sliderValue"
-                    (change)="sliderChange(sliderValue)"
+                    [(ngModel)]="creationService.sliderValue"
+                    (change)="this.creationService.sliderChange(creationService.sliderValue)"
                 ></mat-slider>
             </div>
             <div class="zone-button-container">
-                <button class="button-reset" color="orange" (click)="detectDifference()">
+                <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">
                     Valider les différences
                     <mat-icon>image_search</mat-icon>
                 </button>
-                <button [ngClass]="{ 'button-disabled': !isSaveable }" class="button-settings" color="orange" (click)="saveGame()">
+                <button
+                    [ngClass]="{ 'button-disabled': !creationService.isSaveable }"
+                    class="button-settings"
+                    color="orange"
+                    (click)="this.creationService.saveGame()"
+                >
                     Sauvegarder le jeu
                     <mat-icon>save</mat-icon>
                 </button>
@@ -75,12 +94,12 @@
             <div id="info-area">
                 <div>
                     <span class="info-txt">Rayon: </span>
-                    <span class="answer-txt">{{ radius }}</span>
+                    <span class="answer-txt">{{ creationService.creationSpecs.radius }}</span>
                 </div>
                 <div>
                     <span class="info-txt">Nombre de différences: </span>
-                    <span class="answer-txt">{{ nbDifferences }}</span>
-                    <span class="error">{{ differenceAmountMsg }}</span>
+                    <span class="answer-txt">{{ creationService.creationSpecs.nbDifferences }}</span>
+                    <span class="error">{{ creationService.differenceAmountMsg }}</span>
                     <p id="diff-nb-note">Le nombres de différences doit se situer entre 3 et 9.</p>
                 </div>
             </div>

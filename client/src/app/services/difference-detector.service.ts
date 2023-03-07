@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Difference } from '@app/classes/difference';
+import { LevelDifferences } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 
 @Injectable({
@@ -52,7 +52,7 @@ export class DifferenceDetectorService {
         this.comparePixels();
         this.addRadius();
 
-        const differences = new Difference();
+        const differences = new LevelDifferences();
         const differenceCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         differenceCanvas.canvas.width = defaultImage.canvas.width;
         differenceCanvas.canvas.height = defaultImage.canvas.height;
