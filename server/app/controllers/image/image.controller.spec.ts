@@ -1,3 +1,4 @@
+import { Message } from '@app/model/schema/message.schema';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Level } from 'assets/data/level';
@@ -63,6 +64,45 @@ describe('ImageController', () => {
             imageService.getLevel = jest.fn().mockRejectedValue(undefined);
             const result = await controller.getLevel(undefined);
             expect(result).toBeUndefined();
+        });
+    });
+
+    describe('differenceCount', () => {
+        it('should call differenceCount', () => {
+            const spy = jest.spyOn(imageService, 'differencesCount').mockImplementation(jest.fn());
+            controller.differenceCount('');
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return the appropriate number of differences', async () => {
+            const numDifferences = 10;
+            imageService.differencesCount = jest.fn().mockResolvedValue(numDifferences);
+            const result = await controller.differenceCount('');
+            expect(result).toStrictEqual(numDifferences);
+        });
+
+        it('should return undefined if the file cannot be found or read', async () => {
+            imageService.differencesCount = jest.fn().mockRejectedValue(undefined);
+            const result = await controller.getLevel(undefined);
+            expect(result).toBeUndefined();
+        });
+    });
+
+    describe('writeLevelData', () => {
+        it('should call writeLevelData', () => {
+            const spy = jest.spyOn(imageService, 'writeLevelData').mockImplementation(jest.fn());
+            controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return the appropriate message', async () => {
+            const expectedMessage: Message = new Message();
+            expectedMessage.body = 'Le jeu a été téléchargé avec succès!';
+            expectedMessage.title = 'success';
+
+            imageService.writeLevelData = jest.fn().mockResolvedValue(expectedMessage);
+            const result = await controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(result).toStrictEqual(expectedMessage);
         });
     });
 });

@@ -25,7 +25,11 @@ export class ImageController {
         description: 'Returns the card data',
     })
     async getLevels(): Promise<Level[]> {
-        return await this.imageService.getLevels();
+        try {
+            return await this.imageService.getLevels();
+        } catch (error) {
+            return undefined;
+        }
     }
 
     /**
@@ -39,7 +43,11 @@ export class ImageController {
     })
     @Get('/:id')
     async getLevel(@Param('id') id: string): Promise<Level> {
-        return await this.imageService.getLevel(parseInt(id, 10));
+        try {
+            return await this.imageService.getLevel(parseInt(id, 10));
+        } catch (error) {
+            return undefined;
+        }
     }
 
     /**
