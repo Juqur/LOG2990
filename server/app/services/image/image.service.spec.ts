@@ -4,7 +4,7 @@ import { Level } from 'assets/data/level';
 import * as fs from 'fs';
 import { ImageService } from './image.service';
 
-fdescribe('ImageService', () => {
+describe('ImageService', () => {
     let service: ImageService;
     let levels: Level[] = [];
     let mockReadFile;
