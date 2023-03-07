@@ -5,6 +5,12 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { Level } from 'assets/data/level';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
+/**
+ * This controller handles the server API requests for the image data.
+ *
+ * @author ???
+ * @class ImageController
+ */
 @Controller('image')
 export class ImageController {
     constructor(private readonly imageService: ImageService) {}
