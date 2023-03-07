@@ -8,7 +8,7 @@ import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 /**
  * This controller handles the server API requests for the image data.
  *
- * @author ???
+ * @author Junaid Qureshi & Charles Degrandpré
  * @class ImageController
  */
 @Controller('image')
