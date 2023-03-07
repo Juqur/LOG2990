@@ -16,7 +16,7 @@ export class ImageController {
     constructor(private readonly imageService: ImageService) {}
 
     /**
-     * Gets the card data from the json files
+     * Gets the card data from the json files.
      *
      * @returns The array of card data
      */
@@ -24,12 +24,12 @@ export class ImageController {
     @ApiOkResponse({
         description: 'Returns the card data',
     })
-    async getLevels() {
-        return this.imageService.getLevels();
+    async getLevels(): Promise<Level[]> {
+        return await this.imageService.getLevels();
     }
 
     /**
-     * Gets the difference count between the two images
+     * Gets the difference count between the two images.
      *
      * @param differenceFile The name of the file that has the differences
      * @returns The number of differences between the two images
@@ -38,8 +38,8 @@ export class ImageController {
         description: 'Returns data for a level',
     })
     @Get('/:id')
-    async getSingleGameData(@Param('id') id: string): Promise<Level> {
-        return this.imageService.getLevel(parseInt(id, 10));
+    async getLevel(@Param('id') id: string): Promise<Level> {
+        return await this.imageService.getLevel(parseInt(id, 10));
     }
 
     /**
@@ -52,12 +52,12 @@ export class ImageController {
     @ApiOkResponse({
         description: 'Returns the number of differences between the two images',
     })
-    async differenceCount(@Param('differenceFile') differenceFile: string) {
-        return this.imageService.differencesCount(differenceFile);
+    async differenceCount(@Param('differenceFile') differenceFile: string): Promise<number> {
+        return await this.imageService.differencesCount(differenceFile);
     }
 
     /**
-     * Writes the level data onto a json file for the game information and the images into the assets folder
+     * Writes the level data onto a json file for the game information and the images into the assets folder.
      *
      * @param formData The data of the level
      * @returns The message of the result
@@ -65,6 +65,6 @@ export class ImageController {
     @Post('/postLevel')
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {
-        return this.imageService.writeLevelData(formData);
+        return await this.imageService.writeLevelData(formData);
     }
 }
