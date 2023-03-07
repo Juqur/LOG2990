@@ -143,43 +143,4 @@ fdescribe('ImageService', () => {
         expect(message.title).toEqual('error');
         expect(message.body).toEqual('Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: skill issue');
     });
-
-    // it('should create a new file with the differences', async () => {
-    //     const mockLevelData: LevelData = {
-    //         name: 'Test level',
-    //         imageOriginal: new FileSystemStoredFile(),
-    //         imageDiff: new FileSystemStoredFile(),
-    //         nbDifferences: 10,
-    //         isEasy: 'true',
-    //         clusters: [
-    //             [1, 1],
-    //             [1, 1],
-    //         ],
-    //     };
-    //     const mockPromises =
-    //         '{"id":1,"name":"Test","playerSolo":["Bot1","Bot2","Bot3"],"timeSolo":20,"playerMulti":["Bot1","Bot2","Bot3"],' +
-    //         '"timeMulti":20,"isEasy":false,"nbDifferences":2}';
-    //     jest.spyOn(JSON, 'parse').mockReturnValue([mockLevelData]);
-    //     const mockMessage: Message = new Message();
-    //     mockMessage.body = 'Le jeu a été téléchargé avec succès!';
-    //     mockMessage.title = 'success';
-    //     jest.spyOn(fsp, 'readFile').mockResolvedValue(mockPromises);
-    //     jest.spyOn(fs, 'writeFile').mockImplementation((path, data, callback) => {
-    //         callback(null);
-    //     });
-    //     jest.spyOn(fs, 'rename').mockImplementation((oldPath, newPath, callback) => {
-    //         callback(null);
-    //     });
-    //     const result = await service.writeLevelData(mockLevelData);
-    //     expect(result).toEqual(mockMessage);
-    // });
-
-    // it('should return a Message object with an error title and body', () => {
-    //     const error = new Error('erreur');
-    //     const result = service['handleErrors'](error);
-    //     expect(result).toBeInstanceOf(Message);
-
-    //     expect(result.title).toBe('error');
-    //     expect(result.body).toBe(`Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur:${error.message}`);
-    // });
 });
