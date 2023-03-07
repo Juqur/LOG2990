@@ -59,13 +59,4 @@ export namespace TestConstants {
         clusters: CLUSTERS_TEST1,
         nbDifferences: 3,
     };
-
-    export const MOCK_LEVEL_DATA_2 = {
-        name: '',
-        imageOriginal: { path: '' },
-        imageDiff: { path: '' },
-        isEasy: 'true',
-        clusters: CLUSTERS_TEST1,
-        nbDifferences: '11',
-    };
 }
