@@ -6,29 +6,13 @@ import { Constants } from '@common/constants';
     providedIn: 'root',
 })
 export class DifferenceDetectorService {
-    defaultImage: ImageData;
-    modifiedImage: ImageData;
-    comparisonImage: ImageData;
-    initialDifferentPixels: number[];
-    radius: number;
-    counter: number = 0;
-    visited: boolean[];
-
-    /**
-     * Resets the properties of the service..
-     *
-     * @param defaultImage The image to compare.
-     * @param modifiedImage The other image to compare.
-     * @param radius The radius of the pixels to change.
-     */
-    initializeData(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number) {
-        this.defaultImage = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
-        this.modifiedImage = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
-        this.comparisonImage = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
-        this.radius = radius;
-        this.initialDifferentPixels = [];
-        this.visited = [];
-    }
+    private defaultImage: ImageData;
+    private modifiedImage: ImageData;
+    private comparisonImage: ImageData;
+    private initialDifferentPixels: number[];
+    private radius: number;
+    private counter: number = 0;
+    private visited: boolean[];
 
     /**
      * Detects the differences between two images.
@@ -39,7 +23,7 @@ export class DifferenceDetectorService {
      * @param radius The radius of the pixels to change.
      * @return The clusters of pixels that are different.
      */
-    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number) {
+    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): Difference | undefined {
         // Ensures image format is valid.
         if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
             return undefined;
@@ -66,13 +50,29 @@ export class DifferenceDetectorService {
     }
 
     /**
+     * Resets the properties of the service..
+     *
+     * @param defaultImage The image to compare.
+     * @param modifiedImage The other image to compare.
+     * @param radius The radius of the pixels to change.
+     */
+    private initializeData(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): void {
+        this.defaultImage = defaultImage.getImageData(0, 0, defaultImage.canvas.width, defaultImage.canvas.height);
+        this.modifiedImage = modifiedImage.getImageData(0, 0, modifiedImage.canvas.width, modifiedImage.canvas.height);
+        this.comparisonImage = defaultImage.createImageData(defaultImage.canvas.width, defaultImage.canvas.height);
+        this.radius = radius;
+        this.initialDifferentPixels = [];
+        this.visited = [];
+    }
+
+    /**
      * Verifies if the image is valid.
      * The image must be 640x480 and 24 bits.
      *
      * @param image The image to verify.
      * @returns True if the image is valid, false otherwise.
      */
-    isImageValid(image: CanvasRenderingContext2D): boolean {
+    private isImageValid(image: CanvasRenderingContext2D): boolean {
         const width = image.canvas.width;
         const height = image.canvas.height;
         return width === Constants.EXPECTED_WIDTH && height === Constants.EXPECTED_HEIGHT;
@@ -83,7 +83,7 @@ export class DifferenceDetectorService {
      *
      * @returns True if the pixel is in bound, false otherwise.
      */
-    isInBounds(position: number): boolean {
+    private isInBounds(position: number): boolean {
         return position >= 0 && position < this.comparisonImage.data.length;
     }
 
@@ -91,8 +91,8 @@ export class DifferenceDetectorService {
      * Compares the pixels of the two images and
      * generates the new image with the differences.
      */
-    comparePixels(): void {
-        for (let i = 0; i < this.defaultImage.data.length; i += Constants.CHANNELS_PER_PIXEL) {
+    private comparePixels(): void {
+        for (let i = 0; i < this.defaultImage.data.length; i += Constants.PIXEL_SIZE) {
             const r = this.defaultImage.data[i];
             const g = this.defaultImage.data[i + 1];
             const b = this.defaultImage.data[i + 2];
@@ -112,20 +112,20 @@ export class DifferenceDetectorService {
      * Applies the radius to the initial different pixels.
      * The pixels within the radius are then included.
      */
-    addRadius(): void {
+    private addRadius(): void {
         if (this.radius < 0 || isNaN(this.radius)) {
             this.radius = 0;
         }
 
         for (const pixel of this.initialDifferentPixels) {
             // Ensures the pixel is in the image.
-            if (!this.isInBounds(pixel) || NaN || pixel % Constants.CHANNELS_PER_PIXEL !== 0) {
+            if (!this.isInBounds(pixel) || NaN || pixel % Constants.PIXEL_SIZE !== 0) {
                 continue;
             }
 
             for (let i = -this.radius; i <= this.radius; i++) {
                 for (let j = -this.radius; j <= this.radius; j++) {
-                    const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.CHANNELS_PER_PIXEL + pixel;
+                    const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.PIXEL_SIZE + pixel;
                     const distance = Math.pow(i, 2) + Math.pow(j, 2);
                     if (this.isInBounds(pixelPosition) && distance <= Math.pow(this.radius, 2)) {
                         this.colorizePixel(pixelPosition);
@@ -141,7 +141,7 @@ export class DifferenceDetectorService {
      *
      * @returns True if the pair of difference is hard, false otherwise.
      */
-    isHard(nbDifferences: number): boolean {
+    private isHard(nbDifferences: number): boolean {
         const rate = this.counter / this.comparisonImage.data.length;
         return rate < Constants.MIN_DIFFICULTY_RATIO && nbDifferences >= Constants.MIN_DIFFERENCES;
     }
@@ -152,7 +152,7 @@ export class DifferenceDetectorService {
      *
      * @param position The position of the pixel in the array.
      */
-    colorizePixel(position: number): void {
+    private colorizePixel(position: number): void {
         this.comparisonImage.data[position] = 0;
         this.comparisonImage.data[position + 1] = 0;
         this.comparisonImage.data[position + 2] = 0;
@@ -164,7 +164,7 @@ export class DifferenceDetectorService {
      *
      * @returns A list of clusters, where each cluster is a list of pixels.
      */
-    listDifferences(): number[][] {
+    private listDifferences(): number[][] {
         const listOfDifferences: number[][] = [];
         for (const pixel of this.initialDifferentPixels) {
             if (!this.visited[pixel]) {
@@ -180,7 +180,7 @@ export class DifferenceDetectorService {
      * @param pixel The pixel to start the search.
      * @returns A list of pixels that are part of the same cluster.
      */
-    bfs(pixel: number): number[] {
+    private bfs(pixel: number): number[] {
         const queue: number[] = [];
         const cluster: number[] = [];
         queue.push(pixel);
@@ -205,11 +205,11 @@ export class DifferenceDetectorService {
      * @param pixel The pixel to start the search.
      * @returns A list of pixels that are adjacent and valid to the pixel.
      */
-    findAdjacentPixels(pixel: number): number[] {
+    private findAdjacentPixels(pixel: number): number[] {
         const adjacentPixels: number[] = [];
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
-                const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.CHANNELS_PER_PIXEL + pixel;
+                const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.PIXEL_SIZE + pixel;
                 // Checks if the pixel is inside the image.
                 if (!this.isInBounds(pixelPosition)) {
                     continue;
@@ -222,6 +222,7 @@ export class DifferenceDetectorService {
                 if (!this.isPixelColored(pixelPosition)) {
                     continue;
                 }
+
                 adjacentPixels.push(pixelPosition);
             }
         }
