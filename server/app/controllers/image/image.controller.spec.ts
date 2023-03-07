@@ -40,8 +40,10 @@ describe('ImageController', () => {
             expect(result).toStrictEqual(levels);
         });
 
+        // We can assume that getLevels will return undefined if it cannot read the file.
+        // It is already handled in image service.
         it('should return undefined if it cannot read the file', async () => {
-            imageService.getLevels = jest.fn().mockRejectedValue(undefined);
+            imageService.getLevels = jest.fn().mockResolvedValue(undefined);
             const result = await controller.getLevels();
             expect(result).toBeUndefined();
         });
@@ -61,7 +63,7 @@ describe('ImageController', () => {
         });
 
         it('should return undefined if the file cannot be found or read', async () => {
-            imageService.getLevel = jest.fn().mockRejectedValue(undefined);
+            imageService.getLevel = jest.fn().mockResolvedValue(undefined);
             const result = await controller.getLevel(undefined);
             expect(result).toBeUndefined();
         });
