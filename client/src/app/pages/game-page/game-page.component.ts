@@ -7,6 +7,8 @@ import { CommunicationService } from '@app/services/communicationService/communi
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -84,8 +86,8 @@ export class GamePageComponent implements OnInit {
         }
 
         try {
-            this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
-            this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
+            this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
+            this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
         } catch (error) {
             throw new Error("Couldn't load images");
         }
