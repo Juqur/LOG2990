@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication.service';
 import { Message } from '@common/message';
+import { environment } from 'src/environments/environment';
 
 describe('CommunicationService', () => {
     let httpMock: HttpTestingController;
@@ -39,7 +40,7 @@ describe('CommunicationService', () => {
             expect(res).toEqual(fakeLevel);
         });
 
-        const req = httpMock.expectOne('http://localhost:3000/api/image/1');
+        const req = httpMock.expectOne(environment.serverUrl + 'api/image/1');
         expect(req.request.method).toEqual('GET');
         req.flush(fakeLevel);
     });
@@ -52,7 +53,7 @@ describe('CommunicationService', () => {
             expect(res).toEqual(fakeMessage);
         });
 
-        const req = httpMock.expectOne(`http://localhost:3000/api${path}`);
+        const req = httpMock.expectOne(environment.serverUrl + `api${path}`);
         expect(req.request.method).toEqual('GET');
         req.flush(fakeMessage);
     });

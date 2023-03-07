@@ -4,6 +4,7 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
 describe('PlayAreaComponent', () => {
@@ -64,7 +65,7 @@ describe('PlayAreaComponent', () => {
 
     it('drawPlayArea should call context.drawImage', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-        component.drawPlayArea('http://localhost:3000/originals/1.bmp');
+        component.drawPlayArea(environment.serverUrl + 'originals/1.bmp');
         component.currentImage.dispatchEvent(new Event('load'));
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
