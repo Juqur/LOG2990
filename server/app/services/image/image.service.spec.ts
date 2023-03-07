@@ -45,7 +45,7 @@ describe('ImageService', () => {
         it('should return undefined if it cannot read the file', async () => {
             fs.promises.readFile = jest.fn().mockRejectedValue(undefined);
             const result = await service.getLevels();
-            expect(result).toEqual(undefined);
+            expect(result).toBeUndefined();
         });
     });
 
@@ -65,13 +65,13 @@ describe('ImageService', () => {
         it('should return undefined if it cannot read the file', async () => {
             fs.promises.readFile = jest.fn().mockRejectedValue(undefined);
             const result = await service.getLevel(1);
-            expect(result).toEqual(undefined);
+            expect(result).toBeUndefined();
         });
 
         it('should return undefined if the level does not exist', async () => {
             fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
             const result = await service.getLevel(0);
-            expect(result).toEqual(undefined);
+            expect(result).toBeUndefined();
         });
     });
 
@@ -91,7 +91,7 @@ describe('ImageService', () => {
         it('should return undefined if the file does not exist', async () => {
             fs.promises.readFile = jest.fn().mockRejectedValue(undefined);
             const result = await service.differencesCount('');
-            expect(result).toEqual(undefined);
+            expect(result).toBeUndefined();
         });
     });
 
@@ -111,7 +111,7 @@ describe('ImageService', () => {
         it('should return undefined if the file does not exist', async () => {
             fs.promises.readFile = jest.fn().mockRejectedValue(undefined);
             const result = await service.getAllDifferences('');
-            expect(result).toEqual(undefined);
+            expect(result).toBeUndefined();
         });
     });
 
@@ -127,7 +127,7 @@ describe('ImageService', () => {
             const foundDifferences = [];
             const index = service.getIndex(TestConstants.CLUSTERS_TEST1, foundDifferences, 1);
             expect(foundDifferences).toEqual([]);
-            expect(index).toEqual(undefined);
+            expect(index).toBeUndefined();
         });
     });
 
