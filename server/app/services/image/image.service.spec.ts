@@ -50,26 +50,26 @@ describe('ImageService', () => {
     });
 
     describe('getLevel', () => {
-        it('should call fsp.readFile', async () => {
-            const spy = jest.spyOn(fs.promises, 'readFile').mockResolvedValue(Buffer.from(JSON.stringify(levels)));
+        it('should call getLevels', async () => {
+            const spy = jest.spyOn(service, 'getLevels').mockResolvedValue(levels);
             await service.getLevel(1);
             expect(spy).toHaveBeenCalled();
         });
 
         it('should return the mocked level', async () => {
-            fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
+            service.getLevels = jest.fn().mockResolvedValue(levels);
             const result = await service.getLevel(1);
             expect(result).toEqual(levels[0]);
         });
 
         it('should return undefined if it cannot read the file', async () => {
-            fs.promises.readFile = jest.fn().mockRejectedValue(undefined);
+            service.getLevels = jest.fn().mockRejectedValue(undefined);
             const result = await service.getLevel(1);
             expect(result).toBeUndefined();
         });
 
         it('should return undefined if the level does not exist', async () => {
-            fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
+            service.getLevels = jest.fn().mockResolvedValue(levels);
             const result = await service.getLevel(0);
             expect(result).toBeUndefined();
         });
@@ -151,30 +151,92 @@ describe('ImageService', () => {
     });
 
     describe('writeLevelData', () => {
-        it('should return the correct message', async () => {
+        const mockSyncWrite = jest.spyOn(fs, 'writeFile');
+        const mockSyncRename = jest.spyOn(fs, 'rename');
+
+        beforeEach(() => {
+            mockSyncWrite.mockImplementation();
+            mockSyncRename.mockImplementation();
+            service['confirmUpload'] = jest.fn().mockResolvedValue('success');
+            service['handleErrors'] = jest.fn().mockImplementation((error) => error);
+        });
+
+        it('should call confirmUpload on normal use case', async () => {
             fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
             fs.promises.writeFile = jest.fn();
-            service['handleErrors'] = jest.fn();
-            jest.spyOn(fs, 'writeFile').mockImplementation((path, data, cb) => {
-                cb(new Error('Failed to rename file'));
-            });
-            jest.spyOn(fs, 'rename').mockImplementation((oldPath, newPath, cb) => {
-                cb(new Error('Failed to rename file'));
+
+            const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(service['confirmUpload']).toHaveBeenCalledTimes(1);
+            expect(service['handleErrors']).not.toHaveBeenCalled();
+            expect(result).toEqual('success');
+        });
+
+        it('should return an error message if the file cannot be found', async () => {
+            fs.promises.readFile = jest.fn().mockRejectedValue(new Error('file cannot be read'));
+            fs.promises.writeFile = jest.fn();
+
+            const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(service['confirmUpload']).not.toHaveBeenCalled();
+            expect(service['handleErrors']).toHaveBeenCalledTimes(1);
+            expect(result).toBeInstanceOf(Error);
+        });
+
+        it('should return an error message when writing the file is a failure', async () => {
+            const error = new Error('Failed to write file');
+            fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
+            fs.promises.writeFile = jest.fn();
+            mockSyncWrite.mockImplementation((path, data, cb) => {
+                cb(error);
             });
 
-            let message = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
-            expect(message.title).toEqual('success');
-            message = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_2);
-            expect(message.title).toEqual('success');
+            const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(service['confirmUpload']).not.toHaveBeenCalled();
+            expect(service['handleErrors']).toHaveBeenCalledTimes(1);
+            expect(result).toEqual(error);
+        });
+
+        it('should return an error message when rename original image is a failure', async () => {
+            const error = new Error('Failed to rename file');
+            fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
+            fs.promises.writeFile = jest.fn();
+            mockSyncRename.mockImplementation((path, data, cb) => {
+                cb(error);
+            });
+
+            const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(service['confirmUpload']).not.toHaveBeenCalled();
+            expect(service['handleErrors']).toHaveBeenCalledTimes(1);
+            expect(result).toEqual(error);
+        });
+
+        it('should return an error message when rename modified image is a failure', async () => {
+            const error = new Error('Failed to rename file');
+            fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
+            fs.promises.writeFile = jest.fn();
+            mockSyncRename.mockImplementationOnce(jest.fn());
+            mockSyncRename.mockImplementation((path, data, cb) => {
+                cb(error);
+            });
+
+            const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(service['confirmUpload']).not.toHaveBeenCalled();
+            expect(service['handleErrors']).toHaveBeenCalledTimes(1);
+            expect(result).toEqual(error);
+        });
+    });
+
+    describe('confirmUpload', () => {
+        it('should return the correct message', () => {
+            expect(service['confirmUpload']().title).toStrictEqual('success');
         });
     });
 
     describe('handleErrors', () => {
-        it('handleErrors should return the correct error message', () => {
+        it('should return the correct error message', () => {
             const error = new Error('skill issue');
             const message = service['handleErrors'](error);
             expect(message.title).toEqual('error');
-            expect(message.body).toEqual('Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: skill issue');
+            expect(message.body).toEqual('Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: ' + error.message);
         });
     });
 });
