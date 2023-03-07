@@ -138,6 +138,7 @@ export class ImageService {
 
             // Updated list of levels
             allDifferences.push(level);
+
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
                 throw error;
             });
@@ -148,6 +149,7 @@ export class ImageService {
                 throw error;
             });
             await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(allDifferences));
+
             return this.confirmUpload();
         } catch (error) {
             return this.handleErrors(error);
