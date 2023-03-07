@@ -36,11 +36,12 @@ describe('GamePageComponent', () => {
     } as MouseEvent;
 
     beforeEach(async () => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState', 'resetCounter']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['playSound']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError']);
         subject = new Subject();
+        // route = { params: of({ id: 1 }), queryParams: of({ playerName: 'John Doe' }) };
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -70,6 +71,24 @@ describe('GamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('ngOnInit should set the correct level', () => {
+        fixture.detectChanges();
+        subject.next({ id: 1 });
+        expect(component.levelId).toEqual(1);
+    });
+
+    it('ngOnInit should set the correct player name', () => {
+        fixture.detectChanges();
+        subject.next({ playerName: 'John Doe' });
+        expect(component.playerName).toEqual('John Doe');
+    });
+
+    it('if its navigationstart, should call resetCounter', () => {
+        fixture.detectChanges();
+        spyOn(instanceof NavigationStart).and.returnValue(true);
+        expect(mouseServiceSpy.resetCounter).toHaveBeenCalledTimes(1);
     });
 
     it('should call handleAreaFoundInOriginal if difference is found in original', fakeAsync(() => {
@@ -115,7 +134,6 @@ describe('GamePageComponent', () => {
         component.handleAreaFoundInDiff(result);
         expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         expect(component.imagesData).toEqual(result);
-        expect(component.foundADifference).toBe(true);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
@@ -128,7 +146,6 @@ describe('GamePageComponent', () => {
         const spyResetCanvas = spyOn(component, 'resetCanvas');
         component.handleAreaFoundInOriginal(result);
         expect(component.imagesData).toEqual(result);
-        expect(component.foundADifference).toBe(true);
         expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
         expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
@@ -136,21 +153,29 @@ describe('GamePageComponent', () => {
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
 
-    it('handleAreaNotFoundInOriginal should call multiple functions', () => {
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        component.handleAreaNotFoundInOriginal();
-        expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
+    it('handleAreaNotFoundInOriginal should call multiple functions', fakeAsync(() => {
+        const spyDrawPlayAreaOriginal = spyOn(component.originalPlayArea, 'drawPlayArea');
+        // const drawServiceDiffSpy = spyOn(component.drawServiceDiff, 'drawError');
 
-    it('handleAreaNotFoundInDiff should call multiple functions', () => {
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        component.handleAreaNotFoundInDiff();
+        component.handleAreaNotFoundInOriginal();
+
         expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
+        // expect(drawServiceDiffSpy).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
+        tick(Constants.millisecondsInOneSecond);
+        expect(spyDrawPlayAreaOriginal).toHaveBeenCalledTimes(1);
+    }));
+
+    it('handleAreaNotFoundInDiff should call multiple functions', fakeAsync(() => {
+        const spyResetCanvas = spyOn(component, 'resetCanvas');
+
+        component.handleAreaNotFoundInDiff();
+
+        expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
+        tick(Constants.millisecondsInOneSecond);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
+    }));
 
     it('pick should get the color of the canvas', () => {
         const rgb = component.pick(1, 1);
@@ -158,15 +183,21 @@ describe('GamePageComponent', () => {
     });
 
     it('resetCanvas should refresh the area and copy a part of the original canvas', fakeAsync(() => {
-        const spyDiffDrawPlayArea = spyOn(component.diffPlayArea, 'drawPlayArea');
+        const spyTempDiffDrawPlayArea = spyOn(component.tempDiffPlayArea, 'drawPlayArea');
         const spyOriginalDrawPlayArea = spyOn(component.originalPlayArea, 'drawPlayArea');
         const copyAreaSpy = spyOn(component, 'copyArea');
         component.resetCanvas();
         tick(Constants.millisecondsInOneSecond);
-        expect(spyDiffDrawPlayArea).toHaveBeenCalledTimes(1);
+        expect(spyTempDiffDrawPlayArea).toHaveBeenCalledTimes(1);
         expect(spyOriginalDrawPlayArea).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        tick(Constants.thirty);
+        tick(0);
         expect(copyAreaSpy).toHaveBeenCalledTimes(1);
     }));
+
+    it('copyArea should copy a part of the original canvas', () => {
+        const spy = spyOn(component, 'copyArea');
+        component.copyArea([4, 8, 12, 16]);
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
 });

@@ -38,7 +38,6 @@ export class GamePageComponent implements OnInit {
     imagesData: number[] = [];
     defaultArea: boolean = true;
     diffArea: boolean = true;
-    foundADifference = false;
 
     drawServiceDiff: DrawService = new DrawService();
     drawServiceOriginal: DrawService = new DrawService();
@@ -78,12 +77,8 @@ export class GamePageComponent implements OnInit {
                 this.nbDiff = value.nbDifferences;
                 this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
             });
-        } catch (error) {
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            this.communicationService.getLevel(7).subscribe((value) => {
-                this.currentLevel = value;
-            });
-        }
+            // eslint-disable-next-line no-empty
+        } catch (error) {}
 
         try {
             this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
@@ -142,10 +137,6 @@ export class GamePageComponent implements OnInit {
             x = (pixelData / Constants.PIXEL_SIZE) % this.originalPlayArea.width;
             y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
             const rgba = this.pick(x, y);
-            if (!context) {
-                return;
-            }
-
             context.fillStyle = rgba;
             context.fillRect(x, y, 1, 1);
         });
@@ -191,7 +182,6 @@ export class GamePageComponent implements OnInit {
         this.originalPlayArea.flashArea(result);
         this.mouseService.changeClickState();
         this.resetCanvas();
-        this.foundADifference = true;
     }
     handleAreaNotFoundInDiff() {
         this.audioService.playSound('./assets/audio/failed.mp3');
@@ -211,7 +201,6 @@ export class GamePageComponent implements OnInit {
         this.diffPlayArea.flashArea(result);
         this.mouseService.changeClickState();
         this.resetCanvas();
-        this.foundADifference = true;
     }
     handleAreaNotFoundInOriginal() {
         this.audioService.playSound('./assets/audio/failed.mp3');
