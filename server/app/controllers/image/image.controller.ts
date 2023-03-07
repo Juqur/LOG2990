@@ -6,7 +6,7 @@ import { Level } from 'assets/data/level';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
 /**
- * This controller handles the server API requests for the image data.
+ * This controller provides the server API requests for the image data.
  *
  * @author Junaid Qureshi & Charles Degrandpré
  * @class ImageController
@@ -18,7 +18,7 @@ export class ImageController {
     /**
      * Gets the card data from the json files
      *
-     * @returns the array of card data
+     * @returns The array of card data
      */
     @Get('/allLevels')
     @ApiOkResponse({
@@ -32,7 +32,7 @@ export class ImageController {
      * Gets the difference count between the two images
      *
      * @param differenceFile The name of the file that has the differences
-     * @returns the number of differences between the two images
+     * @returns The number of differences between the two images
      */
     @ApiOkResponse({
         description: 'Returns data for a level',
@@ -42,6 +42,12 @@ export class ImageController {
         return this.imageService.getLevel(parseInt(id, 10));
     }
 
+    /**
+     * Gets the amount of differences between the two images.
+     *
+     * @param formData The data of the level
+     * @returns The message of the result
+     */
     @Get('/differenceCount')
     @ApiOkResponse({
         description: 'Returns the number of differences between the two images',
@@ -54,7 +60,7 @@ export class ImageController {
      * Writes the level data onto a json file for the game information and the images into the assets folder
      *
      * @param formData The data of the level
-     * @returns the message of the result
+     * @returns The message of the result
      */
     @Post('/postLevel')
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
