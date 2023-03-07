@@ -138,22 +138,25 @@ export class ImageService {
             isEasy: levelData.isEasy === 'true',
             nbDifferences: nbDifferencesNumber,
         };
+        // Updated list of levels
         allDifferences.push(level);
 
-        fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (err) => {
-            if (err) this.handleErrors(err);
+        // Confirmation message
+        let message: Message = new Message();
+        message.title = 'success';
+        message.body = 'Le jeu a été téléchargé avec succès!';
+
+        fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
+            if (error) message = this.handleErrors(error);
         });
-        fs.rename(levelData.imageOriginal.path, this.pathOriginal + newId + '.bmp', (err) => {
-            if (err) this.handleErrors(err);
+        fs.rename(levelData.imageOriginal.path, this.pathOriginal + newId + '.bmp', (error) => {
+            if (error) message = this.handleErrors(error);
         });
-        fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (err) => {
-            if (err) this.handleErrors(err);
+        fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
+            if (error) message = this.handleErrors(error);
         });
         await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(allDifferences));
 
-        const message: Message = new Message();
-        message.body = 'Le jeu a été téléchargé avec succès!';
-        message.title = 'success';
         return message;
     }
 
@@ -165,8 +168,8 @@ export class ImageService {
      */
     private handleErrors(err: Error): Message {
         const message: Message = new Message();
-        message.body = 'Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: ' + err.message;
         message.title = 'error';
+        message.body = 'Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: ' + err.message;
         return message;
     }
 }
