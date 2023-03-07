@@ -86,7 +86,8 @@ export class ImageService {
      * of the clicked pixel and returns the index of the array that contains the clicked pixel.
      *
      * @param allDifferences The array of differences.
-     * @param position The position of the pixel clicked.
+     * @param foundDifferences The indexes of the differences array that have already been found.
+     * @param pixelClicked The position of the pixel clicked
      * @returns The array of pixels that are different.
      */
     getIndex(allDifferences: number[][], foundDifferences: number[], pixelClicked: number): number {
