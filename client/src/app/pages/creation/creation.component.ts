@@ -225,7 +225,9 @@ export class CreationComponent implements OnInit {
      */
     resetDefault() {
         this.reinitGame();
-        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
+        const image = new Image();
+        image.src = './assets/images/image_empty.bmp';
+        image.onload = () => { this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(image,0, 0); };
     }
 
     /**
@@ -233,7 +235,9 @@ export class CreationComponent implements OnInit {
      */
     resetDiff() {
         this.reinitGame();
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+        const image = new Image();
+        image.src = './assets/images/image_empty.bmp';
+        image.onload = () => { this.canvasShare.diffCanvas.getContext('2d')?.drawImage(image,0, 0); };
     }
 
     /**
