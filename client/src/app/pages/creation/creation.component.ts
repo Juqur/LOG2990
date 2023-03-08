@@ -6,7 +6,7 @@ import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
-import { DrawService } from '@app/services/draw.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { Constants } from '@common/constants';
 import { LevelFormData } from '@common/levelFormData';
