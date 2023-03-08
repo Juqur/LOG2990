@@ -269,7 +269,7 @@ export class CreationComponent implements OnInit {
         this.nbDifferences = this.differences.clusters.length;
         this.nbDifferences = this.differences.clusters.length;
         let respecteNb = '';
-        if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
+        if (this.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT && this.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT) {
             this.isSaveable = true;
         } else {
             this.isSaveable = false;
@@ -281,8 +281,8 @@ export class CreationComponent implements OnInit {
             closeButtonMessage: 'Fermer',
         };
         this.differenceAmountMsg = '';
-        if (this.nbDifferences >= Constants.MAX_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
-        if (this.nbDifferences <= Constants.MIN_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
+        if (this.nbDifferences > Constants.MAX_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
+        if (this.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
 
         this.popUpService.openDialog(canvasDialogData);
     }
