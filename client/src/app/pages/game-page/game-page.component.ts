@@ -58,7 +58,6 @@ export class GamePageComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
-            // recoit le bon id!!
             this.levelId = params.id;
         });
 
