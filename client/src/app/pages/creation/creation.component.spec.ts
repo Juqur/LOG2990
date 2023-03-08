@@ -8,17 +8,15 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CreationPageService } from '@app/services/creationPageService/creation-page.service';
 import { CreationComponent } from './creation.component';
-import SpyObj = jasmine.SpyObj;
+// import SpyObj = jasmine.SpyObj;
 
 describe('CreationComponent', () => {
     let component: CreationComponent;
     let fixture: ComponentFixture<CreationComponent>;
-    let creationServiceSpy: SpyObj<CreationPageService>;
     beforeEach(async () => {
-        creationServiceSpy = jasmine.createSpyObj('CreationPageService', ['']);
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, ScaleContainerComponent, PlayAreaComponent],
-            providers: [{ provide: CreationPageService, useValue: creationServiceSpy }, HttpClient, HttpHandler],
+            providers: [CreationPageService, HttpClient, HttpHandler],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
         fixture = TestBed.createComponent(CreationComponent);
