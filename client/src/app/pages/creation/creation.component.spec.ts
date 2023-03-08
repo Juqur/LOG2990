@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { CanvasSharingService } from '@app/services/canvas-sharing.service';
+import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { MouseService } from '@app/services/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
@@ -159,40 +159,40 @@ describe('CreationComponent', () => {
     });
     it('showImage functions should show images on canvas if the image format is correct', (done) => {
         component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        canvasSharingService.defaultCanvas = component.defaultCanvasCtx?.canvas as HTMLCanvasElement;
         component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
+        canvasSharingService.diffCanvas = component.diffCanvasCtx?.canvas as HTMLCanvasElement;
         const mockFile = new File([''], 'mock.bmp');
         component.defaultImageFile = mockFile;
         component.diffImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const defaultDrawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
+        const defaultDrawSpy = spyOn<any>(canvasSharingService.defaultCanvas.getContext('2d'), 'drawImage').and.callThrough();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage').and.callThrough();
+        const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvas.getContext('2d'), 'drawImage').and.callThrough();
         component.showDefaultImage();
         component.showDiffImage();
         setTimeout(() => {
             expect(defaultDrawSpy).toHaveBeenCalled();
             expect(diffDrawSpy).toHaveBeenCalled();
-            expect(canvasSharingService.defaultCanvasRef.width).toEqual(Constants.EXPECTED_WIDTH);
-            expect(canvasSharingService.defaultCanvasRef.height).toEqual(Constants.EXPECTED_HEIGHT);
-            expect(canvasSharingService.diffCanvasRef.width).toEqual(Constants.EXPECTED_WIDTH);
-            expect(canvasSharingService.diffCanvasRef.height).toEqual(Constants.EXPECTED_HEIGHT);
+            expect(canvasSharingService.defaultCanvas.width).toEqual(Constants.EXPECTED_WIDTH);
+            expect(canvasSharingService.defaultCanvas.height).toEqual(Constants.EXPECTED_HEIGHT);
+            expect(canvasSharingService.diffCanvas.width).toEqual(Constants.EXPECTED_WIDTH);
+            expect(canvasSharingService.diffCanvas.height).toEqual(Constants.EXPECTED_HEIGHT);
             done();
         }, Constants.thousand);
     });
     it('showImage functions should call errorDialog and not show  image on canvas if there is no canvas context', (done) => {
         component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        canvasSharingService.defaultCanvas = component.defaultCanvasCtx?.canvas as HTMLCanvasElement;
         const mockFile = new File([''], 'mock.bmp');
         component.defaultImageFile = mockFile;
         component.diffImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_7_diff.bmp');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const defaultDrawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage');
+        const defaultDrawSpy = spyOn<any>(canvasSharingService.defaultCanvas.getContext('2d'), 'drawImage');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage');
+        const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvas.getContext('2d'), 'drawImage');
         const errorSpy = spyOn(component, 'errorDialog');
         component.defaultCanvasCtx = null;
         component.diffCanvasCtx = null;
@@ -208,17 +208,17 @@ describe('CreationComponent', () => {
     });
     it('showImage functions should call dialog and not show image if the image res is incorrect', (done) => {
         component.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDefaultCanvasRef(component.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        canvasSharingService.defaultCanvas = component.defaultCanvasCtx?.canvas as HTMLCanvasElement;
         component.diffCanvasCtx = document.createElement('canvas').getContext('2d');
-        canvasSharingService.setDiffCanvasRef(component.diffCanvasCtx?.canvas as HTMLCanvasElement);
+        canvasSharingService.diffCanvas = component.diffCanvasCtx?.canvas as HTMLCanvasElement;
         const mockFile = new File([''], 'mock.bmp');
         component.defaultImageFile = mockFile;
         component.diffImageFile = mockFile;
         spyOn(URL, 'createObjectURL').and.returnValue('./assets/test/image_wrong_res.bmp');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const defaultDrawSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'drawImage');
+        const defaultDrawSpy = spyOn<any>(canvasSharingService.defaultCanvas.getContext('2d'), 'drawImage');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'drawImage');
+        const diffDrawSpy = spyOn<any>(canvasSharingService.diffCanvas.getContext('2d'), 'drawImage');
         const errorSpy = spyOn(component, 'errorDialog');
         component.showDefaultImage();
         component.showDiffImage();
@@ -266,19 +266,14 @@ describe('CreationComponent', () => {
     });
     it('resetDefault should call reinitGame and clear the canvas', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const clearDefaultSpy = spyOn<any>(canvasSharingService.defaultCanvasRef.getContext('2d'), 'clearRect');
+        const clearDefaultSpy = spyOn<any>(canvasSharingService.defaultCanvas.getContext('2d'), 'clearRect');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const clearDiffSpy = spyOn<any>(canvasSharingService.diffCanvasRef.getContext('2d'), 'clearRect');
+        const clearDiffSpy = spyOn<any>(canvasSharingService.diffCanvas.getContext('2d'), 'clearRect');
         const reinitSpy = spyOn(component, 'reinitGame');
         component.resetDefault();
         component.resetDiff();
-        expect(clearDefaultSpy).toHaveBeenCalledOnceWith(
-            0,
-            0,
-            canvasSharingService.defaultCanvasRef.width,
-            canvasSharingService.defaultCanvasRef.height,
-        );
-        expect(clearDiffSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.diffCanvasRef.width, canvasSharingService.diffCanvasRef.height);
+        expect(clearDefaultSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.defaultCanvas.width, canvasSharingService.defaultCanvas.height);
+        expect(clearDiffSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.diffCanvas.width, canvasSharingService.diffCanvas.height);
         expect(reinitSpy).toHaveBeenCalledTimes(2);
     });
     it('sliderChange should change value of the radius ', () => {
