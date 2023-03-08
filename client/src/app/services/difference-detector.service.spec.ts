@@ -7,7 +7,7 @@ import { DifferenceDetectorService } from './difference-detector.service';
 
 import SpyObj = jasmine.SpyObj;
 
-fdescribe('DifferenceDetectorService', () => {
+describe('DifferenceDetectorService', () => {
     let service: DifferenceDetectorService;
     let serviceSpy: SpyObj<DifferenceDetectorService>;
     let defaultCanvas: CanvasRenderingContext2D;
