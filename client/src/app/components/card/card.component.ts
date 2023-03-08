@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
-import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
@@ -36,7 +36,7 @@ export class CardComponent {
     playerName: string = 'player 1';
     difficulty: string;
 
-    constructor(private router: Router, public popUpService: PopUpServiceService) {}
+    constructor(private router: Router, public popUpService: PopUpService) {}
 
     /**
      * Display the difficulty of the level
