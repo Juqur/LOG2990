@@ -130,9 +130,19 @@ export class DifferenceDetectorService {
                 continue;
             }
 
+            const column = (pixel / Constants.PIXEL_SIZE) % Constants.EXPECTED_WIDTH;
             for (let i = -this.radius; i <= this.radius; i++) {
+                // Checks if the pixel is on the left edge of the image.
+                if (column + i < 0) {
+                    continue;
+                }
+                // Checks if the pixel is on the right edge of the image.
+                if (column + i >= Constants.EXPECTED_WIDTH) {
+                    continue;
+                }
+
                 for (let j = -this.radius; j <= this.radius; j++) {
-                    const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.PIXEL_SIZE + pixel;
+                    const pixelPosition = (j * Constants.EXPECTED_WIDTH + i) * Constants.PIXEL_SIZE + pixel;
                     const distance = Math.pow(i, 2) + Math.pow(j, 2);
                     if (this.isInBounds(pixelPosition) && distance <= Math.pow(this.radius, 2)) {
                         this.colorizePixel(pixelPosition);
@@ -214,9 +224,21 @@ export class DifferenceDetectorService {
      */
     private findAdjacentPixels(pixel: number): number[] {
         const adjacentPixels: number[] = [];
+        const column = (pixel / Constants.PIXEL_SIZE) % Constants.EXPECTED_WIDTH;
+
         for (let i = -1; i <= 1; i++) {
+            // Checks if the pixel is on the left edge of the image.
+            if (column + i < 0) {
+                continue;
+            }
+
+            // Checks if the pixel is on the right edge of the image.
+            if (column + i >= Constants.EXPECTED_WIDTH) {
+                continue;
+            }
+
             for (let j = -1; j <= 1; j++) {
-                const pixelPosition = (i * Constants.EXPECTED_WIDTH + j) * Constants.PIXEL_SIZE + pixel;
+                const pixelPosition = (j * Constants.EXPECTED_WIDTH + i) * Constants.PIXEL_SIZE + pixel;
                 // Checks if the pixel is inside the image.
                 if (!this.isInBounds(pixelPosition)) {
                     continue;
@@ -229,7 +251,6 @@ export class DifferenceDetectorService {
                 if (!this.isPixelColored(pixelPosition)) {
                     continue;
                 }
-
                 adjacentPixels.push(pixelPosition);
             }
         }

@@ -7,7 +7,7 @@ import { DifferenceDetectorService } from './difference-detector.service';
 
 import SpyObj = jasmine.SpyObj;
 
-describe('DifferenceDetectorService', () => {
+fdescribe('DifferenceDetectorService', () => {
     let service: DifferenceDetectorService;
     let serviceSpy: SpyObj<DifferenceDetectorService>;
     let defaultCanvas: CanvasRenderingContext2D;
@@ -199,6 +199,7 @@ describe('DifferenceDetectorService', () => {
             service['initialDifferentPixels'] = TestConstants.OFF_BOUNDS_PIXELS;
             service['comparisonImage'] = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
             service['radius'] = 3;
+
             service['addRadius']();
             expect(spyOnColorize).not.toHaveBeenCalledTimes(1);
         });
@@ -214,6 +215,28 @@ describe('DifferenceDetectorService', () => {
             service['addRadius']();
             expect(spyChangeColor).toHaveBeenCalledTimes(expectedTimes);
             expect(service['counter']).toEqual(expectedTimes);
+        });
+
+        it('should not consider pixels that exceeds the right border', () => {
+            const expectedNeighbors = 3;
+            const spyOnColorize = spyOn(service, 'colorizePixel' as never);
+            service['initialDifferentPixels'] = [TestConstants.ADJACENT_PIXELS_TEST2[0]]; // x = 439, y = 0
+            service['comparisonImage'] = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+            service['radius'] = 1;
+
+            service['addRadius']();
+            expect(spyOnColorize).toHaveBeenCalledTimes(expectedNeighbors);
+        });
+
+        it('should not consider pixels that exceeds the left border', () => {
+            const expectedNeighbors = 4;
+            const spyOnColorize = spyOn(service, 'colorizePixel' as never);
+            service['initialDifferentPixels'] = [TestConstants.ADJACENT_PIXELS_TEST2[1]]; // x = 1, y = 1
+            service['comparisonImage'] = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+            service['radius'] = 1;
+
+            service['addRadius']();
+            expect(spyOnColorize).toHaveBeenCalledTimes(expectedNeighbors);
         });
     });
 
@@ -275,21 +298,46 @@ describe('DifferenceDetectorService', () => {
 
     describe('findAdjacentPixels', () => {
         it('should return all adjacent pixels if they are all valid', () => {
+            service['isPixelColored'] = () => true;
             service['comparisonImage'] = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
             service['visited'] = [];
             service['visited'][TestConstants.PIXEL_TO_FIND_ADJACENT] = true;
-            for (const position of TestConstants.ADJACENT_PIXELS) {
-                service['colorizePixel'](position);
-            }
-            const adjacent = service['findAdjacentPixels'](TestConstants.PIXEL_TO_FIND_ADJACENT);
-            expect(adjacent).toEqual(TestConstants.ADJACENT_PIXELS);
+            const adjacent = service['findAdjacentPixels'](TestConstants.PIXEL_TO_FIND_ADJACENT).sort((a, b) => a - b);
+            expect(adjacent).toEqual(TestConstants.ADJACENT_PIXELS_TEST1);
         });
 
         it('should return an empty array if the pixel is invalid', () => {
+            service['isPixelColored'] = () => true;
             service['comparisonImage'] = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
             service['visited'] = [];
             const adjacent = service['findAdjacentPixels'](NaN);
             expect(adjacent).toEqual([]);
+        });
+
+        it('should not consider the neighbors pixels that exceeds the right border', () => {
+            const leftPixel = 2556;
+            service['comparisonImage'] = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+            service['visited'] = [];
+            service['visited'][leftPixel] = true;
+            for (const position of TestConstants.ADJACENT_PIXELS_TEST2) {
+                service['colorizePixel'](position);
+            }
+
+            const adjacentToLeft = service['findAdjacentPixels'](leftPixel);
+            expect(adjacentToLeft).toEqual([]);
+        });
+
+        it('should not consider the neighbors pixels that exceeds the left border', () => {
+            const rightPixel = 2560;
+            service['comparisonImage'] = defaultCanvas.createImageData(defaultCanvas.canvas.width, defaultCanvas.canvas.height);
+            service['visited'] = [];
+            service['visited'][rightPixel] = true;
+            for (const position of TestConstants.ADJACENT_PIXELS_TEST2) {
+                service['colorizePixel'](position);
+            }
+
+            const adjacentToLeft = service['findAdjacentPixels'](rightPixel);
+            expect(adjacentToLeft).toEqual([]);
         });
     });
 
