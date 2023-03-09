@@ -8,19 +8,15 @@ import { CommunicationService } from '@app/services/communicationService/communi
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-<<<<<<< HEAD
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
-import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 
 export interface GameData {
     differences: number[];
     amountOfDifferences: number;
     amountOfDifferencesSecondPlayer?: number;
 }
-=======
-import { environment } from 'src/environments/environment';
->>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
 
 @Component({
     selector: 'app-game-page',
@@ -73,7 +69,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private communicationService: CommunicationService,
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
-        private popUpService: PopUpServiceService,
+        private popUpService: PopUpService,
     ) {}
 
     ngOnDestroy(): void {
@@ -104,23 +100,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
             throw new Error("Couldn't load level: " + error);
         }
 
-<<<<<<< HEAD
         this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
         this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
 
         this.handleSocket();
-=======
-        try {
-            this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
-            this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
-        } catch (error) {
-            throw new Error("Couldn't load images");
-        }
-
-        this.communicationService.postNewGame(String(this.levelId)).subscribe((gameId) => {
-            this.gameId = gameId;
-        });
->>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
     }
     /**
      * This method handles the socket connection.
