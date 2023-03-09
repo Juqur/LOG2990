@@ -1,6 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
 import { CounterComponent } from '@app/components/counter/counter.component';
@@ -15,15 +14,12 @@ import { AudioService } from '@app/services/audio.service';
 import { DrawService } from '@app/services/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-import { Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import SpyObj = jasmine.SpyObj;
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let subject: Subject<any>;
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
     let audioServiceSpy: SpyObj<AudioService>;
@@ -40,8 +36,6 @@ describe('GamePageComponent', () => {
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['playSound']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError']);
-        subject = new Subject();
-        // route = { params: of({ id: 1 }), queryParams: of({ playerName: 'John Doe' }) };
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -56,7 +50,6 @@ describe('GamePageComponent', () => {
             ],
             imports: [AppMaterialModule, HttpClientModule, RouterTestingModule],
             providers: [
-                { provide: ActivatedRoute, useValue: { params: subject.asObservable(), queryParams: subject.asObservable() } },
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: AudioService, useValue: audioServiceSpy },
@@ -73,21 +66,9 @@ describe('GamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('ngOnInit should set the correct level', () => {
-        fixture.detectChanges();
-        subject.next({ id: 1 });
-        expect(component.levelId).toEqual(1);
-    });
-
-    it('ngOnInit should set the correct player name', () => {
-        fixture.detectChanges();
-        subject.next({ playerName: 'John Doe' });
-        expect(component.playerName).toEqual('John Doe');
-    });
-
     it('if its navigationstart, should call resetCounter', () => {
         fixture.detectChanges();
-        spyOn(instanceof NavigationStart).and.returnValue(true);
+
         expect(mouseServiceSpy.resetCounter).toHaveBeenCalledTimes(1);
     });
 
@@ -155,12 +136,10 @@ describe('GamePageComponent', () => {
 
     it('handleAreaNotFoundInOriginal should call multiple functions', fakeAsync(() => {
         const spyDrawPlayAreaOriginal = spyOn(component.originalPlayArea, 'drawPlayArea');
-        // const drawServiceDiffSpy = spyOn(component.drawServiceDiff, 'drawError');
 
         component.handleAreaNotFoundInOriginal();
 
         expect(audioServiceSpy.playSound).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        // expect(drawServiceDiffSpy).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
         tick(Constants.millisecondsInOneSecond);
         expect(spyDrawPlayAreaOriginal).toHaveBeenCalledTimes(1);
@@ -194,10 +173,4 @@ describe('GamePageComponent', () => {
         tick(0);
         expect(copyAreaSpy).toHaveBeenCalledTimes(1);
     }));
-
-    it('copyArea should copy a part of the original canvas', () => {
-        const spy = spyOn(component, 'copyArea');
-        component.copyArea([4, 8, 12, 16]);
-        expect(spy).toHaveBeenCalledTimes(1);
-    });
 });

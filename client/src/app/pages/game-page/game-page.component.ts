@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { AudioService } from '@app/services/audio.service';
@@ -51,45 +51,11 @@ export class GamePageComponent implements OnInit {
         private mouseService: MouseService,
         private route: ActivatedRoute,
         private communicationService: CommunicationService,
-        private router: Router,
         private audioService: AudioService,
     ) {}
 
     ngOnInit(): void {
-        this.route.params.subscribe((params) => {
-            this.levelId = params.id;
-        });
-
-        this.router.events.subscribe((event: Event) => {
-            if (event instanceof NavigationStart) {
-                this.mouseService.resetCounter();
-                this.ngOnInit();
-            }
-        });
-
-        this.route.queryParams.subscribe((params) => {
-            this.playerName = params['playerName'];
-        });
-
-        try {
-            this.communicationService.getLevel(this.levelId).subscribe((value) => {
-                this.currentLevel = value;
-                this.nbDiff = value.nbDifferences;
-                this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
-            });
-            // eslint-disable-next-line no-empty
-        } catch (error) {}
-
-        try {
-            this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
-            this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
-        } catch (error) {
-            throw new Error("Couldn't load images");
-        }
-
-        this.communicationService.postNewGame('/game', String(this.levelId)).subscribe((gameId) => {
-            this.gameId = gameId;
-        });
+        this.getGameLevel();
     }
 
     clickedOnOriginal(event: MouseEvent) {
@@ -162,12 +128,6 @@ export class GamePageComponent implements OnInit {
             });
     }
 
-    pasteCanvas() {
-        this.tempCanvasContext = this.diffPlayArea
-            .getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-    }
-
     copyDiffPlayAreaContext() {
         const context2 = this.tempDiffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const context = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -213,5 +173,38 @@ export class GamePageComponent implements OnInit {
             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
             this.mouseService.changeClickState();
         });
+    }
+    getGameLevel() {
+        this.levelId = this.route.snapshot.params.id;
+        this.playerName = this.route.snapshot.queryParams.playerName;
+        this.mouseService.resetCounter();
+
+        this.settingGameLevel();
+        this.settingGameImage();
+
+        this.communicationService.postNewGame('/game', String(this.levelId)).subscribe((gameId) => {
+            this.gameId = gameId;
+        });
+    }
+
+    settingGameLevel() {
+        try {
+            this.communicationService.getLevel(this.levelId).subscribe((value) => {
+                this.currentLevel = value;
+                this.nbDiff = value.nbDifferences;
+                this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
+            });
+        } catch (error) {
+            throw new Error("Couldn't load level");
+        }
+    }
+
+    settingGameImage() {
+        try {
+            this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
+            this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
+        } catch (error) {
+            throw new Error("Couldn't load images");
+        }
     }
 }
