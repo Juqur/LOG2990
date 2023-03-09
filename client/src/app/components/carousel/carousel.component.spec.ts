@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Constants } from '@common/constants';
 import { CarouselComponent } from './carousel.component';
 
 describe('CarouselComponent', () => {
@@ -20,8 +21,14 @@ describe('CarouselComponent', () => {
     });
 
     it('should format time', () => {
-        const time = 60;
+        let time = 0;
+        expect(component.formatTime(time)).toEqual('00:00');
+        time = Constants.thirty;
+        expect(component.formatTime(time)).toEqual('00:30');
+        time = Constants.sixty;
         expect(component.formatTime(time)).toEqual('01:00');
+        time = Constants.thirty + Constants.sixty;
+        expect(component.formatTime(time)).toEqual('01:30');
     });
 
     it('should change button style from solo to multi', () => {
