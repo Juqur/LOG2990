@@ -15,27 +15,19 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @class GameTimerComponent
  */
 export class GameTimerComponent implements OnInit {
-    gameTime: number = 0;
     gameTimeFormatted: string;
 
     constructor(private socketHandler: SocketHandler) {}
 
     /**
-     * Sets the game time variable to the new time value and calls formatTime.
-     *
-     * @param value the new value of the timer in seconds.
-     */
-    setTimer(value: number) {
-        this.gameTime = value;
-        this.formatTime();
-    }
-
-    /**
+     * Sets the timer to the given value.
      * Formats the time into a MM:SS format.
+     *
+     * @param time The time to set the timer to.
      */
-    formatTime() {
-        const minutes: number = Math.floor(this.gameTime / Constants.secondsPerMinute);
-        const seconds: number = this.gameTime - minutes * Constants.secondsPerMinute;
+    updateTimer(time: number) {
+        const minutes: number = Math.floor(time / Constants.secondsPerMinute);
+        const seconds: number = time - minutes * Constants.secondsPerMinute;
 
         const minutesString: string = minutes < Constants.ten ? '0' + minutes : minutes.toString();
         const secondsString: string = seconds < Constants.ten ? '0' + seconds : seconds.toString();
@@ -48,9 +40,9 @@ export class GameTimerComponent implements OnInit {
      * listen on any 'timer' event for which we want to update the timer value.
      */
     ngOnInit(): void {
-        this.setTimer(0);
+        this.updateTimer(0);
         this.socketHandler.on('game', 'sendTime', (data: number) => {
-            this.setTimer(data);
+            this.updateTimer(data);
         });
     }
 }
