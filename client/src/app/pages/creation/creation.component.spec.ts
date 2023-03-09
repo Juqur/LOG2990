@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -8,21 +9,50 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CreationPageService } from '@app/services/creationPageService/creation-page.service';
 import { CreationComponent } from './creation.component';
-// import SpyObj = jasmine.SpyObj;
+import SpyObj = jasmine.SpyObj;
 
 describe('CreationComponent', () => {
     let component: CreationComponent;
     let fixture: ComponentFixture<CreationComponent>;
+    let creationServiceSpy: SpyObj<CreationPageService>;
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, ScaleContainerComponent, PlayAreaComponent],
-            providers: [CreationPageService, HttpClient, HttpHandler],
+            providers: [{ provide: CreationPageService, useValue: creationServiceSpy }, HttpClient, HttpHandler],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         }).compileComponents();
+        creationServiceSpy = jasmine.createSpyObj(
+            'CreationPageService',
+            [
+                'defaultImageSelector',
+                'cleanSrc',
+                'resetDefault',
+                'bothImagesSelector',
+                'diffImageSelector',
+                'resetDiff',
+                'sliderChange',
+                'detectDifference',
+                'saveGame',
+            ],
+            {
+                creationSpecs: {
+                    defaultImageFile: null,
+                    diffImageFile: null,
+                    radius: Constants.RADIUS_DEFAULT,
+                    nbDifferences: Constants.INIT_DIFF_NB,
+                    differences: new LevelDifferences(),
+                    defaultArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+                    diffArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+                    defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
+                    diffCanvasCtx: document.createElement('canvas').getContext('2d'),
+                },
+            },
+        );
         fixture = TestBed.createComponent(CreationComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
