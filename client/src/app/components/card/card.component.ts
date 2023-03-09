@@ -31,7 +31,10 @@ export class CardComponent {
     };
     @Input() page: string = 'no page';
 
-    imgPath: string = environment.serverUrl + 'originals/';
+    private _imgPath: string = environment.serverUrl + 'originals/';
+    public get imgPath(): string {
+        return this._imgPath;
+    }
 
     playerName: string = 'player 1';
     difficulty: string;
