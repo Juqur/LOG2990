@@ -1,4 +1,4 @@
-.flexible-fullscreen-body {
+#flexible-fullscreen-body {
     margin: 0;
     position: fixed;
     height: 100vh;
@@ -8,7 +8,7 @@
     overflow: hidden;
 }
 
-.container {
+#container {
     display: flex;
     flex-direction: column;
     aspect-ratio: 16/9;

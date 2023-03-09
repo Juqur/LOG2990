@@ -14,20 +14,33 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 export class ScaleContainerComponent implements OnInit {
     @ViewChild('screen', { static: true }) screen: ElementRef;
     @ViewChild('container', { static: true }) container: ElementRef;
-    scale: number = 1;
+    private scaleRatio: number = 1;
 
+    /**
+     * Getter for the scaleRatio attribute.
+     */
+    get scale(): number {
+        return this.scaleRatio;
+    }
+
+    /**
+     * This code triggers on the initial rendering of the component and resizes the children components
+     * to a uniform format.
+     */
     ngOnInit(): void {
         this.resizeContainer();
     }
 
     /**
-     * Resizes the container and its components to fit the screen.
+     * This method is used to resize the container to a uniform format and avoid the use of complex
+     * and intricate CSS rules to format every page. It essentially makes it so every page follows
+     * a similar size.
      */
-    resizeContainer() {
+    resizeContainer(): void {
         const screenWidth = this.screen.nativeElement.offsetWidth;
         const screenHeight = this.screen.nativeElement.offsetHeight;
         const containerWidth = this.container.nativeElement.offsetWidth;
         const containerHeight = this.container.nativeElement.offsetHeight;
-        this.scale = Math.min(screenWidth / containerWidth, screenHeight / containerHeight);
+        this.scaleRatio = Math.min(screenWidth / containerWidth, screenHeight / containerHeight);
     }
 }

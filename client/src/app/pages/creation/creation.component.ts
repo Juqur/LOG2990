@@ -1,19 +1,16 @@
+/* eslint-disable max-lines */
 import { Component, OnInit } from '@angular/core';
 import { Difference } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
-import { CanvasSharingService } from '@app/services/canvas-sharing.service';
-import { CommunicationService } from '@app/services/communication.service';
+import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
-import { DrawService } from '@app/services/draw.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
-/**
- * This component represents the creation, the page where we can create new levels/games.
- *
- * @author Simon Gagné
- * @class CreationComponent
- */
+import { LevelFormData } from '@common/levelFormData';
+
 @Component({
     selector: 'app-creation',
     templateUrl: './creation.component.html',
@@ -56,9 +53,9 @@ export class CreationComponent implements OnInit {
      */
     ngOnInit(): void {
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        this.canvasShare.setDefaultCanvasRef(this.defaultCanvasCtx?.canvas as HTMLCanvasElement);
+        this.canvasShare.defaultCanvas = this.defaultCanvasCtx?.canvas as HTMLCanvasElement;
         this.diffCanvasCtx = document.createElement('canvas').getContext('2d');
-        this.canvasShare.setDiffCanvasRef(this.diffCanvasCtx?.canvas as HTMLCanvasElement);
+        this.canvasShare.diffCanvas = this.diffCanvasCtx?.canvas as HTMLCanvasElement;
 
         this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
         this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
@@ -155,10 +152,12 @@ export class CreationComponent implements OnInit {
                 this.errorDialog('Les images doivent être de taille 640x480');
                 return;
             }
-            this.canvasShare.defaultCanvasRef.width = image1.width;
-            this.canvasShare.defaultCanvasRef.height = image1.height;
-            this.canvasShare.defaultCanvasRef.getContext('2d')?.drawImage(image1, 0, 0);
-            this.defaultCanvasCtx = this.canvasShare.defaultCanvasRef.getContext('2d');
+            const defaultCanvas = this.canvasShare.defaultCanvas;
+            defaultCanvas.width = image1.width;
+            defaultCanvas.height = image1.height;
+            defaultCanvas.getContext('2d')?.drawImage(image1, 0, 0);
+            this.canvasShare.defaultCanvas = defaultCanvas;
+            this.defaultCanvasCtx = this.canvasShare.defaultCanvas.getContext('2d');
         };
     }
 
@@ -181,10 +180,12 @@ export class CreationComponent implements OnInit {
                 this.errorDialog('Les images doivent être de taille 640x480');
                 return;
             }
-            this.canvasShare.diffCanvasRef.width = image2.width;
-            this.canvasShare.diffCanvasRef.height = image2.height;
-            this.canvasShare.diffCanvasRef.getContext('2d')?.drawImage(image2, 0, 0);
-            this.diffCanvasCtx = this.canvasShare.diffCanvasRef.getContext('2d');
+            const diffCanvas = this.canvasShare.diffCanvas;
+            diffCanvas.width = image2.width;
+            diffCanvas.height = image2.height;
+            diffCanvas.getContext('2d')?.drawImage(image2, 0, 0);
+            this.canvasShare.diffCanvas = diffCanvas;
+            this.diffCanvasCtx = this.canvasShare.diffCanvas.getContext('2d');
         };
     }
 
@@ -220,9 +221,7 @@ export class CreationComponent implements OnInit {
      */
     resetDefault() {
         this.reinitGame();
-        this.canvasShare.defaultCanvasRef
-            .getContext('2d')
-            ?.clearRect(0, 0, this.canvasShare.defaultCanvasRef.width, this.canvasShare.defaultCanvasRef.height);
+        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
     }
 
     /**
@@ -230,7 +229,7 @@ export class CreationComponent implements OnInit {
      */
     resetDiff() {
         this.reinitGame();
-        this.canvasShare.diffCanvasRef.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvasRef.width, this.canvasShare.diffCanvasRef.height);
+        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
     }
 
     /**
@@ -280,7 +279,7 @@ export class CreationComponent implements OnInit {
         this.popUpService.openDialog(canvasDialogData);
     }
     /**
-     * This methods reinitializes the game games values to prevent the user from saving
+     * This methods re initializes the game games values to prevent the user from saving
      * using obsolete values after a change.
      */
     reinitGame() {
@@ -289,8 +288,6 @@ export class CreationComponent implements OnInit {
         this.isSaveable = false;
     }
 
-    /**
-     * THis method is used to save the game, it opens a popUp asking the user
     /**
      * This method is used to save the game, it opens a popUp asking the user
      * to give a name to their new game and saves it.
@@ -332,14 +329,15 @@ export class CreationComponent implements OnInit {
                 if (!this.defaultImageFile || !this.diffImageFile || !this.differences) {
                     return;
                 }
-                const formData = new FormData();
-                formData.append('imageOriginal', this.defaultImageFile);
-                formData.append('imageDiff', this.diffImageFile);
-                formData.append('name', this.savedLevel.name);
-                formData.append('isEasy', this.savedLevel.isEasy.toString());
-                formData.append('clusters', JSON.stringify(this.differences.clusters));
-                formData.append('nbDifferences', this.savedLevel.nbDifferences.toString());
-                this.communicationService.postLevel(formData).subscribe((data) => {
+                const levelFormData: LevelFormData = {
+                    imageOriginal: this.defaultImageFile,
+                    imageDiff: this.diffImageFile,
+                    name: this.savedLevel.name,
+                    isEasy: this.savedLevel.isEasy.toString(),
+                    clusters: JSON.stringify(this.differences.clusters),
+                    nbDifferences: this.savedLevel.nbDifferences.toString(),
+                };
+                this.communicationService.postLevel(levelFormData).subscribe((data) => {
                     if (data.title === 'error') {
                         this.errorDialog(data.body);
                         return;
@@ -347,7 +345,6 @@ export class CreationComponent implements OnInit {
                         const dialogData: DialogData = {
                             textToSend: data.body,
                             closeButtonMessage: 'Fermer',
-                            // eslint-disable-next-line max-lines
                         };
                         this.popUpService.openDialog(dialogData, '/config');
                     }

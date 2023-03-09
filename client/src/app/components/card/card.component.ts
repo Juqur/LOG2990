@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-card',
@@ -30,6 +31,8 @@ export class CardComponent {
     };
 
     @Input() isSelectionPage: boolean = true;
+
+    imgPath: string = environment.serverUrl + 'originals/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',

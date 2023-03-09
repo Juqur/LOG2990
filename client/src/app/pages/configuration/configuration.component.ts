@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Level } from '@app/levels';
-import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -61,7 +61,7 @@ export class ConfigurationComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.communicationService.getLevels('/image/allLevels').subscribe((value) => {
+        this.communicationService.getLevels().subscribe((value) => {
             this.levels = value;
 
             this.lastShownLevel = Constants.levelsPerPage;
