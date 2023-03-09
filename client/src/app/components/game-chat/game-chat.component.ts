@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Message, messages } from '@app/messages';
+import { Message } from '@app/messages';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @class GameChatComponent
  */
 export class GameChatComponent implements OnInit {
-    messages: Message[] = messages;
+    messages: Message[];
 
     constructor(private socketHandler: SocketHandler) {}
 
