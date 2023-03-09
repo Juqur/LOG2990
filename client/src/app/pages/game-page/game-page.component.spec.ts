@@ -12,8 +12,13 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AudioService } from '@app/services/audioService/audio.service';
+<<<<<<< HEAD
 import { DrawService } from '@app/services/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
+=======
+// import { CommunicationService } from '@app/services/communication.service';
+import { DrawService } from '@app/services/drawService/draw.service';
+>>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
 import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
 import { SocketHandler } from '@app/services/socket-handler.service';

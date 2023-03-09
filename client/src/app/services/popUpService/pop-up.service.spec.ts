@@ -5,17 +5,17 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialog.component';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
-import { DialogData, PopUpServiceService } from './pop-up-service.service';
+import { DialogData, PopUpService } from './pop-up.service';
 
 describe('PopUpServiceService', () => {
-    let service: PopUpServiceService;
+    let service: PopUpService;
     let dialogRef: MatDialogRef<PopUpDialogComponent>;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [MatDialogModule, RouterTestingModule],
             providers: [
-                PopUpServiceService,
+                PopUpService,
                 {
                     provide: MatDialogRef,
                     useValue: { afterClosed: () => of({}) },
@@ -23,7 +23,7 @@ describe('PopUpServiceService', () => {
                 { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
         });
-        service = TestBed.inject(PopUpServiceService);
+        service = TestBed.inject(PopUpService);
         dialogRef = TestBed.inject(MatDialogRef);
     });
 
@@ -92,6 +92,8 @@ describe('PopUpServiceService', () => {
 
         service.openDialog(dialogData);
 
-        expect(service.result).toEqual('Hello');
+        service.dialogRef.afterClosed().subscribe((result) => {
+            expect(result).toEqual('Hello');
+        });
     });
 });

@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { Constants, MouseButton } from '@common/constants';
+<<<<<<< HEAD
+=======
+import { lastValueFrom } from 'rxjs';
+import { AudioService } from './audioService/audio.service';
+import { CommunicationService } from './communicationService/communication.service';
+import { DialogData, PopUpService } from './popUpService/pop-up.service';
+>>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
 
 @Injectable({
     providedIn: 'root',
@@ -8,6 +15,23 @@ import { Constants, MouseButton } from '@common/constants';
 export class MouseService {
     private mousePosition: Vec2 = { x: 0, y: 0 };
     private canClick: boolean = true;
+<<<<<<< HEAD
+=======
+    private numberOfDifference: number = 0;
+    private endGameAudio = new AudioService();
+
+    constructor(
+        private communicationService: CommunicationService,
+        public popUpService: PopUpService /* private socketHandler: SocketHandler */,
+        router: Router,
+    ) {
+        router.events.forEach((event) => {
+            if (event instanceof NavigationStart) {
+                this.endGameAudio.reset();
+            }
+        });
+    }
+>>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
 
     /**
      * Takes the mouse event to calculate the position of the mouse

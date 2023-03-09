@@ -1,12 +1,14 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { Vec2 } from '@app/interfaces/vec2';
 import { Level } from '@app/levels';
 import { AudioService } from '@app/services/audioService/audio.service';
-import { CommunicationService } from '@app/services/communication.service';
-import { DrawService } from '@app/services/draw.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
+<<<<<<< HEAD
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
@@ -16,6 +18,9 @@ export interface GameData {
     amountOfDifferences: number;
     amountOfDifferencesSecondPlayer?: number;
 }
+=======
+import { environment } from 'src/environments/environment';
+>>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
 
 @Component({
     selector: 'app-game-page',
@@ -99,10 +104,23 @@ export class GamePageComponent implements OnInit, OnDestroy {
             throw new Error("Couldn't load level: " + error);
         }
 
+<<<<<<< HEAD
         this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
         this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
 
         this.handleSocket();
+=======
+        try {
+            this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
+            this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
+        } catch (error) {
+            throw new Error("Couldn't load images");
+        }
+
+        this.communicationService.postNewGame(String(this.levelId)).subscribe((gameId) => {
+            this.gameId = gameId;
+        });
+>>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
     }
     /**
      * This method handles the socket connection.
@@ -250,7 +268,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError(this.mouseService);
+        this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
         this.mouseService.changeClickState();
         this.resetCanvas();
     }
@@ -272,7 +290,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawError(this.mouseService);
+        this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
         this.mouseService.changeClickState();
         this.resetCanvas();
     }
