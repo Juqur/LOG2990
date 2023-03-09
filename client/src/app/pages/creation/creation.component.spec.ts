@@ -264,17 +264,20 @@ describe('CreationComponent', () => {
                 });
             });
     });
-    it('resetDefault should call reinitGame and clear the canvas', () => {
+    it('resetDefault/Fiff should call reinitGame and clear the canvas', (done) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const clearDefaultSpy = spyOn<any>(canvasSharingService.defaultCanvas.getContext('2d'), 'clearRect');
+        const clearDefaultSpy = spyOn<any>(canvasSharingService.defaultCanvas.getContext('2d'), 'drawImage');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const clearDiffSpy = spyOn<any>(canvasSharingService.diffCanvas.getContext('2d'), 'clearRect');
+        const clearDiffSpy = spyOn<any>(canvasSharingService.diffCanvas.getContext('2d'), 'drawImage');
         const reinitSpy = spyOn(component, 'reinitGame');
         component.resetDefault();
         component.resetDiff();
-        expect(clearDefaultSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.defaultCanvas.width, canvasSharingService.defaultCanvas.height);
-        expect(clearDiffSpy).toHaveBeenCalledOnceWith(0, 0, canvasSharingService.diffCanvas.width, canvasSharingService.diffCanvas.height);
-        expect(reinitSpy).toHaveBeenCalledTimes(2);
+        setTimeout(() => {
+            expect(clearDefaultSpy).toHaveBeenCalledTimes(1);
+            expect(clearDiffSpy).toHaveBeenCalledTimes(1);
+            expect(reinitSpy).toHaveBeenCalledTimes(2);
+            done();
+        }, Constants.hundred);
     });
     it('sliderChange should change value of the radius ', () => {
         for (let i = 0; i < Constants.RADIUS_TABLE.length; i++) {
