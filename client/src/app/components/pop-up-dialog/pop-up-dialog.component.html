@@ -3,19 +3,17 @@
     <div *ngIf="data.inputData">
         <input
             id="pop-up-input"
-            [ngClass]="inputWasValid ? 'valid-input' : 'invalid-input'"
+            [ngClass]="inputValid ? 'valid-input' : 'invalid-input'"
             type="text"
             (input)="submitText(input.value)"
             [placeholder]="data.inputData.inputLabel"
             #input
         />
     </div>
-    <img *ngIf="data.imgSrc" [src]="data.imgSrc"/>
+    <img *ngIf="data.imgSrc" [src]="data.imgSrc" />
     <div mat-dialog-actions align="end">
-        <button mat-button id="close-button" [disabled]="!inputWasValid" [mat-dialog-close]="this.inputValue">
+        <button mat-button id="close-button" [disabled]="!inputValid" [mat-dialog-close]="this.value">
             {{ data.closeButtonMessage }}
         </button>
     </div>
 </ol>
-
-<!-- (click)="onCloseClick()" -->
