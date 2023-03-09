@@ -8,7 +8,7 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
-import { MouseService } from '@app/services/mouse.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
