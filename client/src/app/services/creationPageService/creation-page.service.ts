@@ -16,7 +16,17 @@ import { LevelFormData } from '@common/levelFormData';
     providedIn: 'root',
 })
 export class CreationPageService {
-    creationSpecs: CreationSpecs;
+    creationSpecs: CreationSpecs = {
+        defaultImageFile: null,
+        diffImageFile: null,
+        radius: Constants.RADIUS_DEFAULT,
+        nbDifferences: Constants.INIT_DIFF_NB,
+        differences: new LevelDifferences(),
+        defaultArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+        diffArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+        defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
+        diffCanvasCtx: document.createElement('canvas').getContext('2d'),
+    };
     sliderValue = Constants.SLIDER_DEFAULT;
     radiusTable = Constants.RADIUS_TABLE;
     isSaveable = false;
@@ -31,17 +41,17 @@ export class CreationPageService {
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
     ) {
-        this.creationSpecs = {
-            defaultImageFile: null,
-            diffImageFile: null,
-            radius: Constants.RADIUS_DEFAULT,
-            nbDifferences: Constants.INIT_DIFF_NB,
-            differences: new LevelDifferences(),
-            defaultArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
-            diffArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
-            defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
-            diffCanvasCtx: document.createElement('canvas').getContext('2d'),
-        } as CreationSpecs;
+        // this.creationSpecs = {
+        //     defaultImageFile: null,
+        //     diffImageFile: null,
+        //     radius: Constants.RADIUS_DEFAULT,
+        //     nbDifferences: Constants.INIT_DIFF_NB,
+        //     differences: new LevelDifferences(),
+        //     defaultArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+        //     diffArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+        //     defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
+        //     diffCanvasCtx: document.createElement('canvas').getContext('2d'),
+        // } as CreationSpecs;
 
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultCanvasCtx?.canvas as HTMLCanvasElement;
 
