@@ -6,7 +6,7 @@ import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import { ConfigurationComponent } from './configuration.component';
