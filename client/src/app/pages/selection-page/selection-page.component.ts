@@ -2,6 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { Constants } from '@common/constants';
+import { SocketHandler } from '@app/services/socket-handler.service';
+
+interface SelectionData {
+    levelId: number;
+    canJoin: boolean;
+}
 
 @Component({
     selector: 'app-selection-page',
@@ -24,7 +30,7 @@ export class SelectionPageComponent implements OnInit {
     lastPage: number = 0;
     levelToShow: Level[];
 
-    constructor(private communicationService: CommunicationService) {}
+    constructor(private communicationService: CommunicationService, private socketHandler: SocketHandler) {}
 
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
@@ -68,6 +74,19 @@ export class SelectionPageComponent implements OnInit {
             this.lastShownLevel = Constants.levelsPerPage;
             this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
             this.lastPage = Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
+        });
+
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+
+        this.socketHandler.on('game', 'updateSelection', (data) => {
+            const selectionData: SelectionData = data as SelectionData;
+            this.levels.forEach((level) => {
+                if (level.id === selectionData.levelId) {
+                    level.canJoin = selectionData.canJoin;
+                }
+            });
         });
     }
 }

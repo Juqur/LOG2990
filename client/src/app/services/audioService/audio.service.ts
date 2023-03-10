@@ -22,7 +22,17 @@ export class AudioService {
      */
     static quickPlay(path: string): void {
         const audio = new Audio(path);
-        audio.play();
+        const promise = audio.play();
+
+        if (promise) {
+            promise
+                .then(() => {
+                    // Autoplay is allowed.
+                })
+                .catch(() => {
+                    // Autoplay was prevented.
+                });
+        }
     }
 
     /**

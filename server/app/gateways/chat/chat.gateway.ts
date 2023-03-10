@@ -4,7 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from './chat.gateway.constants';
 import { ChatEvents } from './chat.gateway.events';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors: true, namespace: '/chat' })
 @Injectable()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() private server: Server;

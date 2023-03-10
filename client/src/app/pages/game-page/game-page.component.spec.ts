@@ -1,22 +1,21 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ElementRef } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
-import { CounterComponent } from '@app/components/counter/counter.component';
 import { GameChatComponent } from '@app/components/game-chat/game-chat.component';
 import { GameTimerComponent } from '@app/components/game-timer/game-timer.component';
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
+import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { AudioService } from '@app/services/audioService/audio.service';
-// import { CommunicationService } from '@app/services/communication.service';
-import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouse.service';
-import { Constants } from '@common/constants';
+import { GamePageService } from '@app/services/game-page/game-page.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 import { Subject } from 'rxjs';
-import { GamePageComponent } from './game-page.component';
+import { GameData, GamePageComponent } from './game-page.component';
 import SpyObj = jasmine.SpyObj;
 
 describe('GamePageComponent', () => {
@@ -26,20 +25,37 @@ describe('GamePageComponent', () => {
     let subject: Subject<any>;
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
-    // let audioServiceSpy: SpyObj<AudioService>;
-    let drawServiceSpy: SpyObj<DrawService>;
+    let gamePageServiceSpy: SpyObj<GamePageService>;
+    const socketHandlerSpy = {
+        on: jasmine.createSpy(),
+        isSocketAlive: jasmine.createSpy().and.returnValue(false),
+        send: jasmine.createSpy(),
+        connect: jasmine.createSpy(),
+        disconnect: jasmine.createSpy(),
+    };
 
-    const mouseEvent = {
-        offsetX: 100,
-        offsetY: 200,
-        button: 0,
-    } as MouseEvent;
+    const gameData: GameData = {
+        differences: [],
+        amountOfDifferences: 1,
+        amountOfDifferencesSecondPlayer: 1,
+    };
 
     beforeEach(async () => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+        gamePageServiceSpy = jasmine.createSpyObj('GamePageService', [
+            'sendClick',
+            'validateResponse',
+            'setNumberOfDifference',
+            'setDifferenceFound',
+            'getLevelInformation',
+            'setPlayArea',
+            'handleResponse',
+        ]);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
-        // audioServiceSpy = jasmine.createSpyObj('AudioService', ['quickPlay']);
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError']);
+        const canvas = document.createElement('canvas');
+        const nativeElementMock = { nativeElement: canvas };
+        playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
+        playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
         subject = new Subject();
 
         await TestBed.configureTestingModule({
@@ -49,7 +65,6 @@ describe('GamePageComponent', () => {
                 GameTimerComponent,
                 ScaleContainerComponent,
                 GameChatComponent,
-                CounterComponent,
                 ChatMessageComponent,
                 MessageBoxComponent,
             ],
@@ -58,13 +73,15 @@ describe('GamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { params: subject.asObservable(), queryParams: subject.asObservable() } },
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
-                // { provide: AudioService, useValue: audioServiceSpy },
-                { provide: DrawService, useValue: drawServiceSpy },
+                { provide: SocketHandler, useValue: socketHandlerSpy },
+                { provide: GamePageService, useValue: gamePageServiceSpy },
             ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
+        component['diffPlayArea'] = playAreaComponentSpy;
+        component['originalPlayArea'] = playAreaComponentSpy;
         fixture.detectChanges();
     });
 
@@ -72,105 +89,97 @@ describe('GamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call handleAreaFoundInOriginal if difference is found in original', fakeAsync(() => {
+    it('should retrieve the game id from the url', () => {
+        const testParam = { id: 123 };
+        subject.next(testParam);
+        expect(component['levelId']).toEqual(testParam.id);
+    });
+
+    it('should load level and update properties', () => {
+        const testLevel: Level = {
+            id: 1,
+            name: 'test',
+            playerSolo: [],
+            timeSolo: [],
+            playerMulti: [],
+            timeMulti: [],
+            isEasy: false,
+            nbDifferences: 0,
+        };
+        gamePageServiceSpy.getLevelInformation.and.returnValue(testLevel);
+        spyOn(component, 'handleSocket').and.returnValue();
+        component.ngOnInit();
+
+        expect(gamePageServiceSpy.getLevelInformation).toHaveBeenCalledWith(component['levelId']);
+        expect(component.currentLevel).toEqual(testLevel);
+        expect(component.nbDiff).toEqual(testLevel.nbDifferences);
+    });
+
+    it('should properly assign names in a multiplayer game', () => {
+        const data = ['name1', 'name2'];
+        component['playerName'] = 'name1';
+        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+            if (eventName === 'onSecondPlayerJoined') {
+                callback(data);
+            }
+        });
+        component.handleSocket();
+        expect(data).toEqual(['name1', 'name2']);
+        expect(component['secondPlayerName']).toEqual('name2');
+    });
+
+    it('should set the opponents found differences correctly if it is a multiplayer match', () => {
+        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+            if (eventName === 'onProcessedClick') {
+                callback(gameData);
+            }
+        });
+        component.handleSocket();
+        expect(component['secondPlayerDifferencesCount']).toEqual(1);
+    });
+    it('should set the amount of difference found by the player', () => {
+        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+            if (eventName === 'onProcessedClick') {
+                callback(gameData);
+            }
+        });
+        component.handleSocket();
+        expect(component['playerDifferencesCount']).toEqual(1);
+    });
+
+    it('should send mouse position to the server if you click on the original picture', () => {
+        const mousePosition = 1;
         mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([1]));
-        const spy = spyOn(component, 'handleAreaFoundInOriginal');
-        component.clickedOnOriginal(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
+        mouseServiceSpy.getMousePosition.and.returnValue(mousePosition);
+        component.clickedOnOriginal(new MouseEvent('click'));
+        expect(gamePageServiceSpy.sendClick).toHaveBeenCalledWith(mousePosition);
+        expect(mouseServiceSpy.getMousePosition).toHaveBeenCalled();
+        expect(component['clickedOriginalImage']).toBe(true);
+    });
 
-    it('should call handleAreaNotFoundInOriginal if difference is not found in original', fakeAsync(() => {
+    it('should if the mouse position is undefined if clicked on the original image', () => {
+        const mousePosition = 0;
         mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([]));
-        const spy = spyOn(component, 'handleAreaNotFoundInOriginal');
-        component.clickedOnOriginal(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
+        mouseServiceSpy.getMousePosition.and.returnValue(mousePosition);
+        component.clickedOnOriginal(new MouseEvent('click'));
+        expect(gamePageServiceSpy.sendClick).not.toHaveBeenCalled();
+    });
 
-    it('should call handleAreaFoundInDiff if difference is found in diff', fakeAsync(() => {
+    it('should if the mouse position is undefined if clicked on the difference image', () => {
+        const mousePosition = 0;
         mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([1]));
-        const spy = spyOn(component, 'handleAreaFoundInDiff');
-        component.clickedOnDiff(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
+        mouseServiceSpy.getMousePosition.and.returnValue(mousePosition);
+        component.clickedOnDiff(new MouseEvent('click'));
+        expect(gamePageServiceSpy.sendClick).not.toHaveBeenCalled();
+    });
 
-    it('should call handleAreaFoundInDiff if difference is not found in diff', fakeAsync(() => {
+    it('should send mouse position to the server if you click on the difference picture', () => {
+        const mousePosition = 1;
         mouseServiceSpy.getCanClick.and.returnValue(true);
-        mouseServiceSpy.mouseHitDetect.and.returnValue(Promise.resolve([]));
-        const spy = spyOn(component, 'handleAreaNotFoundInDiff');
-        component.clickedOnDiff(mouseEvent);
-        tick();
-        expect(spy).toHaveBeenCalledTimes(1);
-    }));
-
-    it('handleAreaFoundInDiff should call multiple functions', () => {
-        const result = [1, 2, 3];
-        const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
-        const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaFoundInDiff(result);
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
-        expect(component.imagesData).toEqual(result);
-        expect(component.foundADifference).toBe(true);
-        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
-        expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
+        mouseServiceSpy.getMousePosition.and.returnValue(mousePosition);
+        component.clickedOnDiff(new MouseEvent('click'));
+        expect(gamePageServiceSpy.sendClick).toHaveBeenCalledWith(mousePosition);
+        expect(mouseServiceSpy.getMousePosition).toHaveBeenCalled();
+        expect(component['clickedOriginalImage']).toBe(false);
     });
-
-    it('handleAreaFoundInOriginal should call multiple functions', () => {
-        const result = [1, 2, 3];
-        const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
-        const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaFoundInOriginal(result);
-        expect(component.imagesData).toEqual(result);
-        expect(component.foundADifference).toBe(true);
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
-        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
-        expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
-        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
-
-    it('handleAreaNotFoundInOriginal should call multiple functions', () => {
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaNotFoundInOriginal();
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
-
-    it('handleAreaNotFoundInDiff should call multiple functions', () => {
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaNotFoundInDiff();
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
-
-    it('pick should get the color of the canvas', () => {
-        const rgb = component.pick(1, 1);
-        expect(rgb).toEqual('rgba(0, 0, 0, 0)');
-    });
-
-    it('resetCanvas should refresh the area and copy a part of the original canvas', fakeAsync(() => {
-        const spyDiffDrawPlayArea = spyOn(component.diffPlayArea, 'drawPlayArea');
-        const spyOriginalDrawPlayArea = spyOn(component.originalPlayArea, 'drawPlayArea');
-        const copyAreaSpy = spyOn(component, 'copyArea');
-        component.resetCanvas();
-        tick(Constants.millisecondsInOneSecond);
-        expect(spyDiffDrawPlayArea).toHaveBeenCalledTimes(1);
-        expect(spyOriginalDrawPlayArea).toHaveBeenCalledTimes(1);
-        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-        tick(Constants.thirty);
-        expect(copyAreaSpy).toHaveBeenCalledTimes(1);
-    }));
 });

@@ -44,7 +44,7 @@ export class SocketHandler {
      * @param type The gateway to connect to.
      */
     connect(type: string): void {
-        this.sockets.set(type, io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false }));
+        this.sockets.set(type, io(environment.serverUrl, { transports: ['websocket'], upgrade: false }));
     }
 
     /**

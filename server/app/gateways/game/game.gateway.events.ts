@@ -1,0 +1,25 @@
+export enum GameEvents {
+    OnJoinNewGame = 'onJoinNewGame',
+    OnJoinMultiplayerGame = 'onJoinMultiplayerGame',
+    OnClick = 'onClick',
+    OnLeave = 'onLeave',
+    OnSecondPlayerJoined = 'onSecondPlayerJoined',
+    UpdateDifferenceAmount = 'updateDifferenceAmount',
+    OnProcessedClick = 'onProcessedClick',
+    SendTime = 'sendTime',
+    OnDefeat = 'onDefeat',
+    OnVictory = 'onVictory',
+
+    // Game Selection
+    OnGameSelection = 'onGameSelection',
+    OnGameAccepted = 'onGameAccepted',
+    OnGameRejected = 'onGameRejected',
+    OnGameCancelledWhileWaitingForSecondPlayer = 'onGameCancelledWhileWaitingForSecondPlayer',
+    OnGameCancelledWhileWaitingForAcceptation = 'onGameCancelledWhileWaitingForAcceptation',
+    UpdateSelection = 'updateSelection',
+    InvalidName = 'invalidName',
+    ToBeAccepted = 'toBeAccepted',
+    PlayerSelection = 'playerSelection',
+    RejectedGame = 'rejectedGame',
+    StartClassicMultiplayerGame = 'startClassicMultiplayerGame',
+}

@@ -108,7 +108,6 @@ export class PlayAreaComponent implements AfterViewInit {
         area.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % this.width;
             y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
-
             context.fillStyle = 'red';
             context.fillRect(x, y, 1, 1);
         });

@@ -10,7 +10,7 @@ import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.serv
 /**
  * This component represents a pop-up.
  *
- * @author Charles Degrandpré
+ * @author Charles Degrandpré and Junaid Qureshi
  * @class PopUpDialogComponent
  */
 export class PopUpDialogComponent {
