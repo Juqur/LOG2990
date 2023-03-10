@@ -50,4 +50,16 @@ describe('MessageBoxComponent', () => {
 
         expect(el.value).toBe('');
     });
+
+    it('should send a message to the server', () => {
+        const spySocketHandler = jasmine.createSpyObj('socketHandler', ['on', 'isSocketAlive', 'send', 'connect']);
+        component['socketHandler'] = spySocketHandler;
+
+        const messageInput = document.createElement('textarea');
+        messageInput.value = 'Hello, world!';
+        component.sendMessage(messageInput);
+
+        expect(spySocketHandler.send).toHaveBeenCalledWith('chat', 'soloClassic', jasmine.any(Object));
+        expect(messageInput.value).toEqual('');
+    });
 });
