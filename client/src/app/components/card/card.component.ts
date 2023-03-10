@@ -5,12 +5,6 @@ import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.serv
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
-@Component({
-    selector: 'app-card',
-    templateUrl: './card.component.html',
-    styleUrls: ['./card.component.scss'],
-})
-
 /**
  * Component that displays a preview
  * of a level and its difficulty
@@ -18,6 +12,11 @@ import { environment } from 'src/environments/environment';
  * @author Galen Hu
  * @class CardComponent
  */
+@Component({
+    selector: 'app-card',
+    templateUrl: './card.component.html',
+    styleUrls: ['./card.component.scss'],
+})
 export class CardComponent {
     @Input() level: Level = {
         id: 0,
