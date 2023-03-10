@@ -59,8 +59,6 @@ export class CardComponent {
     /**
      * Opens a pop-up to ask the player to enter his name
      * Then redirects to the game page with the right level id, and puts the player name as a query parameter
-     *
-     *
      */
     playSolo(): void {
         this.popUpService.openDialog(this.saveDialogData);
