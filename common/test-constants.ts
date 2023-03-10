@@ -60,4 +60,8 @@ export namespace TestConstants {
         clusters: CLUSTERS_TEST1,
         nbDifferences: 3,
     };
+
+    // Level Service constants
+    export const TIME_CONSTANTS_SOLO = { sixty: 60, sixty_five: 65, seventy: 70 };
+    export const TIME_CONSTANTS_MULTI = { eighty: 80, eighty_three: 83, ninety: 90 };
 }
