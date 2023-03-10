@@ -9,6 +9,7 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
 import { ImageController } from './controllers/image/image.controller';
 import { ImageService } from './services/image/image.service';
+import { GameService } from './services/game/game.service';
 
 @Module({
     imports: [
@@ -27,6 +28,6 @@ import { ImageService } from './services/image/image.service';
         // MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
     controllers: [ImageController],
-    providers: [ChatGateway, GameGateway, ImageService, Logger],
+    providers: [ChatGateway, GameGateway, ImageService, GameService, Logger],
 })
 export class AppModule {}
