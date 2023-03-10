@@ -157,6 +157,39 @@ export class ImageService {
     }
 
     /**
+     * Deletes the level in the json file.
+     *
+     * @param id The id of the level to be deleted.
+     * @returns The confirmation of the deletion.
+     */
+    async deleteLevelData(id: number): Promise<boolean> {
+        try {
+            const level = await this.getLevel(id);
+            if (level === undefined) {
+                return false;
+            }
+
+            const allDifferences = await this.getLevels();
+            const updatedDifferences = allDifferences.filter((difference) => difference.id !== level.id);
+
+            fs.unlink(this.pathDifference + id + '.json', (error) => {
+                throw error;
+            });
+            fs.unlink(this.pathOriginal + id + '.bmp', (error) => {
+                throw error;
+            });
+            fs.unlink(this.pathModified + id + '.bmp', (error) => {
+                throw error;
+            });
+
+            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(updatedDifferences));
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
      * Internal method that generates a message when the level is successfully uploaded.
      *
      * @returns The message that the level was successfully uploaded
