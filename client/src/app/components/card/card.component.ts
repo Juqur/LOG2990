@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
-import { SocketHandler } from '@app/services/socket-handler.service';
 
 @Component({
     selector: 'app-card',
@@ -31,13 +31,13 @@ export class CardComponent {
         nbDifferences: 7,
     };
     @Input() page: string = 'no page';
+    @Input() waitingForSecondPlayer: boolean = true;
+    @Output() resetDialogEvent = new EventEmitter();
 
     imgPath: string = environment.serverUrl + 'originals/';
 
     playerName: string = 'player 1';
     difficulty: string;
-    waitingForSecondPlayer: boolean = true;
-    waitingForAcceptation: boolean = true;
 
     constructor(private router: Router, public popUpService: PopUpService, private socketHandler: SocketHandler) {}
 
@@ -95,64 +95,15 @@ export class CardComponent {
         };
         this.popUpService.openDialog(loadingDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
+            console.log(this.waitingForSecondPlayer);
             if (this.waitingForSecondPlayer) {
                 this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
             }
         });
-        this.socketHandler.on('game', 'invalidName', () => {
-            this.popUpService.dialogRef.close();
-            const invalidNameDialogData: DialogData = {
-                textToSend: 'Le nom choisi est trop court, veuillez en choisir un autre',
-                closeButtonMessage: 'OK',
-            };
-            this.popUpService.openDialog(invalidNameDialogData);
-        });
-        this.socketHandler.on('game', 'toBeAccepted', () => {
-            this.waitingForSecondPlayer = false;
-            this.popUpService.dialogRef.close();
-            const toBeAcceptedDialogData: DialogData = {
-                textToSend: "Partie trouvée ! En attente de l'approbation de l'autre joueur.",
-                closeButtonMessage: 'Annuler',
-            };
-            this.popUpService.openDialog(toBeAcceptedDialogData);
-            this.popUpService.dialogRef.afterClosed().subscribe(() => {
-                if (this.waitingForAcceptation) {
-                    this.socketHandler.send('game', 'onGameCancelledWhileWaitingForAcceptation', {});
-                }
-            });
-        });
-        this.socketHandler.on('game', 'playerSelection', (name) => {
-            this.waitingForSecondPlayer = false;
-            this.popUpService.dialogRef.close();
-            const toBeAcceptedDialogData: DialogData = {
-                textToSend: 'Voulez-vous autoriser ' + name + ' à participer à votre jeu ?',
-                closeButtonMessage: 'Annuler',
-                isConfirmation: true,
-            };
-            this.popUpService.openDialog(toBeAcceptedDialogData);
-            this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
-                if (confirmation) {
-                    this.socketHandler.send('game', 'onGameAccepted', {});
-                } else if (this.waitingForAcceptation) {
-                    this.socketHandler.send('game', 'onGameRejected', {});
-                }
-            });
-        });
-        this.socketHandler.on('game', 'startClassicMultiplayerGame', (name) => {
-            this.waitingForAcceptation = false;
-            this.popUpService.dialogRef.close();
-            this.router.navigate([`/game/${this.level.id}/`], {
-                queryParams: { playerName: this.playerName, opponent: name },
-            });
-        });
-
-        this.socketHandler.on('game', 'rejectedGame', () => {
-            this.waitingForAcceptation = false;
-            this.popUpService.dialogRef.close();
-        });
     }
 
-    playMuliplayer(): void {
+    playMultiplayer(): void {
+        this.resetDialogEvent.emit();
         const saveDialogData: DialogData = {
             textToSend: 'Veuillez entrer votre nom',
             inputData: {
@@ -170,6 +121,7 @@ export class CardComponent {
         this.popUpService.openDialog(saveDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
+                this.waitingForSecondPlayer = true;
                 this.playerName = result;
                 this.waitForMatch(result);
             }

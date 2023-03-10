@@ -1,12 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { Constants } from '@common/constants';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
+import { Constants } from '@common/constants';
 
 interface SelectionData {
     levelId: number;
     canJoin: boolean;
+}
+
+interface StartGameData {
+    levelId: number;
+    playerName: string;
+    secondPlayerName: string;
 }
 
 @Component({
@@ -29,8 +37,15 @@ export class SelectionPageComponent implements OnInit {
     lastShownLevel: number = 0;
     lastPage: number = 0;
     levelToShow: Level[];
+    waitingForSecondPlayer: boolean = true;
+    waitingForAcceptation: boolean = true;
 
-    constructor(private communicationService: CommunicationService, private socketHandler: SocketHandler) {}
+    constructor(
+        private communicationService: CommunicationService,
+        private socketHandler: SocketHandler,
+        private router: Router,
+        private popUpService: PopUpService,
+    ) {}
 
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentPage++;
@@ -67,6 +82,12 @@ export class SelectionPageComponent implements OnInit {
         return this.currentPage >= this.lastPage;
     }
 
+    resetDialog(): void {
+        this.waitingForSecondPlayer = true;
+        this.waitingForAcceptation = true;
+        console.log('resetDialog');
+    }
+
     ngOnInit(): void {
         this.communicationService.getLevels().subscribe((value) => {
             this.levels = value;
@@ -78,15 +99,72 @@ export class SelectionPageComponent implements OnInit {
 
         if (!this.socketHandler.isSocketAlive('game')) {
             this.socketHandler.connect('game');
-        }
-
-        this.socketHandler.on('game', 'updateSelection', (data) => {
-            const selectionData: SelectionData = data as SelectionData;
-            this.levels.forEach((level) => {
-                if (level.id === selectionData.levelId) {
-                    level.canJoin = selectionData.canJoin;
-                }
+            this.socketHandler.on('game', 'updateSelection', (data) => {
+                const selectionData: SelectionData = data as SelectionData;
+                this.levels.forEach((level) => {
+                    if (level.id === selectionData.levelId) {
+                        level.canJoin = selectionData.canJoin;
+                    }
+                });
             });
-        });
+            this.socketHandler.on('game', 'invalidName', () => {
+                this.popUpService.dialogRef.close();
+                const invalidNameDialogData: DialogData = {
+                    textToSend: 'Le nom choisi est trop court, veuillez en choisir un autre',
+                    closeButtonMessage: 'OK',
+                };
+                this.popUpService.openDialog(invalidNameDialogData);
+            });
+            this.socketHandler.on('game', 'toBeAccepted', () => {
+                console.log('toBeAccepted');
+                this.waitingForSecondPlayer = false;
+                this.popUpService.dialogRef.close();
+                const toBeAcceptedDialogData: DialogData = {
+                    textToSend: "Partie trouvée ! En attente de l'approbation de l'autre joueur.",
+                    closeButtonMessage: 'Annuler',
+                };
+                this.popUpService.openDialog(toBeAcceptedDialogData);
+                this.popUpService.dialogRef.afterClosed().subscribe(() => {
+                    if (this.waitingForAcceptation) {
+                        this.socketHandler.send('game', 'onGameCancelledWhileWaitingForAcceptation', {});
+                    }
+                });
+            });
+            this.socketHandler.on('game', 'playerSelection', (name) => {
+                console.log('playerSelection');
+                this.waitingForSecondPlayer = false;
+                this.popUpService.dialogRef.close();
+                const toBeAcceptedDialogData: DialogData = {
+                    textToSend: 'Voulez-vous autoriser ' + name + ' à participer à votre jeu ?',
+                    closeButtonMessage: 'Annuler',
+                    isConfirmation: true,
+                };
+                this.popUpService.openDialog(toBeAcceptedDialogData);
+                this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+                    if (confirmation) {
+                        this.socketHandler.send('game', 'onGameAccepted', {});
+                    } else if (this.waitingForAcceptation) {
+                        this.socketHandler.send('game', 'onGameRejected', {});
+                    }
+                });
+            });
+            this.socketHandler.on('game', 'startClassicMultiplayerGame', (data) => {
+                const startGameData: StartGameData = data as StartGameData;
+                console.log('startClassicMultiplayerGame');
+                this.waitingForAcceptation = false;
+                this.waitingForSecondPlayer = false;
+                this.popUpService.dialogRef.close();
+                this.router.navigate([`/game/${startGameData.levelId}/`], {
+                    queryParams: { playerName: startGameData.playerName, opponent: startGameData.secondPlayerName },
+                });
+            });
+
+            this.socketHandler.on('game', 'rejectedGame', () => {
+                console.log('rejectedGame');
+                this.waitingForAcceptation = false;
+                this.waitingForSecondPlayer = false;
+                this.popUpService.dialogRef.close();
+            });
+        }
     }
 }

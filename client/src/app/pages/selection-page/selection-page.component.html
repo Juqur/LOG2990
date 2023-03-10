@@ -7,7 +7,13 @@
         </header>
 
         <body *ngIf="levels" class="selection-card-container">
-            <app-card *ngFor="let level of levelToShow" [level]="level" [page]="'selection'"></app-card>
+            <app-card
+                *ngFor="let level of levelToShow"
+                (resetDialogEvent)="resetDialog()"
+                [level]="level"
+                [page]="'selection'"
+                [waitingForSecondPlayer]="waitingForSecondPlayer"
+            ></app-card>
         </body>
 
         <footer class="bottom-container">
