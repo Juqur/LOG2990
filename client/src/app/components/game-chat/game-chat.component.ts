@@ -15,7 +15,7 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @class GameChatComponent
  */
 export class GameChatComponent implements OnInit {
-    messages: Message[];
+    messages: Message[] = [];
 
     constructor(private socketHandler: SocketHandler) {}
 

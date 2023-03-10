@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
+import { Message } from '@app/messages';
 
 import { MessageBoxComponent } from './message-box.component';
 
@@ -30,6 +31,12 @@ describe('MessageBoxComponent', () => {
         document.getElementById('send-icon')?.dispatchEvent(new Event('click'));
 
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('createMessage should return a valid message', () => {
+        const message: Message = { sender: '', text: 'someValue', playerId: 0 }; // test is not checking for sender
+        const returnedMessage: Message = component.createMessage('someValue'); // has to be updated when sender is added
+        expect(returnedMessage).toEqual(message);
     });
 
     it('Clicking on the icon should remove the current display message', () => {

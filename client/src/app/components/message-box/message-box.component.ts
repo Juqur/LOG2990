@@ -32,7 +32,7 @@ export class MessageBoxComponent implements OnInit {
         return {
             sender: this.displayName,
             text: message,
-            playerId: 0,
+            playerId: 0, // TODO: get the player id
         };
     }
 
@@ -44,8 +44,12 @@ export class MessageBoxComponent implements OnInit {
     sendMessage(messageInput: HTMLTextAreaElement): void {
         const text: string = messageInput.value;
         this.socketHandler.send('chat', 'soloClassic', this.createMessage(text));
+        messageInput.value = '';
     }
 
+    /**
+     * starts the socket if it was not already started.
+     */
     createSocket(): void {
         if (!this.socketHandler.isSocketAlive('chat')) {
             this.socketHandler.connect('chat');
