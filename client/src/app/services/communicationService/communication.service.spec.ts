@@ -1,8 +1,10 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Level } from '@app/levels';
-import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
+import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
+import { environment } from 'src/environments/environment';
 
 describe('CommunicationService', () => {
     let httpMock: HttpTestingController;
@@ -39,22 +41,9 @@ describe('CommunicationService', () => {
             expect(res).toEqual(fakeLevel);
         });
 
-        const req = httpMock.expectOne('http://localhost:3000/api/image/1');
+        const req = httpMock.expectOne(environment.serverUrl + 'api/image/1');
         expect(req.request.method).toEqual('GET');
         req.flush(fakeLevel);
-    });
-
-    it('getMessage should call http get with the correct path', () => {
-        const fakeMessage = { title: 'Hello, world!', body: 'the code works' } as Message;
-        const path = '/some/path';
-
-        service.getMessage(path).subscribe((res) => {
-            expect(res).toEqual(fakeMessage);
-        });
-
-        const req = httpMock.expectOne(`http://localhost:3000/api${path}`);
-        expect(req.request.method).toEqual('GET');
-        req.flush(fakeMessage);
     });
 
     it('should make an http GET request for levels', () => {
@@ -64,39 +53,13 @@ describe('CommunicationService', () => {
             { id: 2, name: 'Level 2' },
         ] as Level[];
 
-        service.getLevels(path).subscribe((response) => {
+        service.getLevels().subscribe((response) => {
             expect(response).toEqual(levels);
         });
 
         const req = httpMock.expectOne(`${service['baseUrl']}api${path}`);
         expect(req.request.method).toEqual('GET');
         req.flush(levels);
-    });
-
-    it('should make an http GET request for an unknown type', () => {
-        const path = '/unknown';
-        const data = 'response data';
-
-        service.get(path).subscribe((response) => {
-            expect(response).toEqual(data);
-        });
-
-        const req = httpMock.expectOne(`${service['baseUrl']}api${path}`);
-        expect(req.request.method).toEqual('GET');
-        req.flush(data);
-    });
-
-    it('should make an http GET request for difference count', () => {
-        const differenceFile = 'someFile';
-        const count = 5;
-
-        service.getDifferenceCount(differenceFile).subscribe((response) => {
-            expect(response).toEqual(count);
-        });
-
-        const req = httpMock.expectOne(`${service['baseUrl']}api/image/differenceCount/${differenceFile}`);
-        expect(req.request.method).toEqual('GET');
-        req.flush(count);
     });
 
     it('should make an http POST request for difference count', () => {
@@ -113,7 +76,15 @@ describe('CommunicationService', () => {
     });
 
     it('should make an http POST request for level', () => {
-        const level: FormData = new FormData();
+        const blob = new Blob([''], { type: 'text/html' });
+        const level: LevelFormData = {
+            imageOriginal: blob as File,
+            imageDiff: blob as File,
+            name: '',
+            isEasy: '',
+            clusters: '',
+            nbDifferences: '',
+        };
         const fakeMessage = { title: 'Hello, world!', body: 'Successfully received' } as Message;
 
         service.postLevel(level).subscribe((response) => {
@@ -141,14 +112,13 @@ describe('CommunicationService', () => {
     });
 
     it('should make an http POST request new game', () => {
-        const path = '/new';
         const imageName = 'someImage';
 
-        service.postNewGame(path, imageName).subscribe((res) => {
+        service.postNewGame(imageName).subscribe((res) => {
             expect(res).toEqual(imageName);
         });
 
-        const req = httpMock.expectOne(`${service['baseUrl']}api/new`);
+        const req = httpMock.expectOne(`${service['baseUrl']}api/game`);
         expect(req.request.method).toEqual('POST');
         expect(req.request.body).toEqual({ imageId: 'someImage' });
         req.flush(imageName);
