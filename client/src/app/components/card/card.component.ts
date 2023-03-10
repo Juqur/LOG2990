@@ -30,7 +30,6 @@ export class CardComponent {
     };
 
     @Input() isSelectionPage: boolean = true;
-    imgPath: string = environment.serverUrl + 'originals/';
 
     imgPath: string = environment.serverUrl + 'originals/';
 
