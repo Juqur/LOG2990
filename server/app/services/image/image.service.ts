@@ -140,13 +140,13 @@ export class ImageService {
             allDifferences.push(level);
 
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.rename(levelData.imageOriginal.path, this.pathOriginal + newId + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
             await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(allDifferences));
 
@@ -173,15 +173,14 @@ export class ImageService {
             const updatedDifferences = allDifferences.filter((difference) => difference.id !== level.id);
 
             fs.unlink(this.pathDifference + id + '.json', (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.unlink(this.pathOriginal + id + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.unlink(this.pathModified + id + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
-
             await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(updatedDifferences));
             return true;
         } catch (error) {

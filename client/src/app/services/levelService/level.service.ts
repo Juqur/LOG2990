@@ -83,9 +83,7 @@ export class LevelService {
     }
 
     deleteLevel(levelId: number): void {
-        console.log('delete leveled called');
         this.communicationService.deleteLevel(levelId).subscribe((confirmation) => {
-            console.log(confirmation);
             if (confirmation) {
                 this.levels = this.levels.filter((level) => level.id !== levelId);
                 this.updatePageLevels();
