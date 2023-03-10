@@ -4,7 +4,8 @@
     </div>
     <div class="image-container">
         <img src="{{ imgPath + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
-        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon" />
+        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon"
+            alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
     </div>
     <div class="card-content">
         <div class="carousel-container">
