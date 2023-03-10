@@ -6,6 +6,7 @@ import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 import { GameEvents } from './game.gateway.events';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+
 describe('GameGateway', () => {
     let gateway: GameGateway;
     let socket: SinonStubbedInstance<Socket>;
