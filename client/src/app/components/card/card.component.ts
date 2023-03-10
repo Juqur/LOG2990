@@ -39,7 +39,7 @@ export class CardComponent {
         inputData: {
             inputLabel: 'Nom du joueur',
             submitFunction: (value) => {
-                return value.length >= 1 && value.length <= Constants.twenty;
+                return value.length >= 1 && value.length <= Constants.MAX_NAME_LENGTH;
             },
             returnValue: '',
         },
