@@ -4,6 +4,7 @@ import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
+import { environment } from 'src/environments/environment';
 
 describe('CommunicationService', () => {
     let httpMock: HttpTestingController;
@@ -40,7 +41,7 @@ describe('CommunicationService', () => {
             expect(res).toEqual(fakeLevel);
         });
 
-        const req = httpMock.expectOne('http://localhost:3000/api/image/1');
+        const req = httpMock.expectOne(environment.serverUrl + 'api/image/1');
         expect(req.request.method).toEqual('GET');
         req.flush(fakeLevel);
     });
@@ -75,7 +76,6 @@ describe('CommunicationService', () => {
     });
 
     it('should make an http POST request for level', () => {
-        // const level: FormData = new FormData();
         const blob = new Blob([''], { type: 'text/html' });
         const level: LevelFormData = {
             imageOriginal: blob as File,

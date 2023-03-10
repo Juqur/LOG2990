@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { CanvasSharingService } from '@app/services/canvas-sharing.service';
-import { DrawService } from '@app/services/draw.service';
+import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -75,11 +75,11 @@ export class PlayAreaComponent implements AfterViewInit {
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
-                this.canvasSharing.setDefaultCanvasRef(this.canvas.nativeElement);
+                this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             } else {
                 // Diff canvas (right canvas)
-                this.canvasSharing.setDiffCanvasRef(this.canvas.nativeElement);
+                this.canvasSharing.diffCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             }
             this.currentImage = new Image();
@@ -94,11 +94,10 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     /**
-     * flash the area of the canvas red
+     * Fills a given area of the canvas in red.
      *
      * @param area the area to flash
      */
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     flashArea(area: number[]) {
         let x = 0;
         let y = 0;
@@ -116,10 +115,10 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     /**
-     * timeout function
+     * This function creates a new timeout with a given time in milliseconds as a parameter.
      *
      * @param ms a number of milliseconds
-     * @returns a promise that resolves after ms milliseconds
+     * @return promise that resolves after ms milliseconds
      */
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
