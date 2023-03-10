@@ -34,6 +34,10 @@ export class GamePageService {
         textToSend: 'Vous avez gagné!',
         closeButtonMessage: 'Retour au menu de sélection',
     };
+    private loseDialogData: DialogData = {
+        textToSend: 'Vous avez perdu!',
+        closeButtonMessage: 'Retour au menu de sélection',
+    };
     private closePath: string = '/selection';
 
     // eslint-disable-next-line max-params
@@ -95,16 +99,15 @@ export class GamePageService {
     getLevelInformation(levelId: number): Level | undefined {
         this.originalImageSource = 'http://localhost:3000/originals/' + levelId + '.bmp';
         this.diffImageSource = 'http://localhost:3000/modifiees/' + levelId + '.bmp';
-        let level: Level | undefined;
         try {
             this.communicationService.getLevel(levelId).subscribe((value) => {
                 this.setNumberOfDifference(value.nbDifferences);
-                level = value;
+                return value;
             });
         } catch (error) {
             throw new Error("Couldn't load level: " + error);
         }
-        return level;
+        return undefined;
     }
 
     /**
@@ -129,11 +132,22 @@ export class GamePageService {
             }
         }
         if (response === Constants.minusOne) {
-            this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-            this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-            this.audioService.reset();
-            this.audioService.play();
+            this.handleVictory();
         }
+    }
+
+    handleVictory(): void {
+        this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.reset();
+        this.audioService.play();
+    }
+
+    handleDefeat(): void {
+        this.popUpService.openDialog(this.loseDialogData, this.closePath);
+        this.audioService.create('./assets/audio/LossSound.mp3');
+        this.audioService.reset();
+        this.audioService.play();
     }
 
     /**
