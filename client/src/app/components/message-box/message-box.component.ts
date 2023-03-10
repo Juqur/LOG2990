@@ -42,8 +42,8 @@ export class MessageBoxComponent implements OnInit {
      * @param messageInput the HTML input containing the message.
      */
     sendMessage(messageInput: HTMLTextAreaElement): void {
-        messageInput.value = '';
-        this.socketHandler.send('chat', 'soloClassic', this.createMessage(document.getElementById('message-input').value));
+        const text: string = messageInput.value;
+        this.socketHandler.send('chat', 'soloClassic', this.createMessage(text));
     }
 
     createSocket(): void {
