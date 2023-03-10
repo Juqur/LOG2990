@@ -7,7 +7,7 @@
         </header>
 
         <body *ngIf="levels" class="selection-card-container">
-            <app-card *ngFor="let level of levelToShow" [level]="level" [page]="'selection'"></app-card>
+            <app-card *ngFor="let level of levelToShow" [level]="level" [isSelectionPage]="true"></app-card>
         </body>
 
         <footer class="bottom-container">
