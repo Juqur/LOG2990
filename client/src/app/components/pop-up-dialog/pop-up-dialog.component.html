@@ -12,7 +12,11 @@
     </div>
     <img *ngIf="data.imgSrc" [src]="data.imgSrc" />
     <div mat-dialog-actions align="end">
-        <button mat-button id="close-button" [disabled]="!inputValid" [mat-dialog-close]="this.value">
+        <div *ngIf="data.isConfirmation">
+            <button mat-button id="decline-button" [mat-dialog-close]="false">Refuser</button>
+            <button mat-button id="accept-button" [mat-dialog-close]="true">Accepter</button>
+        </div>
+        <button *ngIf="!data.isConfirmation" mat-button id="close-button" [disabled]="!inputValid" [mat-dialog-close]="this.value">
             {{ data.closeButtonMessage }}
         </button>
     </div>
