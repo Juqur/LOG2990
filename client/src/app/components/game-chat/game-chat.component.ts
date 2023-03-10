@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Message } from '@app/messages';
+import { ChatMessage } from '@common/chat-messages';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @class GameChatComponent
  */
 export class GameChatComponent implements OnInit {
-    messages: Message[] = [];
+    messages: ChatMessage[] = [];
 
     constructor(private socketHandler: SocketHandler) {}
 
@@ -23,18 +23,17 @@ export class GameChatComponent implements OnInit {
      * Method in charge of creating a new message once it has been received by the server.
      *
      */
-    receiveMessage(message: Message): void {
+    receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
     }
 
     listenForMessages(): void {
-        if (!this.socketHandler.isSocketAlive('chat')) {
-            this.socketHandler.connect('chat');
-            this.socketHandler.send('chat', 'soloClassic');
-            this.socketHandler.on('chat', 'message', (message: Message) => {
-                this.receiveMessage(message);
-            });
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
         }
+        this.socketHandler.on('game', 'messageSent', (message: ChatMessage) => {
+            this.receiveMessage(message);
+        });
     }
 
     ngOnInit(): void {

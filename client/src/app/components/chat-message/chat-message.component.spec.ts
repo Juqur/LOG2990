@@ -12,9 +12,9 @@ describe('ChatMessageComponent', () => {
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
         component['textMessage'] = {
+            playerId: '1',
             sender: 'I am a super long name',
             text: 'Hello world',
-            playerId: 1,
         };
         fixture.detectChanges();
     });
@@ -24,7 +24,7 @@ describe('ChatMessageComponent', () => {
     });
 
     it('Chat message should display the name with the appropriate length', () => {
-        component['textMessage'] = { sender: 'Charles', text: 'Hello world', playerId: 1 };
+        component['textMessage'] = { playerId: '1', sender: 'Charles', text: 'Hello world' };
 
         component.ngOnInit();
 
@@ -56,9 +56,9 @@ describe('ChatMessageComponent', () => {
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
         component['textMessage'] = {
+            playerId: '2',
             sender: 'I am a super long name',
             text: 'Hello world',
-            playerId: 2,
         };
         fixture.detectChanges();
         spyOn(component, 'formatNameLength');

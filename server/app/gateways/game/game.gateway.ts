@@ -1,4 +1,5 @@
 import { ImageService } from '@app/services/image/image.service';
+import { ChatMessage } from '@common/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { randomUUID } from 'crypto';
@@ -64,6 +65,12 @@ export class GameGateway {
             socket.emit(GameEvents.SendTime, time + 1);
         }, DELAY_BEFORE_EMITTING_TIME);
         this.timeIntervalMap.set(socket.id, interval);
+        const message: ChatMessage = {
+            playerId: socket.id,
+            sender: 'Server',
+            text: 'THE GAME HAS STARTED!',
+        };
+        socket.emit(GameEvents.MessageSent, message);
     }
 
     @SubscribeMessage(GameEvents.OnClick)
@@ -194,6 +201,12 @@ export class GameGateway {
         this.playerGameMap.delete(socket.id);
         secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
+
+    // @SubscribeMessage(GameEvents.OnMessageReception)
+    // onMessageReception(socket: Socket): void {
+    //     const player1id = socket.id;
+    //     secondPlayerSocket.emit(GameEvents.RejectedGame);
+    // }
 
     /**
      * This method is called when a player disconnects.

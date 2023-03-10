@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Message } from '@app/messages';
+import { ChatMessage } from '@common/chat-messages';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -16,7 +16,7 @@ import { Constants } from '@common/constants';
  */
 export class ChatMessageComponent implements OnInit {
     private displayName: string;
-    private textMessage: Message;
+    private textMessage: ChatMessage;
 
     /**
      * Getter for the display name attribute.
@@ -28,12 +28,12 @@ export class ChatMessageComponent implements OnInit {
     /**
      * Getter for the textMessage attribute
      */
-    get message(): Message {
+    get message(): ChatMessage {
         return this.textMessage;
     }
 
     @Input()
-    set message(message: Message) {
+    set message(message: ChatMessage) {
         this.textMessage = message;
     }
 

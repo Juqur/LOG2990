@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Message } from '@app/messages';
+import { ChatMessage } from '@common/chat-messages';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
@@ -28,11 +28,11 @@ export class MessageBoxComponent implements OnInit {
     /**
      * returns a Message object with the given message and the display name.
      */
-    createMessage(message: string): Message {
+    createMessage(message: string): ChatMessage {
         return {
+            playerId: '0', // TODO: get the player id
             sender: this.displayName,
             text: message,
-            playerId: 0, // TODO: get the player id
         };
     }
 

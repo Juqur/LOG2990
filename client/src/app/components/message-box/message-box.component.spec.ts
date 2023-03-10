@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
-import { Message } from '@app/messages';
+import { ChatMessage } from '@common/chat-messages';
 
 import { MessageBoxComponent } from './message-box.component';
 
@@ -34,8 +34,8 @@ describe('MessageBoxComponent', () => {
     });
 
     it('createMessage should return a valid message', () => {
-        const message: Message = { sender: '', text: 'someValue', playerId: 0 }; // test is not checking for sender
-        const returnedMessage: Message = component.createMessage('someValue'); // has to be updated when sender is added
+        const message: ChatMessage = { playerId: '0', sender: '', text: 'someValue' }; // test is not checking for sender
+        const returnedMessage: ChatMessage = component.createMessage('someValue'); // has to be updated when sender is added
         expect(returnedMessage).toEqual(message);
     });
 

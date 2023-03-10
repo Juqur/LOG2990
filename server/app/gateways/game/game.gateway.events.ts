@@ -9,6 +9,8 @@ export enum GameEvents {
     SendTime = 'sendTime',
     OnDefeat = 'onDefeat',
     OnVictory = 'onVictory',
+    OnMessageReception = 'onMessageReception',
+    MessageSent = 'messageSent',
 
     // Game Selection
     OnGameSelection = 'onGameSelection',
