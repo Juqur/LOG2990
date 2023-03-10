@@ -70,4 +70,19 @@ export class CardComponent {
             }
         });
     }
+
+    deleteLevel(levelId: number): void {
+        console.log(levelId);
+        const dataDialog: DialogData = {
+            textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
+            isConfirmation: true,
+            closeButtonMessage: '',
+        };
+        this.popUpService.openDialog(dataDialog);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                console.log('delete level');
+            }
+        });
+    }
 }
