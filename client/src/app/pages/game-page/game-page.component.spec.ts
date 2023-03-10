@@ -9,7 +9,6 @@ import { GameTimerComponent } from '@app/components/game-timer/game-timer.compon
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
-import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
@@ -47,7 +46,7 @@ describe('GamePageComponent', () => {
             'validateResponse',
             'setNumberOfDifference',
             'setDifferenceFound',
-            'getLevelInformation',
+            'setImages',
             'setPlayArea',
             'handleResponse',
         ]);
@@ -93,39 +92,6 @@ describe('GamePageComponent', () => {
         const testParam = { id: 123 };
         subject.next(testParam);
         expect(component['levelId']).toEqual(testParam.id);
-    });
-
-    it('should load level and update properties', () => {
-        const testLevel: Level = {
-            id: 1,
-            name: 'test',
-            playerSolo: [],
-            timeSolo: [],
-            playerMulti: [],
-            timeMulti: [],
-            isEasy: false,
-            nbDifferences: 0,
-        };
-        gamePageServiceSpy.getLevelInformation.and.returnValue(testLevel);
-        spyOn(component, 'handleSocket').and.returnValue();
-        component.ngOnInit();
-
-        expect(gamePageServiceSpy.getLevelInformation).toHaveBeenCalledWith(component['levelId']);
-        expect(component.currentLevel).toEqual(testLevel);
-        expect(component.nbDiff).toEqual(testLevel.nbDifferences);
-    });
-
-    it('should properly assign names in a multiplayer game', () => {
-        const data = ['name1', 'name2'];
-        component['playerName'] = 'name1';
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onSecondPlayerJoined') {
-                callback(data);
-            }
-        });
-        component.handleSocket();
-        expect(data).toEqual(['name1', 'name2']);
-        expect(component['secondPlayerName']).toEqual('name2');
     });
 
     it('should set the opponents found differences correctly if it is a multiplayer match', () => {

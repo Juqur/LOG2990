@@ -1,20 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 //  TODO FIX THE LINT ISSUE, I CURRENTLY DO NOT KNOW HOW
+import { HttpClientModule } from '@angular/common/http';
+import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { GameData } from '@app/pages/game-page/game-page.component';
+import { AudioService } from '@app/services/audioService/audio.service';
+import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
+import { DrawService } from '@app/services/drawService/draw.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GamePageService } from './game-page.service';
-import { HttpClientModule } from '@angular/common/http';
-import { MouseService } from '@app/services/mouseService/mouse.service';
-import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { AudioService } from '@app/services/audioService/audio.service';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { DrawService } from '@app/services/drawService/draw.service';
-import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
-import { Level } from '@app/levels';
-import { of } from 'rxjs';
-import { GameData } from '@app/pages/game-page/game-page.component';
-import { ElementRef } from '@angular/core';
 
 describe('GamePageService', () => {
     let service: GamePageService;
@@ -93,31 +91,6 @@ describe('GamePageService', () => {
         service.setPlayArea(playArea, playArea);
         expect(service['originalPlayArea']).toEqual(playArea);
         expect(service['diffPlayArea']).toEqual(playArea);
-    });
-
-    it('should load level and update properties', () => {
-        const testLevel: Level = {
-            id: 1,
-            name: 'test',
-            playerSolo: [],
-            timeSolo: [],
-            playerMulti: [],
-            timeMulti: [],
-            isEasy: false,
-            nbDifferences: 0,
-        };
-        spyOn(service['communicationService'], 'getLevel').and.returnValue(of(testLevel));
-        const value = service.getLevelInformation(1);
-        expect(value).toEqual(testLevel);
-    });
-
-    it('should throw an error if the level is not found', () => {
-        const errorMessage = 'test error';
-        spyOn(service['communicationService'], 'getLevel').and.throwError(errorMessage);
-
-        expect(() => {
-            service.getLevelInformation(1);
-        }).toThrowError("Couldn't load level: Error: " + errorMessage);
     });
 
     it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
