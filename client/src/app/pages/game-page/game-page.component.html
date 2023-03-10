@@ -26,7 +26,7 @@
                 <span id="nb-hints">indices restants</span>
             </div>
             <app-play-area [isDiff]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
-            <app-play-area #tempDiffPlayArea style="display: none"></app-play-area>
+            <app-play-area #tempDiffPlayArea class="tempDiffPlayArea"></app-play-area>
         </section>
         <section id="bottom-area">
             <app-game-chat></app-game-chat>

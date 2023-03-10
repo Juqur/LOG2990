@@ -3,133 +3,90 @@ import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
 /**
- * The different possible gateways to connect sockets to.
+ * The service in charge of manipulating socket connections.
+ *
+ * @author Junaid Qureshi & Pierre Tran
+ * @class SocketHandler
  */
-export enum Gateways {
-    Timer = 'timer',
-    Chat = 'chat',
-}
-
 @Injectable({
     providedIn: 'root',
 })
-/**
- * The service in charge of manipulating socket connections.
- *
- * @author Junaid Qureshi
- * @class SocketHandler
- */
 export class SocketHandler {
-    socketTimer: Socket;
-    socketChat: Socket;
-    private serverUrl: string = environment.serverUrl;
+    private sockets: Map<string, Socket> = new Map<string, Socket>();
+
+    /**
+     * Gets the socket of its kind, according to the given gateway.
+     *
+     * @param type The socket's gateway.
+     * @returns The socket of the given gateway.
+     */
+    getSocket(gateway: string): Socket | undefined {
+        return this.sockets.get(gateway);
+    }
 
     /**
      * This method verifies if a socket is connected at the given gateway.
-     * It first checks if we created a socket of a given gateway and if that socket is currently
-     * connected.
      *
-     * @param type The gateway we wish to check if the socket is connected.
+     * @param type The gateway we wish to check if the socket is connected or even exists.
      * @returns a boolean indicating if a socket is alive at a given gateway.
      */
-    isSocketAlive(type: Gateways): boolean {
-        switch (type) {
-            case Gateways.Timer:
-                return this.socketTimer && this.socketTimer.connected;
-            case Gateways.Chat:
-                return this.socketChat && this.socketChat.connected;
-        }
+    isSocketAlive(gateway: string): boolean {
+        const socket = this.getSocket(gateway);
+        return socket !== undefined && socket.connected;
     }
 
     /**
      * Connects a socket to a given gateway.
+     * URI : Combination of server.url and the gateway type.
+     * Transport method specified as websocket.
+     * Upgrade to a better transport method as false.
      *
-     * @param type the gateway to connect to.
+     * @param type The gateway to connect to.
      */
-    connect(type: Gateways) {
-        switch (type) {
-            case Gateways.Timer:
-                /**
-                 * The following line does this: it tries to create a socket connected to the server
-                 * at the given url, which in our case is a combination of server.url and the gateway type.
-                 * We then specify what transport method we would like to use, websocket in our case, and if
-                 * the connection should try to upgrade to a better transport method if possible, which we put
-                 * as false.
-                 */
-                this.socketTimer = io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false });
-                break;
-            case Gateways.Chat:
-                this.socketChat = io(this.serverUrl + type, { transports: ['websocket'], upgrade: false });
-                break;
-        }
+    connect(type: string): void {
+        this.sockets.set(type, io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false }));
     }
 
     /**
      * Disconnects the socket of a give gateway.
      *
-     * @param type the gateway to disconnect from.
+     * @param type The gateway to disconnect from.
      */
-    disconnect(type: Gateways) {
-        switch (type) {
-            case Gateways.Timer:
-                this.socketTimer.disconnect();
-                break;
-            case Gateways.Chat:
-                this.socketChat.disconnect();
-                break;
-        }
+    disconnect(gateway: string): void {
+        this.getSocket(gateway)?.disconnect();
     }
 
     /**
      * Disconnect all sockets to every gateway.
      */
-    disconnectAll() {
-        this.socketChat.disconnect();
-        this.socketTimer.disconnect();
+    disconnectAll(): void {
+        this.sockets.forEach((socket) => socket.disconnect());
     }
 
     /**
      * Associates a given event with an action and a gateway and executes said action on even for the
      * given gateway.
      *
-     * @param event the event to process
-     * @param action the action to perform on that event
-     * @param type the socket on which this should all be performed.
+     * @param type The gateway on which this should all be performed.
+     * @param event The event to process
+     * @param action The action to perform on that event
      */
-    on<T>(event: string, action: (data: T) => void, type: Gateways): void {
-        switch (type) {
-            case Gateways.Timer:
-                this.socketTimer.on(event, action);
-                break;
-            case Gateways.Chat:
-                this.socketChat.on(event, action);
-                break;
-        }
+    on<T>(gateway: string, event: string, action: (data: T) => void): void {
+        this.getSocket(gateway)?.on(event, action);
     }
 
     /**
      * The method emits an event on a given gateway and the data linked to that event if provided.
      *
-     * @param type the gateway on which to send the event
-     * @param event the event to emit via the socket.
-     * @param data the data provided with the event. This parameter is options and may not be provided.
+     * @param type The gateway on which to send the event
+     * @param event The event to emit via the socket.
+     * @param data The data provided with the event. This parameter is options and may not be provided.
      */
-    send<T>(type: Gateways, event: string, data?: T): void {
-        switch (type) {
-            case Gateways.Timer:
-                if (data) {
-                    this.socketTimer.emit(event, data);
-                } else {
-                    this.socketTimer.emit(event);
-                }
-                break;
-            case Gateways.Chat:
-                if (data) {
-                    this.socketChat.emit(event, data);
-                } else {
-                    this.socketChat.emit(event);
-                }
-                break;
+    send<T>(gateway: string, event: string, data?: T): void {
+        if (data !== undefined) {
+            this.getSocket(gateway)?.emit(event, data);
+        } else {
+            this.getSocket(gateway)?.emit(event);
         }
     }
 }

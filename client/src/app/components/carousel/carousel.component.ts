@@ -27,10 +27,6 @@ export class CarouselComponent {
         nbDifferences: 7,
     };
 
-    @Input() index: number = Constants.minusOne;
-    temp: string;
-    slides: string[] = [];
-    i = 0;
     selectedButton: string = 'solo';
 
     /**
@@ -53,7 +49,7 @@ export class CarouselComponent {
      *
      * @param button that is active
      */
-    changeButtonStyle(button: string) {
+    changeButtonStyle(button: string): void {
         if (button === 'solo') {
             this.selectedButton = 'solo';
         } else {
