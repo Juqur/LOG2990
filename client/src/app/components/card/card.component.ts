@@ -31,15 +31,14 @@ export class CardComponent {
     };
     @Input() page: string = 'no page';
 
-    private _imgPath: string = environment.serverUrl + 'originals/';
-    public get imgPath(): string {
-        return this._imgPath;
-    }
-
     playerName: string = 'player 1';
     difficulty: string;
+    private imgPath: string = environment.serverUrl + 'originals/';
 
     constructor(private router: Router, public popUpService: PopUpService) {}
+    get getImg(): string {
+        return this.imgPath;
+    }
 
     /**
      * Display the difficulty of the level

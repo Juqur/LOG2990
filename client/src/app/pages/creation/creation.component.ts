@@ -223,7 +223,9 @@ export class CreationComponent implements OnInit {
         this.reinitGame();
         const image = new Image();
         image.src = './assets/images/image_empty.bmp';
-        image.onload = () => { this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(image,0, 0); };
+        image.onload = () => {
+            this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(image, 0, 0);
+        };
     }
 
     /**
@@ -233,7 +235,9 @@ export class CreationComponent implements OnInit {
         this.reinitGame();
         const image = new Image();
         image.src = './assets/images/image_empty.bmp';
-        image.onload = () => { this.canvasShare.diffCanvas.getContext('2d')?.drawImage(image,0, 0); };
+        image.onload = () => {
+            this.canvasShare.diffCanvas.getContext('2d')?.drawImage(image, 0, 0);
+        };
     }
 
     /**
