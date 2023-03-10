@@ -65,7 +65,6 @@ describe('GamePageComponent', () => {
 
     it('if its navigationstart, should call resetCounter', () => {
         fixture.detectChanges();
-
         expect(mouseServiceSpy.resetCounter).toHaveBeenCalledTimes(1);
     });
 
