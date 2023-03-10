@@ -15,4 +15,8 @@ import { LevelService } from '@app/services/levelService/level.service';
 })
 export class ConfigurationPageComponent {
     constructor(public levelService: LevelService) {}
+
+    onDeleteLevel(levelId: number): void {
+        this.levelService.deleteLevel(levelId);
+    }
 }

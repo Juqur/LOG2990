@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
@@ -30,6 +30,8 @@ export class CardComponent {
     };
 
     @Input() isSelectionPage: boolean = true;
+
+    @Output() deleteLevelEvent = new EventEmitter<number>();
 
     imgPath: string = environment.serverUrl + 'originals/';
 
@@ -72,7 +74,6 @@ export class CardComponent {
     }
 
     deleteLevel(levelId: number): void {
-        console.log(levelId);
         const dataDialog: DialogData = {
             textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
             isConfirmation: true,
@@ -81,7 +82,7 @@ export class CardComponent {
         this.popUpService.openDialog(dataDialog);
         this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
             if (confirmation) {
-                console.log('delete level');
+                this.deleteLevelEvent.emit(levelId);
             }
         });
     }

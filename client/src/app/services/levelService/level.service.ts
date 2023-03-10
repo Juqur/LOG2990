@@ -18,7 +18,7 @@ export class LevelService {
     private currentShownPage: number = 0;
     private shownLevels: Level[];
 
-    constructor(communicationService: CommunicationService) {
+    constructor(private communicationService: CommunicationService) {
         communicationService.getLevels().subscribe((value) => {
             this.levels = value;
 
@@ -80,6 +80,17 @@ export class LevelService {
      */
     isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
+    }
+
+    deleteLevel(levelId: number): void {
+        console.log('delete leveled called');
+        this.communicationService.deleteLevel(levelId).subscribe((confirmation) => {
+            console.log(confirmation);
+            if (confirmation) {
+                this.levels = this.levels.filter((level) => level.id !== levelId);
+                this.updatePageLevels();
+            }
+        });
     }
 
     /**
