@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { ImageService } from '@app/services/image/image.service';
 import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 import { randomUUID } from 'crypto';
+import { Constants } from '@common/constants';
 
 export interface GameData {
     differences: number[];
@@ -13,10 +14,11 @@ export interface GameData {
 }
 
 export interface GameState {
-    gameId: string;
+    gameId: number;
     foundDifferences: number[];
     playerName: string;
     secondPlayerId: string;
+    waitingForSecondPlayer: boolean;
 }
 
 @WebSocketGateway({ cors: true })
@@ -45,10 +47,16 @@ export class GameGateway {
      * @param data the data of the player, including the gameId and the playerName
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
-    onJoinNewGame(socket: Socket, data: { game: string; playerName: string }): void {
+    onJoinNewGame(socket: Socket, data: { levelId: number; playerName: string }): void {
         const roomId = randomUUID();
         this.playerRoomMap.set(socket.id, roomId);
-        this.playerGameMap.set(socket.id, { gameId: data.game, foundDifferences: [], playerName: data.playerName, secondPlayerId: '' });
+        this.playerGameMap.set(socket.id, {
+            gameId: data.levelId,
+            foundDifferences: [],
+            playerName: data.playerName,
+            secondPlayerId: '',
+            waitingForSecondPlayer: false,
+        });
         socket.join(roomId);
         this.timeMap.set(socket.id, 0);
         const interval = setInterval(() => {
@@ -59,76 +67,134 @@ export class GameGateway {
         this.timeIntervalMap.set(socket.id, interval);
     }
 
-    /**
-     * This method is called when a player joins a multiplayer game.
-     * If the player is the second player to join the game, it adds the player to the room of the other player.
-     * Or else it creates a new room and adds the player to it.
-     * It also sets the player's game data and starts the timer when both players are in the room.
-     *
-     * @param socket the socket of the player
-     * @param data the data of the player, including the gameId and the playerName
-     */
-    @SubscribeMessage(GameEvents.OnJoinMultiplayerGame)
-    onJoinMultiplayerGame(socket: Socket, data: { game: string; playerName: string }): void {
-        for (const [playerId, gameId] of this.playerGameMap.entries()) {
-            if (playerId !== socket.id && gameId.gameId === data.game) {
-                const room = this.playerRoomMap.get(playerId);
-                const names = [this.playerGameMap.get(playerId).playerName, data.playerName];
-                if (this.server.sockets.adapter.rooms.get(room).size === 1) {
-                    this.playerRoomMap.set(socket.id, this.playerRoomMap.get(playerId));
-                    this.playerGameMap.set(socket.id, {
-                        gameId: data.game,
-                        foundDifferences: [],
-                        playerName: data.playerName,
-                        secondPlayerId: playerId,
-                    });
-                    this.playerGameMap.get(playerId).secondPlayerId = socket.id;
-                    socket.join(room);
-                    this.timeMap.set(room, 0);
-                    const interval = setInterval(() => {
-                        const time = this.timeMap.get(room);
-                        this.timeMap.set(room, time + 1);
-                        this.server.to(room).emit(GameEvents.SendTime, time + 1);
-                    }, DELAY_BEFORE_EMITTING_TIME);
-                    this.timeIntervalMap.set(room, interval);
-                    this.server.to(room).emit(GameEvents.OnSecondPlayerJoined, names);
-                    return;
-                }
-            }
-        }
-        const roomId = randomUUID();
-        this.playerRoomMap.set(socket.id, roomId);
-        this.playerGameMap.set(socket.id, { gameId: data.game, foundDifferences: [], playerName: data.playerName, secondPlayerId: '' });
-        socket.join(roomId);
-    }
-    /**
-     * This method is called when a player clicks on the play area.
-     * It checks whether the player has clicked on a difference or not.
-     * It also sends the data to the other player if the player is in a multiplayer game.
-     * It also deletes the player from the room and the game data when the player has won.
-     *
-     * @param socket the socket of the player
-     * @param data the data of the player, including the position of the click
-     */
     @SubscribeMessage(GameEvents.OnClick)
     async onClick(socket: Socket, data: { position: number }): Promise<void> {
         const gameState = this.playerGameMap.get(socket.id);
-        const rep = await this.imageService.findDifference(gameState.gameId, gameState.foundDifferences, data.position);
+        const id: string = gameState.gameId as unknown as string;
+        const rep = await this.imageService.findDifference(id, gameState.foundDifferences, data.position);
         const dataToSend: GameData = {
             differences: rep.foundDifference,
             amountOfDifferences: gameState.foundDifferences.length,
         };
         socket.emit(GameEvents.OnProcessedClick, dataToSend);
+        if (gameState.foundDifferences.length === rep.totalDifferences) {
+            this.playerGameMap.delete(socket.id);
+            this.playerRoomMap.delete(socket.id);
+            this.timeMap.delete(socket.id);
+            clearInterval(this.timeIntervalMap.get(socket.id));
+        }
         if (rep.foundDifference.length > 0 && gameState.secondPlayerId !== '') {
             const room = this.playerRoomMap.get(socket.id);
             dataToSend.amountOfDifferencesSecondPlayer = gameState.foundDifferences.length;
             dataToSend.amountOfDifferences = this.playerGameMap.get(gameState.secondPlayerId).foundDifferences.length;
             socket.broadcast.to(room).emit(GameEvents.OnProcessedClick, dataToSend);
+
+
+            if (gameState.foundDifferences.length >= Math.ceil(rep.totalDifferences / 2)) {
+                socket.emit(GameEvents.OnVictory);
+                socket.broadcast.to(room).emit(GameEvents.OnDefeat);
+                this.playerGameMap.delete(socket.id);
+                this.playerGameMap.delete(gameState.secondPlayerId);
+                this.playerRoomMap.delete(socket.id);
+                this.playerRoomMap.delete(gameState.secondPlayerId);
+                this.timeMap.delete(socket.id);
+                this.timeMap.delete(gameState.secondPlayerId);
+                clearInterval(this.timeIntervalMap.get(socket.id));
+                clearInterval(this.timeIntervalMap.get(gameState.secondPlayerId));
+            }
         }
-        if (rep.won) {
-            this.playerRoomMap.delete(socket.id);
-            this.playerGameMap.delete(socket.id);
+    }
+
+    @SubscribeMessage(GameEvents.OnGameSelection)
+    onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
+        if (data.playerName.length <= 2) {
+            socket.emit(GameEvents.InvalidName);
         }
+        for (const [secondPlayer, secondPlayerGameState] of this.playerGameMap.entries()) {
+            if (secondPlayer !== socket.id && secondPlayerGameState.gameId === data.levelId) {
+                const room = this.playerRoomMap.get(secondPlayer);
+                if (this.server.sockets.adapter.rooms.get(room).size === 1 && secondPlayerGameState.waitingForSecondPlayer) {
+                    // If the code reaches here, the player is the second player to join the game
+                    secondPlayerGameState.waitingForSecondPlayer = false;
+                    secondPlayerGameState.secondPlayerId = socket.id;
+                    this.playerGameMap.set(secondPlayer, secondPlayerGameState);
+                    this.playerGameMap.set(socket.id, {
+                        gameId: -1,
+                        foundDifferences: [],
+                        playerName: data.playerName,
+                        secondPlayerId: secondPlayer,
+                        waitingForSecondPlayer: false,
+                    });
+                    socket.emit(GameEvents.ToBeAccepted);
+                    this.server.to(room).emit(GameEvents.PlayerSelection, data.playerName);
+                    return;
+                }
+            }
+        }
+        // If the code reaches here, the player is the first player to join the game
+        const roomId = randomUUID();
+        this.playerRoomMap.set(socket.id, roomId);
+        this.playerGameMap.set(socket.id, {
+            gameId: data.levelId,
+            foundDifferences: [],
+            playerName: data.playerName,
+            secondPlayerId: '',
+            waitingForSecondPlayer: true,
+        });
+        socket.join(roomId);
+        this.server.emit(GameEvents.UpdateSelection, { levelId: data.levelId, canJoin: true });
+    }
+
+    @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
+    onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
+        this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(socket.id).gameId, canJoin: false });
+        socket.leave(this.playerRoomMap.get(socket.id));
+        this.playerRoomMap.delete(socket.id);
+        this.playerGameMap.delete(socket.id);
+    }
+
+    @SubscribeMessage(GameEvents.OnGameAccepted)
+    onGameAccepted(socket: Socket): void {
+        const room = this.playerRoomMap.get(socket.id);
+        const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
+        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        secondPlayerSocket.join(room);
+        this.playerRoomMap.set(secondPlayerId, room);
+        const secondPlayerGameState = this.playerGameMap.get(secondPlayerId);
+        secondPlayerGameState.waitingForSecondPlayer = false;
+        secondPlayerGameState.secondPlayerId = socket.id;
+        secondPlayerGameState.gameId = this.playerGameMap.get(socket.id).gameId;
+        this.playerGameMap.set(secondPlayerId, secondPlayerGameState);
+        socket.emit(GameEvents.StartClassicMultiplayerGame, secondPlayerGameState.playerName);
+        secondPlayerSocket.emit(GameEvents.StartClassicMultiplayerGame, this.playerGameMap.get(socket.id).playerName);
+        this.timeMap.set(room, 0);
+        const interval = setInterval(() => {
+            const time = this.timeMap.get(room);
+            this.timeMap.set(room, time + 1);
+            this.server.to(room).emit(GameEvents.SendTime, time + 1);
+        }, DELAY_BEFORE_EMITTING_TIME);
+        this.timeIntervalMap.set(room, interval);
+        return;
+    }
+
+    @SubscribeMessage(GameEvents.OnGameRejected)
+    onGameRejected(socket: Socket): void {
+        const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
+        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        this.playerGameMap.delete(socket.id);
+        this.playerGameMap.delete(socket.id);
+        this.playerGameMap.delete(secondPlayerId);
+        secondPlayerSocket.emit(GameEvents.RejectedGame);
+    }
+
+    @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForAcceptation)
+    onGameCancelledWhileWaitingForAcceptation(socket: Socket): void {
+        const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
+        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        this.playerGameMap.delete(secondPlayerId);
+        this.playerRoomMap.delete(secondPlayerId);
+        this.playerGameMap.delete(socket.id);
+        secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
 
     /**

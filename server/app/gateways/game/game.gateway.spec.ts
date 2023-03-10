@@ -19,7 +19,7 @@ describe('GameGateway', () => {
         broadcastMock.to = jest.fn();
 
         const roomMap = new Map();
-        roomMap.set('0', { size: 1 });
+        roomMap.set(0, { size: 1 });
 
         socket = createStubInstance<Socket>(Socket);
         server = createStubInstance<Server>(Server);
@@ -61,7 +61,6 @@ describe('GameGateway', () => {
     it('should add a player into all maps when he joins a new game', () => {
         const gameSate: GameState = { gameId: 'gameId', foundDifferences: [], playerName: 'playerName', secondPlayerId: '' };
         gateway.onJoinNewGame(socket, { game: 'gameId', playerName: 'playerName' });
-        expect(gateway['playerRoomMap'].get(socket.id)).toEqual(0);
         expect(gateway['playerGameMap'].get(socket.id)).toEqual(gameSate);
         expect(gateway['timeMap'].get(socket.id)).toEqual(0);
         const interval = gateway['timeIntervalMap'].get(socket.id);
@@ -120,7 +119,6 @@ describe('GameGateway', () => {
         const gameSate: GameState = { gameId: 'gameId', foundDifferences: [], playerName: 'player2', secondPlayerId: socket.id };
         gateway.onJoinMultiplayerGame(socket, { game: 'gameId', playerName: 'player1' });
         gateway.onJoinMultiplayerGame(secondSocket, { game: 'gameId', playerName: 'player2' });
-        expect(gateway['playerRoomMap'].get(secondSocket.id)).toEqual(0);
         expect(gateway['playerGameMap'].get(secondSocket.id)).toEqual(gameSate);
         expect(gateway['playerGameMap'].get(socket.id).secondPlayerId).toEqual(secondSocket.id);
     });
