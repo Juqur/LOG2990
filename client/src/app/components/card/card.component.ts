@@ -5,12 +5,6 @@ import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.serv
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
-@Component({
-    selector: 'app-card',
-    templateUrl: './card.component.html',
-    styleUrls: ['./card.component.scss'],
-})
-
 /**
  * Component that displays a preview
  * of a level and its difficulty
@@ -18,6 +12,11 @@ import { environment } from 'src/environments/environment';
  * @author Galen Hu
  * @class CardComponent
  */
+@Component({
+    selector: 'app-card',
+    templateUrl: './card.component.html',
+    styleUrls: ['./card.component.scss'],
+})
 export class CardComponent {
     @Input() level: Level = {
         id: 0,
@@ -29,12 +28,22 @@ export class CardComponent {
         isEasy: true,
         nbDifferences: 7,
     };
-    @Input() page: string = 'no page';
+
+    @Input() isSelectionPage: boolean = true;
 
     imgPath: string = environment.serverUrl + 'originals/';
 
-    playerName: string = 'player 1';
-    difficulty: string;
+    private saveDialogData: DialogData = {
+        textToSend: 'Veuillez entrer votre nom',
+        inputData: {
+            inputLabel: 'Nom du joueur',
+            submitFunction: (value) => {
+                return value.length >= 1 && value.length <= Constants.MAX_NAME_LENGTH;
+            },
+            returnValue: '',
+        },
+        closeButtonMessage: 'Débuter la partie',
+    };
 
     constructor(private router: Router, public popUpService: PopUpService) {}
 
@@ -44,42 +53,19 @@ export class CardComponent {
      * @returns the path difficulty image
      */
     displayDifficultyIcon(): string {
-        if (this.level.isEasy) {
-            return '../../../assets/images/easy.png';
-        } else {
-            return '../../../assets/images/hard.png';
-        }
+        return this.level.isEasy ? '../../../assets/images/easy.png' : '../../../assets/images/hard.png';
     }
 
     /**
      * Opens a pop-up to ask the player to enter his name
      * Then redirects to the game page with the right level id, and puts the player name as a query parameter
-     *
-     *
      */
     playSolo(): void {
-        const saveDialogData: DialogData = {
-            textToSend: 'Veuillez entrer votre nom',
-            inputData: {
-                inputLabel: 'Nom du joueur',
-                submitFunction: (value) => {
-                    //  Vérifier que le nom du jeu n'existe pas déjà
-                    //  Pour l'instant, je limite la longueur du nom à 10 caractères à la place
-                    if (value.length >= 1) {
-                        return true;
-                    }
-                    return false;
-                },
-                returnValue: '',
-            },
-            closeButtonMessage: 'Débuter la partie',
-        };
-        this.popUpService.openDialog(saveDialogData);
+        this.popUpService.openDialog(this.saveDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
-                this.playerName = result;
                 this.router.navigate([`/game/${this.level.id}/`], {
-                    queryParams: { playerName: this.playerName },
+                    queryParams: { playerName: result },
                 });
             }
         });

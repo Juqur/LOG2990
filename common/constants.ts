@@ -70,6 +70,9 @@ export namespace Constants {
     export const HINT_PENALTY = 5;
     export const COUNTDOWN_TIME_WIN = 5;
     export const DEFAULTTESTNUMBER = 7;
+
+    // Card Component
+    export const MAX_NAME_LENGTH = 300;
 }
 
 export enum MouseButton {
