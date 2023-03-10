@@ -160,9 +160,9 @@ export class GamePageComponent implements OnInit {
      * This method will copy/paste the context of the temp canvas to the difference canvas.
      */
     copyDiffPlayAreaContext(): void {
-        const context2 = this.tempDiffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const contextTemp = this.tempDiffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const context = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const imageData = context2.getImageData(0, 0, context2.canvas.width, context2.canvas.height);
+        const imageData = contextTemp.getImageData(0, 0, contextTemp.canvas.width, contextTemp.canvas.height);
         context.putImageData(imageData, 0, 0);
     }
 
