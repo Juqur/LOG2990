@@ -1,6 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ElementRef } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
@@ -11,19 +11,10 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { AudioService } from '@app/services/audioService/audio.service';
-<<<<<<< HEAD
-import { DrawService } from '@app/services/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
-=======
-// import { CommunicationService } from '@app/services/communication.service';
-import { DrawService } from '@app/services/drawService/draw.service';
->>>>>>> 2fec9a47f8952a9b69132256cdaf9d375ac349a1
-import { MouseService } from '@app/services/mouse.service';
-import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
-import { Constants } from '@common/constants';
-import { of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { GameData, GamePageComponent } from './game-page.component';
 import SpyObj = jasmine.SpyObj;
 
@@ -34,8 +25,6 @@ describe('GamePageComponent', () => {
     let subject: Subject<any>;
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
-    let drawServiceSpy: SpyObj<DrawService>;
-    let popUpServiceSpy: SpyObj<PopUpServiceService>;
     let gamePageServiceSpy: SpyObj<GamePageService>;
     const socketHandlerSpy = {
         on: jasmine.createSpy(),
@@ -53,19 +42,20 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'changeClickState']);
-        popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog']);
         gamePageServiceSpy = jasmine.createSpyObj('GamePageService', [
             'sendClick',
             'validateResponse',
             'setNumberOfDifference',
             'setDifferenceFound',
+            'getLevelInformation',
+            'setPlayArea',
+            'handleResponse',
         ]);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
         playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError']);
         subject = new Subject();
 
         await TestBed.configureTestingModule({
@@ -83,10 +73,7 @@ describe('GamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { params: subject.asObservable(), queryParams: subject.asObservable() } },
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
-                // { provide: AudioService, useValue: audioServiceSpy },
-                { provide: DrawService, useValue: drawServiceSpy },
                 { provide: SocketHandler, useValue: socketHandlerSpy },
-                { provide: PopUpServiceService, useValue: popUpServiceSpy },
                 { provide: GamePageService, useValue: gamePageServiceSpy },
             ],
         }).compileComponents();
@@ -95,7 +82,6 @@ describe('GamePageComponent', () => {
         component = fixture.componentInstance;
         component['diffPlayArea'] = playAreaComponentSpy;
         component['originalPlayArea'] = playAreaComponentSpy;
-
         fixture.detectChanges();
     });
 
@@ -106,7 +92,7 @@ describe('GamePageComponent', () => {
     it('should retrieve the game id from the url', () => {
         const testParam = { id: 123 };
         subject.next(testParam);
-        expect(component.levelId).toEqual(testParam.id);
+        expect(component['levelId']).toEqual(testParam.id);
     });
 
     it('should load level and update properties', () => {
@@ -120,22 +106,13 @@ describe('GamePageComponent', () => {
             isEasy: false,
             nbDifferences: 0,
         };
-        const getLevelSpy = spyOn(component['communicationService'], 'getLevel').and.returnValue(of(testLevel));
+        gamePageServiceSpy.getLevelInformation.and.returnValue(testLevel);
+        spyOn(component, 'handleSocket').and.returnValue();
         component.ngOnInit();
 
-        expect(getLevelSpy).toHaveBeenCalledWith(component.levelId);
+        expect(gamePageServiceSpy.getLevelInformation).toHaveBeenCalledWith(component['levelId']);
         expect(component.currentLevel).toEqual(testLevel);
         expect(component.nbDiff).toEqual(testLevel.nbDifferences);
-        expect(gamePageServiceSpy.setNumberOfDifference).toHaveBeenCalledWith(testLevel.nbDifferences);
-    });
-
-    it('should throw error if level cannot be loaded', () => {
-        const errorMessage = 'test error';
-        spyOn(component['communicationService'], 'getLevel').and.throwError(errorMessage);
-
-        expect(() => {
-            component.ngOnInit();
-        }).toThrowError("Couldn't load level: Error: " + errorMessage);
     });
 
     it('should properly assign names in a multiplayer game', () => {
@@ -170,74 +147,6 @@ describe('GamePageComponent', () => {
         expect(component['playerDifferencesCount']).toEqual(1);
     });
 
-    it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                callback(gameData);
-            }
-        });
-        const handleAreaFoundInDiffSpy = spyOn(component, 'handleAreaFoundInDiff');
-        gamePageServiceSpy.validateResponse.and.returnValue(1);
-        component['defaultArea'] = false;
-        component.handleSocket();
-        expect(handleAreaFoundInDiffSpy).toHaveBeenCalled();
-    });
-
-    it('should call handleAreaNotFoundInDiff if the area clicked was the difference canvas and a difference was not found', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                callback(gameData);
-            }
-        });
-        const handleAreaNotFoundInDiffSpy = spyOn(component, 'handleAreaNotFoundInDiff');
-        gamePageServiceSpy.validateResponse.and.returnValue(0);
-        component['defaultArea'] = false;
-        component.handleSocket();
-        expect(handleAreaNotFoundInDiffSpy).toHaveBeenCalled();
-    });
-
-    it('should call handleAreaFoundInOriginal if the area clicked was the original canvas and a difference was found', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                callback(gameData);
-            }
-        });
-        const handleAreaFoundInOriginalSpy = spyOn(component, 'handleAreaFoundInOriginal');
-        gamePageServiceSpy.validateResponse.and.returnValue(1);
-        component['defaultArea'] = true;
-        component.handleSocket();
-        expect(handleAreaFoundInOriginalSpy).toHaveBeenCalled();
-    });
-
-    it('should call handleAreaNotFoundInOriginal if the area clicked was the original canvas and a difference was not found', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                callback(gameData);
-            }
-        });
-        const handleAreaNotFoundInOriginalSpy = spyOn(component, 'handleAreaNotFoundInOriginal');
-        gamePageServiceSpy.validateResponse.and.returnValue(0);
-        component['defaultArea'] = true;
-        component.handleSocket();
-        expect(handleAreaNotFoundInOriginalSpy).toHaveBeenCalled();
-    });
-
-    it('should play victory sound and show popup if the player has found all the differences', () => {
-        const winGameDialogData: DialogData = {
-            textToSend: 'Vous avez gagné!',
-            closeButtonMessage: 'Retour au menu de sélection',
-        };
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                callback(gameData);
-            }
-        });
-        gamePageServiceSpy.validateResponse.and.returnValue(Constants.minusOne);
-        component.handleSocket();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winGameDialogData, '/selection');
-    });
-
     it('should send mouse position to the server if you click on the original picture', () => {
         const mousePosition = 1;
         mouseServiceSpy.getCanClick.and.returnValue(true);
@@ -245,7 +154,7 @@ describe('GamePageComponent', () => {
         component.clickedOnOriginal(new MouseEvent('click'));
         expect(gamePageServiceSpy.sendClick).toHaveBeenCalledWith(mousePosition);
         expect(mouseServiceSpy.getMousePosition).toHaveBeenCalled();
-        expect(component['defaultArea']).toBe(true);
+        expect(component['clickedOriginalImage']).toBe(true);
     });
 
     it('should if the mouse position is undefined if clicked on the original image', () => {
@@ -271,74 +180,6 @@ describe('GamePageComponent', () => {
         component.clickedOnDiff(new MouseEvent('click'));
         expect(gamePageServiceSpy.sendClick).toHaveBeenCalledWith(mousePosition);
         expect(mouseServiceSpy.getMousePosition).toHaveBeenCalled();
-        expect(component['defaultArea']).toBe(false);
+        expect(component['clickedOriginalImage']).toBe(false);
     });
-
-    it('should return undefined when context is undefined when copying', () => {
-        const area = [0];
-        spyOn(component.diffPlayArea.getCanvas().nativeElement, 'getContext').and.returnValue(null);
-        const returnValue = component.copyArea(area);
-        expect(returnValue).toBeUndefined();
-    });
-
-    it('handleAreaFoundInDiff should call multiple functions', () => {
-        const result = [1, 2, 3];
-        const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
-        const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaFoundInDiff(result);
-        expect(component.imagesData).toEqual(result);
-        expect(component.foundADifference).toBe(true);
-        expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
-        expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
-    });
-
-    it('handleAreaFoundInOriginal should call multiple functions', () => {
-        const result = [1, 2, 3];
-        const spyFlashAreaOriginal = spyOn(component.originalPlayArea, 'flashArea');
-        const spyFlashAreaDiff = spyOn(component.diffPlayArea, 'flashArea');
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaFoundInOriginal(result);
-        expect(component.imagesData).toEqual(result);
-        expect(component.foundADifference).toBe(true);
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
-        expect(spyFlashAreaOriginal).toHaveBeenCalledTimes(1);
-        expect(spyFlashAreaDiff).toHaveBeenCalledTimes(1);
-        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
-
-    it('handleAreaNotFoundInOriginal should call multiple functions', () => {
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaNotFoundInOriginal();
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
-
-    it('handleAreaNotFoundInDiff should call multiple functions', () => {
-        const spyResetCanvas = spyOn(component, 'resetCanvas');
-        const audioServiceSpy = spyOn(AudioService, 'quickPlay');
-        component.handleAreaNotFoundInDiff();
-        expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        expect(spyResetCanvas).toHaveBeenCalledTimes(1);
-    });
-
-    it('pick should get the color of the canvas', () => {
-        const rgb = component.pick(1, 1);
-        expect(rgb).toEqual('rgba(0, 0, 0, 0)');
-    });
-
-    it('resetCanvas should refresh the area and copy a part of the original canvas', fakeAsync(() => {
-        const spyDiffDrawPlayArea = spyOn(component.diffPlayArea, 'drawPlayArea');
-        const spyOriginalDrawPlayArea = spyOn(component.originalPlayArea, 'drawPlayArea');
-        const copyAreaSpy = spyOn(component, 'copyArea');
-        component.resetCanvas();
-        tick(Constants.millisecondsInOneSecond);
-        expect(spyDiffDrawPlayArea).toHaveBeenCalledTimes(1);
-        expect(spyOriginalDrawPlayArea).toHaveBeenCalledTimes(1);
-        tick(Constants.thirty);
-        expect(copyAreaSpy).toHaveBeenCalledTimes(1);
-    }));
 });

@@ -1,16 +1,14 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Vec2 } from '@app/interfaces/vec2';
 import { Level } from '@app/levels';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouse.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
 import { Constants } from '@common/constants';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
-import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 
 export interface GameData {
     differences: number[];
@@ -34,42 +32,31 @@ export class GamePageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
 
-    winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu de sélection',
-    };
+    nbDiff: number = Constants.INIT_DIFF_NB;
+    hintPenalty = Constants.HINT_PENALTY;
+    nbHints: number = Constants.INIT_HINTS_NB;
     closePath: string = '/selection';
-
-    originalImageSrc: string = '';
-    diffImageSrc: string = '';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
-
     playerName: string;
     playerDifferencesCount: number = 0;
     secondPlayerName: string = '';
     secondPlayerDifferencesCount: number = 0;
-    levelId: number;
-    currentLevel: Level;
-    isClassicGamemode: boolean = true;
-    nbDiff: number = Constants.INIT_DIFF_NB;
-    hintPenalty = Constants.HINT_PENALTY;
-    nbHints: number = Constants.INIT_HINTS_NB;
-    imagesData: number[] = [];
-    defaultArea: boolean = true;
-    diffArea: boolean = true;
-    foundADifference = false;
+    originalImageSrc: string = '';
+    diffImageSrc: string = '';
+    currentLevel: Level | undefined;
 
-    drawServiceDiff: DrawService = new DrawService();
-    drawServiceOriginal: DrawService = new DrawService();
+
+    private levelId: number;
+    private clickedOriginalImage: boolean = true;
 
     // eslint-disable-next-line max-params
     constructor(
         private mouseService: MouseService,
         private route: ActivatedRoute,
-        private communicationService: CommunicationService,
+        private router: Router,
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
-        private popUpService: PopUpService,
+        private audioService: AudioService,
     ) {}
 
     ngOnDestroy(): void {
@@ -90,16 +77,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.playerName = params['playerName'];
         });
 
-        try {
-            this.communicationService.getLevel(this.levelId).subscribe((value) => {
-                this.currentLevel = value;
-                this.nbDiff = value.nbDifferences;
-                this.gamePageService.setNumberOfDifference(this.currentLevel.nbDifferences);
-            });
-        } catch (error) {
-            throw new Error("Couldn't load level: " + error);
-        }
+        this.router.events.forEach((event) => {
+            if (event instanceof NavigationStart) {
+                this.audioService.reset();
+            }
+        });
 
+        this.currentLevel = this.gamePageService.getLevelInformation(this.levelId);
+        this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
         this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
         this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
 
@@ -116,11 +101,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.socketHandler.connect('game');
             this.socketHandler.on('game', 'onSecondPlayerJoined', (data) => {
                 const names = data as string[];
-                if (names[0] === this.playerName) {
-                    this.secondPlayerName = names[1];
-                } else {
-                    this.secondPlayerName = names[0];
-                }
+                this.secondPlayerName = names[0] === this.playerName ? names[1] : names[0];
             });
             this.socketHandler.on('game', 'onProcessedClick', (data) => {
                 const gameData = data as GameData;
@@ -130,23 +111,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.playerDifferencesCount = gameData.amountOfDifferences;
                 this.gamePageService.setDifferenceFound(gameData.amountOfDifferences);
                 const response = this.gamePageService.validateResponse(gameData.differences);
-                if (!this.defaultArea) {
-                    if (response !== 0) {
-                        this.handleAreaFoundInDiff(gameData.differences);
-                    } else {
-                        this.handleAreaNotFoundInDiff();
-                    }
-                } else {
-                    if (response !== 0) {
-                        this.handleAreaFoundInOriginal(gameData.differences);
-                    } else {
-                        this.handleAreaNotFoundInOriginal();
-                    }
-                }
-                if (response === Constants.minusOne) {
-                    this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-                    AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
-                }
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
+                this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
             });
         }
         this.socketHandler.send('game', 'onJoinNewGame', { game: this.levelId, playerName: this.playerName });
@@ -162,7 +128,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             const mousePosition = this.mouseService.getMousePosition(event);
             if (!mousePosition) return;
             this.gamePageService.sendClick(mousePosition);
-            this.defaultArea = true;
+            this.clickedOriginalImage = true;
         }
     }
     /**
@@ -176,105 +142,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             const mousePosition = this.mouseService.getMousePosition(event);
             if (!mousePosition) return;
             this.gamePageService.sendClick(mousePosition);
-            this.defaultArea = false;
+            this.clickedOriginalImage = false;
         }
-    }
-    /**
-     * This method returns the original pixel color
-     *
-     * @param x The x coordinate of the pixel
-     * @param y The y coordinate of the pixel
-     * @returns The color of the original pixel
-     */
-    pick(x: number, y: number): string {
-        const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const pixel = context.getImageData(x, y, 1, 1);
-        const data = pixel.data;
-
-        const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / Constants.FULL_ALPHA})`;
-        return rgba;
-    }
-
-    /**
-     * This method copies the area found in the original image to the difference image
-     *
-     * @param area The area to be copied
-     */
-    copyArea(area: number[]) {
-        let x = 0;
-        let y = 0;
-        const context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        area.forEach((pixelData) => {
-            x = (pixelData / Constants.PIXEL_SIZE) % this.originalPlayArea.width;
-            y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
-            const rgba = this.pick(x, y);
-            if (!context) {
-                return;
-            }
-            context.fillStyle = rgba;
-            context.fillRect(x, y, 1, 1);
-        });
-    }
-    /**
-     * This method refreshes the difference canvas
-     */
-    resetCanvas() {
-        this.diffPlayArea
-            .timeout(Constants.millisecondsInOneSecond)
-            .then(() => {
-                this.diffPlayArea.drawPlayArea(this.diffImageSrc);
-                this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                this.mouseService.changeClickState();
-            })
-            .then(() => {
-                setTimeout(() => {
-                    this.copyArea(this.imagesData);
-                }, Constants.thirty);
-            });
-    }
-
-    handleAreaFoundInDiff(result: number[]) {
-        AudioService.quickPlay('./assets/audio/success.mp3');
-
-        // this.audioService.playSound('./assets/audio/success.mp3');
-        this.imagesData.push(...result);
-        this.diffPlayArea.flashArea(result);
-        this.originalPlayArea.flashArea(result);
-        this.mouseService.changeClickState();
-        this.resetCanvas();
-        this.foundADifference = true;
-    }
-    handleAreaNotFoundInDiff() {
-        AudioService.quickPlay('./assets/audio/failed.mp3');
-
-        // this.audioService.playSound('./assets/audio/failed.mp3');
-        this.drawServiceDiff.context = this.diffPlayArea
-            .getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.mouseService.changeClickState();
-        this.resetCanvas();
-    }
-    handleAreaFoundInOriginal(result: number[]) {
-        AudioService.quickPlay('./assets/audio/success.mp3');
-
-        // this.audioService.playSound('./assets/audio/success.mp3');
-        this.imagesData.push(...result);
-        this.originalPlayArea.flashArea(result);
-        this.diffPlayArea.flashArea(result);
-        this.mouseService.changeClickState();
-        this.resetCanvas();
-        this.foundADifference = true;
-    }
-    handleAreaNotFoundInOriginal() {
-        AudioService.quickPlay('./assets/audio/failed.mp3');
-
-        // this.audioService.playSound('./assets/audio/failed.mp3');
-        this.drawServiceOriginal.context = this.originalPlayArea
-            .getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.mouseService.changeClickState();
-        this.resetCanvas();
     }
 }
