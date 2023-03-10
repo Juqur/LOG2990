@@ -20,7 +20,7 @@ import { GameTimerComponent } from './components/game-timer/game-timer.component
 import { MessageBoxComponent } from './components/message-box/message-box.component';
 import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.component';
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
-import { ConfigurationComponent } from './pages/configuration/configuration.component';
+import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
 import { CreationComponent } from './pages/creation/creation.component';
 
 /**
@@ -42,7 +42,7 @@ import { CreationComponent } from './pages/creation/creation.component';
         ChatMessageComponent,
         MessageBoxComponent,
         CarouselComponent,
-        ConfigurationComponent,
+        ConfigurationPageComponent,
         CreationComponent,
         ScaleContainerComponent,
         CounterComponent,
