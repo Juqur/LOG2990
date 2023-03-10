@@ -40,6 +40,7 @@ export class SelectionPageComponent implements OnInit {
     waitingForSecondPlayer: boolean = true;
     waitingForAcceptation: boolean = true;
 
+    // eslint-disable-next-line max-params
     constructor(
         private communicationService: CommunicationService,
         private socketHandler: SocketHandler,
@@ -85,7 +86,6 @@ export class SelectionPageComponent implements OnInit {
     resetDialog(): void {
         this.waitingForSecondPlayer = true;
         this.waitingForAcceptation = true;
-        console.log('resetDialog');
     }
 
     ngOnInit(): void {
@@ -116,7 +116,6 @@ export class SelectionPageComponent implements OnInit {
                 this.popUpService.openDialog(invalidNameDialogData);
             });
             this.socketHandler.on('game', 'toBeAccepted', () => {
-                console.log('toBeAccepted');
                 this.waitingForSecondPlayer = false;
                 this.popUpService.dialogRef.close();
                 const toBeAcceptedDialogData: DialogData = {
@@ -131,7 +130,6 @@ export class SelectionPageComponent implements OnInit {
                 });
             });
             this.socketHandler.on('game', 'playerSelection', (name) => {
-                console.log('playerSelection');
                 this.waitingForSecondPlayer = false;
                 this.popUpService.dialogRef.close();
                 const toBeAcceptedDialogData: DialogData = {
@@ -150,7 +148,6 @@ export class SelectionPageComponent implements OnInit {
             });
             this.socketHandler.on('game', 'startClassicMultiplayerGame', (data) => {
                 const startGameData: StartGameData = data as StartGameData;
-                console.log('startClassicMultiplayerGame');
                 this.waitingForAcceptation = false;
                 this.waitingForSecondPlayer = false;
                 this.popUpService.dialogRef.close();
@@ -160,7 +157,6 @@ export class SelectionPageComponent implements OnInit {
             });
 
             this.socketHandler.on('game', 'rejectedGame', () => {
-                console.log('rejectedGame');
                 this.waitingForAcceptation = false;
                 this.waitingForSecondPlayer = false;
                 this.popUpService.dialogRef.close();

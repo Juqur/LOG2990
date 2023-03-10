@@ -145,7 +145,6 @@ export class GameGateway {
 
     @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
     onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
-        console.log('Game cancelled');
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(socket.id).gameId, canJoin: false });
         socket.leave(this.playerRoomMap.get(socket.id));
         this.playerRoomMap.delete(socket.id);
@@ -154,7 +153,6 @@ export class GameGateway {
 
     @SubscribeMessage(GameEvents.OnGameAccepted)
     onGameAccepted(socket: Socket): void {
-        console.log('Game accepted');
         const room = this.playerRoomMap.get(socket.id);
         const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
         const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
@@ -187,7 +185,6 @@ export class GameGateway {
 
     @SubscribeMessage(GameEvents.OnGameRejected)
     onGameRejected(socket: Socket): void {
-        console.log('Game rejected');
         if (this.playerGameMap.has(socket.id)) {
             this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(socket.id).gameId, canJoin: false });
             const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
@@ -201,7 +198,6 @@ export class GameGateway {
 
     @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForAcceptation)
     onGameCancelledWhileWaitingForAcceptation(socket: Socket): void {
-        console.log('Game cancelled while waiting for acceptation');
         if (this.playerGameMap.has(socket.id)) {
             const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
             const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
@@ -220,7 +216,6 @@ export class GameGateway {
      * @param socket the socket of the player
      */
     handleDisconnect(socket: Socket): void {
-        console.log('Player disconnected');
         socket.leave(this.playerRoomMap.get(socket.id));
         this.playerRoomMap.delete(socket.id);
         this.playerGameMap.delete(socket.id);
