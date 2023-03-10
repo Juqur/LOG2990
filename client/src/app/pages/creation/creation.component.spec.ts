@@ -264,7 +264,7 @@ describe('CreationComponent', () => {
                 });
             });
     });
-    it('resetDefault/Fiff should call reinitGame and clear the canvas', (done) => {
+    it('resetDefault/Diff should call reinitGame and clear the canvas', (done) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const clearDefaultSpy = spyOn<any>(canvasSharingService.defaultCanvas.getContext('2d'), 'drawImage');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
