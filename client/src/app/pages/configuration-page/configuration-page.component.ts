@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { LevelService } from '@app/services/levelService/level.service';
 
 @Component({
-    selector: 'app-configuration',
-    templateUrl: './configuration.component.html',
-    styleUrls: ['./configuration.component.scss'],
+    selector: 'app-configuration-page',
+    templateUrl: './configuration-page.component.html',
+    styleUrls: ['./configuration-page.component.scss'],
 })
 /**
  * This component represents the page where the user can modify, delete or create new games. It is accessible from
@@ -13,6 +13,6 @@ import { LevelService } from '@app/services/levelService/level.service';
  * @author Louis Félix St-Amour, Galen Hu & Simon Gagné
  * @class Configuration Component
  */
-export class ConfigurationComponent {
+export class ConfigurationPageComponent {
     constructor(public levelService: LevelService) {}
 }

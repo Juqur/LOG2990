@@ -6,22 +6,22 @@ import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LevelService } from '@app/services/levelService/level.service';
-import { ConfigurationComponent } from './configuration.component';
+import { ConfigurationPageComponent } from './configuration-page.component';
 
-describe('ConfigurationComponent', () => {
-    let component: ConfigurationComponent;
-    let fixture: ComponentFixture<ConfigurationComponent>;
+describe('ConfigurationPageComponent', () => {
+    let component: ConfigurationPageComponent;
+    let fixture: ComponentFixture<ConfigurationPageComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ConfigurationComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
+            declarations: [ConfigurationPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
             imports: [AppMaterialModule, BrowserAnimationsModule, HttpClientTestingModule],
             providers: [LevelService],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ConfigurationComponent);
+        fixture = TestBed.createComponent(ConfigurationPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
