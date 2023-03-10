@@ -1,6 +1,6 @@
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.service';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 
 @Component({
     selector: 'app-pop-up-dialog',
@@ -15,12 +15,26 @@ import { DialogData, PopUpServiceService } from '@app/services/pop-up-service.se
  */
 export class PopUpDialogComponent {
     @ViewChild('pop-up-input') elRef: ElementRef;
-    inputWasValid: boolean | undefined = false;
-    inputValue: string = '';
-    constructor(public dialogRef: MatDialogRef<PopUpServiceService>, @Inject(MAT_DIALOG_DATA) public data: DialogData) {
+    private inputWasValid: boolean | undefined = false;
+    private inputValue: string = '';
+    constructor(public dialogRef: MatDialogRef<PopUpService>, @Inject(MAT_DIALOG_DATA) public data: DialogData) {
         if (!data.inputData) {
             this.inputWasValid = true;
         }
+    }
+
+    /**
+     * Getter for the inputWasValid boolean.
+     */
+    get inputValid(): boolean | undefined {
+        return this.inputWasValid;
+    }
+
+    /**
+     * Getter for the value of the input for the pop-up.
+     */
+    get value(): string {
+        return this.inputValue;
     }
 
     /**
@@ -35,7 +49,7 @@ export class PopUpDialogComponent {
      *
      * @param value the new value of the input.
      */
-    submitText(value: string) {
+    submitText(value: string): void {
         this.inputValue = value;
         this.inputWasValid = this.data.inputData?.submitFunction(value);
         if (this.inputValue.length === 0) {
