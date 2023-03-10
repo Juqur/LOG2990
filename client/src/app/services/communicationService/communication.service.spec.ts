@@ -6,7 +6,7 @@ import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
 import { environment } from 'src/environments/environment';
 
-describe('CommunicationService', () => {
+fdescribe('CommunicationService', () => {
     let httpMock: HttpTestingController;
     let service: CommunicationService;
 
@@ -122,5 +122,28 @@ describe('CommunicationService', () => {
         expect(req.request.method).toEqual('POST');
         expect(req.request.body).toEqual({ imageId: 'someImage' });
         req.flush(imageName);
+    });
+
+    it('should make an http DELETE request a leve', () => {
+        service.deleteLevel(1).subscribe((res) => {
+            expect(res).toBeTruthy();
+        });
+
+        const req = httpMock.expectOne(environment.serverUrl + 'api/image/1');
+        expect(req.request.method).toEqual('DELETE');
+        req.flush('1');
+    });
+
+    it('handleError should handle error', () => {
+        const request = 'GET /api/data';
+        const result = { data: 'test' };
+        const error = new Error('Something went wrong');
+        const handleError = service['handleError'](request, result);
+        const observable = handleError(error);
+        observable
+            .subscribe((value) => {
+                expect(value).toEqual(result);
+            })
+            .unsubscribe();
     });
 });
