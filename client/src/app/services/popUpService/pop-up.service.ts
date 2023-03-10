@@ -25,7 +25,6 @@ export interface InputData {
      * @returns a boolean indicating if the value was correct or not.
      */
     submitFunction: (value: string) => boolean;
-    returnValue: string;
 }
 
 @Injectable({

@@ -68,7 +68,6 @@ export class CardComponent {
                     }
                     return false;
                 },
-                returnValue: '',
             },
             closeButtonMessage: 'Débuter la partie',
         };

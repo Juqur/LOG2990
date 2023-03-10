@@ -2,11 +2,11 @@ import { LevelDifferences } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 
 export interface CreationSpecs {
-    defaultImageFile: File | null;
-    diffImageFile: File | null;
+    defaultImageFile: File;
+    diffImageFile: File;
     radius: number;
     nbDifferences: number; // Could possibly drop depending on the LevelDifferences
-    differences: LevelDifferences | undefined;
+    differences: LevelDifferences;
     defaultArea: PlayAreaComponent;
     diffArea: PlayAreaComponent;
     defaultCanvasCtx: CanvasRenderingContext2D | null;

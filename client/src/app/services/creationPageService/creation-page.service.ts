@@ -17,7 +17,7 @@ import { LevelFormData } from '@common/levelFormData';
 })
 export class CreationPageService {
     creationSpecs: CreationSpecs = {
-        defaultImageFile: null,
+        defaultImageFile: await this.convertRelativeUriToFile(),
         diffImageFile: null,
         radius: Constants.RADIUS_DEFAULT,
         nbDifferences: Constants.INIT_DIFF_NB,
@@ -28,7 +28,6 @@ export class CreationPageService {
         diffCanvasCtx: document.createElement('canvas').getContext('2d'),
     };
     sliderValue = Constants.SLIDER_DEFAULT;
-    radiusTable = Constants.RADIUS_TABLE;
     isSaveable = false;
     defaultImageUrl = '';
     msg = '';
@@ -41,18 +40,6 @@ export class CreationPageService {
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
     ) {
-        // this.creationSpecs = {
-        //     defaultImageFile: null,
-        //     diffImageFile: null,
-        //     radius: Constants.RADIUS_DEFAULT,
-        //     nbDifferences: Constants.INIT_DIFF_NB,
-        //     differences: new LevelDifferences(),
-        //     defaultArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
-        //     diffArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
-        //     defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
-        //     diffCanvasCtx: document.createElement('canvas').getContext('2d'),
-        // } as CreationSpecs;
-
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultCanvasCtx?.canvas as HTMLCanvasElement;
 
         this.canvasShare.diffCanvas = this.creationSpecs.diffCanvasCtx?.canvas as HTMLCanvasElement;
@@ -62,38 +49,38 @@ export class CreationPageService {
      * The method is in charge of taking the default image given in the input, verifying that it is
      * of the correct format and then displaying it.
      *
-     * @param event event on the HTMLInputElement
+     * @param event file upload event on the HTMLInputElement
      */
-    defaultImageSelector(event: Event) {
+    defaultImageSelector(event: Event): void {
         this.restartGame();
         const target = event.target as HTMLInputElement;
-        if (!target.files) {
-            return;
+        if (target.files) {
+            // ------------------------------------------------------------------------------------------------//
+            this.creationSpecs.defaultImageFile = target.files[0]; // Could it be used directly in the if and never again?
+            // ------------------------------------------------------------------------------------------------//
+            this.verifyImageFormat(this.creationSpecs.defaultImageFile).then((result) => {
+                if (result) this.showDefaultImage();
+            });
         }
-        this.creationSpecs.defaultImageFile = target.files[0];
-        this.verifyImageFormat(this.creationSpecs.defaultImageFile).then((result) => {
-            if (!result) return;
-            else this.showDefaultImage();
-        });
     }
 
     /**
      * The method is in charge of taking the modified image given in the input, verifying that it is
      * of the correct format and then displaying it.
      *
-     * @param event event on the HTMLInputElement
+     * @param event file upload event on the HTMLInputElement
      */
-    diffImageSelector(event: Event) {
+    diffImageSelector(event: Event): void {
         this.restartGame();
         const target = event.target as HTMLInputElement;
-        if (!target.files) {
-            return;
+        if (target.files) {
+            // ------------------------------------------------------------------------------------------------//
+            this.creationSpecs.diffImageFile = target.files[0]; // Could it be used directly in the if and never again?
+            // ------------------------------------------------------------------------------------------------//
+            this.verifyImageFormat(this.creationSpecs.diffImageFile).then((result) => {
+                if (result) this.showDiffImage();
+            });
         }
-        this.creationSpecs.diffImageFile = target.files[0];
-        this.verifyImageFormat(this.creationSpecs.diffImageFile).then((result) => {
-            if (!result) return;
-            else this.showDiffImage();
-        });
     }
 
     /**
@@ -102,21 +89,9 @@ export class CreationPageService {
      *
      * @param event event on the HTMLInputElement
      */
-    bothImagesSelector(event: Event) {
-        this.restartGame();
-        const target = event.target as HTMLInputElement;
-        if (!target.files) {
-            return;
-        }
-        this.creationSpecs.defaultImageFile = target.files[0];
-        this.creationSpecs.diffImageFile = target.files[0];
-        this.verifyImageFormat(this.creationSpecs.defaultImageFile).then((result) => {
-            if (!result) return;
-            else {
-                this.showDefaultImage();
-                this.showDiffImage();
-            }
-        });
+    bothImagesSelector(event: Event): void {
+        this.defaultImageSelector(event);
+        this.diffImageSelector(event); // This generates very minor code duplication, check with pierre if that's cool.
     }
 
     /**
@@ -124,15 +99,147 @@ export class CreationPageService {
      *
      * @param event event on the HTMLInputElement
      */
-    cleanSrc(event: Event) {
-        const target = event.target as HTMLInputElement;
-        target.value = '';
+    cleanSrc(event: Event): void {
+        (event.target as HTMLInputElement).value = '';
+    }
+
+    /**
+     * This methods clears all modifications made to the default image.
+     */
+    resetDefault(): void {
+        this.restartGame();
+        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
+    }
+
+    /**
+     * This method clears all modifications made to the different image.
+     */
+    resetDiff(): void {
+        this.restartGame();
+        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+    }
+
+    /**
+     * Changes the value of the radius depending on a value given as parameter. The possible options
+     * are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters
+     *
+     * @param value the index of the new slider value
+     */
+    sliderChange(value: number): void {
+        // ------------------------------------------------------------------------------------------------//
+        this.creationSpecs.radius = Constants.RADIUS_TABLE[value];
+        // ------------------------------------------------------------------------------------------------//
+    }
+
+    /**
+     * This methods starts the detection of differences between the two images and
+     * launches a popUp display the result as a white and black image where the black
+     * sections are differences while the white are regions shared between images.
+     */
+    detectDifference(): void {
+        if (!this.creationSpecs.defaultCanvasCtx || !this.creationSpecs.diffCanvasCtx) {
+            this.errorDialog('Canvas manquant');
+            return;
+        }
+        // ------------------------------------------------------------------------------------------------//
+        this.creationSpecs.differences = this.diffService.detectDifferences(
+            this.creationSpecs.defaultCanvasCtx,
+            this.creationSpecs.diffCanvasCtx,
+            this.creationSpecs.radius,
+        ); // Seems to be super important, not much ways to change this.
+        // ------------------------------------------------------------------------------------------------//
+        if (!this.creationSpecs.differences) {
+            this.errorDialog('Veuillez fournir des images non vides');
+            return;
+        }
+        // ------------------------------------------------------------------------------------------------//
+        this.creationSpecs.nbDifferences = this.creationSpecs.differences.clusters.length; // Could be only call.
+        // ------------------------------------------------------------------------------------------------//
+        this.isSaveable =
+            this.creationSpecs.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT && this.creationSpecs.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT
+                ? true
+                : false;
+        const canvasDialogData: DialogData = {
+            textToSend: this.isSaveable
+                ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'
+                : 'Image de différence (contient ' +
+                  this.creationSpecs.nbDifferences +
+                  ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
+            imgSrc: this.creationSpecs.differences.canvas.canvas.toDataURL(),
+            closeButtonMessage: 'Fermer',
+        };
+        if (this.creationSpecs.nbDifferences >= Constants.MAX_DIFFERENCES_LIMIT)
+            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
+        else if (this.creationSpecs.nbDifferences <= Constants.MIN_DIFFERENCES_LIMIT)
+            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
+
+        this.popUpService.openDialog(canvasDialogData);
+    }
+
+    /**
+     * This method is used to save the game, it opens a popUp asking the user
+     * to give a name to their new game and saves it.
+     */
+    saveGame(): void {
+        if (this.isSaveable) {
+            this.popUpService.openDialog({
+                textToSend: 'Veuillez entrer le nom du jeu',
+                inputData: {
+                    inputLabel: 'Nom du jeu',
+                    submitFunction: (value) => {
+                        return value.length < Constants.MAX_GAME_NAME_LENGTH;
+                    },
+                },
+                closeButtonMessage: 'Sauvegarder',
+            });
+            this.popUpService.dialogRef.afterClosed().subscribe((result) => {
+                this.savedLevel = {
+                    id: 0,
+                    name: result,
+                    playerSolo: [],
+                    timeSolo: [],
+                    playerMulti: [],
+                    timeMulti: [],
+                    isEasy: !this.creationSpecs.differences?.isHard,
+                    nbDifferences: this.creationSpecs.nbDifferences,
+                };
+                // if (!this.creationSpecs.defaultImageFile || !this.creationSpecs.diffImageFile || !this.creationSpecs.differences) {
+                //     return;
+                // }
+                const levelFormData: LevelFormData = {
+                    imageOriginal: this.creationSpecs.defaultImageFile,
+                    imageDiff: this.creationSpecs.diffImageFile,
+                    name: this.savedLevel.name,
+                    isEasy: this.savedLevel.isEasy.toString(),
+                    clusters: JSON.stringify(this.creationSpecs.differences.clusters),
+                    nbDifferences: this.savedLevel.nbDifferences.toString(),
+                };
+                this.communicationService.postLevel(levelFormData).subscribe((data) => {
+                    if (data.title === 'error') {
+                        this.errorDialog(data.body);
+                        return;
+                    } else if (data.title === 'success') {
+                        const dialogData: DialogData = {
+                            textToSend: data.body,
+                            closeButtonMessage: 'Fermer',
+                        };
+                        this.popUpService.openDialog(dialogData, '/config');
+                    }
+                });
+            });
+        }
+    }
+
+    async convertRelativeUriToFile(filePath: string, fileName: string) {
+        const imageUrl = await fetch(filePath);
+        const buffer = await imageUrl.arrayBuffer();
+        return new File([buffer], fileName);
     }
 
     /**
      * This method is used to display the default image on the default canvas.
      */
-    showDefaultImage() {
+    private showDefaultImage(): void {
         if (!this.creationSpecs.defaultImageFile) {
             this.errorDialog('aucun fichier de base');
             return;
@@ -161,7 +268,7 @@ export class CreationPageService {
     /**
      * This method is used to display the different image on the different canvas.
      */
-    showDiffImage() {
+    private showDiffImage(): void {
         if (!this.creationSpecs.diffImageFile) {
             this.errorDialog('aucun fichier de différence');
             return;
@@ -193,7 +300,7 @@ export class CreationPageService {
      * @param imageFile the image file we want to check if the format is valid.
      * @returns A Promise<boolean> which when resolved gives if the image was of the correct format.
      */
-    async verifyImageFormat(imageFile: File) {
+    private async verifyImageFormat(imageFile: File): Promise<boolean> {
         if (imageFile.type !== 'image/bmp') {
             this.errorDialog('Les images doivent être au format bmp');
             return Promise.resolve(false);
@@ -215,147 +322,13 @@ export class CreationPageService {
     }
 
     /**
-     * This methods clears all modifications made to the default image.
-     */
-    resetDefault() {
-        this.restartGame();
-        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
-    }
-
-    /**
-     * This method clears all modifications made to the different image.
-     */
-    resetDiff() {
-        this.restartGame();
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
-    }
-
-    /**
-     * Changes the value of the radius depending on a value given as parameter. The possible options
-     * are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters
-     *
-     * @param value the index of the new slider value
-     */
-    sliderChange(value: number) {
-        this.creationSpecs.radius = this.radiusTable[value];
-    }
-
-    /**
-     * This methods starts the detection of differences between the two images and
-     * launches a popUp display the result as a white and black image where the black
-     * sections are differences while the white are regions shared between images.
-     */
-    detectDifference() {
-        if (!this.creationSpecs.defaultCanvasCtx || !this.creationSpecs.diffCanvasCtx) {
-            this.errorDialog('Canvas manquant');
-            return;
-        }
-        // this.creationSpecs.nbDifferences = Constants.INIT_DIFF_NB;
-        this.creationSpecs.differences = this.diffService.detectDifferences(
-            this.creationSpecs.defaultCanvasCtx,
-            this.creationSpecs.diffCanvasCtx,
-            this.creationSpecs.radius,
-        );
-        if (!this.creationSpecs.differences) {
-            this.errorDialog('Veuillez fournir des images non vides');
-            return;
-        }
-        this.creationSpecs.nbDifferences = this.creationSpecs.differences.clusters.length;
-        this.creationSpecs.nbDifferences = this.creationSpecs.differences.clusters.length;
-        let respecteNb = '';
-        if (this.creationSpecs.nbDifferences >= Constants.RADIUS_DEFAULT && this.creationSpecs.nbDifferences <= Constants.BIG_DIFF_NB) {
-            this.isSaveable = true;
-        } else {
-            this.isSaveable = false;
-            respecteNb = '(Le nombre de différences doit être compris entre 3 et 9)';
-        }
-        const canvasDialogData: DialogData = {
-            textToSend: 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) ' + respecteNb + ' :',
-            imgSrc: this.creationSpecs.differences.canvas.canvas.toDataURL(),
-            closeButtonMessage: 'Fermer',
-        };
-        this.differenceAmountMsg = '';
-        if (this.creationSpecs.nbDifferences >= Constants.MAX_DIFFERENCES_LIMIT)
-            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
-        if (this.creationSpecs.nbDifferences <= Constants.MIN_DIFFERENCES_LIMIT)
-            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
-
-        this.popUpService.openDialog(canvasDialogData);
-    }
-
-    /**
      * This methods re initializes the game games values to prevent the user from saving
      * using obsolete values after a change.
      */
-    restartGame() {
+    private restartGame(): void {
         this.creationSpecs.nbDifferences = Constants.INIT_DIFF_NB;
         this.defaultImageUrl = '';
         this.isSaveable = false;
-    }
-
-    /**
-     * This method is used to save the game, it opens a popUp asking the user
-     * to give a name to their new game and saves it.
-     */
-    saveGame() {
-        if (this.isSaveable) {
-            let gameName = '';
-            const saveDialogData: DialogData = {
-                textToSend: 'Veuillez entrer le nom du jeu',
-                inputData: {
-                    inputLabel: 'Nom du jeu',
-                    submitFunction: (value) => {
-                        if (value.length < Constants.ten) {
-                            return true;
-                        }
-                        return false;
-                    },
-                    returnValue: gameName,
-                },
-                closeButtonMessage: 'Sauvegarder',
-            };
-            if (!this.creationSpecs.diffImageFile) {
-                this.errorDialog('aucun fichier de différence');
-                return;
-            }
-            this.popUpService.openDialog(saveDialogData);
-            this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-                gameName = result;
-                this.savedLevel = {
-                    id: 0,
-                    name: gameName,
-                    playerSolo: [],
-                    timeSolo: [],
-                    playerMulti: [],
-                    timeMulti: [],
-                    isEasy: !this.creationSpecs.differences?.isHard,
-                    nbDifferences: this.creationSpecs.nbDifferences,
-                };
-                if (!this.creationSpecs.defaultImageFile || !this.creationSpecs.diffImageFile || !this.creationSpecs.differences) {
-                    return;
-                }
-                const levelFormData: LevelFormData = {
-                    imageOriginal: this.creationSpecs.defaultImageFile,
-                    imageDiff: this.creationSpecs.diffImageFile,
-                    name: this.savedLevel.name,
-                    isEasy: this.savedLevel.isEasy.toString(),
-                    clusters: JSON.stringify(this.creationSpecs.differences.clusters),
-                    nbDifferences: this.savedLevel.nbDifferences.toString(),
-                };
-                this.communicationService.postLevel(levelFormData).subscribe((data) => {
-                    if (data.title === 'error') {
-                        this.errorDialog(data.body);
-                        return;
-                    } else if (data.title === 'success') {
-                        const dialogData: DialogData = {
-                            textToSend: data.body,
-                            closeButtonMessage: 'Fermer',
-                        };
-                        this.popUpService.openDialog(dialogData, '/config');
-                    }
-                });
-            });
-        }
     }
 
     /**
@@ -363,7 +336,7 @@ export class CreationPageService {
      *
      * @param msg the error message we want to display.
      */
-    errorDialog(msg = 'Une erreur est survenue') {
+    private errorDialog(msg = 'Une erreur est survenue'): void {
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();
         const errorDialogData: DialogData = {
             textToSend: msg,

@@ -60,10 +60,10 @@ export namespace Constants {
     export const RADIUS_DEFAULT = 3;
     export const RADIUS_TABLE: number[] = [0, 3, 9, 15];
     export const SLIDER_DEFAULT = 1;
-    export const BIG_DIFF_NB = 9;
     export const INIT_DIFF_NB = 0;
     export const BMP_BPP_POS = 28;
     export const BMP_BPP = 24;
+    export const MAX_GAME_NAME_LENGTH = 10;
 
     // Game constants
     export const INIT_COUNTDOWN_TIME = 30;
