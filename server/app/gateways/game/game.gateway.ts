@@ -202,11 +202,11 @@ export class GameGateway {
         secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
 
-    // @SubscribeMessage(GameEvents.OnMessageReception)
-    // onMessageReception(socket: Socket): void {
-    //     const player1id = socket.id;
-    //     secondPlayerSocket.emit(GameEvents.RejectedGame);
-    // }
+    @SubscribeMessage(GameEvents.OnMessageReception)
+    onMessageReception(socket: Socket, message: ChatMessage): void {
+        const room = this.playerRoomMap.get(socket.id);
+        this.server.to(room).emit(GameEvents.MessageSent, message);
+    }
 
     /**
      * This method is called when a player disconnects.

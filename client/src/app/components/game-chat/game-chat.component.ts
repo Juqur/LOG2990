@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatMessage } from '@common/chat-messages';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
@@ -14,7 +14,7 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @author Charles Degrandpré
  * @class GameChatComponent
  */
-export class GameChatComponent implements OnInit {
+export class GameChatComponent implements OnInit, OnDestroy {
     messages: ChatMessage[] = [];
 
     constructor(private socketHandler: SocketHandler) {}
@@ -38,5 +38,9 @@ export class GameChatComponent implements OnInit {
 
     ngOnInit(): void {
         this.listenForMessages();
+    }
+
+    ngOnDestroy(): void {
+        this.socketHandler.disconnect('game');
     }
 }

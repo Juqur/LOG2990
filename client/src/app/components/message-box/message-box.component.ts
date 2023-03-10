@@ -43,7 +43,7 @@ export class MessageBoxComponent implements OnInit {
      */
     sendMessage(messageInput: HTMLTextAreaElement): void {
         const text: string = messageInput.value;
-        this.socketHandler.send('chat', 'soloClassic', this.createMessage(text));
+        this.socketHandler.send('game', 'onMessageReception', this.createMessage(text));
         messageInput.value = '';
     }
 
@@ -51,9 +51,8 @@ export class MessageBoxComponent implements OnInit {
      * starts the socket if it was not already started.
      */
     createSocket(): void {
-        if (!this.socketHandler.isSocketAlive('chat')) {
-            this.socketHandler.connect('chat');
-            this.socketHandler.send('chat', 'soloClassic');
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
         }
     }
 
