@@ -32,10 +32,10 @@ export class GamePageComponent implements OnInit {
 
     playerName: string;
     levelId: number;
-    currentLevel: Level; // doit recuperer du server
+    currentLevel: Level;
     isClassicGamemode: boolean = true;
     isMultiplayer: boolean = false;
-    nbDiff: number = Constants.INIT_DIFF_NB; // Il faudrait avoir cette info dans le level
+    nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     imagesData: number[] = [];

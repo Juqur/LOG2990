@@ -31,7 +31,7 @@ export class CardComponent {
 
     @Input() isSelectionPage: boolean = true;
 
-    imgPath: string = environment.serverUrl + 'originals/';
+    private imgPath: string = environment.serverUrl + 'originals/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',
@@ -46,6 +46,9 @@ export class CardComponent {
     };
 
     constructor(private router: Router, public popUpService: PopUpService) {}
+    get getImg(): string {
+        return this.imgPath;
+    }
 
     /**
      * Display the difficulty of the level
