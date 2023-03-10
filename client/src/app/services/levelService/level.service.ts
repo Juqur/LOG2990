@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { Constants } from '@common/constants';
+import { take } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -21,7 +22,6 @@ export class LevelService {
     constructor(private communicationService: CommunicationService) {
         communicationService.getLevels().subscribe((value) => {
             this.levels = value;
-
             this.shownLevels = this.levels.slice(0, Constants.levelsPerPage);
         });
     }
@@ -83,12 +83,15 @@ export class LevelService {
     }
 
     deleteLevel(levelId: number): void {
-        this.communicationService.deleteLevel(levelId).subscribe((confirmation) => {
-            if (confirmation) {
-                this.levels = this.levels.filter((level) => level.id !== levelId);
-                this.updatePageLevels();
-            }
-        });
+        this.communicationService
+            .deleteLevel(levelId)
+            .pipe(take(1))
+            .subscribe((confirmation) => {
+                if (confirmation) {
+                    this.levels = this.levels.filter((level) => level.id !== levelId);
+                    this.updatePageLevels();
+                }
+            });
     }
 
     /**

@@ -6,7 +6,7 @@ import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
 import { environment } from 'src/environments/environment';
 
-fdescribe('CommunicationService', () => {
+describe('CommunicationService', () => {
     let httpMock: HttpTestingController;
     let service: CommunicationService;
 
@@ -26,7 +26,7 @@ fdescribe('CommunicationService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('Get level should call http get with a id', () => {
+    it('should call http GET with a id', () => {
         const fakeLevel = {
             id: 1,
             name: '',
@@ -124,7 +124,7 @@ fdescribe('CommunicationService', () => {
         req.flush(imageName);
     });
 
-    it('should make an http DELETE request a leve', () => {
+    it('should make an http DELETE request a level', () => {
         service.deleteLevel(1).subscribe((res) => {
             expect(res).toBeTruthy();
         });

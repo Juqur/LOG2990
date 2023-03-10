@@ -6,8 +6,7 @@ import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
 /**
- * Component that displays a preview
- * of a level and its difficulty
+ * Component that displays a preview of a level and its difficulty
  *
  * @author Galen Hu
  * @class CardComponent
