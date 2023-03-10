@@ -3,36 +3,25 @@ import { Injectable } from '@angular/core';
 import { LevelDifferences } from '@app/classes/difference';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
-import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
-import { DrawService } from '@app/services/draw.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { LevelFormData } from '@common/levelFormData';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CreationPageService {
-    creationSpecs: CreationSpecs = {
-        defaultImageFile: await this.convertRelativeUriToFile(),
-        diffImageFile: null,
-        radius: Constants.RADIUS_DEFAULT,
-        nbDifferences: Constants.INIT_DIFF_NB,
-        differences: new LevelDifferences(),
-        defaultArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
-        diffArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
-        defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
-        diffCanvasCtx: document.createElement('canvas').getContext('2d'),
-    };
+    creationSpecs: CreationSpecs;
     sliderValue = Constants.SLIDER_DEFAULT;
     isSaveable = false;
     defaultImageUrl = '';
     msg = '';
     differenceAmountMsg = '';
-    savedLevel: Level;
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
@@ -40,6 +29,18 @@ export class CreationPageService {
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
     ) {
+        this.creationSpecs = {
+            defaultImageFile: this.getEmptyBMPFile().finally.arguments,
+            diffImageFile: this.getEmptyBMPFile().finally.arguments,
+            radius: Constants.RADIUS_DEFAULT,
+            nbDifferences: Constants.INIT_DIFF_NB,
+            differences: new LevelDifferences(),
+            defaultArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+            diffArea: new PlayAreaComponent(new DrawService(), this.canvasShare),
+            defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
+            diffCanvasCtx: document.createElement('canvas').getContext('2d'),
+        } as CreationSpecs;
+
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultCanvasCtx?.canvas as HTMLCanvasElement;
 
         this.canvasShare.diffCanvas = this.creationSpecs.diffCanvasCtx?.canvas as HTMLCanvasElement;
@@ -193,47 +194,40 @@ export class CreationPageService {
                 closeButtonMessage: 'Sauvegarder',
             });
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-                this.savedLevel = {
-                    id: 0,
-                    name: result,
-                    playerSolo: [],
-                    timeSolo: [],
-                    playerMulti: [],
-                    timeMulti: [],
-                    isEasy: !this.creationSpecs.differences?.isHard,
-                    nbDifferences: this.creationSpecs.nbDifferences,
-                };
-                // if (!this.creationSpecs.defaultImageFile || !this.creationSpecs.diffImageFile || !this.creationSpecs.differences) {
-                //     return;
-                // }
-                const levelFormData: LevelFormData = {
-                    imageOriginal: this.creationSpecs.defaultImageFile,
-                    imageDiff: this.creationSpecs.diffImageFile,
-                    name: this.savedLevel.name,
-                    isEasy: this.savedLevel.isEasy.toString(),
-                    clusters: JSON.stringify(this.creationSpecs.differences.clusters),
-                    nbDifferences: this.savedLevel.nbDifferences.toString(),
-                };
-                this.communicationService.postLevel(levelFormData).subscribe((data) => {
-                    if (data.title === 'error') {
-                        this.errorDialog(data.body);
-                        return;
-                    } else if (data.title === 'success') {
-                        const dialogData: DialogData = {
-                            textToSend: data.body,
-                            closeButtonMessage: 'Fermer',
-                        };
-                        this.popUpService.openDialog(dialogData, '/config');
-                    }
-                });
+                if (this.creationSpecs.differences) {
+                    const levelFormData: LevelFormData = {
+                        imageOriginal: this.creationSpecs.defaultImageFile,
+                        imageDiff: this.creationSpecs.diffImageFile,
+                        name: result,
+                        isEasy: (!this.creationSpecs.differences?.isHard).toString(),
+                        clusters: JSON.stringify(this.creationSpecs.differences.clusters),
+                        nbDifferences: this.creationSpecs.nbDifferences.toString(),
+                    };
+                    this.communicationService.postLevel(levelFormData).subscribe((data) => {
+                        if (data.title === 'error') {
+                            this.errorDialog(data.body);
+                        } else if (data.title === 'success') {
+                            const dialogData: DialogData = {
+                                textToSend: data.body,
+                                closeButtonMessage: 'Fermer',
+                            };
+                            this.popUpService.openDialog(dialogData, '/config');
+                        }
+                    });
+                }
             });
         }
     }
 
-    async convertRelativeUriToFile(filePath: string, fileName: string) {
-        const imageUrl = await fetch(filePath);
+    /**
+     * This method is used to get the File() object associated with the image_empty.bmp.
+     *
+     * @returns a file Object containing the image_empty.bmp
+     */
+    private async getEmptyBMPFile() {
+        const imageUrl = await fetch(environment.serverUrl + 'images/');
         const buffer = await imageUrl.arrayBuffer();
-        return new File([buffer], fileName);
+        return new File([buffer], 'image_empty.bmp');
     }
 
     /**

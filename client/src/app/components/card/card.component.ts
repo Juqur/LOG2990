@@ -31,15 +31,13 @@ export class CardComponent {
     };
     @Input() page: string = 'no page';
 
-    private _imgPath: string = environment.serverUrl + 'originals/';
-    public get imgPath(): string {
-        return this._imgPath;
-    }
-
-    playerName: string = 'player 1';
-    difficulty: string;
+    private originalImgPath: string = environment.serverUrl + 'originals/';
 
     constructor(private router: Router, public popUpService: PopUpService) {}
+
+    get imgPath(): string {
+        return this.originalImgPath;
+    }
 
     /**
      * Display the difficulty of the level
@@ -79,9 +77,8 @@ export class CardComponent {
         this.popUpService.openDialog(saveDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
-                this.playerName = result;
                 this.router.navigate([`/game/${this.level.id}/`], {
-                    queryParams: { playerName: this.playerName },
+                    queryParams: { playerName: result },
                 });
             }
         });

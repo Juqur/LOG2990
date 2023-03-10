@@ -6,7 +6,7 @@ export interface CreationSpecs {
     diffImageFile: File;
     radius: number;
     nbDifferences: number; // Could possibly drop depending on the LevelDifferences
-    differences: LevelDifferences;
+    differences: LevelDifferences | undefined;
     defaultArea: PlayAreaComponent;
     diffArea: PlayAreaComponent;
     defaultCanvasCtx: CanvasRenderingContext2D | null;
