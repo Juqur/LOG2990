@@ -31,7 +31,7 @@ export class CardComponent {
 
     @Input() isSelectionPage: boolean = true;
 
-    imgPath: string = environment.serverUrl + 'originals/';
+    private imgPath: string = environment.serverUrl + 'originals/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',
