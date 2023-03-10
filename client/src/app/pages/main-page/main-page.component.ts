@@ -15,11 +15,25 @@ import { AudioService } from '@app/services/audioService/audio.service';
  * @class MainPageComponent
  */
 export class MainPageComponent implements OnInit, OnDestroy {
-    icon: string = 'volume_off';
-    showCredits: boolean = true;
+    private iconValue: string = 'volume_off';
+    private canShowCredits: boolean = true;
     private audioServiceSoundtrack = new AudioService();
 
     constructor(private router: Router) {}
+
+    /**
+     * Getter for the icon value
+     */
+    get icon(): string {
+        return this.iconValue;
+    }
+
+    /**
+     * Getter for the canShowCredits attribute
+     */
+    get showCredits(): boolean {
+        return this.canShowCredits;
+    }
 
     /**
      * Initializes the audio playing on the main page. It sets it on loop and muted as
@@ -59,7 +73,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     volumeOnClick() {
         AudioService.quickPlay('./assets/audio/click.mp3');
         this.audioServiceSoundtrack.mute();
-        this.icon = this.icon === 'volume_up' ? 'volume_off' : 'volume_up';
+        this.iconValue = this.icon === 'volume_up' ? 'volume_off' : 'volume_up';
     }
 
     /**
@@ -67,6 +81,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
      */
     creditsOnClick() {
         AudioService.quickPlay('./assets/audio/click.mp3');
-        this.showCredits = !this.showCredits;
+        this.canShowCredits = !this.showCredits;
     }
 }
