@@ -29,7 +29,7 @@ export class LevelService {
     /**
      * Getter for the levelToShow attribute.
      */
-    get levelsToSHow(): Level[] {
+    get levelsToShow(): Level[] {
         return this.shownLevels;
     }
 

@@ -6,8 +6,8 @@
             </button>
         </header>
 
-        <body *ngIf="levelService.levelsToSHow" class="selection-card-container">
-            <app-card *ngFor="let level of levelService.levelsToSHow" [level]="level" [isSelectionPage]="true"></app-card>
+        <body *ngIf="levelService.levelsToShow" class="selection-card-container">
+            <app-card *ngFor="let level of levelService.levelsToShow" [level]="level" [isSelectionPage]="true"></app-card>
         </body>
 
         <footer class="bottom-container">
