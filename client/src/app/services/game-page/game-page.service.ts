@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Constants } from '@common/constants';
-import { SocketHandler } from '@app/services/socket-handler.service';
-import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { Level } from '@app/levels';
-import { AudioService } from '@app/services/audioService/audio.service';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { MouseService } from '@app/services/mouseService/mouse.service';
-import { DrawService } from '@app/services/drawService/draw.service';
 import { Vec2 } from '@app/interfaces/vec2';
 import { GameData } from '@app/pages/game-page/game-page.component';
+import { AudioService } from '@app/services/audioService/audio.service';
+import { DrawService } from '@app/services/drawService/draw.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
+import { Constants } from '@common/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -26,8 +24,6 @@ export class GamePageService {
     private imagesData: number[] = [];
     private originalImageSource: string = '';
     private diffImageSource: string = '';
-    private drawServiceDiff: DrawService;
-    private drawServiceOriginal: DrawService;
     private originalPlayArea: PlayAreaComponent;
     private diffPlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData = {
@@ -43,10 +39,11 @@ export class GamePageService {
     // eslint-disable-next-line max-params
     constructor(
         private socketHandler: SocketHandler,
-        private communicationService: CommunicationService,
         private mouseService: MouseService,
         private popUpService: PopUpService,
         private audioService: AudioService,
+        private drawServiceDiff: DrawService,
+        private drawServiceOriginal: DrawService,
     ) {}
     /**
      * This method validates validates the click of a plyer after it has been checked by the server.
@@ -91,23 +88,12 @@ export class GamePageService {
 
     /**
      * This method the pictures to the correct sources.
-     * It also gets the level information from the server.
      *
      * @param levelId The id of the level
-     * @returns a level object that contains the level information if the level was found, undefined otherwise
      */
-    getLevelInformation(levelId: number): Level | undefined {
+    setImages(levelId: number): void {
         this.originalImageSource = 'http://localhost:3000/originals/' + levelId + '.bmp';
         this.diffImageSource = 'http://localhost:3000/modifiees/' + levelId + '.bmp';
-        try {
-            this.communicationService.getLevel(levelId).subscribe((value) => {
-                this.setNumberOfDifference(value.nbDifferences);
-                return value;
-            });
-        } catch (error) {
-            throw new Error("Couldn't load level: " + error);
-        }
-        return undefined;
     }
 
     /**
@@ -258,7 +244,7 @@ export class GamePageService {
             .then(() => {
                 setTimeout(() => {
                     this.copyArea(this.imagesData);
-                }, Constants.thirty);
+                }, 0);
             });
     }
 }

@@ -95,7 +95,6 @@ export class CardComponent {
         };
         this.popUpService.openDialog(loadingDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
-            console.log(this.waitingForSecondPlayer);
             if (this.waitingForSecondPlayer) {
                 this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
             }
