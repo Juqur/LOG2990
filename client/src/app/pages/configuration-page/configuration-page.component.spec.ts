@@ -1,25 +1,27 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CardComponent } from '@app/components/card/card.component';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LevelService } from '@app/services/levelService/level.service';
-import { SelectionPageComponent } from './selection-page.component';
+import { ConfigurationPageComponent } from './configuration-page.component';
 
-describe('SelectionPageComponent', () => {
-    let component: SelectionPageComponent;
-    let fixture: ComponentFixture<SelectionPageComponent>;
+describe('ConfigurationPageComponent', () => {
+    let component: ConfigurationPageComponent;
+    let fixture: ComponentFixture<ConfigurationPageComponent>;
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SelectionPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
-            imports: [AppMaterialModule, HttpClientTestingModule],
+            declarations: [ConfigurationPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
+            imports: [AppMaterialModule, BrowserAnimationsModule, HttpClientTestingModule],
             providers: [LevelService],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SelectionPageComponent);
+        fixture = TestBed.createComponent(ConfigurationPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
