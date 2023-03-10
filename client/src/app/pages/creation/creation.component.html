@@ -3,10 +3,6 @@
         <section id="top-area">
             <button mat-button routerLink="/config"><span>Retour</span></button>
             <div class="zone-button-container">
-                <button class="button-settings" color="orange" (click)="resetDefault()">
-                    INTERVERTIR AVANT-PLANS
-                    <mat-icon>restart_alt</mat-icon>
-                </button>
                 <button class="button-reset" color="orange" (click)="detectDifference()">
                     Dupliquer un avant-plan
                     <mat-icon>image_search</mat-icon>
@@ -37,19 +33,29 @@
             <div class="img-zone-container">
                 <div class="zone-button-container">
                     <p class="info-txt">Image originale</p>
-                    <button class="button-reset" color="orange" (click)="resetDefault()">
-                        REINITIALISER AVANT PLAN
-                        <mat-icon>restart_alt</mat-icon>
-                    </button>
                 </div>
-                <app-play-area *ngIf="defaultArea" [isDiff]="false"></app-play-area>
+                <div class="display-row">
+                    <div class="display-column canvas-action">
+                        <button title="Réinitialiser Avant Plan">Réinitialiser Avant Plan</button>
+                        <button title="Tout Réinitialiser">Tout Réinitialiser</button>
+                        <button title="Téléverser une image">Téléverser une image</button>
+                        <button title="Dupliquer">Dupliquer</button>
+                    </div>
+                    <app-play-area *ngIf="defaultArea" [isDiff]="false"></app-play-area>
+                </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
                         Téléverser Image Originale
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="default image" id="default" accept=".bmp"
-                        (change)="defaultImageSelector($event)" (click)="cleanSrc($event)" />
+                    <input
+                        type="file"
+                        name="default image"
+                        id="default"
+                        accept=".bmp"
+                        (change)="defaultImageSelector($event)"
+                        (click)="cleanSrc($event)"
+                    />
                     <button class="button-reset" color="orange" (click)="resetDefault()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -62,27 +68,35 @@
                         Téléverser Image Commune
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="both images" id="both" accept=".bmp" (change)="bothImagesSelector($event)"
-                        (click)="cleanSrc($event)" />
+                    <input type="file" name="both images" id="both" accept=".bmp" (change)="bothImagesSelector($event)" (click)="cleanSrc($event)" />
                 </div>
+
+                <button class="button-settings" color="orange" (click)="resetDefault()">
+                    INTERVERTIR AVANT-PLANS
+                    <mat-icon>restart_alt</mat-icon>
+                </button>
                 <p>Les images doivent être en format BMP 24-bit et de taille 640x480</p>
             </div>
             <div class="img-zone-container">
                 <div class="zone-button-container">
-                    <button class="button-reset" color="orange" (click)="resetDefault()">
-                        REINITIALISER AVANT PLAN
-                        <mat-icon>restart_alt</mat-icon>
-                    </button>
                     <p class="info-txt">Image modifiée</p>
                 </div>
-                <app-play-area *ngIf="modifiedArea" [isDiff]="true"></app-play-area>
+
+                <div class="displayRow">
+                    <div class="displayColumn">
+                        <button title="Réinitialiser Avant Plan">Réinitialiser Avant Plan</button>
+                        <button title="Tout Réinitialiser">Tout Réinitialiser</button>
+                        <button title="Téléverser une image">Téléverser une image</button>
+                        <button title="Dupliquer">Dupliquer</button>
+                    </div>
+                    <app-play-area *ngIf="modifiedArea" [isDiff]="true"></app-play-area>
+                </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
                         Téléverser Image Modifiée
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="diff image" id="diff" accept=".bmp" (change)="diffImageSelector($event)"
-                        (click)="cleanSrc($event)" />
+                    <input type="file" name="diff image" id="diff" accept=".bmp" (change)="diffImageSelector($event)" (click)="cleanSrc($event)" />
                     <button class="button-reset" color="orange" (click)="resetDiff()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -93,16 +107,21 @@
         <section id="bottom-area">
             <div id="enlargissement-container">
                 <label class="info-txt" for="values">Rayon d'élargissement:</label>
-                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="sliderValue"
-                    (change)="sliderChange(sliderValue)"></mat-slider>
+                <mat-slider
+                    id="radiusSlider"
+                    [min]="0"
+                    [max]="3"
+                    tickInterval="1"
+                    [(ngModel)]="sliderValue"
+                    (change)="sliderChange(sliderValue)"
+                ></mat-slider>
             </div>
             <div class="zone-button-container">
                 <button class="button-reset" color="orange" (click)="detectDifference()">
                     Valider les différences
                     <mat-icon>image_search</mat-icon>
                 </button>
-                <button [ngClass]="{ 'button-disabled': !isSaveable }" class="button-settings" color="orange"
-                    (click)="saveGame()">
+                <button [ngClass]="{ 'button-disabled': !isSaveable }" class="button-settings" color="orange" (click)="saveGame()">
                     Sauvegarder le jeu
                     <mat-icon>save</mat-icon>
                 </button>
@@ -121,11 +140,11 @@
             </div>
             <div class="zone-button-container">
                 <button class="button-reset" color="orange" (click)="detectDifference()">
-                    Undo
+                    Annuler
                     <mat-icon>image_search</mat-icon>
                 </button>
                 <button class="button-reset" color="orange" (click)="detectDifference()">
-                    Redo
+                    Refaire
                     <mat-icon>image_search</mat-icon>
                 </button>
             </div>
