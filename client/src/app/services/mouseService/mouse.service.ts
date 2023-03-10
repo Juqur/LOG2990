@@ -5,6 +5,13 @@ import { Constants, MouseButton } from '@common/constants';
 @Injectable({
     providedIn: 'root',
 })
+
+/**
+ * This service is used to get the position of the mouse in the canvas.
+ *
+ * @author Junaid Qureshi
+ * @class MouseService
+ */
 export class MouseService {
     private mousePosition: Vec2 = { x: 0, y: 0 };
     private canClick: boolean = true;
