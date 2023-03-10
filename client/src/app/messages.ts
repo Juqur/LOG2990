@@ -3,5 +3,3 @@ export interface Message {
     text: string;
     playerId: number;
 }
-
-// export const messages: Message[] = [];
