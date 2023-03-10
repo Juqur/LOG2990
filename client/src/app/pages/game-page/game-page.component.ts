@@ -45,7 +45,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
 
-
     private levelId: number;
     private clickedOriginalImage: boolean = true;
 
@@ -57,6 +56,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
         private audioService: AudioService,
+        private communicationService: CommunicationService,
     ) {}
 
     ngOnDestroy(): void {
@@ -75,6 +75,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
         this.route.queryParams.subscribe((params) => {
             this.playerName = params['playerName'];
+            this.secondPlayerName = params['opponent'];
         });
 
         this.router.events.forEach((event) => {
@@ -83,7 +84,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.currentLevel = this.gamePageService.getLevelInformation(this.levelId);
+        try {
+            this.communicationService.getLevel(this.levelId).subscribe((value) => {
+                this.gamePageService.setNumberOfDifference(value.nbDifferences);
+                this.currentLevel = value;
+            });
+        } catch (error) {
+            throw new Error("Couldn't load level: " + error);
+        }
         this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
         this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
         this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
@@ -97,25 +105,24 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It checks if the difference is in the original image or in the diff image, and if the game is finished.
      */
     handleSocket() {
-        if (!this.socketHandler.isSocketAlive('game')) {
-            this.socketHandler.connect('game');
-            this.socketHandler.on('game', 'onSecondPlayerJoined', (data) => {
-                const names = data as string[];
-                this.secondPlayerName = names[0] === this.playerName ? names[1] : names[0];
-            });
-            this.socketHandler.on('game', 'onProcessedClick', (data) => {
-                const gameData = data as GameData;
-                if (gameData.amountOfDifferencesSecondPlayer) {
-                    this.secondPlayerDifferencesCount = gameData.amountOfDifferencesSecondPlayer;
-                }
-                this.playerDifferencesCount = gameData.amountOfDifferences;
-                this.gamePageService.setDifferenceFound(gameData.amountOfDifferences);
-                const response = this.gamePageService.validateResponse(gameData.differences);
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
-                this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
-            });
-        }
-        this.socketHandler.send('game', 'onJoinNewGame', { game: this.levelId, playerName: this.playerName });
+        this.socketHandler.on('game', 'onProcessedClick', (data) => {
+            const gameData = data as GameData;
+            if (gameData.amountOfDifferencesSecondPlayer) {
+                this.secondPlayerDifferencesCount = gameData.amountOfDifferencesSecondPlayer;
+            }
+            this.playerDifferencesCount = gameData.amountOfDifferences;
+            this.gamePageService.setDifferenceFound(gameData.amountOfDifferences);
+            const response = this.gamePageService.validateResponse(gameData.differences);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
+            this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
+        });
+
+        this.socketHandler.on('game', 'onVictory', () => {
+            this.gamePageService.handleVictory();
+        });
+        this.socketHandler.on('game', 'onDefeat', () => {
+            this.gamePageService.handleDefeat();
+        });
     }
     /**
      * This method handles the case where the user clicks on the original image
