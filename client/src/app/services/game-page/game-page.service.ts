@@ -8,6 +8,7 @@ import { MouseService } from '@app/services/mouseService/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root',
@@ -92,12 +93,13 @@ export class GamePageService {
      * @param levelId The id of the level
      */
     setImages(levelId: number): void {
-        this.originalImageSource = 'http://localhost:3000/originals/' + levelId + '.bmp';
-        this.diffImageSource = 'http://localhost:3000/modifiees/' + levelId + '.bmp';
+        this.originalImageSource = environment.serverUrl + 'originals/' + levelId + '.bmp';
+        this.diffImageSource = environment.serverUrl + 'modifiees/' + levelId + '.bmp';
     }
 
     /**
      * This method handles the action to take depending on the response of validateResponse()
+     * +
      *
      * @param response Integer that represents the state of the click, 1 if the click is valid, 0 if the click is invalid and -1 if the game is over
      * @param gameData Values of the game
