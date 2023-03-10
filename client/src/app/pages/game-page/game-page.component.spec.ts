@@ -10,7 +10,6 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AudioService } from '@app/services/audioService/audio.service';
-// import { CommunicationService } from '@app/services/communication.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
@@ -34,7 +33,6 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState', 'resetCounter']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
-        // audioServiceSpy = jasmine.createSpyObj('AudioService', ['quickPlay']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError']);
 
         await TestBed.configureTestingModule({
@@ -52,7 +50,6 @@ describe('GamePageComponent', () => {
             providers: [
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
-                // { provide: AudioService, useValue: audioServiceSpy },
                 { provide: DrawService, useValue: drawServiceSpy },
             ],
         }).compileComponents();
@@ -136,12 +133,16 @@ describe('GamePageComponent', () => {
         expect(spyResetCanvas).toHaveBeenCalledTimes(1);
     });
 
-    it('handleAreaNotFoundInOriginal should call multiple functions', () => {
+    it('handleAreaNotFoundInOriginal should call multiple functions', fakeAsync(() => {
         const audioServiceSpy = spyOn(AudioService, 'quickPlay');
+        const originalPlayAreaSpy = spyOn(component.originalPlayArea, 'drawPlayArea');
         component.handleAreaNotFoundInOriginal();
         expect(audioServiceSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
-        expect(mouseServiceSpy.changeClickState).toHaveBeenCalledTimes(1);
-    });
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalled();
+        tick(Constants.millisecondsInOneSecond);
+        expect(originalPlayAreaSpy).toHaveBeenCalledTimes(1);
+        expect(mouseServiceSpy.changeClickState).toHaveBeenCalled();
+    }));
 
     it('handleAreaNotFoundInDiff should call multiple functions', fakeAsync(() => {
         const spyResetCanvas = spyOn(component, 'resetCanvas');
