@@ -9,6 +9,7 @@ import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
 
 export interface GameData {
     differences: number[];
@@ -93,8 +94,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
             throw new Error("Couldn't load level: " + error);
         }
         this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
-        this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
-        this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
+        this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
+        this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
 
         this.handleSocket();
     }
