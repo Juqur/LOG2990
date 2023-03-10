@@ -62,7 +62,7 @@ export class GamePageComponent implements OnInit {
      *
      * @param event
      */
-    clickedOnOriginal(event: MouseEvent) {
+    clickedOnOriginal(event: MouseEvent): void {
         if (this.mouseService.getCanClick()) {
             // Update this so it also does game id work.
             const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
@@ -83,7 +83,7 @@ export class GamePageComponent implements OnInit {
      *
      * @param event
      */
-    clickedOnDiff(event: MouseEvent) {
+    clickedOnDiff(event: MouseEvent): void {
         if (this.mouseService.getCanClick()) {
             const diffDetected = this.mouseService.mouseHitDetect(event, this.gameId);
             diffDetected.then((result) => {
@@ -118,7 +118,7 @@ export class GamePageComponent implements OnInit {
      *
      * @param area the area to copy
      */
-    copyArea(area: number[]) {
+    copyArea(area: number[]): void {
         let x = 0;
         let y = 0;
         const context = this.tempDiffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -136,7 +136,7 @@ export class GamePageComponent implements OnInit {
      * To avoid flashing issue, it copies to a third temporary canvas.
      * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
-    resetCanvas() {
+    resetCanvas(): void {
         this.diffPlayArea
             .timeout(Constants.millisecondsInOneSecond)
             .then(() => {
@@ -159,7 +159,7 @@ export class GamePageComponent implements OnInit {
     /**
      * This method will copy/paste the context of the temp canvas to the difference canvas.
      */
-    copyDiffPlayAreaContext() {
+    copyDiffPlayAreaContext(): void {
         const context2 = this.tempDiffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const context = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const imageData = context2.getImageData(0, 0, context2.canvas.width, context2.canvas.height);
@@ -171,7 +171,7 @@ export class GamePageComponent implements OnInit {
      *
      * @param result the current area found
      */
-    handleAreaFoundInDiff(result: number[]) {
+    handleAreaFoundInDiff(result: number[]): void {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.diffPlayArea.flashArea(result);
@@ -183,7 +183,7 @@ export class GamePageComponent implements OnInit {
     /**
      * Will be called when the user does not find a difference in the difference canvas.
      */
-    handleAreaNotFoundInDiff() {
+    handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
@@ -198,7 +198,7 @@ export class GamePageComponent implements OnInit {
      *
      * @param result the current area found
      */
-    handleAreaFoundInOriginal(result: number[]) {
+    handleAreaFoundInOriginal(result: number[]): void {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);
@@ -210,7 +210,7 @@ export class GamePageComponent implements OnInit {
     /**
      * Will be called when the user does not find a difference in the original canvas.
      */
-    handleAreaNotFoundInOriginal() {
+    handleAreaNotFoundInOriginal(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
@@ -226,7 +226,7 @@ export class GamePageComponent implements OnInit {
     /**
      * Get the game level from the server when the game is loaded.
      */
-    getGameLevel() {
+    getGameLevel(): void {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.mouseService.resetCounter();
@@ -242,7 +242,7 @@ export class GamePageComponent implements OnInit {
     /**
      * This method will set the game level.
      */
-    settingGameLevel() {
+    settingGameLevel(): void {
         try {
             this.communicationService.getLevel(this.levelId).subscribe((value) => {
                 this.currentLevel = value;
@@ -257,7 +257,7 @@ export class GamePageComponent implements OnInit {
     /**
      * This method will set the game images.
      */
-    settingGameImage() {
+    settingGameImage(): void {
         try {
             this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
             this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
