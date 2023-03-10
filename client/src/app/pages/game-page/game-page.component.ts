@@ -1,12 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Event, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { Vec2 } from '@app/interfaces/vec2';
 import { Level } from '@app/levels';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { DrawService } from '@app/services/draw.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -29,10 +32,10 @@ export class GamePageComponent implements OnInit {
 
     playerName: string;
     levelId: number;
-    currentLevel: Level; // doit recuperer du server
+    currentLevel: Level;
     isClassicGamemode: boolean = true;
     isMultiplayer: boolean = false;
-    nbDiff: number = Constants.INIT_DIFF_NB; // Il faudrait avoir cette info dans le level
+    nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     imagesData: number[] = [];
@@ -55,7 +58,6 @@ export class GamePageComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
-            // recoit le bon id!!
             this.levelId = params.id;
         });
 
@@ -84,8 +86,8 @@ export class GamePageComponent implements OnInit {
         }
 
         try {
-            this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
-            this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
+            this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
+            this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
         } catch (error) {
             throw new Error("Couldn't load images");
         }
@@ -182,7 +184,7 @@ export class GamePageComponent implements OnInit {
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError(this.mouseService);
+        this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
         this.mouseService.changeClickState();
         this.resetCanvas();
     }
@@ -204,7 +206,7 @@ export class GamePageComponent implements OnInit {
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawError(this.mouseService);
+        this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
         this.mouseService.changeClickState();
         this.resetCanvas();
     }

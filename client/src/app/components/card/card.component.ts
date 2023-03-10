@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-card',
@@ -28,8 +29,12 @@ export class CardComponent {
         isEasy: true,
         nbDifferences: 7,
     };
-
     @Input() page: string = 'no page';
+
+    private _imgPath: string = environment.serverUrl + 'originals/';
+    public get imgPath(): string {
+        return this._imgPath;
+    }
 
     playerName: string = 'player 1';
     difficulty: string;
