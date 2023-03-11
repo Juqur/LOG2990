@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CreationPageService } from '@app/services/creationPageService/creation-page.service';
+import { Constants } from '@common/constants';
 
 /**
  * This component represents the creation, the page where we can create new levels/games.
@@ -13,5 +14,7 @@ import { CreationPageService } from '@app/services/creationPageService/creation-
     styleUrls: ['./creation.component.scss'],
 })
 export class CreationComponent {
+    sliderValue = Constants.SLIDER_DEFAULT;
+
     constructor(public creationService: CreationPageService) {}
 }

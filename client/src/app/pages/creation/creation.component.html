@@ -6,7 +6,7 @@
         <section id="creation-area-container">
             <div class="img-zone-container">
                 <p class="info-txt">Image originale</p>
-                <app-play-area *ngIf="creationService.creationSpecs.defaultArea" [isDiff]="false"></app-play-area>
+                <app-play-area [isDiff]="false"></app-play-area>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
                         Téléverser Image Originale
@@ -43,7 +43,7 @@
             </div>
             <div class="img-zone-container">
                 <p class="info-txt">Image modifiée</p>
-                <app-play-area *ngIf="creationService.creationSpecs.diffArea" [isDiff]="true"></app-play-area>
+                <app-play-area [isDiff]="true"></app-play-area>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
                         Téléverser Image Modifiée
@@ -72,8 +72,8 @@
                     [min]="0"
                     [max]="3"
                     tickInterval="1"
-                    [(ngModel)]="creationService.sliderValue"
-                    (change)="this.creationService.sliderChange(creationService.sliderValue)"
+                    [(ngModel)]="sliderValue"
+                    (change)="this.creationService.sliderChange(sliderValue)"
                 ></mat-slider>
             </div>
             <div class="zone-button-container">
@@ -82,7 +82,7 @@
                     <mat-icon>image_search</mat-icon>
                 </button>
                 <button
-                    [ngClass]="{ 'button-disabled': !creationService.isSaveable }"
+                    [ngClass]="{ 'button-disabled': !creationService.saveable }"
                     class="button-settings"
                     color="orange"
                     (click)="this.creationService.saveGame()"
@@ -94,12 +94,12 @@
             <div id="info-area">
                 <div>
                     <span class="info-txt">Rayon: </span>
-                    <span class="answer-txt">{{ creationService.creationSpecs.radius }}</span>
+                    <span class="answer-txt">{{ creationService.radius }}</span>
                 </div>
                 <div>
                     <span class="info-txt">Nombre de différences: </span>
-                    <span class="answer-txt">{{ creationService.creationSpecs.nbDifferences }}</span>
-                    <span class="error">{{ creationService.differenceAmountMsg }}</span>
+                    <span class="answer-txt">{{ creationService.nbDifferences }}</span>
+                    <span class="error">{{ creationService.differenceMsg }}</span>
                     <p id="diff-nb-note">Le nombres de différences doit se situer entre 3 et 9.</p>
                 </div>
             </div>
