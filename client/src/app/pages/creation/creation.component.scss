@@ -176,7 +176,8 @@ input[type='file'] {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    align-items: center;
+    align-items: stretch;
+    height: 100%;
 }
 
 .canvas-action {
