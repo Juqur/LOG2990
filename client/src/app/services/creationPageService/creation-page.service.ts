@@ -15,6 +15,7 @@ export class CreationPageService {
     private creationSpecs: CreationSpecs;
     private isSaveable = false;
     private differenceAmountMsg = '';
+    private submitFunction: (value: string) => boolean;
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
@@ -40,6 +41,10 @@ export class CreationPageService {
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultCanvasCtx?.canvas as HTMLCanvasElement;
 
         this.canvasShare.diffCanvas = this.creationSpecs.diffCanvasCtx?.canvas as HTMLCanvasElement;
+
+        this.submitFunction = (value) => {
+            return value.length !== 0 && value.length < Constants.MAX_GAME_NAME_LENGTH;
+        };
     }
 
     /**
@@ -201,9 +206,7 @@ export class CreationPageService {
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
                     inputLabel: 'Nom du jeu',
-                    submitFunction: (value) => {
-                        return value.length < Constants.MAX_GAME_NAME_LENGTH;
-                    },
+                    submitFunction: this.submitFunction,
                 },
                 closeButtonMessage: 'Sauvegarder',
             });
@@ -214,7 +217,7 @@ export class CreationPageService {
                             imageOriginal: this.creationSpecs.defaultImageFile,
                             imageDiff: this.creationSpecs.diffImageFile,
                             name: result,
-                            isEasy: (!this.creationSpecs.differences?.isHard).toString(),
+                            isEasy: (!this.creationSpecs.differences.isHard).toString(),
                             clusters: JSON.stringify(this.creationSpecs.differences.clusters),
                             nbDifferences: this.creationSpecs.nbDifferences.toString(),
                         })
@@ -252,10 +255,6 @@ export class CreationPageService {
      * This method is used to display the default image on the default canvas.
      */
     private showDefaultImage(): void {
-        if (!this.creationSpecs.defaultImageFile) {
-            this.errorDialog('aucun fichier de base');
-            return;
-        }
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
         image.onload = () => {
@@ -278,10 +277,6 @@ export class CreationPageService {
      * This method is used to display the different image on the different canvas.
      */
     private showDiffImage(): void {
-        if (!this.creationSpecs.diffImageFile) {
-            this.errorDialog('aucun fichier de différence');
-            return;
-        }
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
         image.onload = () => {

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -7,11 +8,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { LevelDifferences } from '@app/classes/difference';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
+import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { MouseService } from '@app/services/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
-import { CommunicationService } from '../communicationService/communication.service';
+import { of } from 'rxjs';
 import { CreationPageService } from './creation-page.service';
 import SpyObj = jasmine.SpyObj;
 
@@ -20,16 +22,24 @@ describe('CreationPageService', () => {
     // let canvasSharingService: CanvasSharingService;
     let mouseServiceSpy: SpyObj<MouseService>;
     let diffServiceSpy: SpyObj<DifferenceDetectorService>;
-    let popUpServiceSpy: SpyObj<PopUpService>;
+    // let popUpServiceSpy: SpyObj<PopUpService>;
     let communicationSpy: SpyObj<CommunicationService>;
-    // let fixture: ComponentFixture<CreationComponent>;
+    // let dialogRefSpy: SpyObj<MatDialogRef<PopUpDialogComponent, any>>;
+
+    // --------------------------------------------------------------------------------- //
+    let popUpServiceSpy: any; // Need to have any, not fully sure why.
+    // --------------------------------------------------------------------------------- //
+    let onloadRef: Function | undefined;
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
-        popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog']);
-        popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']); // COME CHECK ON THIS LATER
-        communicationSpy = jasmine.createSpyObj('CommunicationService', ['']);
+        // popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], ['dialogRef']);
+        // dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']); // COME CHECK ON THIS LATER
+        communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
+        popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
+        popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+        popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
     });
 
     beforeEach(() => {
@@ -47,18 +57,41 @@ describe('CreationPageService', () => {
         });
         // fixture = TestBed.createComponent(CreationComponent);
         service = TestBed.inject(CreationPageService);
+        // service.popUpService.dialogRef = dialogRefSpy;
+    });
+
+    beforeAll(() => {
+        Object.defineProperty(Image.prototype, 'onload', {
+            get() {
+                // eslint-disable-next-line no-underscore-dangle
+                return this._onload;
+            },
+            // eslint-disable-next-line @typescript-eslint/ban-types
+            set(onload: Function) {
+                onloadRef = onload;
+                // eslint-disable-next-line no-underscore-dangle
+                this._onload = onload;
+            },
+        });
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should be created', () => {
+    it('constructor should correctly initialize', fakeAsync(() => {
+        spyOn<any>(service, 'getEmptyBMPFile').and.returnValue(Promise.resolve(new File([''], '')));
         spyOn(HTMLCanvasElement.prototype, 'getContext').and.returnValue(null);
         const creationService = new CreationPageService(new CanvasSharingService(), diffServiceSpy, popUpServiceSpy, communicationSpy);
         expect(creationService['canvasShare'].defaultCanvas).toBeUndefined();
         expect(creationService['canvasShare'].diffCanvas).toBeUndefined();
-    });
+        expect(service['submitFunction']('')).toBeFalse();
+        expect(service['submitFunction']('A title')).toBeTrue();
+        expect(service['submitFunction']('A really long game name that should not be accepted as it breaks the UI')).toBeFalse();
+        tick();
+        expect(service['creationSpecs'].defaultImageFile).toEqual(new File([''], ''));
+        expect(service['creationSpecs'].diffImageFile).toEqual(new File([''], ''));
+    }));
 
     it('defaultImageSelector should make the appropriate function calls', fakeAsync(() => {
         const restartGameSpy = spyOn<any>(service, 'restartGame');
@@ -333,4 +366,55 @@ describe('CreationPageService', () => {
 
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     });
+
+    it('save game should call open dialog twice if we can save and post level was successful', () => {
+        service['isSaveable'] = true;
+        popUpServiceSpy.openDialog.and.returnValue({
+            afterClosed: () =>
+                of({
+                    hasAccepted: 'Hello World',
+                }),
+        });
+        communicationSpy.postLevel.and.returnValue(
+            of({
+                title: 'success',
+                body: 'it was a sucess',
+            }),
+        );
+        service.saveGame();
+        expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(2);
+    });
+
+    it('save game should call open dialog once if we can save and post level was not successful', () => {
+        service['isSaveable'] = true;
+        const errorDialogSpy = spyOn<any>(service, 'errorDialog');
+        popUpServiceSpy.openDialog.and.returnValue({
+            afterClosed: () =>
+                of({
+                    hasAccepted: 'Hello World',
+                }),
+        });
+        communicationSpy.postLevel.and.returnValue(
+            of({
+                title: 'error',
+                body: 'it was a sucess',
+            }),
+        );
+        service.saveGame();
+        expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
+        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('getEmptyBMPFile should return a new File with the correct src', fakeAsync(async () => {
+        const result = await service['getEmptyBMPFile']();
+        expect(result.name).toEqual('image_empty.bmp');
+    }));
+
+    it('showDefaultImage should call errorDialog if we have no defaultCanvasCtx', fakeAsync(() => {
+        const errorDialogSPy = spyOn<any>(service, 'errorDialog');
+        service['creationSpecs'].defaultCanvasCtx = null;
+        service['showDefaultImage']();
+        tick();
+        expect(errorDialogSPy).toHaveBeenCalledTimes(1);
+    }));
 });
