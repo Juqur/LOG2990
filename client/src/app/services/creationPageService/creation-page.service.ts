@@ -309,8 +309,8 @@ export class CreationPageService {
         }
         return new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const view = new DataView(e.target?.result as ArrayBuffer);
+            reader.onload = (event) => {
+                const view = new DataView(event.target?.result as ArrayBuffer);
                 const bitNb = view.getUint16(Constants.BMP_BPP_POS, true);
                 if (bitNb !== Constants.BMP_BPP) {
                     this.errorDialog('Les images doivent être de 24 bits par pixel');

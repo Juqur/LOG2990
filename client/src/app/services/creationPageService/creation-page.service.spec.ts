@@ -60,21 +60,6 @@ fdescribe('CreationPageService', () => {
         // service.popUpService.dialogRef = dialogRefSpy;
     });
 
-    beforeAll(() => {
-        Object.defineProperty(Image.prototype, 'onload', {
-            get() {
-                // eslint-disable-next-line no-underscore-dangle
-                return this._onload;
-            },
-            // eslint-disable-next-line @typescript-eslint/ban-types
-            set(onload: Function) {
-                // onloadRef = onload;
-                // eslint-disable-next-line no-underscore-dangle
-                this._onload = onload;
-            },
-        });
-    });
-
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
