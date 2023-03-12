@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { LevelDifferences } from '@app/classes/difference';
 import { CreationSpecs } from '@app/interfaces/creation-specs';

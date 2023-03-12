@@ -30,7 +30,7 @@ export class DifferenceDetectorService {
      * @param radius The radius of the pixels to change.
      * @return The clusters of pixels that are different.
      */
-    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): Difference | undefined {
+    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): LevelDifferences | undefined {
         // Ensures image format is valid.
         if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
             return undefined;

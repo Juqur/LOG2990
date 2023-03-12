@@ -19,23 +19,14 @@ import SpyObj = jasmine.SpyObj;
 
 describe('CreationPageService', () => {
     let service: CreationPageService;
-    // let canvasSharingService: CanvasSharingService;
     let mouseServiceSpy: SpyObj<MouseService>;
     let diffServiceSpy: SpyObj<DifferenceDetectorService>;
-    // let popUpServiceSpy: SpyObj<PopUpService>;
     let communicationSpy: SpyObj<CommunicationService>;
-    // let dialogRefSpy: SpyObj<MatDialogRef<PopUpDialogComponent, any>>;
-
-    // --------------------------------------------------------------------------------- //
-    let popUpServiceSpy: any; // Need to have any, not fully sure why.
-    // --------------------------------------------------------------------------------- //
-    // let onloadRef: Function | undefined;
+    let popUpServiceSpy: any;
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
-        // popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], ['dialogRef']);
-        // dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']); // COME CHECK ON THIS LATER
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
         popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
@@ -55,9 +46,7 @@ describe('CreationPageService', () => {
             ],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         });
-        // fixture = TestBed.createComponent(CreationComponent);
         service = TestBed.inject(CreationPageService);
-        // service.popUpService.dialogRef = dialogRefSpy;
     });
 
     it('should be created', () => {
