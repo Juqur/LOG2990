@@ -446,7 +446,7 @@ describe('CreationPageService', () => {
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
 
-    it('should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
+    it('showDefaultImage should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
@@ -454,77 +454,69 @@ describe('CreationPageService', () => {
         service['creationSpecs'].defaultCanvasCtx = null;
         service['showDefaultImage']();
 
-        // Trigger the load event by calling the spy
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
     it('showDefaultImage should call errorDialog if image is not correct width', fakeAsync(() => {
-        let imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
+        const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
 
-        imageSpy.onload();
-        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
-
-        imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
     it('showDefaultImage should call errorDialog if image is not correct height', fakeAsync(() => {
-        let imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
+        const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
 
-        imageSpy.onload();
-        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
-
-        imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
+    // Trying to fix this.
     it('showDefaultImage should correctly update class attributes', fakeAsync(() => {
-        let imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
+        const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
-        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+        spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
 
-        imageSpy.onload();
-        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        expect(service['canvasShare'].defaultCanvas.width).toEqual(Constants.DEFAULT_WIDTH);
+        expect(service['canvasShare'].defaultCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
+    }));
 
-        imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
+    it('showDiffImage should call errorDialog if diffCanvasCtx is undefined', fakeAsync(() => {
+        const imageSpy = jasmine.createSpyObj('Image', ['onload']);
+        spyOn(window, 'Image').and.returnValue(imageSpy);
+
+        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+        service['creationSpecs'].diffCanvasCtx = null;
+        service['showDiffImage']();
+
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
     it('showDiffImage should call errorDialog if image is not correct width', fakeAsync(() => {
-        let imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
+        const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         service['showDiffImage']();
 
-        imageSpy.onload();
-        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
-
-        imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
     it('showDiffImage should call errorDialog if image is not correct height', fakeAsync(() => {
-        let imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
+        const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         service['showDiffImage']();
 
-        imageSpy.onload();
-        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
-
-        imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
