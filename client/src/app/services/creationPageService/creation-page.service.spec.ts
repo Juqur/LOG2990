@@ -435,7 +435,7 @@ describe('CreationPageService', () => {
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
 
-    it('showDefaultImage should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
+    it('showDefaultImage showDefaultImage should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
