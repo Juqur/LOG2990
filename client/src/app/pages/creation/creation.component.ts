@@ -2,7 +2,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Difference } from '@app/classes/difference';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
-import { Vec2 } from '@app/interfaces/vec2';
 import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
@@ -42,8 +41,8 @@ export class CreationComponent implements OnInit {
     differenceAmountMsg = '';
     savedLevel: Level;
 
-    drawServiceDefault: DrawService = new DrawService();
-    drawServiceDiff: DrawService = new DrawService();
+    drawServiceDefault: DrawService;
+    drawServiceDiff: DrawService;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -53,18 +52,19 @@ export class CreationComponent implements OnInit {
         private communicationService: CommunicationService,
         private mouseServiceDefault: MouseService,
         private mouseServiceDiff: MouseService,
-    ) {}
+    ) { }
 
     /**
      * The method initiates two empty canvas on the page. The canvases are represented by two
      * PaintArea components.
      */
     ngOnInit(): void {
+        this.drawServiceDefault = new DrawService();
+        this.drawServiceDiff = new DrawService();
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.defaultCanvas = this.defaultCanvasCtx?.canvas as HTMLCanvasElement;
         this.diffCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.diffCanvas = this.diffCanvasCtx?.canvas as HTMLCanvasElement;
-
         this.defaultArea = new PaintAreaComponent(this.drawServiceDefault, this.canvasShare, this.mouseServiceDefault);
         this.modifiedArea = new PaintAreaComponent(this.drawServiceDiff, this.canvasShare, this.mouseServiceDiff);
     }
@@ -383,22 +383,22 @@ export class CreationComponent implements OnInit {
         this.popUpService.openDialog(errorDialogData);
     }
 
-    /*clickedOnDiff(event: MouseEvent) {
-        if (this.mouseService.getCanClick()) {
-            const diffDetected = this.mouseService.mouseHitDetect(event, 0);
-        }
-    }*/
-
-    handleAreaNotFoundInOriginal() {
-        // this.audioService.playSound('./assets/audio/failed.mp3');
-        this.drawServiceDefault.context = this.defaultArea
-            ?.getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDefault.drawError({ x: this.mouseServiceDefault.getX(), y: this.mouseServiceDefault.getY() } as Vec2);
-        //this.mouseService.changeClickState();
+    paintBrushMode() {
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas
+            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas
+            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.paintBrush();
+        this.drawServiceDiff.paintBrush();
     }
 
-
-
+    eraseBrushMode() {
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas
+            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas
+            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.eraseBrush();
+        this.drawServiceDiff.eraseBrush();
+    }
 
 }

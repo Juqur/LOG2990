@@ -11,7 +11,8 @@
             <div id="draw-tools-container">
                 <label class="info-txt" for="values">Epaisseur:</label>
                 <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="radius"></mat-slider>
-                <button class="button-settings" color="orange" (click)="resetDefault()">
+                <button class="button-settings" color="orange"
+                    (click)="paintBrushMode()">
                     CRAYON
                     <mat-icon>restart_alt</mat-icon>
                 </button>
@@ -19,7 +20,7 @@
                     RECTANGLE
                     <mat-icon>restart_alt</mat-icon>
                 </button>
-                <button class="button-reset" color="orange" (click)="resetDefault()">
+                <button class="button-reset" color="orange" (click)="eraseBrushMode()">
                     EFFACE
                     <mat-icon>restart_alt</mat-icon>
                 </button>
@@ -48,14 +49,8 @@
                         Téléverser Image Originale
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input
-                        type="file"
-                        name="default image"
-                        id="default"
-                        accept=".bmp"
-                        (change)="defaultImageSelector($event)"
-                        (click)="cleanSrc($event)"
-                    />
+                    <input type="file" name="default image" id="default" accept=".bmp"
+                        (change)="defaultImageSelector($event)" (click)="cleanSrc($event)" />
                     <button class="button-reset" color="orange" (click)="resetDefault()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -68,7 +63,8 @@
                         Téléverser Image Commune
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="both images" id="both" accept=".bmp" (change)="bothImagesSelector($event)" (click)="cleanSrc($event)" />
+                    <input type="file" name="both images" id="both" accept=".bmp" (change)="bothImagesSelector($event)"
+                        (click)="cleanSrc($event)" />
                 </div>
 
                 <button class="button-settings" color="orange" (click)="resetDefault()">
@@ -95,7 +91,8 @@
                         Téléverser Image Modifiée
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="diff image" id="diff" accept=".bmp" (change)="diffImageSelector($event)" (click)="cleanSrc($event)" />
+                    <input type="file" name="diff image" id="diff" accept=".bmp" (change)="diffImageSelector($event)"
+                        (click)="cleanSrc($event)" />
                     <button class="button-reset" color="orange" (click)="resetDiff()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -106,21 +103,16 @@
         <section id="bottom-area">
             <div id="enlargissement-container">
                 <label class="info-txt" for="values">Rayon d'élargissement:</label>
-                <mat-slider
-                    id="radiusSlider"
-                    [min]="0"
-                    [max]="3"
-                    tickInterval="1"
-                    [(ngModel)]="sliderValue"
-                    (change)="sliderChange(sliderValue)"
-                ></mat-slider>
+                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="sliderValue"
+                    (change)="sliderChange(sliderValue)"></mat-slider>
             </div>
             <div class="zone-button-container">
                 <button class="button-reset" color="orange" (click)="detectDifference()">
                     Valider les différences
                     <mat-icon>image_search</mat-icon>
                 </button>
-                <button [ngClass]="{ 'button-disabled': !isSaveable }" class="button-settings" color="orange" (click)="saveGame()">
+                <button [ngClass]="{ 'button-disabled': !isSaveable }" class="button-settings" color="orange"
+                    (click)="saveGame()">
                     Sauvegarder le jeu
                     <mat-icon>save</mat-icon>
                 </button>
