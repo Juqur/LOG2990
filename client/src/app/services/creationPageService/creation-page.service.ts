@@ -281,11 +281,11 @@ export class CreationPageService {
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
         image.onload = () => {
             if (!this.creationSpecs.diffCanvasCtx) {
-                this.errorDialog('aucun canvas de différence');
+                this.errorDialog('Aucun canvas de différence.');
                 return;
             }
             if (image.width !== Constants.DEFAULT_WIDTH || image.height !== Constants.DEFAULT_HEIGHT) {
-                this.errorDialog('Les images doivent être de taille 640x480');
+                this.errorDialog('Les images doivent être de taille 640x480.');
                 return;
             }
             this.canvasShare.diffCanvas.width = image.width;

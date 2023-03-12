@@ -424,5 +424,27 @@ fdescribe('CreationPageService', () => {
             tick();
             expect(errorDialogSpy).toHaveBeenCalledTimes(1);
         }));
+
+        it('should call errorDialog if image is not correct width', fakeAsync(() => {
+            const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
+            spyOn(window, 'Image').and.returnValue(imageSpy);
+            const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+            service['showDefaultImage']();
+
+            imageSpy.onload();
+            tick();
+            expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should call errorDialog if image is not correct height', fakeAsync(() => {
+            const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
+            spyOn(window, 'Image').and.returnValue(imageSpy);
+            const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+            service['showDefaultImage']();
+
+            imageSpy.onload();
+            tick();
+            expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        }));
     });
 });
