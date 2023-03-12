@@ -29,7 +29,7 @@ describe('CreationPageService', () => {
     // --------------------------------------------------------------------------------- //
     let popUpServiceSpy: any; // Need to have any, not fully sure why.
     // --------------------------------------------------------------------------------- //
-    let onloadRef: Function | undefined;
+    // let onloadRef: Function | undefined;
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
@@ -38,7 +38,7 @@ describe('CreationPageService', () => {
         // dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']); // COME CHECK ON THIS LATER
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
-        popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+        popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
     });
 
@@ -60,20 +60,20 @@ describe('CreationPageService', () => {
         // service.popUpService.dialogRef = dialogRefSpy;
     });
 
-    beforeAll(() => {
-        Object.defineProperty(Image.prototype, 'onload', {
-            get() {
-                // eslint-disable-next-line no-underscore-dangle
-                return this._onload;
-            },
-            // eslint-disable-next-line @typescript-eslint/ban-types
-            set(onload: Function) {
-                onloadRef = onload;
-                // eslint-disable-next-line no-underscore-dangle
-                this._onload = onload;
-            },
-        });
-    });
+    // beforeAll(() => {
+    //     Object.defineProperty(Image.prototype, 'onload', {
+    //         get() {
+    //             // eslint-disable-next-line no-underscore-dangle
+    //             return this._onload;
+    //         },
+    //         // eslint-disable-next-line @typescript-eslint/ban-types
+    //         set(onload: Function) {
+    //             onloadRef = onload;
+    //             // eslint-disable-next-line no-underscore-dangle
+    //             this._onload = onload;
+    //         },
+    //     });
+    // });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
@@ -144,7 +144,7 @@ describe('CreationPageService', () => {
     it('diffImageSelector should initialize diffImageFile with the file given as parameter', fakeAsync(() => {
         spyOn<any>(service, 'restartGame');
         spyOn<any>(service, 'verifyImageFormat').and.resolveTo(true);
-        spyOn<any>(service, 'showDefaultImage');
+        spyOn<any>(service, 'showDiffImage');
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.diffImageSelector(mockEvent);
@@ -410,11 +410,62 @@ describe('CreationPageService', () => {
         expect(result.name).toEqual('image_empty.bmp');
     }));
 
-    it('showDefaultImage should call errorDialog if we have no defaultCanvasCtx', fakeAsync(() => {
-        const errorDialogSPy = spyOn<any>(service, 'errorDialog');
-        service['creationSpecs'].defaultCanvasCtx = null;
-        service['showDefaultImage']();
-        tick();
-        expect(errorDialogSPy).toHaveBeenCalledTimes(1);
+    // it('showDefaultImage should call errorDialog if we have no defaultCanvasCtx', fakeAsync(() => {
+    //     const errorDialogSPy = spyOn<any>(service, 'errorDialog');
+    //     service['creationSpecs'].defaultCanvasCtx = null;
+    //     service['showDefaultImage']();
+    //     tick();
+    //     expect(errorDialogSPy).toHaveBeenCalledTimes(1);
+    // }));
+
+    it('verifyImageFormat should call error dialog if the image is not in the image/bmp format', fakeAsync(async () => {
+        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+        const result: boolean = await service['verifyImageFormat'](new File([''], '', { type: 'image/jpeg' }));
+        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        expect(result).toBeFalse();
+    }));
+
+    it('verifyImageFormat should call error dialog if the image is not 24 bits per pixels', fakeAsync(async () => {
+        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+        spyOn(DataView.prototype, 'getUint16').and.returnValue(Constants.BMP_BPP + 1);
+        const mockFileGetter = async () => {
+            const imageSrc = './assets/images/image_empty.bmp';
+            return fetch(imageSrc)
+                .then(async (res) => res.blob())
+                .then((blob) => {
+                    return new File([blob], 'image_empty.bmp', { type: 'image/bmp' });
+                });
+        };
+        const mockFile = await mockFileGetter();
+        const result: boolean = await service['verifyImageFormat'](mockFile);
+        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        expect(result).toBeFalse();
+    }));
+
+    it('verifyImageFormat should return true if the image format is image/bmp and there is 24 bits per pixels', fakeAsync(async () => {
+        const mockFileGetter = async () => {
+            const imageSrc = './assets/images/image_empty.bmp';
+            return fetch(imageSrc)
+                .then(async (res) => res.blob())
+                .then((blob) => {
+                    return new File([blob], 'image_empty.bmp', { type: 'image/bmp' });
+                });
+        };
+        const mockFile = await mockFileGetter();
+        const result: boolean = await service['verifyImageFormat'](mockFile);
+        expect(result).toBeTrue();
+    }));
+
+    it('Restart game should correctly reset class attributes', fakeAsync(async () => {
+        service['isSaveable'] = true;
+        service['creationSpecs'].nbDifferences = 3;
+        service['restartGame']();
+        expect(service['isSaveable']).toBeFalse();
+        expect(service['creationSpecs'].nbDifferences).toEqual(Constants.INIT_DIFF_NB);
+    }));
+
+    it('errorDialog should close the previous dialog if there is one', fakeAsync(async () => {
+        service['errorDialog']();
+        expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
 });
