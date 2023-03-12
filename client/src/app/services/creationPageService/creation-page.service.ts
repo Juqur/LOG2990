@@ -268,7 +268,7 @@ export class CreationPageService {
             }
             this.canvasShare.defaultCanvas.width = image.width;
             this.canvasShare.defaultCanvas.height = image.height;
-            this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(image, 0, 0);
+            (this.canvasShare.defaultCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
             this.creationSpecs.defaultCanvasCtx = this.canvasShare.defaultCanvas.getContext('2d');
         };
     }
@@ -290,7 +290,7 @@ export class CreationPageService {
             }
             this.canvasShare.diffCanvas.width = image.width;
             this.canvasShare.diffCanvas.height = image.height;
-            this.canvasShare.diffCanvas.getContext('2d')?.drawImage(image, 0, 0);
+            (this.canvasShare.diffCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
             this.creationSpecs.diffCanvasCtx = this.canvasShare.diffCanvas.getContext('2d');
         };
     }
