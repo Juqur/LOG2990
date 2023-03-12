@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { LevelDifferences } from '@app/classes/difference';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
@@ -6,6 +7,7 @@ import { CommunicationService } from '@app/services/communicationService/communi
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
+import { LevelFormData } from '@common/levelFormData';
 
 @Injectable({
     providedIn: 'root',
@@ -201,6 +203,8 @@ export class CreationPageService {
      */
     saveGame(): void {
         if (this.isSaveable) {
+            // eslint-disable-next-line no-console
+            console.log('before first pop-up');
             this.popUpService.openDialog({
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
@@ -209,9 +213,14 @@ export class CreationPageService {
                 },
                 closeButtonMessage: 'Sauvegarder',
             });
+            // eslint-disable-next-line no-console
+            console.log('after the first pop-up');
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 if (this.creationSpecs.differences) {
+                    // eslint-disable-next-line no-console
+                    console.log('Before post level');
                     this.communicationService
+                        // can read post level but it returns empty?
                         .postLevel({
                             imageOriginal: this.creationSpecs.defaultImageFile,
                             imageDiff: this.creationSpecs.diffImageFile,
@@ -219,8 +228,12 @@ export class CreationPageService {
                             isEasy: (!this.creationSpecs.differences.isHard).toString(),
                             clusters: JSON.stringify(this.creationSpecs.differences.clusters),
                             nbDifferences: this.creationSpecs.nbDifferences.toString(),
-                        })
+                        } as LevelFormData)
                         .subscribe((data) => {
+                            // eslint-disable-next-line no-console
+                            console.log(data);
+                            // eslint-disable-next-line no-console
+                            console.log('after the pop up');
                             if (data.title === 'error') {
                                 this.errorDialog(data.body);
                             } else if (data.title === 'success') {
@@ -229,6 +242,8 @@ export class CreationPageService {
                                     closeButtonMessage: 'Fermer',
                                 };
                                 this.popUpService.openDialog(dialogData, '/config');
+                                // eslint-disable-next-line no-console
+                                console.log('after the pop up');
                             }
                         });
                 }
