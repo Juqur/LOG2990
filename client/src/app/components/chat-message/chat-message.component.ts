@@ -16,7 +16,7 @@ import { Constants } from '@common/constants';
  */
 export class ChatMessageComponent implements OnInit {
     private displayName: string;
-    private textMessage: ChatMessage;
+    private chatMessage: ChatMessage;
 
     /**
      * Getter for the display name attribute.
@@ -29,12 +29,12 @@ export class ChatMessageComponent implements OnInit {
      * Getter for the textMessage attribute
      */
     get message(): ChatMessage {
-        return this.textMessage;
+        return this.chatMessage;
     }
 
     @Input()
     set message(message: ChatMessage) {
-        this.textMessage = message;
+        this.chatMessage = message;
     }
 
     /**
@@ -42,11 +42,12 @@ export class ChatMessageComponent implements OnInit {
      * on the length of the name saved.
      */
     formatNameLength(): void {
-        if (this.textMessage.sender.length > Constants.maxNameLength) {
-            this.displayName = this.textMessage.sender.substring(0, Constants.maxNameLengthShown) + '...';
+        if (this.chatMessage.sender.length > Constants.maxNameLength) {
+            this.displayName = this.chatMessage.sender.substring(0, Constants.maxNameLengthShown) + '...';
         } else {
-            this.displayName = this.textMessage.sender;
+            this.displayName = this.chatMessage.sender;
         }
+        console.log(this.message);
     }
 
     ngOnInit(): void {

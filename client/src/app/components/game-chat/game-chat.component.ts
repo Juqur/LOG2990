@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage, SenderType } from '@common/chat-messages';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 @Component({
@@ -21,7 +21,6 @@ export class GameChatComponent implements OnInit, OnDestroy {
 
     /**
      * Method in charge of creating a new message once it has been received by the server.
-     *
      */
     receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
@@ -38,6 +37,16 @@ export class GameChatComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.listenForMessages();
+        this.messages.push({
+            sender: 'System',
+            senderId: SenderType.System,
+            text: 'Welcome to the game!',
+        });
+        this.messages.push({
+            sender: 'unLama',
+            senderId: SenderType.Player,
+            text: 'Welcome to the game!',
+        });
     }
 
     ngOnDestroy(): void {

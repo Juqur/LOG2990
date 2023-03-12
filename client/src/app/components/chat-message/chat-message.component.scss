@@ -7,12 +7,16 @@
     margin-right: 10px;
 }
 
-.player1 {
+.player {
+    color: blue;
+}
+
+.opponent {
     color: red;
 }
 
-.player2 {
-    color: blue;
+.system {
+    color: yellow;
 }
 
 #sender > p {

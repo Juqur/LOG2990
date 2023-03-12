@@ -1,5 +1,5 @@
 import { ImageService } from '@app/services/image/image.service';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage, SenderType } from '@common/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { randomUUID } from 'crypto';
@@ -65,12 +65,6 @@ export class GameGateway {
             socket.emit(GameEvents.SendTime, time + 1);
         }, DELAY_BEFORE_EMITTING_TIME);
         this.timeIntervalMap.set(socket.id, interval);
-        const message: ChatMessage = {
-            playerId: socket.id,
-            sender: 'Server',
-            text: 'THE GAME HAS STARTED!',
-        };
-        socket.emit(GameEvents.MessageSent, message);
     }
 
     @SubscribeMessage(GameEvents.OnClick)
@@ -96,8 +90,8 @@ export class GameGateway {
             socket.broadcast.to(room).emit(GameEvents.OnProcessedClick, dataToSend);
 
             const message: ChatMessage = {
-                playerId: '0',
-                sender: 'Server',
+                sender: 'Système',
+                senderId: SenderType.System,
                 text: 'Différence trouvée par ' + gameState.playerName,
             };
             this.server.to(room).emit(GameEvents.MessageSent, message);
@@ -117,8 +111,8 @@ export class GameGateway {
         } else if (rep.foundDifference.length === 0 && gameState.secondPlayerId !== '') {
             const room = this.playerRoomMap.get(socket.id);
             const message: ChatMessage = {
-                playerId: '0',
-                sender: 'Server',
+                sender: 'Système',
+                senderId: SenderType.System,
                 text: 'ERREUR par ' + gameState.playerName,
             };
             this.server.to(room).emit(GameEvents.MessageSent, message);
@@ -220,7 +214,10 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
         const room = this.playerRoomMap.get(socket.id);
-        this.server.to(room).emit(GameEvents.MessageSent, message);
+
+        socket.emit(GameEvents.MessageSent, message);
+        message.senderId = SenderType.Opponent;
+        socket.broadcast.to(room).emit(GameEvents.MessageSent, message);
     }
 
     /**
