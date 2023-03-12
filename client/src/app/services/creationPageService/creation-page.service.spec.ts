@@ -478,13 +478,14 @@ describe('CreationPageService', () => {
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
-    // Trying to fix this.
     it('showDefaultImage should correctly update class attributes', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
+        spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
 
+        imageSpy.onload();
         expect(service['canvasShare'].defaultCanvas.width).toEqual(Constants.DEFAULT_WIDTH);
         expect(service['canvasShare'].defaultCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
     }));
@@ -519,5 +520,17 @@ describe('CreationPageService', () => {
 
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('showDiffImage should correctly update class attributes', fakeAsync(() => {
+        const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
+        spyOn(window, 'Image').and.returnValue(imageSpy);
+        spyOn(service, 'errorDialog' as never);
+        service['showDiffImage']();
+        spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+
+        imageSpy.onload();
+        expect(service['canvasShare'].diffCanvas.width).toEqual(Constants.DEFAULT_WIDTH);
+        expect(service['canvasShare'].diffCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
     }));
 });
