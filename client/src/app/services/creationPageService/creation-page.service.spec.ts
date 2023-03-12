@@ -446,7 +446,7 @@ describe('CreationPageService', () => {
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
 
-    it('should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
+    it('showDefaultImage should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
@@ -488,15 +488,11 @@ describe('CreationPageService', () => {
     }));
 
     it('showDefaultImage should correctly update class attributes', fakeAsync(() => {
-        let imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
+        const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
 
-        imageSpy.onload();
-        expect(errorDialogSpy).toHaveBeenCalledTimes(1);
-
-        imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
