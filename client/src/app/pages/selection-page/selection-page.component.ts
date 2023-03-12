@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Level } from '@app/levels';
-import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { Constants } from '@common/constants';
+import { Component } from '@angular/core';
+import { LevelService } from '@app/services/levelService/level.service';
 
 @Component({
     selector: 'app-selection-page',
@@ -15,59 +13,6 @@ import { Constants } from '@common/constants';
  * @author Louis Félix St-Amour
  * @class SelectionPageComponent
  */
-export class SelectionPageComponent implements OnInit {
-    page = 'selection';
-    levels: Level[] = [];
-    currentPage: number = 0;
-    firstShownLevel: number = 0;
-    lastShownLevel: number = 0;
-    lastPage: number = 0;
-    levelToShow: Level[];
-
-    constructor(private communicationService: CommunicationService) {}
-
-    nextPage(): void {
-        if (this.currentPage < this.lastPage) this.currentPage++;
-        this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
-        this.lastShownLevel = this.firstShownLevel + Constants.levelsPerPage;
-        this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
-    }
-
-    /**
-     * Decrements the current page and updates the levels on the screen
-     */
-    previousPage(): void {
-        if (this.currentPage > 0) this.currentPage--;
-        this.firstShownLevel = this.currentPage * Constants.levelsPerPage;
-        this.lastShownLevel = this.firstShownLevel + Constants.levelsPerPage;
-        this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
-    }
-
-    /**
-     * Checks if we have reached the last page
-     *
-     * @returns a boolean indicating if we are on the last page
-     */
-    isBeginningOfList(): boolean {
-        return this.currentPage <= 0;
-    }
-
-    /**
-     * Checks if we have reached the first page
-     *
-     * @returns a boolean indicating if we are on the first page
-     */
-    isEndOfList(): boolean {
-        return this.currentPage >= this.lastPage;
-    }
-
-    ngOnInit(): void {
-        this.communicationService.getLevels().subscribe((value) => {
-            this.levels = value;
-
-            this.lastShownLevel = Constants.levelsPerPage;
-            this.levelToShow = this.levels.slice(this.firstShownLevel, this.lastShownLevel);
-            this.lastPage = Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
-        });
-    }
+export class SelectionPageComponent {
+    constructor(public levelService: LevelService) {}
 }

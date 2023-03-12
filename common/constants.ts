@@ -40,7 +40,6 @@ export namespace Constants {
     export const maxMessageLength: number = 100;
 
     // Difference Detector
-    export const CHANNELS_PER_PIXEL = 4;
     export const EXPECTED_WIDTH = 640;
     export const EXPECTED_HEIGHT = 480;
     export const MIN_DIFFICULTY_RATIO = 0.15;
@@ -71,6 +70,9 @@ export namespace Constants {
     export const HINT_PENALTY = 5;
     export const COUNTDOWN_TIME_WIN = 5;
     export const DEFAULTTESTNUMBER = 7;
+
+    // Card Component
+    export const MAX_NAME_LENGTH = 300;
 }
 
 export enum MouseButton {
