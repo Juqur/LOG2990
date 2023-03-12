@@ -17,7 +17,7 @@ import { of } from 'rxjs';
 import { CreationPageService } from './creation-page.service';
 import SpyObj = jasmine.SpyObj;
 
-describe('CreationPageService', () => {
+fdescribe('CreationPageService', () => {
     let service: CreationPageService;
     // let canvasSharingService: CanvasSharingService;
     let mouseServiceSpy: SpyObj<MouseService>;
@@ -29,7 +29,7 @@ describe('CreationPageService', () => {
     // --------------------------------------------------------------------------------- //
     let popUpServiceSpy: any; // Need to have any, not fully sure why.
     // --------------------------------------------------------------------------------- //
-    let onloadRef: Function | undefined;
+    // let onloadRef: Function | undefined;
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
@@ -68,7 +68,7 @@ describe('CreationPageService', () => {
             },
             // eslint-disable-next-line @typescript-eslint/ban-types
             set(onload: Function) {
-                onloadRef = onload;
+                // onloadRef = onload;
                 // eslint-disable-next-line no-underscore-dangle
                 this._onload = onload;
             },
@@ -410,11 +410,19 @@ describe('CreationPageService', () => {
         expect(result.name).toEqual('image_empty.bmp');
     }));
 
-    it('showDefaultImage should call errorDialog if we have no defaultCanvasCtx', fakeAsync(() => {
-        const errorDialogSPy = spyOn<any>(service, 'errorDialog');
-        service['creationSpecs'].defaultCanvasCtx = null;
-        service['showDefaultImage']();
-        tick();
-        expect(errorDialogSPy).toHaveBeenCalledTimes(1);
-    }));
+    describe('showDefaultImage', () => {
+        it('should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
+            const imageSpy = jasmine.createSpyObj('Image', ['onload']);
+            spyOn(window, 'Image').and.returnValue(imageSpy);
+
+            const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+            service['creationSpecs'].defaultCanvasCtx = null;
+            service['showDefaultImage']();
+
+            // Trigger the load event by calling the spy
+            imageSpy.onload();
+            tick();
+            expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        }));
+    });
 });

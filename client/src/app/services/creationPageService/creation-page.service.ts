@@ -259,11 +259,11 @@ export class CreationPageService {
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
         image.onload = () => {
             if (!this.creationSpecs.defaultCanvasCtx) {
-                this.errorDialog('aucun canvas de base');
+                this.errorDialog('Aucun canvas de base.');
                 return;
             }
             if (image.width !== Constants.DEFAULT_WIDTH || image.height !== Constants.DEFAULT_HEIGHT) {
-                this.errorDialog('Les images doivent être de taille 640x480');
+                this.errorDialog('Les images doivent être de taille 640x480.');
                 return;
             }
             this.canvasShare.defaultCanvas.width = image.width;
