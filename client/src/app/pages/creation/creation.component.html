@@ -41,7 +41,7 @@
                         <button class="button-settings" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-settings" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-play-area *ngIf="defaultArea" [isDiff]="false"></app-play-area>
+                    <app-paint-area *ngIf="defaultArea" [isDiff]="false"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
@@ -88,7 +88,7 @@
                         <button class="button-settings" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-settings" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-play-area *ngIf="defaultArea" [isDiff]="true"></app-play-area>
+                    <app-paint-area *ngIf="defaultArea" [isDiff]="true"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">

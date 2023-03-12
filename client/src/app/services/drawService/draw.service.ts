@@ -37,4 +37,19 @@ export class DrawService {
         this.context.fillStyle = 'red';
         this.context.fillText('ERREUR', coord.x, coord.y);
     }
+
+    draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
+        this.context.beginPath();
+        this.context.strokeStyle = 'black';
+        this.context.lineWidth = 4;
+        this.context.moveTo(prevCoord.x, prevCoord.y);
+        if (actCoord.x !== -1 && actCoord.y !== -1) {
+            this.context.lineTo(actCoord.x, actCoord.y);
+        }
+        else {
+            this.context.lineTo(prevCoord.x + 1, prevCoord.y);
+        }
+
+        this.context.stroke();
+    }
 }
