@@ -95,6 +95,13 @@ export class GameGateway {
             dataToSend.amountOfDifferences = this.playerGameMap.get(gameState.secondPlayerId).foundDifferences.length;
             socket.broadcast.to(room).emit(GameEvents.OnProcessedClick, dataToSend);
 
+            const message: ChatMessage = {
+                playerId: '0',
+                sender: 'Server',
+                text: 'Différence trouvée par ' + gameState.playerName,
+            };
+            this.server.to(room).emit(GameEvents.MessageSent, message);
+
             if (gameState.foundDifferences.length >= Math.ceil(rep.totalDifferences / 2)) {
                 socket.emit(GameEvents.OnVictory);
                 socket.broadcast.to(room).emit(GameEvents.OnDefeat);
@@ -107,6 +114,14 @@ export class GameGateway {
                 clearInterval(this.timeIntervalMap.get(socket.id));
                 clearInterval(this.timeIntervalMap.get(gameState.secondPlayerId));
             }
+        } else if (rep.foundDifference.length === 0 && gameState.secondPlayerId !== '') {
+            const room = this.playerRoomMap.get(socket.id);
+            const message: ChatMessage = {
+                playerId: '0',
+                sender: 'Server',
+                text: 'ERREUR par ' + gameState.playerName,
+            };
+            this.server.to(room).emit(GameEvents.MessageSent, message);
         }
     }
 
