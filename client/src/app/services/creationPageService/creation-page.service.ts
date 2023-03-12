@@ -259,11 +259,11 @@ export class CreationPageService {
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
         image.onload = () => {
             if (!this.creationSpecs.defaultCanvasCtx) {
-                this.errorDialog('aucun canvas de base');
+                this.errorDialog('Aucun canvas de base.');
                 return;
             }
             if (image.width !== Constants.DEFAULT_WIDTH || image.height !== Constants.DEFAULT_HEIGHT) {
-                this.errorDialog('Les images doivent être de taille 640x480');
+                this.errorDialog('Les images doivent être de taille 640x480.');
                 return;
             }
             this.canvasShare.defaultCanvas.width = image.width;
@@ -281,11 +281,11 @@ export class CreationPageService {
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
         image.onload = () => {
             if (!this.creationSpecs.diffCanvasCtx) {
-                this.errorDialog('aucun canvas de différence');
+                this.errorDialog('Aucun canvas de différence.');
                 return;
             }
             if (image.width !== Constants.DEFAULT_WIDTH || image.height !== Constants.DEFAULT_HEIGHT) {
-                this.errorDialog('Les images doivent être de taille 640x480');
+                this.errorDialog('Les images doivent être de taille 640x480.');
                 return;
             }
             this.canvasShare.diffCanvas.width = image.width;
@@ -309,8 +309,8 @@ export class CreationPageService {
         }
         return new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const view = new DataView(e.target?.result as ArrayBuffer);
+            reader.onload = (event) => {
+                const view = new DataView(event.target?.result as ArrayBuffer);
                 const bitNb = view.getUint16(Constants.BMP_BPP_POS, true);
                 if (bitNb !== Constants.BMP_BPP) {
                     this.errorDialog('Les images doivent être de 24 bits par pixel');

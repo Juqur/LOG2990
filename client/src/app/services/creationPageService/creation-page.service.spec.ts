@@ -17,7 +17,7 @@ import { of } from 'rxjs';
 import { CreationPageService } from './creation-page.service';
 import SpyObj = jasmine.SpyObj;
 
-describe('CreationPageService', () => {
+fdescribe('CreationPageService', () => {
     let service: CreationPageService;
     // let canvasSharingService: CanvasSharingService;
     let mouseServiceSpy: SpyObj<MouseService>;
@@ -60,6 +60,7 @@ describe('CreationPageService', () => {
         // service.popUpService.dialogRef = dialogRefSpy;
     });
 
+<<<<<<< HEAD
     // beforeAll(() => {
     //     Object.defineProperty(Image.prototype, 'onload', {
     //         get() {
@@ -75,6 +76,8 @@ describe('CreationPageService', () => {
     //     });
     // });
 
+=======
+>>>>>>> 9d6f7dc066d8727a48d500cc24328e7b67e409eb
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
@@ -410,14 +413,6 @@ describe('CreationPageService', () => {
         expect(result.name).toEqual('image_empty.bmp');
     }));
 
-    // it('showDefaultImage should call errorDialog if we have no defaultCanvasCtx', fakeAsync(() => {
-    //     const errorDialogSPy = spyOn<any>(service, 'errorDialog');
-    //     service['creationSpecs'].defaultCanvasCtx = null;
-    //     service['showDefaultImage']();
-    //     tick();
-    //     expect(errorDialogSPy).toHaveBeenCalledTimes(1);
-    // }));
-
     it('verifyImageFormat should call error dialog if the image is not in the image/bmp format', fakeAsync(async () => {
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         const result: boolean = await service['verifyImageFormat'](new File([''], '', { type: 'image/jpeg' }));
@@ -468,4 +463,32 @@ describe('CreationPageService', () => {
         service['errorDialog']();
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
+    describe('showDefaultImage', () => {
+        it('should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
+            const imageSpy = jasmine.createSpyObj('Image', ['onload']);
+            spyOn(window, 'Image').and.returnValue(imageSpy);
+
+            const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+            service['creationSpecs'].defaultCanvasCtx = null;
+            service['showDefaultImage']();
+
+            // Trigger the load event by calling the spy
+            imageSpy.onload();
+            expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should call errorDialog if image is not correct size', fakeAsync(() => {
+            let imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
+            spyOn(window, 'Image').and.returnValue(imageSpy);
+            const errorDialogSpy = spyOn(service, 'errorDialog' as never);
+            service['showDefaultImage']();
+
+            imageSpy.onload();
+            expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+
+            imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
+            imageSpy.onload();
+            expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+        }));
+    });
 });
