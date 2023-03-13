@@ -49,7 +49,7 @@ export class GamePageService {
      * This method validates validates the click of a plyer after it has been checked by the server.
      *
      * @param differenceArray array of different pixels
-     * @returns an whether the lick was valid or not
+     * @returns whether the click was valid or not
      */
     validateResponse(differenceArray: number[]): boolean {
         return differenceArray.length > 0;
