@@ -215,6 +215,7 @@ export class GameGateway {
     onMessageReception(socket: Socket, message: ChatMessage): void {
         const room = this.playerRoomMap.get(socket.id);
 
+        message.sender = this.playerGameMap.get(socket.id).playerName;
         socket.emit(GameEvents.MessageSent, message);
         message.senderId = SenderType.Opponent;
         socket.broadcast.to(room).emit(GameEvents.MessageSent, message);
