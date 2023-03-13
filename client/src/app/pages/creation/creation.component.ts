@@ -40,7 +40,7 @@ export class CreationComponent implements OnInit {
     msg = '';
     differenceAmountMsg = '';
     savedLevel: Level;
-    color = Constants.DEFAULT_COLOR;
+    color = Constants.BLACK;
 
     drawServiceDefault: DrawService;
     drawServiceDiff: DrawService;
