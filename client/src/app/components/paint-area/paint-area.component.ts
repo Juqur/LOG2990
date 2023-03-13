@@ -210,6 +210,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.isRectangle) {
+            this.canvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
             document.body.querySelector('#grid-container')?.removeChild(this.tempCanvas);
         }
         console.log(this.mouseService.getX() + ' et ' + this.mouseService.getY());
