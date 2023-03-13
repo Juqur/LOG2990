@@ -72,6 +72,7 @@ export class DrawService {
     }
 
     drawRect(coord: Vec2, width: number, height: number): void {
+        console.log('draw rect');
         this.context.beginPath();
         this.context.rect(coord.x, coord.y, width, height);
         this.context.fill();

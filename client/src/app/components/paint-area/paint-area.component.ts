@@ -26,6 +26,7 @@ export class PaintAreaComponent implements AfterViewInit {
     buttonPressed = '';
     private isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
+    private tempCanvas: HTMLCanvasElement;
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
@@ -132,6 +133,20 @@ export class PaintAreaComponent implements AfterViewInit {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
+    createTempCanvas() {
+        this.tempCanvas = document.createElement('canvas');
+        this.tempCanvas.className = 'draw';
+        this.tempCanvas.style.position = 'absolute';
+        this.tempCanvas.style.top = this.canvas.nativeElement.offsetTop + 'px';
+        this.tempCanvas.style.left = this.canvas.nativeElement.offsetLeft + 'px';
+        this.tempCanvas.width = this.width;
+        this.tempCanvas.height = this.height;
+        document.body.querySelector('#grid-container')?.insertBefore(this.tempCanvas, this.canvas.nativeElement);
+        this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
+        this.tempCanvas.addEventListener('mouseup', this.canvasRelease.bind(this));
+        this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
+    }
+
     canvasClick(event: MouseEvent) {
         this.isDragging = true;
         this.mouseService.mouseDrag(event);
@@ -140,14 +155,17 @@ export class PaintAreaComponent implements AfterViewInit {
         if (!this.isRectangle) {
             this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawService.draw(this.lastMousePosition);
+        } else {
+            this.createTempCanvas();
         }
     }
 
     canvasDrag(event: MouseEvent) {
         if (this.mouseService) {
             if (this.isDragging) {
-                if (this.isRectangle) this.canvasRectangularDrag(event);
-                else this.canvasPaint(event);
+                if (this.isRectangle) {
+                    this.canvasRectangularDrag(event);
+                } else this.canvasPaint(event);
             }
         }
     }
@@ -172,7 +190,7 @@ export class PaintAreaComponent implements AfterViewInit {
         if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
             this.canvasRelease(event);
         } else {
-            this.drawService.context = this.canvas.nativeElement.getContext('2d', {
+            this.drawService.context = this.tempCanvas.getContext('2d', {
                 willReadFrequently: true,
             }) as CanvasRenderingContext2D;
             this.drawService.context.clearRect(0, 0, this.width, this.height);
@@ -191,6 +209,9 @@ export class PaintAreaComponent implements AfterViewInit {
         console.log('release');
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
+        if (this.isRectangle) {
+            document.body.querySelector('#grid-container')?.removeChild(this.tempCanvas);
+        }
         console.log(this.mouseService.getX() + ' et ' + this.mouseService.getY());
     }
 }
