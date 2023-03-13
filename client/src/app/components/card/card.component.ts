@@ -6,12 +6,6 @@ import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
-@Component({
-    selector: 'app-card',
-    templateUrl: './card.component.html',
-    styleUrls: ['./card.component.scss'],
-})
-
 /**
  * Component that displays a preview
  * of a level and its difficulty
@@ -19,6 +13,11 @@ import { environment } from 'src/environments/environment';
  * @author Galen Hu
  * @class CardComponent
  */
+@Component({
+    selector: 'app-card',
+    templateUrl: './card.component.html',
+    styleUrls: ['./card.component.scss'],
+})
 export class CardComponent {
     @Input() level: Level = {
         id: 0,
@@ -34,12 +33,26 @@ export class CardComponent {
     @Input() waitingForSecondPlayer: boolean = true;
     @Output() resetDialogEvent = new EventEmitter();
 
-    imgPath: string = environment.serverUrl + 'originals/';
+    @Input() isSelectionPage: boolean = true;
 
-    playerName: string = 'player 1';
-    difficulty: string;
+    private imgPath: string = environment.serverUrl + 'originals/';
+
+    private saveDialogData: DialogData = {
+        textToSend: 'Veuillez entrer votre nom',
+        inputData: {
+            inputLabel: 'Nom du joueur',
+            submitFunction: (value) => {
+                return value.length >= 1 && value.length <= Constants.MAX_NAME_LENGTH;
+            },
+            returnValue: '',
+        },
+        closeButtonMessage: 'Débuter la partie',
+    };
 
     constructor(private router: Router, public popUpService: PopUpService, private socketHandler: SocketHandler) {}
+    get getImg(): string {
+        return this.imgPath;
+    }
 
     /**
      * Display the difficulty of the level
@@ -47,41 +60,20 @@ export class CardComponent {
      * @returns the path difficulty image
      */
     displayDifficultyIcon(): string {
-        if (this.level.isEasy) {
-            return '../../../assets/images/easy.png';
-        } else {
-            return '../../../assets/images/hard.png';
-        }
+        return this.level.isEasy ? '../../../assets/images/easy.png' : '../../../assets/images/hard.png';
     }
 
     /**
      * Opens a pop-up to ask the player to enter his name
      * Then redirects to the game page with the right level id, and puts the player name as a query parameter
-     *
-     *
      */
     playSolo(): void {
-        const saveDialogData: DialogData = {
-            textToSend: 'Veuillez entrer votre nom',
-            inputData: {
-                inputLabel: 'Nom du joueur',
-                submitFunction: (value) => {
-                    if (value.length >= 1) {
-                        return true;
-                    }
-                    return false;
-                },
-                returnValue: '',
-            },
-            closeButtonMessage: 'Débuter la partie',
-        };
-        this.popUpService.openDialog(saveDialogData);
+        this.popUpService.openDialog(this.saveDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
-                this.playerName = result;
                 this.socketHandler.send('game', 'onJoinNewGame', { levelId: this.level.id, playerName: result });
                 this.router.navigate([`/game/${this.level.id}/`], {
-                    queryParams: { playerName: this.playerName },
+                    queryParams: { playerName: result },
                 });
             }
         });
@@ -121,7 +113,6 @@ export class CardComponent {
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.waitingForSecondPlayer = true;
-                this.playerName = result;
                 this.waitForMatch(result);
             }
         });
