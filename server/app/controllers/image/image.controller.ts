@@ -62,6 +62,9 @@ export class ImageController {
      * @param formData The data of the level
      * @returns The message of the result
      */
+    @ApiOkResponse({
+        description: 'Writes the level data onto a json file for the game information and the images into the assets folder.',
+    })
     @Post('/postLevel')
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {
@@ -74,6 +77,9 @@ export class ImageController {
      * @param formData The data of the level
      * @returns The message of the result
      */
+    @ApiOkResponse({
+        description: 'Deletes the game data and its images in the server.',
+    })
     @Delete('/:id')
     async deleteLevelData(@Param('id') id: string): Promise<boolean> {
         return await this.imageService.deleteLevelData(parseInt(id, 10));

@@ -82,6 +82,9 @@ export class LevelService {
         return this.currentPage >= this.lastPage;
     }
 
+    /**
+     * Deletes the level with the given id and updates the levels to show
+     */
     deleteLevel(levelId: number): void {
         this.communicationService
             .deleteLevel(levelId)
