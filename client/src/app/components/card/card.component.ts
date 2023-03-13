@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
@@ -6,8 +6,7 @@ import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
 /**
- * Component that displays a preview
- * of a level and its difficulty
+ * Component that displays a preview of a level and its difficulty
  *
  * @author Galen Hu
  * @class CardComponent
@@ -31,7 +30,9 @@ export class CardComponent {
 
     @Input() isSelectionPage: boolean = true;
 
-    private imgPath: string = environment.serverUrl + 'originals/';
+    @Output() deleteLevelEvent = new EventEmitter<number>();
+
+    readonly imagePath: string = environment.serverUrl + 'originals/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',
@@ -46,9 +47,6 @@ export class CardComponent {
     };
 
     constructor(private router: Router, public popUpService: PopUpService) {}
-    get getImg(): string {
-        return this.imgPath;
-    }
 
     /**
      * Display the difficulty of the level
@@ -70,6 +68,20 @@ export class CardComponent {
                 this.router.navigate([`/game/${this.level.id}/`], {
                     queryParams: { playerName: result },
                 });
+            }
+        });
+    }
+
+    deleteLevel(levelId: number): void {
+        const dataDialog: DialogData = {
+            textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
+            isConfirmation: true,
+            closeButtonMessage: '',
+        };
+        this.popUpService.openDialog(dataDialog);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                this.deleteLevelEvent.emit(levelId);
             }
         });
     }

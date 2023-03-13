@@ -107,4 +107,24 @@ describe('ImageController', () => {
             expect(result).toStrictEqual(expectedMessage);
         });
     });
+
+    describe('deleteLevelData', () => {
+        it('should call deleteLevelData', () => {
+            const spy = jest.spyOn(imageService, 'deleteLevelData').mockImplementation(jest.fn());
+            controller.deleteLevelData('1');
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return true on success', async () => {
+            imageService.deleteLevelData = jest.fn().mockResolvedValue(true);
+            const result = await controller.deleteLevelData('1');
+            expect(result).toBeTruthy();
+        });
+
+        it('should return on failure', async () => {
+            imageService.deleteLevelData = jest.fn().mockResolvedValue(false);
+            const result = await controller.deleteLevelData('1');
+            expect(result).toBeFalsy();
+        });
+    });
 });
