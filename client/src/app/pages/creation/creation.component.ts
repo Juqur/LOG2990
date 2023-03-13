@@ -52,7 +52,7 @@ export class CreationComponent implements OnInit {
         private communicationService: CommunicationService,
         private mouseServiceDefault: MouseService,
         private mouseServiceDiff: MouseService,
-    ) { }
+    ) {}
 
     /**
      * The method initiates two empty canvas on the page. The canvases are represented by two
@@ -384,21 +384,21 @@ export class CreationComponent implements OnInit {
     }
 
     paintBrushMode() {
-        this.drawServiceDefault.context = this.canvasShare.defaultCanvas
-            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.context = this.canvasShare.diffCanvas
-            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDefault.paintBrush();
         this.drawServiceDiff.paintBrush();
     }
 
     eraseBrushMode() {
-        this.drawServiceDefault.context = this.canvasShare.defaultCanvas
-            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.context = this.canvasShare.diffCanvas
-            .getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDefault.eraseBrush();
         this.drawServiceDiff.eraseBrush();
     }
 
+    rectangleMode() {
+        this.drawServiceDefault.isRect = true;
+        this.drawServiceDiff.isRect = true;
+    }
 }

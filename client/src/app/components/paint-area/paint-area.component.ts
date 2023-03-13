@@ -22,13 +22,13 @@ export class PaintAreaComponent implements AfterViewInit {
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
-
+    private isRectangle = true;
     buttonPressed = '';
     private isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) { }
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
 
     /**
      * Getter for the canvas width
@@ -124,6 +124,7 @@ export class PaintAreaComponent implements AfterViewInit {
     /**
      * This function creates a new timeout with a given time in milliseconds as a parameter.
      *\
+     *
      * @param ms a number of milliseconds
      * @return promise that resolves after ms milliseconds
      */
@@ -135,35 +136,55 @@ export class PaintAreaComponent implements AfterViewInit {
         this.isDragging = true;
         this.mouseService.mouseDrag(event);
         this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        this.drawService.context = this.canvas
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawService.draw(this.lastMousePosition);
+        console.log(this.isRectangle);
+        if (!this.isRectangle) {
+            this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawService.draw(this.lastMousePosition);
+        }
     }
 
     canvasDrag(event: MouseEvent) {
         if (this.mouseService) {
             if (this.isDragging) {
-                this.mouseService.mouseDrag(event);
-                let accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2
-                if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
-                    this.canvasRelease(event);
-                }
-                else {
-                    this.drawService.context = this.canvas
-                        .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-                    this.drawService.draw(accCoords, this.lastMousePosition);
-                    this.lastMousePosition = accCoords;
-                }
+                if (this.isRectangle) this.canvasRectangularDrag(event);
+                else this.canvasPaint(event);
             }
+        }
+    }
+
+    canvasPaint(event: MouseEvent) {
+        this.mouseService.mouseDrag(event);
+        const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
+        if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
+            this.canvasRelease(event);
+        } else {
+            this.drawService.context = this.canvas.nativeElement.getContext('2d', {
+                willReadFrequently: true,
+            }) as CanvasRenderingContext2D;
+            this.drawService.draw(accCoords, this.lastMousePosition);
+            this.lastMousePosition = accCoords;
+        }
+    }
+
+    canvasRectangularDrag(event: MouseEvent) {
+        this.mouseService.mouseDrag(event);
+        const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
+        if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
+            this.canvasRelease(event);
+        } else {
+            this.drawService.context = this.canvas.nativeElement.getContext('2d', {
+                willReadFrequently: true,
+            }) as CanvasRenderingContext2D;
+            this.drawService.context.clearRect(0, 0, this.width, this.height);
+            this.drawService.drawRect(this.lastMousePosition, accCoords.x - this.lastMousePosition.x, accCoords.y - this.lastMousePosition.y);
         }
     }
 
     handleAreaNotFoundInOriginal() {
         // this.audioService.playSound('./assets/audio/failed.mp3');
-        this.drawService.context = this.canvas
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.draw({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        //this.mouseService.changeClickState();
+        // this.mouseService.changeClickState();
     }
 
     canvasRelease(event: MouseEvent) {
@@ -172,5 +193,4 @@ export class PaintAreaComponent implements AfterViewInit {
         this.lastMousePosition = { x: -1, y: -1 };
         console.log(this.mouseService.getX() + ' et ' + this.mouseService.getY());
     }
-
 }

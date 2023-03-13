@@ -12,7 +12,7 @@ import { Vec2 } from '@app/interfaces/vec2';
  */
 export class DrawService {
     context: CanvasRenderingContext2D;
-
+    isRect = false;
     private paintColor = 'black';
     private brushSize = 10;
 
@@ -30,15 +30,17 @@ export class DrawService {
         return this.context.canvas.height;
     }
 
-    paintBrush(): void{
-        this.context.globalCompositeOperation = "source-over";
+    paintBrush(): void {
+        this.isRect = false;
+        this.context.globalCompositeOperation = 'source-over';
         this.context.strokeStyle = this.paintColor;
         this.context.lineWidth = this.brushSize;
         this.context.lineCap = 'round';
     }
 
-    eraseBrush(): void{
-        this.context.globalCompositeOperation = "destination-out";  
+    eraseBrush(): void {
+        this.isRect = false;
+        this.context.globalCompositeOperation = 'destination-out';
         this.context.lineWidth = this.brushSize;
         this.context.lineCap = 'square';
     }
@@ -55,15 +57,25 @@ export class DrawService {
     }
 
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
+        if (this.isRect) {
+            this.drawRect(prevCoord, actCoord.x - prevCoord.x, actCoord.y - prevCoord.y);
+        }
         this.context.beginPath();
         this.context.moveTo(prevCoord.x, prevCoord.y);
         if (actCoord.x !== -1 && actCoord.y !== -1) {
             this.context.lineTo(actCoord.x, actCoord.y);
-        }
-        else {
+        } else {
             this.context.lineTo(prevCoord.x + 1, prevCoord.y);
         }
 
         this.context.stroke();
+    }
+
+    drawRect(coord: Vec2, width: number, height: number): void {
+        this.context.beginPath();
+        this.context.rect(coord.x, coord.y, width, height);
+        this.context.fill();
+        this.context.stroke();
+        // les la le de des oublie pas de créer un canvas par dessus et de le fusionner lorsque tu relaches le clic
     }
 }
