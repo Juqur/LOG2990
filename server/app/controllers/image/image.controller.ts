@@ -1,6 +1,6 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Level } from 'assets/data/level';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
@@ -66,5 +66,16 @@ export class ImageController {
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {
         return await this.imageService.writeLevelData(formData);
+    }
+
+    /**
+     * Deletes the game data from the json file and the images from the assets folder.
+     *
+     * @param formData The data of the level
+     * @returns The message of the result
+     */
+    @Delete('/:id')
+    async deleteLevelData(@Param('id') id: string): Promise<boolean> {
+        return await this.imageService.deleteLevelData(parseInt(id, 10));
     }
 }

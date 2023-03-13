@@ -7,6 +7,7 @@ export interface DialogData {
     textToSend: string;
     inputData?: InputData;
     imgSrc?: string;
+    isConfirmation?: boolean;
     closeButtonMessage: string;
 }
 

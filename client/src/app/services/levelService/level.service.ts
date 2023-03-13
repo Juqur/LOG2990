@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { Constants } from '@common/constants';
+import { take } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -18,10 +19,9 @@ export class LevelService {
     private currentShownPage: number = 0;
     private shownLevels: Level[];
 
-    constructor(communicationService: CommunicationService) {
+    constructor(private communicationService: CommunicationService) {
         communicationService.getLevels().subscribe((value) => {
             this.levels = value;
-
             this.shownLevels = this.levels.slice(0, Constants.levelsPerPage);
         });
     }
@@ -80,6 +80,18 @@ export class LevelService {
      */
     isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
+    }
+
+    deleteLevel(levelId: number): void {
+        this.communicationService
+            .deleteLevel(levelId)
+            .pipe(take(1))
+            .subscribe((confirmation) => {
+                if (confirmation) {
+                    this.levels = this.levels.filter((level) => level.id !== levelId);
+                    this.updatePageLevels();
+                }
+            });
     }
 
     /**
