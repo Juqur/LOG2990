@@ -67,37 +67,18 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     /**
      * This method is called when the component is initialized.
-     * It subscribes to the router events to reset the counter when the user navigates to the game page, and to reset the socket information.
-     * It also subscribes to the route parameters and query to get the level id and player name.
+     * It sets the game level and the game image.
+     * It also handles the pausing of any audio playing if the player decides to leave the page.
      * It also connects to the the game socket and handles the response.
      */
     ngOnInit(): void {
-        this.route.params.subscribe((params) => {
-            this.levelId = params.id;
-        });
-        this.route.queryParams.subscribe((params) => {
-            this.playerName = params['playerName'];
-            this.secondPlayerName = params['opponent'];
-        });
-
         this.router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
                 this.audioService.reset();
             }
         });
-
-        try {
-            this.communicationService.getLevel(this.levelId).subscribe((value) => {
-                this.gamePageService.setNumberOfDifference(value.nbDifferences);
-                this.currentLevel = value;
-            });
-        } catch (error) {
-            throw new Error("Couldn't load level: " + error);
-        }
-        this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
-        this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
-        this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
-
+        this.gamePageService.resetImagesData();
+        this.getGameLevel();
         this.handleSocket();
     }
     /**
@@ -113,10 +94,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesSecondPlayer;
             }
             this.playerDifferencesCount = gameData.amountOfDifferences;
-            this.gamePageService.setDifferenceFound(gameData.amountOfDifferences);
             const response = this.gamePageService.validateResponse(gameData.differences);
             this.gamePageService.setImages(this.levelId);
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
         });
         this.socketHandler.on('game', 'onVictory', () => {
@@ -155,173 +135,41 @@ export class GamePageComponent implements OnInit, OnDestroy {
         }
     }
 
-    // /**
-    //  * The equivalent of eyedropper tool.
-    //  *
-    //  * @param x the x coordinate of the pixel
-    //  * @param y the y coordinate of the pixel
-    //  * @returns the rgba value of the pixel
-    //  */
-    // pick(x: number, y: number): string {
-    //     const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-    //     const pixel = context.getImageData(x, y, 1, 1);
-    //     const data = pixel.data;
+    /**
+     * Get the game level from the server when the game is loaded.
+     */
+    getGameLevel(): void {
+        this.levelId = this.route.snapshot.params.id;
+        this.playerName = this.route.snapshot.queryParams.playerName;
+        this.secondPlayerName = this.route.snapshot.queryParams.opponent;
 
-    //     const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / Constants.FULL_ALPHA})`;
-    //     return rgba;
-    // }
+        this.settingGameLevel();
+        this.settingGameImage();
+    }
 
-    // /**
-    //  * This will copy an area of the original image to the difference canvas.
-    //  * It will call pick function to get the rgba value of the pixel.
-    //  *
-    //  * @param area the area to copy
-    //  */
-    // copyArea(area: number[]): void {
-    //     let x = 0;
-    //     let y = 0;
-    //     const context = this.tempDiffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-    //     area.forEach((pixelData) => {
-    //         x = (pixelData / Constants.PIXEL_SIZE) % this.originalPlayArea.width;
-    //         y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
-    //         const rgba = this.pick(x, y);
-    //         context.fillStyle = rgba;
-    //         context.fillRect(x, y, 1, 1);
-    //     });
-    // }
+    /**
+     * This method will set the game level.
+     */
+    settingGameLevel(): void {
+        try {
+            this.communicationService.getLevel(this.levelId).subscribe((value) => {
+                this.currentLevel = value;
+                this.nbDiff = value.nbDifferences;
+            });
+        } catch (error) {
+            throw new Error("Couldn't load level");
+        }
+    }
 
-    // /**
-    //  * This method will redraw the canvas with the original image plus the elements that were not found.
-    //  * To avoid flashing issue, it copies to a third temporary canvas.
-    //  * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
-    //  */
-    // resetCanvas(): void {
-    //     this.diffPlayArea
-    //         .timeout(Constants.millisecondsInOneSecond)
-    //         .then(() => {
-    //             this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
-    //             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-    //             this.mouseService.changeClickState();
-    //         })
-    //         .then(() => {
-    //             setTimeout(() => {
-    //                 this.copyArea(this.imagesData);
-    //             }, 0);
-    //         })
-    //         .then(() => {
-    //             setTimeout(() => {
-    //                 this.copyDiffPlayAreaContext();
-    //             }, 0);
-    //         });
-    // }
-
-    // /**
-    //  * This method will copy/paste the context of the temp canvas to the difference canvas.
-    //  */
-    // copyDiffPlayAreaContext(): void {
-    //     const contextTemp = this.tempDiffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-    //     const context = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-    //     const imageData = contextTemp.getImageData(0, 0, contextTemp.canvas.width, contextTemp.canvas.height);
-    //     context.putImageData(imageData, 0, 0);
-    // }
-
-    // /**
-    //  * Will be called when the user finds a difference in the difference canvas.
-    //  *
-    //  * @param result the current area found
-    //  */
-    // handleAreaFoundInDiff(result: number[]): void {
-    //     AudioService.quickPlay('./assets/audio/success.mp3');
-    //     this.imagesData.push(...result);
-    //     this.diffPlayArea.flashArea(result);
-    //     this.originalPlayArea.flashArea(result);
-    //     this.mouseService.changeClickState();
-    //     this.resetCanvas();
-    // }
-
-    // /**
-    //  * Will be called when the user does not find a difference in the difference canvas.
-    //  */
-    // handleAreaNotFoundInDiff(): void {
-    //     AudioService.quickPlay('./assets/audio/failed.mp3');
-    //     this.drawServiceDiff.context = this.diffPlayArea
-    //         .getCanvas()
-    //         .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-    //     this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-    //     this.mouseService.changeClickState();
-    //     this.resetCanvas();
-    // }
-
-    // /**
-    //  * Will be called when the user finds a difference in the original canvas.
-    //  *
-    //  * @param result the current area found
-    //  */
-    // handleAreaFoundInOriginal(result: number[]): void {
-    //     AudioService.quickPlay('./assets/audio/success.mp3');
-    //     this.imagesData.push(...result);
-    //     this.originalPlayArea.flashArea(result);
-    //     this.diffPlayArea.flashArea(result);
-    //     this.mouseService.changeClickState();
-    //     this.resetCanvas();
-    // }
-
-    // /**
-    //  * Will be called when the user does not find a difference in the original canvas.
-    //  */
-    // handleAreaNotFoundInOriginal(): void {
-    //     AudioService.quickPlay('./assets/audio/failed.mp3');
-    //     this.drawServiceOriginal.context = this.originalPlayArea
-    //         .getCanvas()
-    //         .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-    //     this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-    //     this.mouseService.changeClickState();
-    //     this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
-    //         this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-    //         this.mouseService.changeClickState();
-    //     });
-    // }
-
-    // /**
-    //  * Get the game level from the server when the game is loaded.
-    //  */
-    // getGameLevel(): void {
-    //     this.levelId = this.route.snapshot.params.id;
-    //     this.playerName = this.route.snapshot.queryParams.playerName;
-    //     this.mouseService.resetCounter();
-
-    //     this.settingGameLevel();
-    //     this.settingGameImage();
-
-    //     this.communicationService.postNewGame(String(this.levelId)).subscribe((gameId) => {
-    //         this.gameId = gameId;
-    //     });
-    // }
-
-    // /**
-    //  * This method will set the game level.
-    //  */
-    // settingGameLevel(): void {
-    //     try {
-    //         this.communicationService.getLevel(this.levelId).subscribe((value) => {
-    //             this.currentLevel = value;
-    //             this.nbDiff = value.nbDifferences;
-    //             this.mouseService.setNumberOfDifference(this.currentLevel.nbDifferences);
-    //         });
-    //     } catch (error) {
-    //         throw new Error("Couldn't load level");
-    //     }
-    // }
-
-    // /**
-    //  * This method will set the game images.
-    //  */
-    // settingGameImage(): void {
-    //     try {
-    //         this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
-    //         this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
-    //     } catch (error) {
-    //         throw new Error("Couldn't load images");
-    //     }
-    // }
+    /**
+     * This method will set the game images.
+     */
+    settingGameImage(): void {
+        try {
+            this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
+            this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
+        } catch (error) {
+            throw new Error("Couldn't load images");
+        }
+    }
 }
