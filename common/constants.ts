@@ -62,6 +62,7 @@ export namespace Constants {
     export const INIT_DIFF_NB = 0;
     export const BMP_BPP_POS = 28;
     export const BMP_BPP = 24;
+    export const DEFAULT_COLOR = '#000000';
 
     // Game constants
     export const INIT_COUNTDOWN_TIME = 30;
