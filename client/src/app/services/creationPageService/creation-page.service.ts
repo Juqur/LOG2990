@@ -203,8 +203,6 @@ export class CreationPageService {
      */
     saveGame(): void {
         if (this.isSaveable) {
-            // eslint-disable-next-line no-console
-            console.log('before first pop-up');
             this.popUpService.openDialog({
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
@@ -213,14 +211,9 @@ export class CreationPageService {
                 },
                 closeButtonMessage: 'Sauvegarder',
             });
-            // eslint-disable-next-line no-console
-            console.log('after the first pop-up');
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 if (this.creationSpecs.differences) {
-                    // eslint-disable-next-line no-console
-                    console.log('Before post level');
                     this.communicationService
-                        // can read post level but it returns empty?
                         .postLevel({
                             imageOriginal: this.creationSpecs.defaultImageFile,
                             imageDiff: this.creationSpecs.diffImageFile,
@@ -230,10 +223,6 @@ export class CreationPageService {
                             nbDifferences: this.creationSpecs.nbDifferences.toString(),
                         } as LevelFormData)
                         .subscribe((data) => {
-                            // eslint-disable-next-line no-console
-                            console.log(data);
-                            // eslint-disable-next-line no-console
-                            console.log('after the pop up');
                             if (data.title === 'error') {
                                 this.errorDialog(data.body);
                             } else if (data.title === 'success') {
@@ -242,8 +231,6 @@ export class CreationPageService {
                                     closeButtonMessage: 'Fermer',
                                 };
                                 this.popUpService.openDialog(dialogData, '/config');
-                                // eslint-disable-next-line no-console
-                                console.log('after the pop up');
                             }
                         });
                 }
