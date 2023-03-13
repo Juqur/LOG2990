@@ -23,6 +23,7 @@ export class MouseService {
     private canClick: boolean = true;
     private numberOfDifference: number = 0;
     private endGameAudio = new AudioService();
+    //private isOutOfBound: boolean = false;
 
     constructor(
         private communicationService: CommunicationService,
@@ -75,6 +76,7 @@ export class MouseService {
                 }
                 return differencesArray;
             }
+            else return [];
         }
         return [];
     }
@@ -148,5 +150,14 @@ export class MouseService {
 
     resetCounter(): void {
         this.differenceCounter = 0;
+    }
+
+    async mouseDrag(event: MouseEvent): Promise<number[]> {
+        if (event.button === MouseButton.Left) {
+            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            console.log(this.mousePosition);
+            //this.isOutOfBound = true;
+        }
+        return Promise.resolve([]);
     }
 }

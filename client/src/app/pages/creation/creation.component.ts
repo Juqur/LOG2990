@@ -1,12 +1,13 @@
 /* eslint-disable max-lines */
 import { Component, OnInit } from '@angular/core';
 import { Difference } from '@app/classes/difference';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
 import { DrawService } from '@app/services/drawService/draw.service';
+import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { LevelFormData } from '@common/levelFormData';
@@ -31,34 +32,42 @@ export class CreationComponent implements OnInit {
     nbDifferences = Constants.INIT_DIFF_NB;
     isSaveable = false;
     differences: Difference | undefined;
-    defaultArea: PlayAreaComponent | null = null;
-    modifiedArea: PlayAreaComponent | null = null;
+    defaultArea: PaintAreaComponent | null = null;
+    modifiedArea: PaintAreaComponent | null = null;
     defaultCanvasCtx: CanvasRenderingContext2D | null = null;
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
     defaultImageUrl = '';
     msg = '';
     differenceAmountMsg = '';
     savedLevel: Level;
+    color = Constants.DEFAULT_COLOR;
+
+    drawServiceDefault: DrawService;
+    drawServiceDiff: DrawService;
+
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
         private diffService: DifferenceDetectorService,
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
+        private mouseServiceDefault: MouseService,
+        private mouseServiceDiff: MouseService,
     ) {}
 
     /**
      * The method initiates two empty canvas on the page. The canvases are represented by two
-     * PlayArea components.
+     * PaintArea components.
      */
     ngOnInit(): void {
+        this.drawServiceDefault = new DrawService();
+        this.drawServiceDiff = new DrawService();
         this.defaultCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.defaultCanvas = this.defaultCanvasCtx?.canvas as HTMLCanvasElement;
         this.diffCanvasCtx = document.createElement('canvas').getContext('2d');
         this.canvasShare.diffCanvas = this.diffCanvasCtx?.canvas as HTMLCanvasElement;
-
-        this.defaultArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
-        this.modifiedArea = new PlayAreaComponent(new DrawService(), this.canvasShare);
+        this.defaultArea = new PaintAreaComponent(this.drawServiceDefault, this.canvasShare, this.mouseServiceDefault);
+        this.modifiedArea = new PaintAreaComponent(this.drawServiceDiff, this.canvasShare, this.mouseServiceDiff);
     }
 
     /**
@@ -221,7 +230,11 @@ export class CreationComponent implements OnInit {
      */
     resetDefault() {
         this.reinitGame();
-        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
+        const image = new Image();
+        image.src = './assets/images/image_empty.bmp';
+        image.onload = () => {
+            this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(image, 0, 0);
+        };
     }
 
     /**
@@ -229,7 +242,11 @@ export class CreationComponent implements OnInit {
      */
     resetDiff() {
         this.reinitGame();
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+        const image = new Image();
+        image.src = './assets/images/image_empty.bmp';
+        image.onload = () => {
+            this.canvasShare.diffCanvas.getContext('2d')?.drawImage(image, 0, 0);
+        };
     }
 
     /**
@@ -261,7 +278,7 @@ export class CreationComponent implements OnInit {
         this.nbDifferences = this.differences.clusters.length;
         this.nbDifferences = this.differences.clusters.length;
         let respecteNb = '';
-        if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
+        if (this.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT && this.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT) {
             this.isSaveable = true;
         } else {
             this.isSaveable = false;
@@ -273,8 +290,8 @@ export class CreationComponent implements OnInit {
             closeButtonMessage: 'Fermer',
         };
         this.differenceAmountMsg = '';
-        if (this.nbDifferences >= Constants.MAX_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
-        if (this.nbDifferences <= Constants.MIN_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
+        if (this.nbDifferences > Constants.MAX_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
+        if (this.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
 
         this.popUpService.openDialog(canvasDialogData);
     }
@@ -365,5 +382,28 @@ export class CreationComponent implements OnInit {
             closeButtonMessage: 'Fermer',
         };
         this.popUpService.openDialog(errorDialogData);
+    }
+
+    paintBrushMode() {
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.paintBrush();
+        this.drawServiceDiff.paintBrush();
+    }
+
+    eraseBrushMode() {
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.eraseBrush();
+        this.drawServiceDiff.eraseBrush();
+    }
+
+    rectangleMode() {
+        this.drawServiceDefault.isRect = true;
+        this.drawServiceDiff.isRect = true;
+    }
+
+    colorPickerMode() {
+        console.log(this.color);
     }
 }

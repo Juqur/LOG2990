@@ -11,18 +11,25 @@
             <div id="draw-tools-container">
                 <label class="info-txt" for="values">Epaisseur:</label>
                 <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="radius"></mat-slider>
-                <button class="button-settings" (click)="resetDefault()" title="Pinceaux">
+                <button class="button-settings" color="orange" (click)="paintBrushMode()">
                     <mat-icon>mode_edit</mat-icon>
                 </button>
-                <button class="button-settings" (click)="resetDefault()" title="Rectangle">
+                <button class="button-settings" color="orange" (click)="rectangleMode()" title="Rectangle">
                     <mat-icon>rectangle</mat-icon>
                 </button>
-                <button class="button-reset" color="orange" (click)="resetDefault()">
+                <button class="button-reset" color="orange" (click)="eraseBrushMode()" title="Efface">
                     <img src="assets/images/eraser.png" alt="efface" />
                 </button>
-                <button class="button-reset" color="orange" (click)="resetDefault()">
-                    <img src="assets/images/colour.png" alt="couleur" />
-                </button>
+                <label for="colorPicker"></label>
+                <input
+                    type="color"
+                    id="colorPicker"
+                    name="colorPicker"
+                    (change)="colorPickerMode()"
+                    title="Selecteur de couleur"
+                    [(ngModel)]="color"
+                />
+                <!-- <img src="assets/images/colour.png" alt="couleur" /> -->
             </div>
         </section>
         <section id="creation-area-container">
@@ -37,7 +44,7 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-play-area *ngIf="defaultArea" [isDiff]="false"></app-play-area>
+                    <app-paint-area *ngIf="defaultArea" [isDiff]="false"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
@@ -84,7 +91,7 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-play-area *ngIf="defaultArea" [isDiff]="true"></app-play-area>
+                    <app-paint-area *ngIf="defaultArea" [isDiff]="true"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
