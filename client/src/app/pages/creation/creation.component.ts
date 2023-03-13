@@ -9,6 +9,7 @@ import { DifferenceDetectorService } from '@app/services/difference-detector.ser
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 import { LevelFormData } from '@common/levelFormData';
 
@@ -44,6 +45,8 @@ export class CreationComponent implements OnInit {
 
     drawServiceDefault: DrawService;
     drawServiceDiff: DrawService;
+
+    undoRedoService: UndoRedoService;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -405,5 +408,9 @@ export class CreationComponent implements OnInit {
 
     colorPickerMode() {
         console.log(this.color);
+    }
+
+    addToUndoRedoStack() {
+        this.undoRedoService.addToStack(this.canvasShare.defaultCanvas, this.canvasShare.diffCanvas);
     }
 }

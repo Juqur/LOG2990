@@ -44,7 +44,8 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-paint-area *ngIf="defaultArea" [isDiff]="false"></app-paint-area>
+                    <app-paint-area *ngIf="defaultArea" [isDiff]="false" (change)="addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #testing></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
@@ -91,7 +92,7 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-paint-area *ngIf="defaultArea" [isDiff]="true"></app-paint-area>
+                    <app-paint-area *ngIf="defaultArea" [isDiff]="true" (change)="addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">

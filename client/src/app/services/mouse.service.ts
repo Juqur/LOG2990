@@ -23,7 +23,7 @@ export class MouseService {
     private canClick: boolean = true;
     private numberOfDifference: number = 0;
     private endGameAudio = new AudioService();
-    //private isOutOfBound: boolean = false;
+    // private isOutOfBound: boolean = false;
 
     constructor(
         private communicationService: CommunicationService,
@@ -75,8 +75,7 @@ export class MouseService {
                     // AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
                 }
                 return differencesArray;
-            }
-            else return [];
+            } else return [];
         }
         return [];
     }
@@ -155,8 +154,8 @@ export class MouseService {
     async mouseDrag(event: MouseEvent): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            console.log(this.mousePosition);
-            //this.isOutOfBound = true;
+            // console.log(this.mousePosition);
+            // this.isOutOfBound = true;
         }
         return Promise.resolve([]);
     }

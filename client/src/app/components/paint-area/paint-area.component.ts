@@ -3,6 +3,7 @@ import { Vec2 } from '@app/interfaces/vec2';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 
 @Component({
@@ -21,6 +22,7 @@ export class PaintAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
+    undoRedoService: UndoRedoService = new UndoRedoService();
     currentImage: HTMLImageElement;
     private isRectangle = true;
     buttonPressed = '';
@@ -151,7 +153,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.isDragging = true;
         this.mouseService.mouseDrag(event);
         this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        console.log(this.isRectangle);
+        // console.log(this.isRectangle);
         if (!this.isRectangle) {
             this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawService.draw(this.lastMousePosition);
@@ -213,6 +215,6 @@ export class PaintAreaComponent implements AfterViewInit {
             this.canvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
             document.body.querySelector('#grid-container')?.removeChild(this.tempCanvas);
         }
-        console.log(this.mouseService.getX() + ' et ' + this.mouseService.getY());
+        this.undoRedoService.addState(this.canvas.nativeElement.toDataURL());
     }
 }
