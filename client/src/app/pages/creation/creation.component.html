@@ -11,21 +11,17 @@
             <div id="draw-tools-container">
                 <label class="info-txt" for="values">Epaisseur:</label>
                 <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="radius"></mat-slider>
-                <button class="button-settings" color="orange" (click)="resetDefault()">
-                    CRAYON
-                    <mat-icon>restart_alt</mat-icon>
+                <button class="button-settings" (click)="resetDefault()" title="Pinceaux">
+                    <mat-icon>mode_edit</mat-icon>
                 </button>
-                <button class="button-settings" color="orange" (click)="resetDefault()">
-                    RECTANGLE
-                    <mat-icon>restart_alt</mat-icon>
+                <button class="button-settings" (click)="resetDefault()" title="Rectangle">
+                    <mat-icon>rectangle</mat-icon>
                 </button>
                 <button class="button-reset" color="orange" (click)="resetDefault()">
-                    EFFACE
-                    <mat-icon>restart_alt</mat-icon>
+                    <img src="assets/images/eraser.png" alt="efface" />
                 </button>
                 <button class="button-reset" color="orange" (click)="resetDefault()">
-                    COULEUR
-                    <mat-icon>restart_alt</mat-icon>
+                    <img src="assets/images/colour.png" alt="couleur" />
                 </button>
             </div>
         </section>
