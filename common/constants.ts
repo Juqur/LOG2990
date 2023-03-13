@@ -73,6 +73,16 @@ export namespace Constants {
 
     // Card Component
     export const MAX_NAME_LENGTH = 300;
+    export const DEFAULT_LEVEL = {
+        id: 0,
+        name: 'no name',
+        playerSolo: ['player 1', 'player 2', 'player 3'],
+        timeSolo: [-1, -1, -1],
+        playerMulti: ['player 1', 'player 2', 'player 3'],
+        timeMulti: [-1, -1, -1],
+        isEasy: true,
+        nbDifferences: 7,
+    };
 }
 
 export enum MouseButton {

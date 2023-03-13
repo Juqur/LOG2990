@@ -6,7 +6,7 @@ import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
 /**
- * Component that displays a preview of a level and its difficulty
+ * Component that displays a preview of a level and its difficulty.
  *
  * @author Galen Hu
  * @class CardComponent
@@ -17,21 +17,13 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./card.component.scss'],
 })
 export class CardComponent {
-    @Input() level: Level = {
-        id: 0,
-        name: 'no name',
-        playerSolo: ['player 1', 'player 2', 'player 3'],
-        timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        playerMulti: ['player 1', 'player 2', 'player 3'],
-        timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        isEasy: true,
-        nbDifferences: 7,
-    };
+    @Input() level: Level = Constants.DEFAULT_LEVEL;
 
     @Input() isSelectionPage: boolean = true;
+
     @Output() deleteLevelEvent = new EventEmitter<number>();
 
-    private originalImgPath: string = environment.serverUrl + 'originals/';
+    readonly imagePath: string = environment.serverUrl + 'originals/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',
@@ -44,11 +36,13 @@ export class CardComponent {
         closeButtonMessage: 'Débuter la partie',
     };
 
-    constructor(private router: Router, public popUpService: PopUpService) {}
+    private deleteDialogData: DialogData = {
+        textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+    };
 
-    get imgPath(): string {
-        return this.originalImgPath;
-    }
+    constructor(private router: Router, public popUpService: PopUpService) {}
 
     /**
      * Display the difficulty of the level
@@ -74,13 +68,12 @@ export class CardComponent {
         });
     }
 
+    /**
+     * Handles the click on the delete button.
+     * A popup is opened to ask for confirmation.
+     */
     deleteLevel(levelId: number): void {
-        const dataDialog: DialogData = {
-            textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
-            isConfirmation: true,
-            closeButtonMessage: '',
-        };
-        this.popUpService.openDialog(dataDialog);
+        this.popUpService.openDialog(this.deleteDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
             if (confirmation) {
                 this.deleteLevelEvent.emit(levelId);
