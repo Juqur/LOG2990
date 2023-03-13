@@ -46,7 +46,7 @@ export class GameGateway {
      * @param data the data of the player, including the gameId and the playerName
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
-    onJoinNewGame(socket: Socket, data: { levelId: number; playerName: string }): void {
+    onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
         const roomId = randomUUID();
         this.playerRoomMap.set(socket.id, roomId);
         this.playerGameMap.set(socket.id, {
@@ -77,6 +77,7 @@ export class GameGateway {
         };
         socket.emit(GameEvents.OnProcessedClick, dataToSend);
         if (gameState.foundDifferences.length === rep.totalDifferences) {
+            socket.emit(GameEvents.OnVictory);
             this.playerGameMap.delete(socket.id);
             this.playerRoomMap.delete(socket.id);
             this.timeMap.delete(socket.id);
