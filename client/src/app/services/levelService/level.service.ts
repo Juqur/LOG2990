@@ -84,6 +84,8 @@ export class LevelService {
 
     /**
      * Deletes the level with the given id and updates the levels to show.
+     *
+     * @param levelId The id of the level to delete.
      */
     deleteLevel(levelId: number): void {
         this.communicationService
