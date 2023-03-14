@@ -31,9 +31,8 @@ export class CardComponent {
     };
     @Input() page: string = 'no page';
     @Input() waitingForSecondPlayer: boolean = true;
-    @Output() resetDialogEvent = new EventEmitter();
-
     @Input() isSelectionPage: boolean = true;
+    @Output() resetDialogEvent = new EventEmitter();
 
     private imgPath: string = environment.serverUrl + 'originals/';
 
@@ -87,6 +86,8 @@ export class CardComponent {
         };
         this.popUpService.openDialog(loadingDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
+            console.log('dialog closed');
+            console.log(this.waitingForSecondPlayer);
             if (this.waitingForSecondPlayer) {
                 this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
             }
