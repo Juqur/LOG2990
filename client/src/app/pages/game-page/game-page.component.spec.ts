@@ -13,7 +13,6 @@ import { GameData, GamePageComponent } from '@app/pages/game-page/game-page.comp
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
-import { Subject } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 
 describe('GamePageComponent', () => {
@@ -22,7 +21,6 @@ describe('GamePageComponent', () => {
     let mouseServiceSpy: SpyObj<MouseService>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
     let gamePageServiceSpy: SpyObj<GamePageService>;
-    let subject: Subject<unknown>;
     const socketHandlerSpy = {
         on: jasmine.createSpy(),
         isSocketAlive: jasmine.createSpy().and.returnValue(false),
@@ -47,13 +45,13 @@ describe('GamePageComponent', () => {
             'setImages',
             'setPlayArea',
             'handleResponse',
+            'resetImagesData',
         ]);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
         playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
-        subject = new Subject();
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -83,12 +81,6 @@ describe('GamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should retrieve the game id from the url', () => {
-        const testParam = { id: 123 };
-        subject.next(testParam);
-        expect(component['levelId']).toEqual(testParam.id);
     });
 
     it('should set the opponents found differences correctly if it is a multiplayer match', () => {

@@ -12,7 +12,7 @@
                 *ngFor="let level of levelService.levelsToShow"
                 [level]="level"
                 [isSelectionPage]="true"
-                [waitingForSecondPlayer]="waitingForSecondPlayer"
+                [waitingForSecondPlayer]="selectionPageService.waitingForSecondPlayer"
             ></app-card>
         </body>
 

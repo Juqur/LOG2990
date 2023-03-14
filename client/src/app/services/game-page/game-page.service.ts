@@ -158,6 +158,7 @@ export class GamePageService {
         let x = 0;
         let y = 0;
         const context = this.tempDiffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        if (context === null) return;
         area.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % this.originalPlayArea.width;
             y = Math.floor(pixelData / this.originalPlayArea.width / Constants.PIXEL_SIZE);
@@ -196,8 +197,10 @@ export class GamePageService {
      * This method will copy/paste the context of the temp canvas to the difference canvas.
      */
     copyDiffPlayAreaContext(): void {
-        const contextTemp = this.tempDiffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const context = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const contextTemp = this.tempDiffPlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const imageData = contextTemp.getImageData(0, 0, contextTemp.canvas.width, contextTemp.canvas.height);
         context.putImageData(imageData, 0, 0);
     }

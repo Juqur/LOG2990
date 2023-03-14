@@ -4,13 +4,13 @@
     </div>
     <div class="image-container">
         <img src="{{ getImg + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
-        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon"
-            alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
+        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon" alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
     </div>
     <div class="card-content">
         <div class="carousel-container">
             <p class="leaderboard-title">LeaderBoard - Top 3</p>
             <app-carousel [level]="this.level"></app-carousel>
+            <span>{{ waitingForSecondPlayer }}</span>
         </div>
         <div class="card-action">
             <div class="action-button-container" *ngIf="isSelectionPage">

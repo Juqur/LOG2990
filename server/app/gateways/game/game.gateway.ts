@@ -113,7 +113,8 @@ export class GameGateway {
             if (secondPlayer !== socket.id && secondPlayerGameState.gameId === data.levelId) {
                 const room = this.playerRoomMap.get(secondPlayer);
                 if (this.server.sockets.adapter.rooms.get(room).size === 1 && secondPlayerGameState.waitingForSecondPlayer) {
-                    // If the code reaches here, the player is the second player to join the game
+                    // If the code reaches here, the player is trying to join a game
+                    console.log('second player joined a game');
                     secondPlayerGameState.waitingForSecondPlayer = false;
                     secondPlayerGameState.secondPlayerId = socket.id;
                     this.playerGameMap.set(secondPlayer, secondPlayerGameState);
@@ -141,11 +142,14 @@ export class GameGateway {
             waitingForSecondPlayer: true,
         });
         socket.join(roomId);
+        console.log(socket.id);
+        console.log(this.playerGameMap.get(socket.id));
         this.server.emit(GameEvents.UpdateSelection, { levelId: data.levelId, canJoin: true });
     }
 
     @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
     onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
+        console.log('game cancelled while waiting for second player ' + socket.id);
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(socket.id).gameId, canJoin: false });
         socket.leave(this.playerRoomMap.get(socket.id));
         this.playerRoomMap.delete(socket.id);
@@ -155,6 +159,8 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnGameAccepted)
     onGameAccepted(socket: Socket): void {
         const room = this.playerRoomMap.get(socket.id);
+        console.log(socket.id);
+        console.log(this.playerGameMap.get(socket.id));
         const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
         const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
         secondPlayerSocket.join(room);
@@ -186,6 +192,7 @@ export class GameGateway {
 
     @SubscribeMessage(GameEvents.OnGameRejected)
     onGameRejected(socket: Socket): void {
+        console.log('game rejected');
         if (this.playerGameMap.has(socket.id)) {
             this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(socket.id).gameId, canJoin: false });
             const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
@@ -199,6 +206,7 @@ export class GameGateway {
 
     @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForAcceptation)
     onGameCancelledWhileWaitingForAcceptation(socket: Socket): void {
+        console.log('game cancelled');
         if (this.playerGameMap.has(socket.id)) {
             const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
             const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
@@ -217,6 +225,7 @@ export class GameGateway {
      * @param socket the socket of the player
      */
     handleDisconnect(socket: Socket): void {
+        console.log('disconnected');
         socket.leave(this.playerRoomMap.get(socket.id));
         this.playerRoomMap.delete(socket.id);
         this.playerGameMap.delete(socket.id);

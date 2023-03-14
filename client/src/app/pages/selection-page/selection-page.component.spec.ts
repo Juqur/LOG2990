@@ -1,5 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { UrlSerializer } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CardComponent } from '@app/components/card/card.component';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
@@ -13,8 +15,8 @@ describe('SelectionPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [SelectionPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
-            imports: [AppMaterialModule, HttpClientTestingModule],
-            providers: [LevelService],
+            imports: [AppMaterialModule, RouterTestingModule, HttpClientTestingModule],
+            providers: [LevelService, UrlSerializer],
         }).compileComponents();
     });
 
@@ -26,5 +28,17 @@ describe('SelectionPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should reset dialog', () => {
+        const resetDialogSpy = spyOn(component['selectionPageService'], 'resetDialog');
+        component.resetDialog();
+        expect(resetDialogSpy).toHaveBeenCalled();
+    });
+
+    it('should setup socket', () => {
+        const setupSocketSpy = spyOn(component['selectionPageService'], 'setupSocket');
+        component.ngOnInit();
+        expect(setupSocketSpy).toHaveBeenCalled();
     });
 });
