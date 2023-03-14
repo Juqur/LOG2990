@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Difference } from '@app/classes/difference';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { Level } from '@app/levels';
@@ -17,6 +17,7 @@ import { LevelFormData } from '@common/levelFormData';
     selector: 'app-creation',
     templateUrl: './creation.component.html',
     styleUrls: ['./creation.component.scss'],
+    providers: [UndoRedoService],
 })
 /**
  * This component represents the creation, the page where we can create new levels/games.
@@ -46,8 +47,6 @@ export class CreationComponent implements OnInit {
     drawServiceDefault: DrawService;
     drawServiceDiff: DrawService;
 
-    undoRedoService: UndoRedoService;
-
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
@@ -57,6 +56,20 @@ export class CreationComponent implements OnInit {
         private mouseServiceDefault: MouseService,
         private mouseServiceDiff: MouseService,
     ) {}
+
+    @HostListener('window:keydown', ['$event'])
+    onKeyPress($event: KeyboardEvent) {
+        // if (($event.ctrlKey || $event.metaKey) && $event.shiftKey && $event.key === 'z') console.log('CTRL + SHIFT +  Z');
+        if ($event.ctrlKey && $event.shiftKey && $event.key === 'z') {
+            console.log('ctrl + SHIFT + Z');
+        }
+        if ($event.ctrlKey && $event.key === 'z') {
+            console.log('CTRL + Z');
+        }
+        if ($event.shiftKey) {
+            console.log('SHIFT');
+        }
+    }
 
     /**
      * The method initiates two empty canvas on the page. The canvases are represented by two
@@ -411,6 +424,7 @@ export class CreationComponent implements OnInit {
     }
 
     addToUndoRedoStack() {
-        this.undoRedoService.addToStack(this.canvasShare.defaultCanvas, this.canvasShare.diffCanvas);
+        UndoRedoService.addToStack(this.canvasShare.defaultCanvas, this.canvasShare.diffCanvas);
+        console.log('helo');
     }
 }

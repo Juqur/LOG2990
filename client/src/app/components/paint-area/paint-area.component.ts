@@ -215,6 +215,6 @@ export class PaintAreaComponent implements AfterViewInit {
             this.canvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
             document.body.querySelector('#grid-container')?.removeChild(this.tempCanvas);
         }
-        this.undoRedoService.addState(this.canvas.nativeElement.toDataURL());
+        // this.undoRedoService.addState(this.canvas.nativeElement.getContext('2d'));
     }
 }
