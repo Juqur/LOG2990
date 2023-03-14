@@ -5,7 +5,7 @@
     background-color: #355070;
 }
 
-#diff-counter{
+#diff-counter {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -14,18 +14,18 @@
     font-size: 150%;
 }
 
-#diff-counter .diff-self{
+#diff-counter .diff-self {
     font-weight: normal;
     margin-left: 10px;
     margin-right: 10px;
     color: #3ab138;
 }
 
-#diff-counter .diff-friend{
+#diff-counter .diff-friend {
     font-weight: normal;
     margin-left: 10px;
     margin-right: 10px;
-    color: #F63B3B;
+    color: #f63b3b;
 }
 
 .player-counter {
@@ -48,12 +48,12 @@
 #top-area button {
     background-color: #eaac8b00;
     text-align: center;
-    border: 2px solid #F63B3B;
+    border: 2px solid #f63b3b;
     transition: 0.2s;
 }
 
 #top-area button span {
-    color: #F63B3B;
+    color: #f63b3b;
     border: none;
     transition: 0.2s;
     font-size: 200%;
@@ -61,7 +61,7 @@
 
 #top-area button:hover {
     transition: 0.3s;
-    background-color: #F63B3B;
+    background-color: #f63b3b;
     transform: rotate(3deg) scale(1.1);
 }
 
@@ -70,7 +70,7 @@
     color: #355070;
 }
 
-app-game-timer{
+app-game-timer {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -111,7 +111,7 @@ app-game-timer{
     padding-bottom: 5px;
 }
 
-#nb-hints{
+#nb-hints {
     text-align: center;
     color: #ffffff;
 }
@@ -147,4 +147,8 @@ app-game-timer{
 .info-answer {
     font-size: 150%;
     color: #ffffff;
+}
+
+.tempDiffPlayArea {
+    display: none;
 }

@@ -9,6 +9,7 @@ import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
 
 export interface GameData {
     differences: number[];
@@ -25,12 +26,13 @@ export interface GameData {
 /**
  * This component represents the game, it is the component that creates a game page.
  *
- * @author Simon Gagné
+ * @author Simon Gagné et Galen Hu
  * @class GamePageComponent
  */
 export class GamePageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
+    @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty = Constants.HINT_PENALTY;
@@ -65,37 +67,18 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     /**
      * This method is called when the component is initialized.
-     * It subscribes to the router events to reset the counter when the user navigates to the game page, and to reset the socket information.
-     * It also subscribes to the route parameters and query to get the level id and player name.
+     * It sets the game level and the game image.
+     * It also handles the pausing of any audio playing if the player decides to leave the page.
      * It also connects to the the game socket and handles the response.
      */
     ngOnInit(): void {
-        this.route.params.subscribe((params) => {
-            this.levelId = params.id;
-        });
-        this.route.queryParams.subscribe((params) => {
-            this.playerName = params['playerName'];
-            this.secondPlayerName = params['opponent'];
-        });
-
         this.router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
                 this.audioService.reset();
             }
         });
-
-        try {
-            this.communicationService.getLevel(this.levelId).subscribe((value) => {
-                this.gamePageService.setNumberOfDifference(value.nbDifferences);
-                this.currentLevel = value;
-            });
-        } catch (error) {
-            throw new Error("Couldn't load level: " + error);
-        }
-        this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
-        this.originalImageSrc = 'http://localhost:3000/originals/' + this.levelId + '.bmp';
-        this.diffImageSrc = 'http://localhost:3000/modifiees/' + this.levelId + '.bmp';
-
+        this.gamePageService.resetImagesData();
+        this.getGameLevel();
         this.handleSocket();
     }
     /**
@@ -111,12 +94,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesSecondPlayer;
             }
             this.playerDifferencesCount = gameData.amountOfDifferences;
-            this.gamePageService.setDifferenceFound(gameData.amountOfDifferences);
             const response = this.gamePageService.validateResponse(gameData.differences);
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea);
+            this.gamePageService.setImages(this.levelId);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
         });
-
         this.socketHandler.on('game', 'onVictory', () => {
             this.gamePageService.handleVictory();
         });
@@ -150,6 +132,44 @@ export class GamePageComponent implements OnInit, OnDestroy {
             if (!mousePosition) return;
             this.gamePageService.sendClick(mousePosition);
             this.clickedOriginalImage = false;
+        }
+    }
+
+    /**
+     * Get the game level from the server when the game is loaded.
+     */
+    getGameLevel(): void {
+        this.levelId = this.route.snapshot.params.id;
+        this.playerName = this.route.snapshot.queryParams.playerName;
+        this.secondPlayerName = this.route.snapshot.queryParams.opponent;
+
+        this.settingGameLevel();
+        this.settingGameImage();
+    }
+
+    /**
+     * This method will set the game level.
+     */
+    settingGameLevel(): void {
+        try {
+            this.communicationService.getLevel(this.levelId).subscribe((value) => {
+                this.currentLevel = value;
+                this.nbDiff = value.nbDifferences;
+            });
+        } catch (error) {
+            throw new Error("Couldn't load level");
+        }
+    }
+
+    /**
+     * This method will set the game images.
+     */
+    settingGameImage(): void {
+        try {
+            this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
+            this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
+        } catch (error) {
+            throw new Error("Couldn't load images");
         }
     }
 }

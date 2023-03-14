@@ -4,6 +4,14 @@
         <p id="sender-name">{{ this.name }}</p>
         <p>]</p>
     </div>
-    <textarea type="text" id="message-input" class="message-input" placeholder="Type message..." #messageInput></textarea>
+    <!--<textarea type="text" id="message-input" class="message-input" placeholder="Type message..." #messageInput></textarea>-->
+    <textarea
+        type="text"
+        id="message-input"
+        class="message-input"
+        placeholder="Type message..."
+        #messageInput
+        (keydown)="onKeyDown($event, messageInput)"
+    ></textarea>
     <mat-icon id="send-icon" (click)="sendMessage(messageInput)">send</mat-icon>
 </div>

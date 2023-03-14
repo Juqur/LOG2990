@@ -27,9 +27,7 @@ export class MessageBoxComponent implements OnInit {
 
     /**
      * returns a Message object with the given message and the display name.
-     * the senderId is set to undefined because the server since the client does not
-     * know if he is player1 or player2.
-     * undefined is used rather than '' to easily see errors.
+     * since the sender is the player, the senderId is always SenderType.Player.
      *
      * @param message the message to send.
      * @returns message formated in a ChatMessage interface.
@@ -41,6 +39,20 @@ export class MessageBoxComponent implements OnInit {
             senderId: SenderType.Player,
             text: message,
         };
+    }
+
+    /**
+     * This method is called when the user presses a key in the message box.
+     * It checks if the space bar was pressed and sends the message.
+     *
+     * @param event the event that triggered the method.
+     * @param messageInput the HTML input containing the message.
+     */
+    onKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            this.sendMessage(messageInput);
+        }
     }
 
     /**

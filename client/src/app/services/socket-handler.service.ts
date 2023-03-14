@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment';
 })
 export class SocketHandler {
     private sockets: Map<string, Socket> = new Map<string, Socket>();
+    private socketListenersMap: string[] = [];
 
     /**
      * Gets the socket of its kind, according to the given gateway.
@@ -64,15 +65,19 @@ export class SocketHandler {
     }
 
     /**
-     * Associates a given event with an action and a gateway and executes said action on event for the
-     * given gateway.
+     * Associates a given event with an action and a gateway and executes said action on even for the
+     * given gateway. If the event already exists, it will not be added again.
      *
      * @param type The gateway on which this should all be performed.
      * @param event The event to process
      * @param action The action to perform on that event
      */
     on<T>(gateway: string, event: string, action: (data: T) => void): void {
-        this.getSocket(gateway)?.on(event, action);
+        if (!this.socketListenersMap.find((listener) => listener === event)) {
+            this.getSocket(gateway)?.on(event, action);
+            this.socketListenersMap.push(event);
+        }
+        console.log(this.socketListenersMap);
     }
 
     /**

@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 //  TODO FIX THE LINT ISSUE, I CURRENTLY DO NOT KNOW HOW
+import { HttpClientModule } from '@angular/common/http';
+import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { GameData } from '@app/pages/game-page/game-page.component';
+import { AudioService } from '@app/services/audioService/audio.service';
+import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
+import { DrawService } from '@app/services/drawService/draw.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
+import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
+import { environment } from 'src/environments/environment';
 import { GamePageService } from './game-page.service';
-import { HttpClientModule } from '@angular/common/http';
-import { MouseService } from '@app/services/mouseService/mouse.service';
-import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { AudioService } from '@app/services/audioService/audio.service';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { DrawService } from '@app/services/drawService/draw.service';
-import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
-import { Level } from '@app/levels';
-import { of } from 'rxjs';
-import { GameData } from '@app/pages/game-page/game-page.component';
-import { ElementRef } from '@angular/core';
 
 describe('GamePageService', () => {
     let service: GamePageService;
@@ -56,7 +55,7 @@ describe('GamePageService', () => {
             ],
         });
         service = TestBed.inject(GamePageService);
-        service.setPlayArea(playAreaComponentSpy, playAreaComponentSpy);
+        service.setPlayArea(playAreaComponentSpy, playAreaComponentSpy, playAreaComponentSpy);
         service['drawServiceDiff'] = drawServiceSpy;
         service['drawServiceOriginal'] = drawServiceSpy;
     });
@@ -65,17 +64,23 @@ describe('GamePageService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should return -1 if the number of differences found is equal to the number of differences', () => {
-        service.setNumberOfDifference(1);
-        service.setDifferenceFound(1);
-        expect(service.validateResponse([1])).toEqual(Constants.minusOne);
+    it('should return false if a different is not found', () => {
+        expect(service.validateResponse([])).toEqual(false);
     });
-    it('should return 0 if a different is not found', () => {
-        expect(service.validateResponse([Constants.minusOne])).toEqual(0);
+    it('should return true if a different is found', () => {
+        expect(service.validateResponse([1])).toEqual(true);
     });
-    it('should return 1 if a different is found', () => {
-        service.setNumberOfDifference(2);
-        expect(service.validateResponse([1])).toEqual(1);
+
+    it('should reset imagesData', () => {
+        service['imagesData'] = [1];
+        service.resetImagesData();
+        expect(service['imagesData']).toEqual([]);
+    });
+
+    it('should correctly set default and difference images', () => {
+        service.setImages(1);
+        expect(service['originalImageSrc']).toEqual(environment.serverUrl + 'originals/1.bmp');
+        expect(service['diffImageSrc']).toEqual(environment.serverUrl + 'modifiees/1.bmp');
     });
 
     it('should send a click to the server', () => {
@@ -83,75 +88,52 @@ describe('GamePageService', () => {
         expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', { position: 1 });
     });
 
-    it('should set the number of differences', () => {
-        service.setDifferenceFound(1);
-        expect(service['differencesFound']).toEqual(1);
+    it('should play a victory audio and open a victory dialog', () => {
+        service.handleVictory();
+        expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        expect(audioServiceSpy.reset).toHaveBeenCalled();
+        expect(audioServiceSpy.play).toHaveBeenCalled();
+        expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['winGameDialogData'], service['closePath']);
+    });
+
+    it('should play a loss audio and open a loss dialog', () => {
+        service.handleDefeat();
+        expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/LossSound.mp3');
+        expect(audioServiceSpy.reset).toHaveBeenCalled();
+        expect(audioServiceSpy.play).toHaveBeenCalled();
+        expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['loseDialogData'], service['closePath']);
     });
 
     it('should set both play areas', () => {
         const playArea = new PlayAreaComponent(new DrawService(), new CanvasSharingService());
-        service.setPlayArea(playArea, playArea);
+        service.setPlayArea(playArea, playArea, playArea);
         expect(service['originalPlayArea']).toEqual(playArea);
         expect(service['diffPlayArea']).toEqual(playArea);
-    });
-
-    it('should load level and update properties', () => {
-        const testLevel: Level = {
-            id: 1,
-            name: 'test',
-            playerSolo: [],
-            timeSolo: [],
-            playerMulti: [],
-            timeMulti: [],
-            isEasy: false,
-            nbDifferences: 0,
-        };
-        spyOn(service['communicationService'], 'getLevel').and.returnValue(of(testLevel));
-        const value = service.getLevelInformation(1);
-        expect(value).toEqual(testLevel);
-    });
-
-    it('should throw an error if the level is not found', () => {
-        const errorMessage = 'test error';
-        spyOn(service['communicationService'], 'getLevel').and.throwError(errorMessage);
-
-        expect(() => {
-            service.getLevelInformation(1);
-        }).toThrowError("Couldn't load level: Error: " + errorMessage);
+        expect(service['tempDiffPlayArea']).toEqual(playArea);
     });
 
     it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
         const spy = spyOn<any>(service, 'handleAreaFoundInDiff');
-        service.handleResponse(1, gameData, false);
+        service.handleResponse(true, gameData, false);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaNotFoundInDiff if the area clicked was the difference canvas and a difference was not found', () => {
         const spy = spyOn<any>(service, 'handleAreaNotFoundInDiff');
-        service.handleResponse(0, gameData, false);
+        service.handleResponse(false, gameData, false);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaFoundInOriginal if the area clicked was the original canvas and a difference was found', () => {
         const spy = spyOn<any>(service, 'handleAreaFoundInOriginal');
-        service.handleResponse(1, gameData, true);
+        service.handleResponse(true, gameData, true);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaNotFoundInOriginal if the area clicked was the original canvas and a difference was not found', () => {
         const spy = spyOn<any>(service, 'handleAreaNotFoundInOriginal');
-        service.handleResponse(0, gameData, true);
+        service.handleResponse(false, gameData, true);
         expect(spy).toHaveBeenCalled();
-    });
-
-    it('should play victory sound and show popup if the player has found all the differences', () => {
-        const winGameDialogData: DialogData = {
-            textToSend: 'Vous avez gagné!',
-            closeButtonMessage: 'Retour au menu de sélection',
-        };
-        service.handleResponse(Constants.minusOne, gameData, true);
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winGameDialogData, '/selection');
     });
 
     it('should return undefined when context is undefined when copying', () => {
@@ -205,4 +187,11 @@ describe('GamePageService', () => {
         tick(Constants.millisecondsInOneSecond);
         expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
     }));
+
+    it('should correctly set the original images pixels onto the difference image', () => {
+        const area = [0];
+        const pickSpy = spyOn<any>(service, 'pick').and.returnValue([1, 2, 3]);
+        service['copyArea'](area);
+        expect(pickSpy).toHaveBeenCalledTimes(1);
+    });
 });

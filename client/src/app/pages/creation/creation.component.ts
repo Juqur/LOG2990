@@ -221,7 +221,11 @@ export class CreationComponent implements OnInit {
      */
     resetDefault() {
         this.reinitGame();
-        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
+        const image = new Image();
+        image.src = './assets/images/image_empty.bmp';
+        image.onload = () => {
+            this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(image, 0, 0);
+        };
     }
 
     /**
@@ -229,7 +233,11 @@ export class CreationComponent implements OnInit {
      */
     resetDiff() {
         this.reinitGame();
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+        const image = new Image();
+        image.src = './assets/images/image_empty.bmp';
+        image.onload = () => {
+            this.canvasShare.diffCanvas.getContext('2d')?.drawImage(image, 0, 0);
+        };
     }
 
     /**
@@ -261,7 +269,7 @@ export class CreationComponent implements OnInit {
         this.nbDifferences = this.differences.clusters.length;
         this.nbDifferences = this.differences.clusters.length;
         let respecteNb = '';
-        if (this.nbDifferences >= Constants.RADIUS_DEFAULT && this.nbDifferences <= Constants.BIG_DIFF_NB) {
+        if (this.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT && this.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT) {
             this.isSaveable = true;
         } else {
             this.isSaveable = false;
@@ -273,8 +281,8 @@ export class CreationComponent implements OnInit {
             closeButtonMessage: 'Fermer',
         };
         this.differenceAmountMsg = '';
-        if (this.nbDifferences >= Constants.MAX_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
-        if (this.nbDifferences <= Constants.MIN_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
+        if (this.nbDifferences > Constants.MAX_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
+        if (this.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT) this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
 
         this.popUpService.openDialog(canvasDialogData);
     }

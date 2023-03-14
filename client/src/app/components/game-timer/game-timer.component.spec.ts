@@ -27,7 +27,6 @@ describe('GameTimerComponent', () => {
         expect(component).toBeTruthy();
     });
 
-
     it('should format time', () => {
         component.updateTimer(TestConstants.ninetySecondsTimer);
         expect(component.gameTimeFormatted).toEqual('Time: 01:30');

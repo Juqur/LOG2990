@@ -3,20 +3,21 @@
         <h2 class="level-name">{{ level.name }}</h2>
     </div>
     <div class="image-container">
-        <img src="{{ imgPath + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
-        <img src="{{ displayDifficultyIcon() }}" alt="{{ difficulty }}" class="difficulty-icon" />
+        <img src="{{ getImg + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
+        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon" alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
     </div>
     <div class="card-content">
         <div class="carousel-container">
             <p class="leaderboard-title">LeaderBoard - Top 3</p>
             <app-carousel [level]="this.level"></app-carousel>
+            <span>{{ waitingForSecondPlayer }}</span>
         </div>
         <div class="card-action">
-            <div class="action-button-container" *ngIf="page === 'selection'">
+            <div class="action-button-container" *ngIf="isSelectionPage">
                 <button (click)="playSolo()" mat-raised-button class="action-button">Jouer</button>
-                <button (click)="playMuliplayer()" mat-raised-button class="action-button">{{ level.canJoin ? 'Joindre' : 'Créer' }}</button>
+                <button (click)="playMultiplayer()" mat-raised-button class="action-button">{{ level.canJoin ? 'Joindre' : 'Créer' }}</button>
             </div>
-            <div class="action-button-container" *ngIf="page === 'configuration'">
+            <div class="action-button-container" *ngIf="!isSelectionPage">
                 <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
                 <button mat-raised-button class="action-button delete-button">Effacer</button>
             </div>
