@@ -49,7 +49,6 @@ export class SelectionPageService {
                 this.waitingForSecondPlayer = false;
                 console.log(this.waitingForSecondPlayer);
                 this.popUpService.dialogRef.close();
-                console.log('dialog closed');
                 const toBeAcceptedDialogData: DialogData = {
                     textToSend: "Partie trouvée ! En attente de l'approbation de l'autre joueur.",
                     closeButtonMessage: 'Annuler',
@@ -98,9 +97,46 @@ export class SelectionPageService {
         }
     }
 
-    resetDialog(): void {
+    waitForMatch(id: number, result: string): void {
+        this.socketHandler.send('game', 'onGameSelection', { levelId: id, playerName: result });
+        const loadingDialogData: DialogData = {
+            textToSend: "En attente d'un autre joueur",
+            closeButtonMessage: 'Annuler',
+        };
+        this.popUpService.openDialog(loadingDialogData);
+        this.popUpService.dialogRef.afterClosed().subscribe(() => {
+            console.log('dialog closed');
+            console.log(this.waitingForSecondPlayer);
+            if (this.waitingForSecondPlayer) {
+                this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
+            }
+        });
+    }
+
+    startGameDialog(levelId: number): void {
         console.log('resetDialog');
         this.waitingForAcceptation = true;
         this.waitingForSecondPlayer = true;
+        const saveDialogData: DialogData = {
+            textToSend: 'Veuillez entrer votre nom',
+            inputData: {
+                inputLabel: 'Nom du joueur',
+                submitFunction: (value) => {
+                    if (value.length >= 1) {
+                        return true;
+                    }
+                    return false;
+                },
+                returnValue: '',
+            },
+            closeButtonMessage: 'Lancer la partie',
+        };
+        this.popUpService.openDialog(saveDialogData);
+        this.popUpService.dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.waitingForSecondPlayer = true;
+                this.waitForMatch(levelId, result);
+            }
+        });
     }
 }

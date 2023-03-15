@@ -17,10 +17,6 @@ import { SelectionPageService } from '@app/services/selectionPageService/selecti
 export class SelectionPageComponent implements OnInit {
     constructor(public selectionPageService: SelectionPageService, public levelService: LevelService) {}
 
-    resetDialog(): void {
-        this.selectionPageService.resetDialog();
-    }
-
     ngOnInit(): void {
         this.selectionPageService.setupSocket(this.levelService);
     }
