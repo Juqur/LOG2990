@@ -402,8 +402,12 @@ export class CreationComponent implements OnInit {
     }
 
     rectangleMode() {
-        this.drawServiceDefault.isRect = true;
-        this.drawServiceDiff.isRect = true;
+        console.log(this.color);
+        if (this.defaultArea && this.modifiedArea ) {
+            this.mouseServiceDefault.isRectangleMode = true;
+            this.mouseServiceDiff.isRectangleMode =true;
+            console.log(this.defaultArea);
+        }
     }
 
     colorPickerMode() {

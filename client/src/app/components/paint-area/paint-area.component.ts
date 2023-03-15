@@ -24,7 +24,6 @@ export class PaintAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
     undoRedoService: UndoRedoService = new UndoRedoService();
     currentImage: HTMLImageElement;
-    private isRectangle = true;
     buttonPressed = '';
     private isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
@@ -154,7 +153,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.mouseService.mouseDrag(event);
         this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
         // console.log(this.isRectangle);
-        if (!this.isRectangle) {
+        if (!this.mouseService.isRectangleMode) {
             this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawService.draw(this.lastMousePosition);
         } else {
@@ -165,7 +164,7 @@ export class PaintAreaComponent implements AfterViewInit {
     canvasDrag(event: MouseEvent) {
         if (this.mouseService) {
             if (this.isDragging) {
-                if (this.isRectangle) {
+                if (this.mouseService.isRectangleMode) {
                     this.canvasRectangularDrag(event);
                 } else this.canvasPaint(event);
             }
@@ -211,7 +210,7 @@ export class PaintAreaComponent implements AfterViewInit {
         console.log('release');
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
-        if (this.isRectangle) {
+        if (this.mouseService.isRectangleMode) {
             this.canvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
             document.body.querySelector('#grid-container')?.removeChild(this.tempCanvas);
         }
