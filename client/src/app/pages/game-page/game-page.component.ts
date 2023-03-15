@@ -83,9 +83,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     abandon(): void {
-        this.socketHandler.on('game', 'abandon', () => {
-            /* do nothing */
-        });
+        this.socketHandler.send('game', 'abandon');
         this.router.navigate([this.closePath]);
     }
 
