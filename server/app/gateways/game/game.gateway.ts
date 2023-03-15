@@ -238,6 +238,12 @@ export class GameGateway {
     onAbandon(socket: Socket): void {
         const room = this.playerRoomMap.get(socket.id);
         const gameState = this.playerGameMap.get(socket.id);
+        const message: ChatMessage = {
+            sender: 'Système',
+            senderId: SenderType.System,
+            text: gameState.playerName + ' a abandonné la partie.',
+        };
+        this.server.to(room).emit(GameEvents.MessageSent, message);
         socket.broadcast.to(room).emit(GameEvents.OpponentAbandoned);
 
         this.timeIntervalMap.get(room).unref();
