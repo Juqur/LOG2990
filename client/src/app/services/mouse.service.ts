@@ -24,6 +24,7 @@ export class MouseService {
     private numberOfDifference: number = 0;
     private endGameAudio = new AudioService();
     // private isOutOfBound: boolean = false;
+    isRectangleMode: boolean = false;
 
     constructor(
         private communicationService: CommunicationService,

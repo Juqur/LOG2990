@@ -12,7 +12,6 @@ import { Vec2 } from '@app/interfaces/vec2';
  */
 export class DrawService {
     context: CanvasRenderingContext2D;
-    isRect = false;
     private paintColor = 'black';
     private brushSize = 10;
 
@@ -31,7 +30,6 @@ export class DrawService {
     }
 
     paintBrush(): void {
-        this.isRect = false;
         this.context.globalCompositeOperation = 'source-over';
         this.context.strokeStyle = this.paintColor;
         this.context.lineWidth = this.brushSize;
@@ -39,7 +37,6 @@ export class DrawService {
     }
 
     eraseBrush(): void {
-        this.isRect = false;
         this.context.globalCompositeOperation = 'destination-out';
         this.context.lineWidth = this.brushSize;
         this.context.lineCap = 'square';
@@ -57,9 +54,6 @@ export class DrawService {
     }
 
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
-        if (this.isRect) {
-            this.drawRect(prevCoord, actCoord.x - prevCoord.x, actCoord.y - prevCoord.y);
-        }
         this.context.beginPath();
         this.context.moveTo(prevCoord.x, prevCoord.y);
         if (actCoord.x !== -1 && actCoord.y !== -1) {

@@ -58,7 +58,7 @@ export class CreationComponent implements OnInit {
         private communicationService: CommunicationService,
         private mouseServiceDefault: MouseService,
         private mouseServiceDiff: MouseService,
-    ) {}
+    ) { }
 
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
@@ -400,6 +400,8 @@ export class CreationComponent implements OnInit {
     }
 
     paintBrushMode() {
+        this.mouseServiceDefault.isRectangleMode = false;
+        this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDefault.paintBrush();
@@ -407,6 +409,8 @@ export class CreationComponent implements OnInit {
     }
 
     eraseBrushMode() {
+        this.mouseServiceDefault.isRectangleMode = false;
+        this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDefault.eraseBrush();
@@ -414,8 +418,8 @@ export class CreationComponent implements OnInit {
     }
 
     rectangleMode() {
-        this.drawServiceDefault.isRect = true;
-        this.drawServiceDiff.isRect = true;
+        this.mouseServiceDefault.isRectangleMode = true;
+        this.mouseServiceDiff.isRectangleMode = true;
     }
 
     colorPickerMode() {
