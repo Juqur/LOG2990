@@ -4,17 +4,29 @@ import { Injectable } from '@angular/core';
     providedIn: 'root',
 })
 export class UndoRedoService {
-    // constructor() {}
-    actionStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
-    stateStack: string[] = [];
+    static actionStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
+    // actionStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
+    stateStack: CanvasRenderingContext2D[] = [];
+    static pointer: number = -1;
 
-    addToStack(defaultCanvas: HTMLCanvasElement, diffCanvas: HTMLCanvasElement) {
+    static addToStack(defaultCanvas: HTMLCanvasElement, diffCanvas: HTMLCanvasElement) {
         this.actionStack.push({ defaultCanvas, diffCanvas });
+        this.pointer++;
         console.log(this.actionStack);
     }
 
-    addState(state: string) {
-        this.stateStack.push(state);
-        console.log(this.stateStack);
+    static undo() {
+        this.pointer--;
     }
+    // constructor() {}
+
+    // addToStack(defaultCanvas: HTMLCanvasElement, diffCanvas: HTMLCanvasElement) {
+    //     this.actionStack.push({ defaultCanvas, diffCanvas });
+    //     console.log(this.actionStack);
+    // }
+
+    // addState(state: CanvasRenderingContext2D) {
+    //     this.stateStack.push(state);
+    //     console.log(this.stateStack);
+    // }
 }
