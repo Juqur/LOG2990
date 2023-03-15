@@ -30,6 +30,10 @@ export class GamePageService {
         textToSend: 'Vous avez gagné!',
         closeButtonMessage: 'Retour au menu de sélection',
     };
+    private opponentAbandonedGameDialogData: DialogData = {
+        textToSend: 'Vous avez gagné!\nVotre adversaire a abandonné la partie.',
+        closeButtonMessage: 'Retour au menu de sélection',
+    };
     private loseDialogData: DialogData = {
         textToSend: 'Vous avez perdu!',
         closeButtonMessage: 'Retour au menu de sélection',
@@ -119,6 +123,13 @@ export class GamePageService {
 
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.reset();
+        this.audioService.play();
+    }
+
+    handleOpponentAbandon(): void {
+        this.popUpService.openDialog(this.opponentAbandonedGameDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
         this.audioService.reset();
         this.audioService.play();

@@ -218,6 +218,21 @@ export class GameGateway {
         }
     }
 
+    @SubscribeMessage(GameEvents.Abandon)
+    onGameFinished(socket: Socket): void {
+        const room = this.playerRoomMap.get(socket.id);
+        const gameState = this.playerGameMap.get(socket.id);
+        socket.broadcast.to(room).emit(GameEvents.OpponentAbandoned);
+
+        this.timeIntervalMap.get(room).unref();
+        this.timeIntervalMap.delete(room);
+        this.timeMap.delete(room);
+        clearInterval(this.timeIntervalMap.get(socket.id));
+        clearInterval(this.timeIntervalMap.get(gameState.secondPlayerId));
+        this.playerRoomMap.delete(socket.id);
+        this.playerGameMap.delete(socket.id);
+    }
+
     /**
      * This method is called when a player disconnects.
      * It deletes the player from all the maps

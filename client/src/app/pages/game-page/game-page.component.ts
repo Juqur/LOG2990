@@ -61,10 +61,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private communicationService: CommunicationService,
     ) {}
 
-    ngOnDestroy(): void {
-        this.socketHandler.disconnect('game');
-    }
-
     /**
      * This method is called when the component is initialized.
      * It sets the game level and the game image.
@@ -81,6 +77,18 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.getGameLevel();
         this.handleSocket();
     }
+
+    ngOnDestroy(): void {
+        this.socketHandler.disconnect('game');
+    }
+
+    abandon(): void {
+        this.socketHandler.on('game', 'abandon', () => {
+            /* do nothing */
+        });
+        this.router.navigate([this.closePath]);
+    }
+
     /**
      * This method handles the socket connection.
      * It connects to the game socket and sends the level id to the server.
@@ -99,6 +107,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
         });
+        this.socketHandler.on('game', 'opponentAbandoned', () => {
+            this.gamePageService.handleOpponentAbandon();
+        });
         this.socketHandler.on('game', 'onVictory', () => {
             this.gamePageService.handleVictory();
         });
@@ -106,6 +117,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.gamePageService.handleDefeat();
         });
     }
+
     /**
      * This method handles the case where the user clicks on the original image
      * It will send the click to the server
@@ -120,6 +132,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.clickedOriginalImage = true;
         }
     }
+
     /**
      * This method handles the case where the user clicks on the difference image
      * It will send the click to the server
