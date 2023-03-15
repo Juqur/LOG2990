@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Difference } from '@app/classes/difference';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { Level } from '@app/levels';
@@ -26,6 +26,9 @@ import { LevelFormData } from '@common/levelFormData';
  * @class CreationComponent
  */
 export class CreationComponent implements OnInit {
+    @ViewChild('defaultArea', { static: false }) defaultPaintArea!: PaintAreaComponent;
+    @ViewChild('diffArea', { static: false }) diffPaintArea!: PaintAreaComponent;
+
     defaultImageFile: File | null = null;
     diffImageFile: File | null = null;
     sliderValue = Constants.SLIDER_DEFAULT;
@@ -57,17 +60,13 @@ export class CreationComponent implements OnInit {
         private mouseServiceDiff: MouseService,
     ) {}
 
-    @HostListener('window:keydown', ['$event'])
+    @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
-        // if (($event.ctrlKey || $event.metaKey) && $event.shiftKey && $event.key === 'z') console.log('CTRL + SHIFT +  Z');
-        if ($event.ctrlKey && $event.shiftKey && $event.key === 'z') {
-            console.log('ctrl + SHIFT + Z');
-        }
-        if ($event.ctrlKey && $event.key === 'z') {
-            console.log('CTRL + Z');
-        }
-        if ($event.shiftKey) {
-            console.log('SHIFT');
+        if ($event.ctrlKey && $event.shiftKey && $event.key === 'Z') {
+            UndoRedoService.redo();
+        } else if ($event.ctrlKey && $event.key === 'z') {
+            const canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined = UndoRedoService.undo();
+            this.applyChanges(canvas);
         }
     }
 
@@ -424,7 +423,14 @@ export class CreationComponent implements OnInit {
     }
 
     addToUndoRedoStack() {
-        UndoRedoService.addToStack(this.canvasShare.defaultCanvas, this.canvasShare.diffCanvas);
-        console.log('helo');
+        const leftCanvas = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const rightCanvas = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        UndoRedoService.addToStack(leftCanvas, rightCanvas);
+        console.log('addToUndoRedoStack function called');
+    }
+
+    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined) {
+        if (!canvas) return;
+        this.canvasShare.diffCanvas.getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
     }
 }
