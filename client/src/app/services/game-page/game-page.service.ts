@@ -31,7 +31,7 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu de sélection',
     };
     private opponentAbandonedGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!\nVotre adversaire a abandonné la partie.',
+        textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
         closeButtonMessage: 'Retour au menu de sélection',
     };
     private loseDialogData: DialogData = {

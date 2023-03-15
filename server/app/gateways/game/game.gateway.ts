@@ -218,8 +218,8 @@ export class GameGateway {
         }
     }
 
-    @SubscribeMessage(GameEvents.Abandon)
-    onGameFinished(socket: Socket): void {
+    @SubscribeMessage(GameEvents.OnAbandon)
+    onAbandon(socket: Socket): void {
         const room = this.playerRoomMap.get(socket.id);
         const gameState = this.playerGameMap.get(socket.id);
         socket.broadcast.to(room).emit(GameEvents.OpponentAbandoned);
