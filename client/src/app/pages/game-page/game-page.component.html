@@ -1,7 +1,7 @@
 <app-scale-container>
     <div class="container">
         <section id="top-area">
-            <button mat-button [routerLink]="closePath"><span>Abandonner</span></button>
+            <button mat-button (click)="abandon()"><span>Abandonner</span></button>
             <app-game-timer></app-game-timer>
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">

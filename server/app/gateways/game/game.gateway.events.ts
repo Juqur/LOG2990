@@ -11,6 +11,8 @@ export enum GameEvents {
     OnVictory = 'onVictory',
     OnMessageReception = 'onMessageReception',
     MessageSent = 'messageSent',
+    OnAbandon = 'onAbandon',
+    OpponentAbandoned = 'opponentAbandoned',
 
     // Game Selection
     OnGameSelection = 'onGameSelection',
