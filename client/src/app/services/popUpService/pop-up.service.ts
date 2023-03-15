@@ -56,7 +56,6 @@ export class PopUpService {
      */
     openDialog(dataToSend: DialogData, routeToGo?: string): void {
         this.dialogRef = this.dialog.open(PopUpDialogComponent, {
-            disableClose: true,
             width: '500px',
             data: dataToSend,
         });
