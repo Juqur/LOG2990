@@ -58,7 +58,7 @@ export class CreationComponent implements OnInit {
         private communicationService: CommunicationService,
         private mouseServiceDefault: MouseService,
         private mouseServiceDiff: MouseService,
-    ) { }
+    ) {}
 
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
@@ -430,11 +430,15 @@ export class CreationComponent implements OnInit {
         const leftCanvas = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const rightCanvas = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         UndoRedoService.addToStack(leftCanvas, rightCanvas);
-        console.log('addToUndoRedoStack function called');
     }
 
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined) {
         if (!canvas) return;
-        this.canvasShare.diffCanvas.getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
+
+        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
+        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+
+        this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
+        this.canvasShare.diffCanvas.getContext('2d')?.drawImage(canvas.diffCanvas, 0, 0);
     }
 }

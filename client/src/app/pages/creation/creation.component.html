@@ -46,7 +46,6 @@
                         <p>left</p>
                     </div>
                     <app-paint-area #defaultArea *ngIf="defaultArea" [isDiff]="false" (mouseup)="addToUndoRedoStack()"></app-paint-area>
-                    
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
@@ -94,7 +93,7 @@
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                         <p>asdf</p>
                     </div>
-                    <app-paint-area #diffArea *ngIf="defaultArea" [isDiff]="true" (change)="addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #diffArea *ngIf="defaultArea" [isDiff]="true" (mouseup)="addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">

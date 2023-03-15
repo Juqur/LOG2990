@@ -33,7 +33,9 @@ export class UndoRedoService {
 
     static undo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         // const action = this.canvasStack.pop();
-        if (this.pointer < 0) return undefined;
+        if (this.pointer <= 0) {
+            return { defaultCanvas: document.createElement('canvas'), diffCanvas: document.createElement('canvas') };
+        }
         const action = this.canvasStack[--this.pointer];
         // this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
         console.log('undo ', this.pointer);
