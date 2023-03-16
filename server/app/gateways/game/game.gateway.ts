@@ -29,7 +29,6 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
-        console.log('onJoinNewGame');
         this.gameService.createNewGame(socket.id, { levelId: data.levelId, playerName: data.playerName });
         this.timerService.startTimer(socket.id, this.server, true);
     }
@@ -40,15 +39,15 @@ export class GameGateway {
         socket.emit(GameEvents.OnProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
         if (secondPlayerId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(secondPlayerId).foundDifferences.length;
-            this.server.to(socket.id).emit(GameEvents.OnProcessedClick, dataToSend);
+            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
+            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnProcessedClick, dataToSend);
         }
-        if (this.gameService.verifyWinCondition(socket.id, dataToSend.totalDifferences)) {
+        if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.OnVictory);
             this.timerService.stopTimer(socket.id);
-            this.gameService.deleteUserFromGame(socket.id);
+            this.gameService.deleteUserFromGame(socket);
             if (secondPlayerId) {
-                this.server.to(secondPlayerId).emit(GameEvents.OnDefeat);
+                this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnDefeat);
                 this.timerService.stopTimer(secondPlayerId);
             }
         }
@@ -86,14 +85,14 @@ export class GameGateway {
             playerName: secondPlayerName,
             secondPlayerName: gameState.playerName,
         });
-        this.timerService.startTimer(socket.id, this.server, true);
+        this.timerService.startTimer(socket.id, this.server, true, secondPlayerSocket.id);
         this.server.emit(GameEvents.UpdateSelection, { levelId: gameState.gameId, canJoin: false });
     }
 
     @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
     onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).gameId, canJoin: false });
-        this.gameService.deleteUserFromGame(socket.id);
+        this.gameService.deleteUserFromGame(socket);
         this.timerService.stopTimer(socket.id);
     }
 
@@ -101,8 +100,8 @@ export class GameGateway {
     onGameRejected(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).gameId, canJoin: false });
         const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
-        this.gameService.deleteUserFromGame(socket.id);
-        this.gameService.deleteUserFromGame(secondPlayerId);
+        this.gameService.deleteUserFromGame(socket);
+        this.gameService.deleteUserFromGame(this.server.sockets.sockets.get(secondPlayerId));
         const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
         secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
@@ -114,8 +113,7 @@ export class GameGateway {
      * @param socket the socket of the player
      */
     handleDisconnect(socket: Socket): void {
-        console.log('handleDisconnect');
-        this.gameService.deleteUserFromGame(socket.id);
+        this.gameService.deleteUserFromGame(socket);
         this.timerService.stopTimer(socket.id);
         // Make sure to remove the player from the opponents room if he is in a multiplayer game
     }

@@ -1,6 +1,6 @@
 import { ImageService } from '@app/services/image/image.service';
 import { Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 export interface GameData {
     differencePixels: number[];
@@ -52,14 +52,14 @@ export class GameService {
         };
     }
 
-    verifyWinCondition(socketId: string, totalDifferences: number): boolean {
-        const gameState = this.playerGameMap.get(socketId);
+    verifyWinCondition(socket: Socket, server: Server, totalDifferences: number): boolean {
+        const gameState = this.playerGameMap.get(socket.id);
         if (gameState.secondPlayerId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
-            this.deleteUserFromGame(socketId);
-            this.deleteUserFromGame(gameState.secondPlayerId);
+            this.deleteUserFromGame(socket);
+            this.deleteUserFromGame(server.sockets.sockets.get(gameState.secondPlayerId));
             return true;
         } else if (gameState.foundDifferences.length === totalDifferences) {
-            this.deleteUserFromGame(socketId);
+            this.deleteUserFromGame(socket);
             return true;
         }
         return false;
@@ -106,8 +106,14 @@ export class GameService {
         this.changeSecondPlayerGameState(socket.id, secondPlayerSocket.id);
     }
 
-    deleteUserFromGame(socketId: string): void {
-        this.playerGameMap.delete(socketId);
+    deleteUserFromGame(socket: Socket): void {
+        if (this.playerGameMap.get(socket.id)) {
+            const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
+            if (secondPlayerId) {
+                socket.leave(secondPlayerId);
+            }
+            this.playerGameMap.delete(socket.id);
+        }
     }
 
     getGameState(socketId: string): GameState {
