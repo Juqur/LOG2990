@@ -111,13 +111,13 @@ export class ImageService {
         fileName: string,
         foundDifferences: number[],
         position: number,
-    ): Promise<{ foundDifference: number[]; totalDifferences: number }> {
+    ): Promise<{ differencePixels: number[]; totalDifferences: number }> {
         const allDifferences = await this.getAllDifferences(fileName);
         const index = this.getIndex(allDifferences, foundDifferences, position);
         const foundDifferenceArray = allDifferences[index];
         return foundDifferenceArray !== undefined
-            ? { foundDifference: foundDifferenceArray, totalDifferences: allDifferences.length }
-            : { foundDifference: [], totalDifferences: allDifferences.length };
+            ? { differencePixels: foundDifferenceArray, totalDifferences: allDifferences.length }
+            : { differencePixels: [], totalDifferences: allDifferences.length };
     }
 
     /**
