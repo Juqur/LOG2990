@@ -102,15 +102,16 @@ export class GamePageService {
      * @param clickedOriginalImage boolean that represents if the player clicked on the original image or the difference image
      */
     handleResponse(response: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
+        this.mouseService.setClickState(false);
         if (!clickedOriginalImage) {
             if (response) {
-                this.handleAreaFoundInDiff(gameData.differences);
+                this.handleAreaFoundInDiff(gameData.differencePixels);
             } else {
                 this.handleAreaNotFoundInDiff();
             }
         } else {
             if (response) {
-                this.handleAreaFoundInOriginal(gameData.differences);
+                this.handleAreaFoundInOriginal(gameData.differencePixels);
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
@@ -179,7 +180,7 @@ export class GamePageService {
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                this.mouseService.changeClickState();
+                this.mouseService.setClickState(true);
             })
             .then(() => {
                 setTimeout(() => {
@@ -210,25 +211,23 @@ export class GamePageService {
      *
      * @param result the current area found
      */
-    handleAreaFoundInDiff(result: number[]): void {
+    private handleAreaFoundInDiff(result: number[]): void {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.diffPlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
-        this.mouseService.changeClickState();
         this.resetCanvas();
     }
 
     /**
      * Will be called when the user does not find a difference in the difference canvas.
      */
-    handleAreaNotFoundInDiff(): void {
+    private handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.mouseService.changeClickState();
         this.resetCanvas();
     }
 
@@ -242,7 +241,6 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);
         this.diffPlayArea.flashArea(result);
-        this.mouseService.changeClickState();
         this.resetCanvas();
     }
 
@@ -255,10 +253,9 @@ export class GamePageService {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.mouseService.changeClickState();
         this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-            this.mouseService.changeClickState();
+            this.mouseService.setClickState(true);
         });
     }
 }

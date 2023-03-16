@@ -12,9 +12,10 @@ import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
 export interface GameData {
-    differences: number[];
-    amountOfDifferences: number;
-    amountOfDifferencesSecondPlayer?: number;
+    differencePixels: number[];
+    totalDifferences: number;
+    amountOfDifferencesFound: number;
+    amountOfDifferencesFoundSecondPlayer?: number;
 }
 
 @Component({
@@ -90,11 +91,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
     handleSocket() {
         this.socketHandler.on('game', 'onProcessedClick', (data) => {
             const gameData = data as GameData;
-            if (gameData.amountOfDifferencesSecondPlayer) {
-                this.secondPlayerDifferencesCount = gameData.amountOfDifferencesSecondPlayer;
+            if (gameData.amountOfDifferencesFoundSecondPlayer) {
+                this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             }
-            this.playerDifferencesCount = gameData.amountOfDifferences;
-            const response = this.gamePageService.validateResponse(gameData.differences);
+            this.playerDifferencesCount = gameData.amountOfDifferencesFound;
+            const response = this.gamePageService.validateResponse(gameData.differencePixels);
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);

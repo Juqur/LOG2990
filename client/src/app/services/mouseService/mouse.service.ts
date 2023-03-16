@@ -50,10 +50,12 @@ export class MouseService {
     }
 
     /**
-     * Swaps the state of the canClick attribute to it's opposite.
+     * Sets the value of canClick to the value passed in.
+     *
+     * @param value The value to set the canClick attribute to.
      */
-    changeClickState(): void {
-        this.canClick = !this.canClick;
+    setClickState(value: boolean): void {
+        this.canClick = value;
     }
 
     /**
