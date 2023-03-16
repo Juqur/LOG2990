@@ -5,7 +5,7 @@ import { Level } from '@app/levels';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { GamePageService } from '@app/services/game-page/game-page.service';
+import { GamePageService } from '@app/services/gamePageService/game-page.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
