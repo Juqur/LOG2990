@@ -12,7 +12,7 @@ import { Vec2 } from '@app/interfaces/vec2';
  */
 export class DrawService {
     context: CanvasRenderingContext2D;
-    private paintColor = 'black';
+    paintColor = 'black';
     private brushSize = 10;
 
     /**
@@ -27,6 +27,14 @@ export class DrawService {
      */
     get height(): number {
         return this.context.canvas.height;
+    }
+
+    setPaintColor(color: string): void {
+        this.paintColor = color;
+        this.context.strokeStyle = color;
+        this.context.fillStyle = color;
+        console.log(this.context.fillStyle);
+        console.log(this.paintColor);
     }
 
     paintBrush(): void {
@@ -54,6 +62,7 @@ export class DrawService {
     }
 
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
+        //console.log(this.context.fillStyle);
         this.context.beginPath();
         this.context.moveTo(prevCoord.x, prevCoord.y);
         if (actCoord.x !== -1 && actCoord.y !== -1) {
@@ -66,7 +75,6 @@ export class DrawService {
     }
 
     drawRect(coord: Vec2, width: number, height: number): void {
-        console.log('draw rect');
         this.context.beginPath();
         this.context.rect(coord.x, coord.y, width, height);
         this.context.fill();
