@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
@@ -18,10 +19,8 @@ import { environment } from 'src/environments/environment';
 })
 export class CardComponent {
     @Input() level: Level = Constants.DEFAULT_LEVEL;
-
     @Input() isSelectionPage: boolean = true;
     @Output() startGameDialogEvent = new EventEmitter();
-
     @Output() deleteLevelEvent = new EventEmitter<number>();
 
     readonly imagePath: string = environment.serverUrl + 'originals/';
@@ -43,7 +42,7 @@ export class CardComponent {
         closeButtonMessage: '',
     };
 
-    constructor(private router: Router, public popUpService: PopUpService) {}
+    constructor(private router: Router, public popUpService: PopUpService, private socketHandler: SocketHandler) {}
 
     /**
      * Display the difficulty of the level

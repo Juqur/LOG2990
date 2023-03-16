@@ -113,6 +113,7 @@ export class SelectionPageService {
         });
     }
 
+    // TODO: Rework this function
     startGameDialog(levelId: number): void {
         console.log('resetDialog');
         this.waitingForAcceptation = true;
@@ -127,7 +128,7 @@ export class SelectionPageService {
                     }
                     return false;
                 },
-                returnValue: '',
+                // returnValue: '',
             },
             closeButtonMessage: 'Lancer la partie',
         };
