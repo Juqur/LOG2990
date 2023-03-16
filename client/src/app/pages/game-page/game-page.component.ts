@@ -2,11 +2,9 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
-import { AudioService } from '@app/services/audioService/audio.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { GamePageService } from '@app/services/gamePageService/game-page.service';
-import { MouseService } from '@app/services/mouseService/mouse.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
@@ -53,12 +51,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     // eslint-disable-next-line max-params
     constructor(
-        private mouseService: MouseService,
         private route: ActivatedRoute,
         private router: Router,
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
-        private audioService: AudioService,
         private communicationService: CommunicationService,
     ) {}
 
@@ -71,7 +67,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
-                this.audioService.reset();
+                this.gamePageService.resetAudio();
             }
         });
         this.gamePageService.resetImagesData();
@@ -116,10 +112,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * @param event The mouse event
      */
     clickedOnOriginal(event: MouseEvent) {
-        if (this.mouseService.getCanClick()) {
-            const mousePosition = this.mouseService.getMousePosition(event);
-            if (!mousePosition) return;
-            this.gamePageService.sendClick(mousePosition);
+        const mousePosition = this.gamePageService.verifyClick(event);
+        if (mousePosition) {
+            this.socketHandler.send('game', 'onClick', { mousePosition });
             this.clickedOriginalImage = true;
         }
     }
@@ -130,10 +125,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * @param event The mouse event
      */
     clickedOnDiff(event: MouseEvent): void {
-        if (this.mouseService.getCanClick()) {
-            const mousePosition = this.mouseService.getMousePosition(event);
-            if (!mousePosition) return;
-            this.gamePageService.sendClick(mousePosition);
+        const mousePosition = this.gamePageService.verifyClick(event);
+        if (mousePosition) {
+            this.socketHandler.send('game', 'onClick', { mousePosition });
             this.clickedOriginalImage = false;
         }
     }

@@ -6,7 +6,6 @@ import { AudioService } from '@app/services/audioService/audio.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
@@ -38,7 +37,6 @@ export class GamePageService {
 
     // eslint-disable-next-line max-params
     constructor(
-        private socketHandler: SocketHandler,
         private mouseService: MouseService,
         private popUpService: PopUpService,
         private audioService: AudioService,
@@ -68,13 +66,22 @@ export class GamePageService {
     }
 
     /**
-     * This method sends the click to the server.
+     * This method verifies whether the click is valid or not.
      *
-     * @param position position of the click
+     * @param event The mouse event.
      */
-    sendClick(position: number): void {
-        this.mouseService.setClickState(false);
-        this.socketHandler.send('game', 'onClick', { position });
+    verifyClick(event: MouseEvent): number {
+        if (this.mouseService.getCanClick()) {
+            this.mouseService.setClickState(false);
+            const mousePosition = this.mouseService.getMousePosition(event);
+            if (!mousePosition) return Constants.minusOne;
+            return mousePosition;
+        }
+        return Constants.minusOne;
+    }
+
+    resetAudio(): void {
+        this.audioService.reset();
     }
 
     /**
