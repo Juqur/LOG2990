@@ -4,7 +4,7 @@ import { Constants } from '@common/constants';
 
 /**
  * Component that allows to display top 3 times
- * of a level in solo and multiPlayer mode one at a time
+ * of a level in solo and multiPlayer mode one at a time.
  *
  * @author Galen Hu
  * @class CarouselComponent
@@ -15,24 +15,14 @@ import { Constants } from '@common/constants';
     styleUrls: ['./carousel.component.scss'],
 })
 export class CarouselComponent {
-    @Input() level: Level = {
-        id: 0,
-        name: 'no name',
-        playerSolo: ['player 1', 'player 2', 'player 3'],
-        timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        playerMulti: ['player 1', 'player 2', 'player 3'],
-        timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        isEasy: true,
-        nbDifferences: 7,
-    };
-
+    @Input() level: Level = Constants.DEFAULT_LEVEL;
     selectedButton: string = 'solo';
 
     /**
      * Formats the time to a MM:SS format.
      *
-     * @param time the time to format
-     * @returns the time in MM:SS format.
+     * @param time The time to format.
+     * @returns The time in MM:SS format.
      */
     formatTime(time: number): string {
         const minutes: number = Math.floor(time / Constants.SECONDS_PER_MINUTE);
@@ -44,15 +34,11 @@ export class CarouselComponent {
     }
 
     /**
-     * Change the button from solo to multi
+     * Changes the button from solo to multiplayer.
      *
-     * @param button that is active
+     * @param The button that is active.
      */
     changeButtonStyle(button: string): void {
-        if (button === 'solo') {
-            this.selectedButton = 'solo';
-        } else {
-            this.selectedButton = 'multi';
-        }
+        this.selectedButton = button === 'solo' ? 'solo' : 'multi';
     }
 }
