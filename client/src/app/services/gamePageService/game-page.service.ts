@@ -73,6 +73,7 @@ export class GamePageService {
      * @param position position of the click
      */
     sendClick(position: number): void {
+        this.mouseService.setClickState(false);
         this.socketHandler.send('game', 'onClick', { position });
     }
 
@@ -102,7 +103,6 @@ export class GamePageService {
      * @param clickedOriginalImage boolean that represents if the player clicked on the original image or the difference image
      */
     handleResponse(response: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
-        this.mouseService.setClickState(false);
         if (!clickedOriginalImage) {
             if (response) {
                 this.handleAreaFoundInDiff(gameData.differencePixels);
