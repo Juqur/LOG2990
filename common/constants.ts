@@ -72,6 +72,8 @@ export namespace Constants {
 
     // Card Component
     export const MAX_NAME_LENGTH = 300;
+
+    export const TIMED_GAME_MODE_LENGTH = 120;
 }
 
 export enum MouseButton {
