@@ -115,6 +115,7 @@ export class GameGateway {
      * @param socket the socket of the player
      */
     handleDisconnect(socket: Socket): void {
+        console.log('handleDisconnect');
         this.gameService.deleteUserFromGame(socket.id);
         this.timerService.stopTimer(socket.id);
         // Make sure to remove the player from the opponents room if he is in a multiplayer game

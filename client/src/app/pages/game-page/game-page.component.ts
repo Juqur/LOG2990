@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
@@ -30,7 +30,7 @@ export interface GameData {
  * @author Simon Gagné et Galen Hu
  * @class GamePageComponent
  */
-export class GamePageComponent implements OnInit, OnDestroy {
+export class GamePageComponent implements OnInit {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
     @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
@@ -61,10 +61,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private audioService: AudioService,
         private communicationService: CommunicationService,
     ) {}
-
-    ngOnDestroy(): void {
-        this.socketHandler.disconnect('game');
-    }
 
     /**
      * This method is called when the component is initialized.
