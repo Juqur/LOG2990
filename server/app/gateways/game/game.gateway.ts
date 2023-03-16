@@ -30,7 +30,7 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
         console.log('onJoinNewGame');
-        this.gameService.createNewSoloGame(socket.id, { levelId: data.levelId, playerName: data.playerName });
+        this.gameService.createNewGame(socket.id, { levelId: data.levelId, playerName: data.playerName });
         this.timerService.startTimer(socket.id, this.server, true);
     }
 
@@ -41,14 +41,14 @@ export class GameGateway {
         const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
         if (secondPlayerId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(secondPlayerId).foundDifferences.length;
-            socket.to(socket.id).emit(GameEvents.OnProcessedClick, dataToSend);
+            this.server.to(socket.id).emit(GameEvents.OnProcessedClick, dataToSend);
         }
         if (this.gameService.verifyWinCondition(socket.id, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.OnVictory);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket.id);
             if (secondPlayerId) {
-                socket.to(secondPlayerId).emit(GameEvents.OnDefeat);
+                this.server.to(secondPlayerId).emit(GameEvents.OnDefeat);
                 this.timerService.stopTimer(secondPlayerId);
             }
         }
@@ -59,13 +59,13 @@ export class GameGateway {
         if (data.playerName.length <= 2) {
             socket.emit(GameEvents.InvalidName);
         }
-        const secondPlayerId = this.gameService.findAvailableGame(socket.id, this.server, data.levelId);
+        const secondPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
         if (secondPlayerId) {
             this.gameService.changeMultiplayerGameState(socket.id, secondPlayerId, data.playerName);
             socket.emit(GameEvents.ToBeAccepted);
             this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.PlayerSelection, data.playerName);
         } else {
-            this.gameService.createNewSoloGame(socket.id, { levelId: data.levelId, playerName: data.playerName, waitingSecondPlayer: true });
+            this.gameService.createNewGame(socket.id, { levelId: data.levelId, playerName: data.playerName, waitingSecondPlayer: true });
             this.server.emit(GameEvents.UpdateSelection, { levelId: data.levelId, canJoin: true });
         }
     }

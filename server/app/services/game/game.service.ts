@@ -1,6 +1,6 @@
 import { ImageService } from '@app/services/image/image.service';
 import { Injectable } from '@nestjs/common';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 
 export interface GameData {
     differencePixels: number[];
@@ -65,7 +65,7 @@ export class GameService {
         return false;
     }
 
-    createNewSoloGame(socketId: string, data: { levelId: number; playerName: string; waitingSecondPlayer?: boolean }): void {
+    createNewGame(socketId: string, data: { levelId: number; playerName: string; waitingSecondPlayer?: boolean }): void {
         const playerGameState: GameState = {
             gameId: data.levelId,
             foundDifferences: [],
@@ -75,10 +75,10 @@ export class GameService {
         this.playerGameMap.set(socketId, playerGameState);
     }
 
-    findAvailableGame(socketId: string, server: Server, levelId: number): string {
+    findAvailableGame(socketId: string, levelId: number): string {
         for (const [secondPlayerId, secondPlayerGameState] of this.playerGameMap.entries()) {
             if (secondPlayerId !== socketId && secondPlayerGameState.gameId === levelId) {
-                if (server.sockets.adapter.rooms.get(secondPlayerId).size === 1 && secondPlayerGameState.waitingForSecondPlayer) {
+                if (secondPlayerGameState.waitingForSecondPlayer) {
                     return secondPlayerId;
                 }
             }
@@ -87,8 +87,8 @@ export class GameService {
     }
 
     changeMultiplayerGameState(socketId: string, secondPlayerId: string, playerName: string): void {
-        const secondPlayerGameState = this.playerGameMap.get(socketId);
-        secondPlayerGameState.secondPlayerId = secondPlayerId;
+        const secondPlayerGameState: GameState = this.playerGameMap.get(secondPlayerId);
+        secondPlayerGameState.secondPlayerId = socketId;
         secondPlayerGameState.waitingForSecondPlayer = false;
         this.playerGameMap.set(secondPlayerId, secondPlayerGameState);
         this.playerGameMap.set(socketId, {
