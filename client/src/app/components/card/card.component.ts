@@ -23,7 +23,7 @@ export class CardComponent {
     @Output() startGameDialogEvent = new EventEmitter();
     @Output() deleteLevelEvent = new EventEmitter<number>();
 
-    readonly imagePath: string = environment.serverUrl + 'originals/';
+    readonly imagePath: string = environment.serverUrl + 'original/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',
