@@ -40,12 +40,11 @@ describe('MouseService', () => {
         expect(service.getMousePosition(mockEvent)).toBeNull();
     });
 
-    it('changeClickState should change the click state', () => {
-        const expectedStartValue = true;
-        const expectedEndValue = false;
-        expect(service['canClick']).toEqual(expectedStartValue);
-        service.changeClickState();
-        expect(service['canClick']).toEqual(expectedEndValue);
+    it('setClickState should change the correct click state', () => {
+        service.setClickState(true);
+        expect(service['canClick']).toBeTruthy();
+        service.setClickState(false);
+        expect(service['canClick']).toBeFalsy();
     });
 
     it('getCanClick should return the correct value', () => {

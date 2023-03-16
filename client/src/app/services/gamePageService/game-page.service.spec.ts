@@ -25,13 +25,15 @@ describe('GamePageService', () => {
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
 
     const gameData: GameData = {
-        differences: [],
-        amountOfDifferences: 0,
+        differencePixels: [],
+        totalDifferences: 0,
+        amountOfDifferencesFound: 0,
+        amountOfDifferencesFoundSecondPlayer: 0,
     };
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'setClickState']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
