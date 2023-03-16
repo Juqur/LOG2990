@@ -163,8 +163,8 @@ export class GamePageComponent implements OnInit {
      */
     settingGameImage(): void {
         try {
-            this.originalImageSrc = environment.serverUrl + 'originals/' + this.levelId + '.bmp';
-            this.diffImageSrc = environment.serverUrl + 'modifiees/' + this.levelId + '.bmp';
+            this.originalImageSrc = environment.serverUrl + 'original/' + this.levelId + '.bmp';
+            this.diffImageSrc = environment.serverUrl + 'modified/' + this.levelId + '.bmp';
         } catch (error) {
             throw new Error("Couldn't load images");
         }

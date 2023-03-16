@@ -33,7 +33,7 @@ export class CardComponent {
     @Input() isSelectionPage: boolean = true;
     @Output() startGameDialogEvent = new EventEmitter();
 
-    private imgPath: string = environment.serverUrl + 'originals/';
+    private imgPath: string = environment.serverUrl + 'original/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',

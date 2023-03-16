@@ -90,8 +90,8 @@ export class GamePageService {
      * @param levelId The id of the level
      */
     setImages(levelId: number): void {
-        this.originalImageSrc = environment.serverUrl + 'originals/' + levelId + '.bmp';
-        this.diffImageSrc = environment.serverUrl + 'modifiees/' + levelId + '.bmp';
+        this.originalImageSrc = environment.serverUrl + 'original/' + levelId + '.bmp';
+        this.diffImageSrc = environment.serverUrl + 'modified/' + levelId + '.bmp';
     }
 
     /**
