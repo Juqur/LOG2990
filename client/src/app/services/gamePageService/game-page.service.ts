@@ -132,7 +132,6 @@ export class GamePageService {
     }
 
     /**
-    /**
      * The equivalent of eyedropper tool.
      *
      * @param x the x coordinate of the pixel
