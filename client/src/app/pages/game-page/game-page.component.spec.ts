@@ -30,9 +30,10 @@ describe('GamePageComponent', () => {
     };
 
     const gameData: GameData = {
-        differences: [],
-        amountOfDifferences: 1,
-        amountOfDifferencesSecondPlayer: 1,
+        differencePixels: [],
+        totalDifferences: 1,
+        amountOfDifferencesFound: 1,
+        amountOfDifferencesFoundSecondPlayer: 1,
     };
 
     beforeEach(async () => {
