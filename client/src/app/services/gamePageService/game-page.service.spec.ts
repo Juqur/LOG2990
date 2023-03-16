@@ -81,8 +81,8 @@ describe('GamePageService', () => {
 
     it('should correctly set default and difference images', () => {
         service.setImages(1);
-        expect(service['originalImageSrc']).toEqual(environment.serverUrl + 'originals/1.bmp');
-        expect(service['diffImageSrc']).toEqual(environment.serverUrl + 'modifiees/1.bmp');
+        expect(service['originalImageSrc']).toEqual(environment.serverUrl + 'original/1.bmp');
+        expect(service['diffImageSrc']).toEqual(environment.serverUrl + 'modified/1.bmp');
     });
 
     it('should send a click to the server', () => {

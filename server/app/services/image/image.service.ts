@@ -15,8 +15,8 @@ import { promises as fsp } from 'fs';
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
-    readonly pathModified: string = '../server/assets/images/modifiees/';
-    readonly pathOriginal: string = '../server/assets/images/originals/';
+    readonly pathModified: string = '../server/assets/images/modified/';
+    readonly pathOriginal: string = '../server/assets/images/original/';
     readonly pathData: string = '../server/assets/data/';
 
     /**
