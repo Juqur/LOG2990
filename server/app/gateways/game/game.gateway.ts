@@ -38,7 +38,6 @@ export class GameGateway {
     async onClick(socket: Socket, data: { position: number }): Promise<void> {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, data.position);
         socket.emit(GameEvents.OnProcessedClick, dataToSend);
-
         const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
         if (secondPlayerId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(secondPlayerId).foundDifferences.length;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
@@ -30,7 +30,7 @@ export interface GameData {
  * @author Simon Gagné et Galen Hu
  * @class GamePageComponent
  */
-export class GamePageComponent implements OnInit {
+export class GamePageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
     @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
@@ -77,6 +77,12 @@ export class GamePageComponent implements OnInit {
         this.gamePageService.resetImagesData();
         this.getGameLevel();
         this.handleSocket();
+    }
+
+    ngOnDestroy(): void {
+        this.socketHandler.removeListener('onProcessedClick');
+        this.socketHandler.removeListener('onVictory');
+        this.socketHandler.removeListener('onDefeat');
     }
     /**
      * This method handles the socket connection.
