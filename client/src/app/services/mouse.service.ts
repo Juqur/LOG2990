@@ -25,7 +25,7 @@ export class MouseService {
     private endGameAudio = new AudioService();
     // private isOutOfBound: boolean = false;
     isRectangleMode: boolean = false;
-    mouseDrawColor: string = 'black';
+    mouseDrawColor: string = 'blue';
 
     constructor(
         private communicationService: CommunicationService,

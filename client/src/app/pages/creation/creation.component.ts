@@ -424,6 +424,8 @@ export class CreationComponent implements OnInit {
     }
 
     colorPickerMode() {
+        this.mouseServiceDefault.mouseDrawColor = this.color;
+        this.mouseServiceDiff.mouseDrawColor = this.color;
         this.drawServiceDefault.setPaintColor(this.color);
         this.drawServiceDiff.setPaintColor(this.color);
     }
