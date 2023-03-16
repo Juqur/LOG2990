@@ -43,6 +43,7 @@ export class GameTimerComponent implements OnInit {
         this.updateTimer(0);
         this.socketHandler.on('game', 'sendTime', (data: number) => {
             this.updateTimer(data);
+            console.log(data);
         });
     }
 }

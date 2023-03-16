@@ -1,6 +1,6 @@
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
+import { Server } from 'socket.io';
 
 @Injectable()
 export class TimerService {
@@ -15,15 +15,15 @@ export class TimerService {
      * @param socket The socket of the player who is used to start the timer
      * @param isClassic Boolean value that determines if the game is classic or timed
      */
-    startTimer(socket: Socket, isClassic: boolean): void {
-        this.timeMap.set(socket.id, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
+    startTimer(socketId: string, server: Server, isClassic: boolean): void {
+        console.log('startTimer');
+        this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
         const interval = setInterval(() => {
-            this.timeMap.forEach((value, key) => {
-                socket.to(key).emit('time', value);
-                this.timeMap.set(key, isClassic ? value + 1 : value - 1);
-            });
+            const time = this.timeMap.get(socketId);
+            server.to(socketId).emit('sendTime', time);
+            this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
         }, Constants.millisecondsInOneSecond);
-        this.timeIntervalMap.set(socket.id, interval);
+        this.timeIntervalMap.set(socketId, interval);
     }
 
     /**
@@ -32,13 +32,13 @@ export class TimerService {
      *
      * @param socket The socket of the player who is used to stop the timer
      */
-    stopTimer(socket: Socket): void {
-        const interval = this.timeIntervalMap.get(socket.id);
+    stopTimer(socketId: string): void {
+        const interval = this.timeIntervalMap.get(socketId);
         if (interval) {
             clearInterval(interval);
         }
-        this.timeIntervalMap.delete(socket.id);
-        this.timeMap.delete(socket.id);
+        this.timeIntervalMap.delete(socketId);
+        this.timeMap.delete(socketId);
     }
 
     /**
@@ -47,10 +47,10 @@ export class TimerService {
      * @param socket The socket of the player who is used to add time to the timer
      * @param time The time that is added to the timer
      */
-    addTime(socket: Socket, time: number): void {
-        const currentTime = this.timeMap.get(socket.id);
+    addTime(socketId: string, time: number): void {
+        const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            this.timeMap.set(socket.id, currentTime + time);
+            this.timeMap.set(socketId, currentTime + time);
         }
     }
 
@@ -60,10 +60,10 @@ export class TimerService {
      * @param socket The socket of the player who is used to add time to the timer
      * @param time The time that is removed to the timer
      */
-    removeTime(socket: Socket, time: number): void {
-        const currentTime = this.timeMap.get(socket.id);
+    removeTime(socketId: string, time: number): void {
+        const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            this.timeMap.set(socket.id, currentTime - time);
+            this.timeMap.set(socketId, currentTime - time);
         }
     }
 }

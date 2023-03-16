@@ -77,7 +77,6 @@ export class SocketHandler {
             this.getSocket(gateway)?.on(event, action);
             this.socketListenersMap.push(event);
         }
-        console.log(this.socketListenersMap);
     }
 
     /**
