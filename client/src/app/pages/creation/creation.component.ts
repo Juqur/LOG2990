@@ -5,7 +5,7 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { Level } from '@app/levels';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { DifferenceDetectorService } from '@app/services/difference-detector.service';
+import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
