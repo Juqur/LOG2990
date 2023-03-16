@@ -7,8 +7,7 @@ import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
 /**
- * Component that displays a preview
- * of a level and its difficulty
+ * Component that displays a preview of a level and its difficulty.
  *
  * @author Galen Hu
  * @class CardComponent
@@ -19,21 +18,12 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./card.component.scss'],
 })
 export class CardComponent {
-    @Input() level: Level = {
-        id: 0,
-        name: 'no name',
-        playerSolo: ['player 1', 'player 2', 'player 3'],
-        timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        playerMulti: ['player 1', 'player 2', 'player 3'],
-        timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        isEasy: true,
-        nbDifferences: 7,
-    };
-    @Input() page: string = 'no page';
+    @Input() level: Level = Constants.DEFAULT_LEVEL;
     @Input() isSelectionPage: boolean = true;
     @Output() startGameDialogEvent = new EventEmitter();
+    @Output() deleteLevelEvent = new EventEmitter<number>();
 
-    private imgPath: string = environment.serverUrl + 'original/';
+    readonly imagePath: string = environment.serverUrl + 'original/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',
@@ -42,15 +32,17 @@ export class CardComponent {
             submitFunction: (value) => {
                 return value.length >= 1 && value.length <= Constants.MAX_NAME_LENGTH;
             },
-            returnValue: '',
         },
         closeButtonMessage: 'Débuter la partie',
     };
 
+    private deleteDialogData: DialogData = {
+        textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+    };
+
     constructor(private router: Router, public popUpService: PopUpService, private socketHandler: SocketHandler) {}
-    get getImg(): string {
-        return this.imgPath;
-    }
 
     /**
      * Display the difficulty of the level
@@ -79,5 +71,18 @@ export class CardComponent {
 
     playMultiplayer(): void {
         this.startGameDialogEvent.emit(this.level.id);
+    }
+
+    /**
+     * Handles the click on the delete button.
+     * A popup is opened to ask for confirmation.
+     */
+    deleteLevel(levelId: number): void {
+        this.popUpService.openDialog(this.deleteDialogData);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                this.deleteLevelEvent.emit(levelId);
+            }
+        });
     }
 }

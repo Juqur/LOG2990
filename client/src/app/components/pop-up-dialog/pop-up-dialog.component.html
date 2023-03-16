@@ -1,14 +1,8 @@
 <ol>
     <p>{{ data.textToSend }}</p>
     <div *ngIf="data.inputData">
-        <input
-            id="pop-up-input"
-            [ngClass]="inputValid ? 'valid-input' : 'invalid-input'"
-            type="text"
-            (input)="submitText(input.value)"
-            [placeholder]="data.inputData.inputLabel"
-            #input
-        />
+        <input id="pop-up-input" [ngClass]="inputValid ? 'valid-input' : 'invalid-input'" type="text"
+            (input)="submitText(input.value)" [placeholder]="data.inputData.inputLabel" #input />
     </div>
     <img *ngIf="data.imgSrc" [src]="data.imgSrc" />
     <div mat-dialog-actions align="end">
@@ -16,7 +10,8 @@
             <button mat-button id="decline-button" [mat-dialog-close]="false">Refuser</button>
             <button mat-button id="accept-button" [mat-dialog-close]="true">Accepter</button>
         </div>
-        <button *ngIf="!data.isConfirmation" mat-button id="close-button" [disabled]="!inputValid" [mat-dialog-close]="this.value">
+        <button *ngIf="!data.isConfirmation" mat-button id="close-button" [disabled]="!inputValid"
+            [mat-dialog-close]="this.value">
             {{ data.closeButtonMessage }}
         </button>
     </div>

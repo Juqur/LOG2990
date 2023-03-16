@@ -115,6 +115,7 @@ export class SelectionPageService implements OnDestroy {
         });
     }
 
+    // TODO: Rework this function
     startGameDialog(levelId: number): void {
         this.waitingForAcceptation = true;
         this.waitingForSecondPlayer = true;
@@ -128,7 +129,7 @@ export class SelectionPageService implements OnDestroy {
                     }
                     return false;
                 },
-                returnValue: '',
+                // returnValue: '',
             },
             closeButtonMessage: 'Lancer la partie',
         };
