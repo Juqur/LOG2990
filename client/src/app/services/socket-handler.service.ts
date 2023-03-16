@@ -81,7 +81,10 @@ export class SocketHandler {
 
     removeListener(event: string): void {
         const index = this.socketListenersList.indexOf(event);
-        delete this.socketListenersList[index];
+        if (index >= 0) {
+            this.socketListenersList.splice(index, 1);
+            this.getSocket('game')?.off(event);
+        }
     }
 
     /**
