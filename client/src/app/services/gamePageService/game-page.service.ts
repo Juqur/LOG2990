@@ -10,15 +10,15 @@ import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service contains all the logic for the game page.
  *
  * @author Junaid Qureshi
  * @class GamePageService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class GamePageService {
     private imagesData: number[] = [];
     private originalImageSrc: string = '';

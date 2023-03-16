@@ -10,7 +10,7 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameData, GamePageComponent } from '@app/pages/game-page/game-page.component';
-import { GamePageService } from '@app/services/game-page/game-page.service';
+import { GamePageService } from '@app/services/gamePageService/game-page.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { SocketHandler } from '@app/services/socket-handler.service';
 import SpyObj = jasmine.SpyObj;
