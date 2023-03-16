@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Difference } from '@app/classes/difference';
+import { LevelDifferences } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 
 /**
@@ -30,7 +30,7 @@ export class DifferenceDetectorService {
      * @param radius The radius of the pixels to change.
      * @return The clusters of pixels that are different.
      */
-    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): Difference | undefined {
+    detectDifferences(defaultImage: CanvasRenderingContext2D, modifiedImage: CanvasRenderingContext2D, radius: number): LevelDifferences | undefined {
         // Ensures image format is valid.
         if (!this.isImageValid(defaultImage) || !this.isImageValid(modifiedImage)) {
             return undefined;
@@ -43,7 +43,7 @@ export class DifferenceDetectorService {
         this.comparePixels();
         this.addRadius();
 
-        const differences = new Difference();
+        const differences = new LevelDifferences();
         const differenceCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         differenceCanvas.canvas.width = defaultImage.canvas.width;
         differenceCanvas.canvas.height = defaultImage.canvas.height;

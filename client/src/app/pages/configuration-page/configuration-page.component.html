@@ -31,8 +31,8 @@
         </header>
 
         <body class="selection-card-container">
-            <app-card *ngFor="let level of levelService.levelsToShow" [level]="level"
-                [isSelectionPage]="false"></app-card>
+            <app-card *ngFor="let level of levelService.levelsToShow" [level]="level" [isSelectionPage]="false"
+                (deleteLevelEvent)="onDeleteLevel($event)"></app-card>
         </body>
 
         <footer class="bottom-container">

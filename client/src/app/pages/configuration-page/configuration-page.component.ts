@@ -15,4 +15,14 @@ import { LevelService } from '@app/services/levelService/level.service';
 })
 export class ConfigurationPageComponent {
     constructor(public levelService: LevelService) {}
+
+    /**
+     * Event listener for the delete button.
+     * It will call the deleteLevel function from the levelService.
+     *
+     * @param levelId the id of the level to delete.
+     */
+    onDeleteLevel(levelId: number): void {
+        this.levelService.deleteLevel(levelId);
+    }
 }

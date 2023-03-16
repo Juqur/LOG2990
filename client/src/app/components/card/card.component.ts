@@ -2,13 +2,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
 /**
- * Component that displays a preview
- * of a level and its difficulty
+ * Component that displays a preview of a level and its difficulty.
  *
  * @author Galen Hu
  * @class CardComponent
@@ -19,21 +17,14 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./card.component.scss'],
 })
 export class CardComponent {
-    @Input() level: Level = {
-        id: 0,
-        name: 'no name',
-        playerSolo: ['player 1', 'player 2', 'player 3'],
-        timeSolo: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        playerMulti: ['player 1', 'player 2', 'player 3'],
-        timeMulti: [Constants.minusOne, Constants.minusOne, Constants.minusOne],
-        isEasy: true,
-        nbDifferences: 7,
-    };
-    @Input() page: string = 'no page';
+    @Input() level: Level = Constants.DEFAULT_LEVEL;
+
     @Input() isSelectionPage: boolean = true;
     @Output() startGameDialogEvent = new EventEmitter();
 
-    private imgPath: string = environment.serverUrl + 'original/';
+    @Output() deleteLevelEvent = new EventEmitter<number>();
+
+    readonly imagePath: string = environment.serverUrl + 'originals/';
 
     private saveDialogData: DialogData = {
         textToSend: 'Veuillez entrer votre nom',
@@ -42,15 +33,17 @@ export class CardComponent {
             submitFunction: (value) => {
                 return value.length >= 1 && value.length <= Constants.MAX_NAME_LENGTH;
             },
-            returnValue: '',
         },
         closeButtonMessage: 'Débuter la partie',
     };
 
-    constructor(private router: Router, public popUpService: PopUpService, private socketHandler: SocketHandler) {}
-    get getImg(): string {
-        return this.imgPath;
-    }
+    private deleteDialogData: DialogData = {
+        textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+    };
+
+    constructor(private router: Router, public popUpService: PopUpService) {}
 
     /**
      * Display the difficulty of the level
@@ -79,5 +72,18 @@ export class CardComponent {
 
     playMultiplayer(): void {
         this.startGameDialogEvent.emit(this.level.id);
+    }
+
+    /**
+     * Handles the click on the delete button.
+     * A popup is opened to ask for confirmation.
+     */
+    deleteLevel(levelId: number): void {
+        this.popUpService.openDialog(this.deleteDialogData);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                this.deleteLevelEvent.emit(levelId);
+            }
+        });
     }
 }

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Difference } from '@app/classes/difference';
+import { LevelDifferences } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 
@@ -72,7 +72,7 @@ describe('DifferenceDetectorService', () => {
             expect(defaultImage.complete).toBeTruthy();
             expect(modifiedImage.complete).toBeTruthy();
             const expectedDifferences = 7;
-            const differences = service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as Difference;
+            const differences = service.detectDifferences(defaultCanvas, modifiedCanvas, 1) as LevelDifferences;
             expect(differences.clusters.length).toEqual(expectedDifferences);
         });
 
@@ -82,7 +82,7 @@ describe('DifferenceDetectorService', () => {
             serviceSpy['isImageValid'] = () => false;
 
             const canvas: CanvasRenderingContext2D = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-            const differences = serviceSpy.detectDifferences(canvas, canvas, 1) as Difference;
+            const differences = serviceSpy.detectDifferences(canvas, canvas, 1) as LevelDifferences;
             expect(differences).toBeUndefined();
         });
 
@@ -137,12 +137,12 @@ describe('DifferenceDetectorService', () => {
 
         it('should return 0 if the radius is negative', () => {
             const negativeNumber = -1;
-            serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, negativeNumber) as Difference;
+            serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, negativeNumber) as LevelDifferences;
             expect(serviceSpy['radius']).toEqual(0);
         });
 
         it('should return 0 if the radius is invalid', () => {
-            serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, NaN) as Difference;
+            serviceSpy.detectDifferences(defaultCanvas, modifiedCanvas, NaN) as LevelDifferences;
             expect(serviceSpy['radius']).toEqual(0);
         });
     });

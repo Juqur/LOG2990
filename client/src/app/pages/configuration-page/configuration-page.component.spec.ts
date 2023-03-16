@@ -29,4 +29,11 @@ describe('ConfigurationPageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should delete a level', () => {
+        const levelService = TestBed.inject(LevelService);
+        const spy = spyOn(levelService, 'deleteLevel');
+        component.onDeleteLevel(1);
+        expect(spy).toHaveBeenCalled();
+    });
 });
