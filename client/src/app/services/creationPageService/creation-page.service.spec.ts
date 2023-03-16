@@ -28,7 +28,7 @@ describe('CreationPageService', () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
-        popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
+        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog', 'dialogRef']);
         popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
     });

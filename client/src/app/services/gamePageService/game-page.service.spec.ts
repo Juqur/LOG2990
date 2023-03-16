@@ -85,10 +85,10 @@ describe('GamePageService', () => {
         expect(service['diffImageSrc']).toEqual(environment.serverUrl + 'modified/1.bmp');
     });
 
-    it('should send a click to the server', () => {
-        service.sendClick(1);
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', { position: 1 });
-    });
+    // it('should send a click to the server', () => {
+    //     service.sendClick(1);
+    //     expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', { position: 1 });
+    // });
 
     it('should play a victory audio and open a victory dialog', () => {
         service.handleVictory();

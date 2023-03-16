@@ -7,7 +7,7 @@ import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import { DialogData, PopUpService } from './pop-up.service';
 
-describe('PopUpServiceService', () => {
+describe('PopUpService', () => {
     let service: PopUpService;
     let dialogRef: MatDialogRef<PopUpDialogComponent>;
 

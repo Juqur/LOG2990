@@ -45,17 +45,17 @@ export class CardComponent {
     constructor(private router: Router, public popUpService: PopUpService, private socketHandler: SocketHandler) {}
 
     /**
-     * Display the difficulty of the level
+     * Display the difficulty of the level.
      *
-     * @returns the path difficulty image
+     * @returns The path difficulty image.
      */
     displayDifficultyIcon(): string {
         return this.level.isEasy ? '../../../assets/images/easy.png' : '../../../assets/images/hard.png';
     }
 
     /**
-     * Opens a pop-up to ask the player to enter his name
-     * Then redirects to the game page with the right level id, and puts the player name as a query parameter
+     * Opens a pop-up to ask the player to enter his name then redirects to the
+     * game page with the right level id, and puts the player name as a query parameter.
      */
     playSolo(): void {
         this.popUpService.openDialog(this.saveDialogData);
@@ -69,6 +69,9 @@ export class CardComponent {
         });
     }
 
+    /**
+     * Sends an event for a multiplayer game.
+     */
     playMultiplayer(): void {
         this.startGameDialogEvent.emit(this.level.id);
     }

@@ -58,6 +58,14 @@ describe('CardComponent', () => {
         expect(popUpService.openDialog).toHaveBeenCalled();
     });
 
+    describe('playMultiplayer', () => {
+        it('should call emit for startGameDialogEvent', () => {
+            const spy = spyOn(component.startGameDialogEvent, 'emit');
+            component.playMultiplayer();
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
+
     it('should provide a method to check if the name is valid and should at least invalidate very long names', () => {
         /**
          * What defines a very long name is left to the user of the component and we store in server. This could change as
