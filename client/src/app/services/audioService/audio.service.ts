@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service is in charge of the manipulation of an audio element. It is used in combination with
  * a single audio file and offers methods to interact with said audio file.
@@ -10,6 +7,9 @@ import { Injectable } from '@angular/core';
  * @author Pierre Tran & Charles Degrandpré
  * @class AudioService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class AudioService {
     private soundtrack: HTMLAudioElement;
 
@@ -20,17 +20,12 @@ export class AudioService {
      *
      * @param path the source file path as a string
      */
-    static quickPlay(path: string): void {
-        const audio = new Audio(path);
-        const promise = audio?.play();
-        if (promise) {
-            promise
-                .then(() => {
-                    // Autoplay is allowed.
-                })
-                .catch(() => {
-                    // Autoplay was prevented.
-                });
+    static async quickPlay(path: string): Promise<void> {
+        try {
+            const audio = new Audio(path);
+            await audio.play();
+        } catch (error) {
+            // Autoplay was prevented.
         }
     }
 
@@ -50,16 +45,11 @@ export class AudioService {
      * We can't assume the audio will play. It may be blocked by the browser.
      * See https://developer.chrome.com/blog/autoplay/
      */
-    play(): void {
-        const promise = this.soundtrack?.play();
-        if (promise) {
-            promise
-                .then(() => {
-                    // Autoplay is allowed.
-                })
-                .catch(() => {
-                    // Autoplay was prevented.
-                });
+    async play(): Promise<void> {
+        try {
+            await this.soundtrack.play();
+        } catch (error) {
+            // Autoplay was prevented.
         }
     }
 
@@ -87,6 +77,6 @@ export class AudioService {
      * Method used to reset the audio back to it's base state.
      */
     reset(): void {
-        this.soundtrack?.load();
+        this.soundtrack.load();
     }
 }
