@@ -129,7 +129,6 @@ export class SelectionPageService implements OnDestroy {
                     }
                     return false;
                 },
-                // returnValue: '',
             },
             closeButtonMessage: 'Lancer la partie',
         };
