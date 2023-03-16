@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { LevelService } from '@app/services/levelService/level.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
@@ -18,12 +18,21 @@ interface StartGameData {
 @Injectable({
     providedIn: 'root',
 })
-export class SelectionPageService {
+export class SelectionPageService implements OnDestroy {
     waitingForSecondPlayer: boolean = true;
     waitingForAcceptation: boolean = true;
 
     // eslint-disable-next-line max-params
     constructor(private socketHandler: SocketHandler, private router: Router, private popUpService: PopUpService) {}
+
+    ngOnDestroy(): void {
+        this.socketHandler.removeListener('updateSelection');
+        this.socketHandler.removeListener('invalidName');
+        this.socketHandler.removeListener('toBeAccepted');
+        this.socketHandler.removeListener('playerSelection');
+        this.socketHandler.removeListener('startClassicMultiplayerGame');
+        this.socketHandler.removeListener('rejectedGame');
+    }
 
     setupSocket(levelService: LevelService): void {
         if (!this.socketHandler.isSocketAlive('game')) {
@@ -45,9 +54,7 @@ export class SelectionPageService {
                 this.popUpService.openDialog(invalidNameDialogData);
             });
             this.socketHandler.on('game', 'toBeAccepted', () => {
-                console.log('toBeAccepted');
                 this.waitingForSecondPlayer = false;
-                console.log(this.waitingForSecondPlayer);
                 this.popUpService.dialogRef.close();
                 const toBeAcceptedDialogData: DialogData = {
                     textToSend: "Partie trouvée ! En attente de l'approbation de l'autre joueur.",
@@ -56,12 +63,11 @@ export class SelectionPageService {
                 this.popUpService.openDialog(toBeAcceptedDialogData);
                 this.popUpService.dialogRef.afterClosed().subscribe(() => {
                     if (this.waitingForAcceptation) {
-                        this.socketHandler.send('game', 'onGameCancelledWhileWaitingForAcceptation', {});
+                        this.socketHandler.send('game', 'onGameRejected', {});
                     }
                 });
             });
             this.socketHandler.on('game', 'playerSelection', (name) => {
-                console.log('playerSelection');
                 this.waitingForSecondPlayer = false;
                 this.popUpService.dialogRef.close();
                 const toBeAcceptedDialogData: DialogData = {
@@ -79,8 +85,6 @@ export class SelectionPageService {
                 });
             });
             this.socketHandler.on('game', 'startClassicMultiplayerGame', (data) => {
-                console.log(this.waitingForSecondPlayer);
-                console.log('startClassicMultiplayerGame');
                 const startGameData: StartGameData = data as StartGameData;
                 this.waitingForAcceptation = false;
                 this.popUpService.dialogRef.close();
@@ -90,7 +94,7 @@ export class SelectionPageService {
             });
 
             this.socketHandler.on('game', 'rejectedGame', () => {
-                console.log('rejectedGame');
+                console.log('rejected');
                 this.waitingForAcceptation = false;
                 this.popUpService.dialogRef.close();
             });
@@ -105,8 +109,6 @@ export class SelectionPageService {
         };
         this.popUpService.openDialog(loadingDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
-            console.log('dialog closed');
-            console.log(this.waitingForSecondPlayer);
             if (this.waitingForSecondPlayer) {
                 this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
             }
@@ -114,7 +116,6 @@ export class SelectionPageService {
     }
 
     startGameDialog(levelId: number): void {
-        console.log('resetDialog');
         this.waitingForAcceptation = true;
         this.waitingForSecondPlayer = true;
         const saveDialogData: DialogData = {
