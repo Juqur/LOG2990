@@ -15,10 +15,10 @@ export class AudioService {
 
     /**
      * This method play a sound file and then terminates it when it has completed playing.
-     * It used to play ping sounds or click sounds that aren't meant to be played for long and aren't
-     * supposed to be paused or looped.
+     * It used to play ping sounds or click sounds that aren't meant to be played for
+     * long and aren't supposed to be paused or looped.
      *
-     * @param path the source file path as a string
+     * @param path The source file path as a string.
      */
     static async quickPlay(path: string): Promise<void> {
         try {
@@ -30,7 +30,7 @@ export class AudioService {
     }
 
     /**
-     * Initializes the soudtrack attribute to a new HTMLAudioElement containing the new src.
+     * Initializes the soundtrack attribute to a new HTMLAudioElement containing the new src.
      *
      * @param path The path to the audio file.
      */
