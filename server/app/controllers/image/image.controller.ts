@@ -1,6 +1,6 @@
 import { Message } from '@app/model/schema/message.schema';
 import { ImageService } from '@app/services/image/image.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Level } from 'assets/data/level';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
@@ -16,9 +16,9 @@ export class ImageController {
     constructor(private readonly imageService: ImageService) {}
 
     /**
-     * Gets the card data from the json files.
+     * Gets all the level information.
      *
-     * @returns The array of card data
+     * @returns The array of levels data stored in the server.
      */
     @Get('/allLevels')
     @ApiOkResponse({
@@ -29,10 +29,10 @@ export class ImageController {
     }
 
     /**
-     * Gets the difference count between the two images.
+     * Gets the level information.
      *
-     * @param differenceFile The name of the file that has the differences
-     * @returns The number of differences between the two images
+     * @param id The id of the level.
+     * @returns The level data stored in the server.
      */
     @ApiOkResponse({
         description: 'Returns data for a level',
@@ -45,8 +45,8 @@ export class ImageController {
     /**
      * Gets the amount of differences between the two images.
      *
-     * @param formData The data of the level
-     * @returns The message of the result
+     * @param formData The data of the level.
+     * @returns The number of differences between the two images.
      */
     @Get('/differenceCount')
     @ApiOkResponse({
@@ -59,12 +59,29 @@ export class ImageController {
     /**
      * Writes the level data onto a json file for the game information and the images into the assets folder.
      *
-     * @param formData The data of the level
-     * @returns The message of the result
+     * @param formData The data of the level.
+     * @returns The message of the result.
      */
+    @ApiOkResponse({
+        description: 'Writes the level data onto a json file for the game information and the images into the assets folder.',
+    })
     @Post('/postLevel')
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {
         return await this.imageService.writeLevelData(formData);
+    }
+
+    /**
+     * Deletes the game data from the json file and the images from the assets folder.
+     *
+     * @param id The id of the level.
+     * @returns The confirmation of the deletion.
+     */
+    @ApiOkResponse({
+        description: 'Deletes the game data and its images in the server.',
+    })
+    @Delete('/:id')
+    async deleteLevelData(@Param('id') id: string): Promise<boolean> {
+        return await this.imageService.deleteLevelData(parseInt(id, 10));
     }
 }

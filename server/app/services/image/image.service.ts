@@ -140,19 +140,51 @@ export class ImageService {
             allDifferences.push(level);
 
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.rename(levelData.imageOriginal.path, this.pathOriginal + newId + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
             await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(allDifferences));
 
             return this.confirmUpload();
         } catch (error) {
             return this.handleErrors(error);
+        }
+    }
+
+    /**
+     * Deletes the level in the json file.
+     *
+     * @param id The id of the level to be deleted.
+     * @returns The confirmation of the deletion.
+     */
+    async deleteLevelData(id: number): Promise<boolean> {
+        try {
+            const level = await this.getLevel(id);
+            if (level === undefined) {
+                return false;
+            }
+
+            const allDifferences = await this.getLevels();
+            const updatedDifferences = allDifferences.filter((difference) => difference.id !== level.id);
+
+            fs.unlink(this.pathDifference + id + '.json', (error) => {
+                if (error) throw error;
+            });
+            fs.unlink(this.pathOriginal + id + '.bmp', (error) => {
+                if (error) throw error;
+            });
+            fs.unlink(this.pathModified + id + '.bmp', (error) => {
+                if (error) throw error;
+            });
+            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(updatedDifferences));
+            return true;
+        } catch (error) {
+            return false;
         }
     }
 
