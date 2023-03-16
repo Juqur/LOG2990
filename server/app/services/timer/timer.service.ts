@@ -16,7 +16,6 @@ export class TimerService {
      * @param isClassic Boolean value that determines if the game is classic or timed
      */
     startTimer(socketId: string, server: Server, isClassic: boolean): void {
-        console.log('startTimer');
         this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);

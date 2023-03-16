@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Constants } from '@common/constants';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
@@ -14,7 +14,7 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @author Charles Degrandpré & Junaid Qureshi
  * @class GameTimerComponent
  */
-export class GameTimerComponent implements OnInit {
+export class GameTimerComponent implements OnInit, OnDestroy {
     gameTimeFormatted: string;
 
     constructor(private socketHandler: SocketHandler) {}
@@ -43,7 +43,10 @@ export class GameTimerComponent implements OnInit {
         this.updateTimer(0);
         this.socketHandler.on('game', 'sendTime', (data: number) => {
             this.updateTimer(data);
-            console.log(data);
         });
+    }
+
+    ngOnDestroy(): void {
+        this.socketHandler.removeListener('sendTime');
     }
 }
