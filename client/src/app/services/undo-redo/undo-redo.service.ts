@@ -10,6 +10,12 @@ export class UndoRedoService {
     static undoPointer: number = Constants.EMPTYSTACK;
     static redoPointer: number = Constants.EMPTYSTACK;
 
+    /**
+     * After the user has drawn on the canvas, we add the canvas to the stack.
+     *
+     * @param defaultCanvas the default (left) canvas
+     * @param diffCanvas the diff (right) canvas
+     */
     static addToStack(defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D): void {
         const tempDefaultCanvas = document.createElement('canvas');
         tempDefaultCanvas.width = defaultCanvas.canvas.width;
@@ -27,6 +33,11 @@ export class UndoRedoService {
         this.undoPointer++;
     }
 
+    /**
+     * The undo function pops the last action from the stack and returns it.
+     *
+     * @returns the last action in the stack, or undefined if the stack is empty
+     */
     static undo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         if (this.undoPointer === 0) {
             const emptyCanvas = { defaultCanvas: document.createElement('canvas'), diffCanvas: document.createElement('canvas') };
@@ -43,6 +54,11 @@ export class UndoRedoService {
         return undefined;
     }
 
+    /**
+     * The redo function pops the last action from the redo stack and returns it.
+     *
+     * @returns the last action in the redo stack, or undefined if the stack is empty
+     */
     static redo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         if (this.redoPointer >= 0) {
             this.undoPointer++;
@@ -53,29 +69,44 @@ export class UndoRedoService {
         return undefined;
     }
 
-    static resetRedoStack() {
+    /**
+     * Resets the redo stack to an empty array.
+     */
+    static resetRedoStack(): void {
         this.redoStack = [];
         this.redoPointer = Constants.EMPTYSTACK;
     }
 
-    static resetUndoStack() {
+    /**
+     * Resets the undo stack to an empty array.
+     */
+    static resetUndoStack(): void {
         this.canvasStack = [];
         this.undoPointer = Constants.EMPTYSTACK;
     }
 
-    static resetAllStacks() {
+    /**
+     * Resets both the undo and redo stacks to empty arrays.
+     */
+    static resetAllStacks(): void {
         this.resetRedoStack();
         this.resetUndoStack();
     }
 
-    static resizeUndoStack() {
-        this.canvasStack.length = this.undoPointer + 1;
-    }
-
+    /**
+     * Checks if the redo stack is empty.
+     *
+     * @returns true if the redo stack is empty, false otherwise
+     */
     static isRedoStackEmpty(): boolean {
         return this.redoStack.length === 0;
     }
 
+    /**
+     * Checks if the undo stack is empty.
+     *
+     * @returns true if the undo stack is empty, false otherwise
+     */
     static isUndoStackEmpty(): boolean {
         return this.undoPointer === Constants.EMPTYSTACK;
     }
