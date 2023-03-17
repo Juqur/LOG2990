@@ -68,6 +68,9 @@ export class CreationComponent implements OnInit {
                 canvas = UndoRedoService.redo();
             }
         } else if ($event.ctrlKey && $event.key === 'z') {
+            // if (!UndoRedoService.isUndoStackEmpty()) {
+            //     canvas = UndoRedoService.undo();
+            // }
             canvas = UndoRedoService.undo();
         }
         this.applyChanges(canvas);

@@ -7,9 +7,9 @@ export class UndoRedoService {
     static canvasStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
     static redoStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
     static undoPointer: number = -1;
-    stateStack: CanvasRenderingContext2D[] = [];
+    static redoPointer: number = -1;
 
-    static addToStack(defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D) {
+    static addToStack(defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D): void {
         const tempDefaultCanvas = document.createElement('canvas');
         tempDefaultCanvas.width = defaultCanvas.canvas.width;
         tempDefaultCanvas.height = defaultCanvas.canvas.height;
@@ -28,33 +28,47 @@ export class UndoRedoService {
         //     this.actionStack.splice(this.pointer + 1, this.actionStack.length - this.pointer);
         // }
         this.undoPointer++;
-        console.log(this.canvasStack);
+        this.print();
     }
 
     static undo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
-        // const action = this.canvasStack.pop();
-        if (this.undoPointer <= 0) {
+        if (this.undoPointer === 0) {
+            const emptyCanvas = { defaultCanvas: document.createElement('canvas'), diffCanvas: document.createElement('canvas') };
             this.undoPointer = -1;
-            this.canvasStack = [];
-            return { defaultCanvas: document.createElement('canvas'), diffCanvas: document.createElement('canvas') };
+            this.redoPointer++;
+            this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
+            this.print();
+            return emptyCanvas;
+        } else if (this.undoPointer > 0) {
+            const action = this.canvasStack[--this.undoPointer];
+            this.redoPointer++;
+            this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
+            this.print();
+            return action;
         }
-        const action = this.canvasStack[--this.undoPointer];
-        this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
-        // this.redoStack.push(action);
-        console.log(this.canvasStack);
-        return action;
+        return undefined;
     }
 
     static redo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
-        const action = this.redoStack.pop();
-        this.canvasStack.push(action as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
-        this.undoPointer++;
-        console.log(this.canvasStack);
-        return action;
+        // const action = this.redoStack[this.redoPointer--];
+        if (this.redoPointer > 0) {
+            this.undoPointer++;
+            const action = this.redoStack[this.redoPointer--];
+            this.canvasStack.push(action as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
+            this.print();
+            return action;
+        }
+        return undefined;
     }
 
     static resetRedoStack() {
         this.redoStack = [];
+        this.redoPointer = -1;
+    }
+
+    static resetUndoStack() {
+        this.canvasStack = [];
+        this.undoPointer = -1;
     }
 
     static resizeUndoStack() {
@@ -64,15 +78,15 @@ export class UndoRedoService {
     static isRedoStackEmpty(): boolean {
         return this.redoStack.length === 0;
     }
+
+    static isUndoStackEmpty(): boolean {
+        return this.undoPointer === -1;
+    }
+
+    static print() {
+        console.log('canvasStack length : ' + this.canvasStack.length, this.canvasStack);
+        console.log('redoStack length: ' + this.redoStack.length, this.redoStack);
+        console.log('undoPointer: ' + this.undoPointer + '; redoPointer: ' + this.redoPointer);
+    }
     // constructor() {}
-
-    // addToStack(defaultCanvas: HTMLCanvasElement, diffCanvas: HTMLCanvasElement) {
-    //     this.actionStack.push({ defaultCanvas, diffCanvas });
-    //     console.log(this.actionStack);
-    // }
-
-    // addState(state: CanvasRenderingContext2D) {
-    //     this.stateStack.push(state);
-    //     console.log(this.stateStack);
-    // }
 }
