@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
-import { MatSliderChange } from '@angular/material/slider';
 import { LevelDifferences } from '@app/classes/difference';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
@@ -176,11 +175,8 @@ export class CreationPageService {
      *
      * @param value the index of the new slider value
      */
-    brushSliderChange(event: MatSliderChange): void {
-        console.log(event);
-        if (!event.value) {
-            return;
-        }
+    brushSliderChange(event: unknown): void {
+        console.log(event.value);
         this.drawServiceDefault.setBrushSize(event.value);
         this.drawServiceDiff.setBrushSize(event.value);
     }
