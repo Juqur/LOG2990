@@ -35,7 +35,7 @@ describe('SelectionPageService', () => {
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
-        levelServiceSpy = jasmine.createSpyObj('LevelService', [''], { levelsToShow: levels });
+        levelServiceSpy = jasmine.createSpyObj('LevelService', ['removeCard'], { levelsToShow: levels });
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogRefSpy.afterClosed.and.returnValue(of(true));
@@ -111,6 +111,17 @@ describe('SelectionPageService', () => {
         expect(openPlayerSelectionDialogSpy).toHaveBeenCalledWith(name as never);
     });
 
+    it('should call closeDialogOnDeletedLevel when server shutDownGame event', () => {
+        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+            if (eventName === 'shutDownGame') {
+                callback({} as never);
+            }
+        });
+        const closeDialogOnDeletedLevelSpy = spyOn(service, 'closeDialogOnDeletedLevel' as never);
+        service.setupSocket(levelServiceSpy);
+        expect(closeDialogOnDeletedLevelSpy).toHaveBeenCalled();
+    });
+
     it('should call startMultiplayerGame when server startClassicMultiplayerGame event', () => {
         const name = 'Alice';
         socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
@@ -131,6 +142,17 @@ describe('SelectionPageService', () => {
         });
         service.setupSocket(levelServiceSpy);
         expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should call startMultiplayerGame when server deleteLevel event', () => {
+        const gameId = 1;
+        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+            if (eventName === 'deleteLevel') {
+                callback(gameId as never);
+            }
+        });
+        service.setupSocket(levelServiceSpy);
+        expect(levelServiceSpy.removeCard).toHaveBeenCalled();
     });
 
     it('should open a dialog when a player creates a game and when the player closes the dialog', () => {
@@ -216,5 +238,11 @@ describe('SelectionPageService', () => {
         expect(routerSpy.navigate).toHaveBeenCalledWith([`/game/${gameData.levelId}/`], {
             queryParams: { playerName: gameData.playerName, opponent: gameData.secondPlayerName },
         });
+    });
+
+    it('should open a dialog when the level gets deleted while waiting for a player', () => {
+        service['closeDialogOnDeletedLevel']();
+        expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
     });
 });

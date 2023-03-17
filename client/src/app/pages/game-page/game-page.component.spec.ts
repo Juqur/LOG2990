@@ -240,4 +240,9 @@ describe('GamePageComponent', () => {
             expect(component.settingGameLevel).toThrowError();
         });
     });
+
+    it('should emit a socket event when abandoning the game', () => {
+        component.abandonGame();
+        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+    });
 });
