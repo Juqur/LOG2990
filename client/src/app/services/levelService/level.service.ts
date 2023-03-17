@@ -83,7 +83,7 @@ export class LevelService {
     }
 
     /**
-     * Deletes the level with the given id and updates the levels to show.
+     * This method emits a socket event to the server to delete a level.
      *
      * @param levelId The id of the level to delete.
      */
@@ -95,6 +95,11 @@ export class LevelService {
         this.removeCard(levelId);
     }
 
+    /**
+     * This method removes a level from the levels array.
+     *
+     * @param levelId The id of the level to remove.
+     */
     removeCard(levelId: number): void {
         this.levels = this.levels.filter((level) => level.id !== levelId);
         this.updatePageLevels();

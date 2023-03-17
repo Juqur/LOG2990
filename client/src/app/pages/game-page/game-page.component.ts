@@ -169,6 +169,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.diffImageSrc = environment.serverUrl + 'modified/' + this.levelId + '.bmp';
     }
 
+    /**
+     * This method emits a socket event if the player decides to abandon the game.
+     */
     abandonGame(): void {
         this.socketHandler.send('game', 'onAbandonGame');
     }

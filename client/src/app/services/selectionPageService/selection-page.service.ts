@@ -45,6 +45,7 @@ export class SelectionPageService implements OnDestroy {
         this.socketHandler.removeListener('game', 'startClassicMultiplayerGame');
         this.socketHandler.removeListener('game', 'rejectedGame');
         this.socketHandler.removeListener('game', 'shutDownGame');
+        this.socketHandler.removeListener('game', 'deleteLevel');
     }
 
     /**
