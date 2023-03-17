@@ -19,9 +19,9 @@ import { Constants } from '@common/constants';
 export class CreationComponent implements OnDestroy {
     @ViewChild('defaultArea', { static: false }) defaultPaintArea!: PaintAreaComponent;
     @ViewChild('diffArea', { static: false }) diffPaintArea!: PaintAreaComponent;
-    sliderValue = Constants.SLIDER_DEFAULT;
+    diffSliderValue = Constants.SLIDER_DEFAULT;
+    brushSize: number;
 
-    // eslint-disable-next-line max-params
     constructor(public creationService: CreationPageService) {}
 
     @HostListener('window:keydown ', ['$event'])

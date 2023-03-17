@@ -10,7 +10,7 @@
             </div>
             <div id="draw-tools-container">
                 <label class="info-txt" for="values">Epaisseur:</label>
-                <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="sliderValue"></mat-slider>
+                <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="brushSize"></mat-slider>
                 <button class="button-settings" color="orange" (click)="this.creationService.paintBrushMode()">
                     <mat-icon>mode_edit</mat-icon>
                 </button>
@@ -130,8 +130,8 @@
                     [min]="0"
                     [max]="3"
                     tickInterval="1"
-                    [(ngModel)]="sliderValue"
-                    (change)="this.creationService.sliderChange(sliderValue)"
+                    [(ngModel)]="diffSliderValue"
+                    (change)="this.creationService.sliderChange(diffSliderValue)"
                 ></mat-slider>
             </div>
             <div class="zone-button-container">

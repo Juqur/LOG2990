@@ -183,6 +183,7 @@ export class PaintAreaComponent implements AfterViewInit {
             this.drawService.context = this.canvas.nativeElement.getContext('2d', {
                 willReadFrequently: true,
             }) as CanvasRenderingContext2D;
+            this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
             this.drawService.draw(accCoords, this.lastMousePosition);
             this.lastMousePosition = accCoords;
         }

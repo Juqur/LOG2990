@@ -24,12 +24,7 @@ export class UndoRedoService {
         tempDiffCtx?.drawImage(diffCanvas.canvas, 0, 0);
 
         this.canvasStack.push({ defaultCanvas: tempDefaultCanvas, diffCanvas: tempDiffCanvas });
-        // this.actionStack.push({ defaultCanvas, diffCanvas });
-        // if (this.pointer < this.actionStack.length - 1) {
-        //     this.actionStack.splice(this.pointer + 1, this.actionStack.length - this.pointer);
-        // }
         this.undoPointer++;
-        this.print();
     }
 
     static undo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
@@ -38,13 +33,11 @@ export class UndoRedoService {
             this.undoPointer = -1;
             this.redoPointer++;
             this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
-            this.print();
             return emptyCanvas;
         } else if (this.undoPointer > 0) {
             const action = this.canvasStack[--this.undoPointer];
             this.redoPointer++;
             this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
-            this.print();
             return action;
         }
         return undefined;
@@ -55,7 +48,6 @@ export class UndoRedoService {
             this.undoPointer++;
             const action = this.redoStack[this.redoPointer--];
             this.canvasStack.push(this.redoStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
-            this.print();
             return action;
         }
         return undefined;
@@ -87,11 +79,4 @@ export class UndoRedoService {
     static isUndoStackEmpty(): boolean {
         return this.undoPointer === Constants.EMPTYSTACK;
     }
-
-    static print() {
-        console.log('canvasStack length : ' + this.canvasStack.length, this.canvasStack);
-        console.log('redoStack length: ' + this.redoStack.length, this.redoStack);
-        console.log('undoPointer: ' + this.undoPointer + '; redoPointer: ' + this.redoPointer);
-    }
-    // constructor() {}
 }
