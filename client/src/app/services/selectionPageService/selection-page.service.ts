@@ -38,12 +38,12 @@ export class SelectionPageService implements OnDestroy {
      * It removes all the socket listeners.
      */
     ngOnDestroy(): void {
-        this.socketHandler.removeListener('updateSelection');
-        this.socketHandler.removeListener('invalidName');
-        this.socketHandler.removeListener('toBeAccepted');
-        this.socketHandler.removeListener('playerSelection');
-        this.socketHandler.removeListener('startClassicMultiplayerGame');
-        this.socketHandler.removeListener('rejectedGame');
+        this.socketHandler.removeListener('game', 'updateSelection');
+        this.socketHandler.removeListener('game', 'invalidName');
+        this.socketHandler.removeListener('game', 'toBeAccepted');
+        this.socketHandler.removeListener('game', 'playerSelection');
+        this.socketHandler.removeListener('game', 'startClassicMultiplayerGame');
+        this.socketHandler.removeListener('game', 'rejectedGame');
     }
 
     /**
