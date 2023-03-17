@@ -61,7 +61,11 @@ export class PaintAreaComponent implements AfterViewInit {
      * Method called after the initial rendering.
      */
     ngAfterViewInit(): void {
-        this.drawPaintArea(this.image);
+        this.loadBackground(this.image);
+        this.canvas.nativeElement.addEventListener('mousedown', this.canvasClick.bind(this));
+        this.canvas.nativeElement.addEventListener('mouseup', this.canvasRelease.bind(this));
+        this.canvas.nativeElement.addEventListener('mousemove', this.canvasDrag.bind(this));
+        this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
     }
 
     getCanvas() {
@@ -75,21 +79,16 @@ export class PaintAreaComponent implements AfterViewInit {
      *
      * @param image the image source
      */
-    drawPaintArea(image: string) {
+    loadBackground(image: string) {
         if (this.canvas) {
-            this.canvas.nativeElement.addEventListener('mousedown', this.canvasClick.bind(this));
-            this.canvas.nativeElement.addEventListener('mouseup', this.canvasRelease.bind(this));
-            this.canvas.nativeElement.addEventListener('mousemove', this.canvasDrag.bind(this));
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
                 this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
-                this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             } else {
                 // Diff canvas (right canvas)
                 this.canvasSharing.diffCanvas = this.canvas.nativeElement;
-                this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             }
             this.currentImage = new Image();
             this.currentImage.crossOrigin = 'anonymous';

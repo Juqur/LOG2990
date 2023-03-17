@@ -66,7 +66,7 @@
                         (change)="this.creationService.defaultImageSelector($event)"
                         (click)="this.creationService.cleanSrc($event)"
                     />
-                    <button class="button-reset" color="orange" (click)="this.creationService.resetDefault()">
+                    <button class="button-reset" color="orange" (click)="this.creationService.resetDefaultBackground()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>
@@ -88,7 +88,7 @@
                     />
                 </div>
 
-                <button class="button-settings" color="orange" (click)="this.creationService.resetDefault()">
+                <button class="button-settings" color="orange">
                     INTERVERTIR AVANT-PLANS
                     <mat-icon>restart_alt</mat-icon>
                 </button>
@@ -120,7 +120,7 @@
                         (change)="this.creationService.diffImageSelector($event)"
                         (click)="this.creationService.cleanSrc($event)"
                     />
-                    <button class="button-reset" color="orange" (click)="this.creationService.resetDiff()">
+                    <button class="button-reset" color="orange" (click)="this.creationService.resetDiffBackground()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
                     </button>

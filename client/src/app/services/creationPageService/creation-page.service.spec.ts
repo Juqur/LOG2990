@@ -161,7 +161,7 @@ describe('CreationPageService', () => {
         const restartGameSpy = spyOn<any>(service, 'restartGame');
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const defaultCanvasSpy = spyOnProperty(service['canvasShare'], 'defaultCanvas').and.callThrough();
-        service.resetDefault();
+        service.resetDefaultBackground();
         expect(restartGameSpy).toHaveBeenCalledTimes(1);
         expect(clearRectSpy).toHaveBeenCalledTimes(1);
         expect(defaultCanvasSpy).toHaveBeenCalledTimes(3);
@@ -171,7 +171,7 @@ describe('CreationPageService', () => {
         const restartGameSpy = spyOn<any>(service, 'restartGame');
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const getContextSpy = spyOn(service['canvasShare'].defaultCanvas, 'getContext').and.returnValue(null);
-        service.resetDefault();
+        service.resetDefaultBackground();
         expect(restartGameSpy).toHaveBeenCalledTimes(1);
         expect(clearRectSpy).not.toHaveBeenCalled();
         expect(getContextSpy).toHaveBeenCalledTimes(1);
@@ -181,7 +181,7 @@ describe('CreationPageService', () => {
         const restartGameSpy = spyOn<any>(service, 'restartGame');
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const defaultCanvasSpy = spyOnProperty(service['canvasShare'], 'diffCanvas').and.callThrough();
-        service.resetDiff();
+        service.resetDiffBackground();
         expect(restartGameSpy).toHaveBeenCalledTimes(1);
         expect(clearRectSpy).toHaveBeenCalledTimes(1);
         expect(defaultCanvasSpy).toHaveBeenCalledTimes(3);
@@ -191,7 +191,7 @@ describe('CreationPageService', () => {
         const restartGameSpy = spyOn<any>(service, 'restartGame');
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const getContextSpy = spyOn(service['canvasShare'].diffCanvas, 'getContext').and.returnValue(null);
-        service.resetDiff();
+        service.resetDiffBackground();
         expect(restartGameSpy).toHaveBeenCalledTimes(1);
         expect(clearRectSpy).not.toHaveBeenCalled();
         expect(getContextSpy).toHaveBeenCalledTimes(1);

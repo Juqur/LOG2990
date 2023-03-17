@@ -24,6 +24,7 @@ export class CreationComponent implements OnDestroy {
 
     constructor(public creationService: CreationPageService) {}
 
+
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
         if ($event.ctrlKey && $event.shiftKey && $event.key === 'Z') {
