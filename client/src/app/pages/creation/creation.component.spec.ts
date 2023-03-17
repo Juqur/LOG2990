@@ -30,14 +30,14 @@ describe('CreationComponent', () => {
     });
 
     it('pressing ctrl + z should call handleUndo', () => {
-        const handleUndospy = spyOn(component.creationService, 'handleUndo');
+        const handleUndospy = spyOn(component, 'handleUndo');
         const event = new KeyboardEvent('keydown', { ctrlKey: true, key: 'z' });
         window.dispatchEvent(event);
         expect(handleUndospy).toHaveBeenCalledTimes(1);
     });
 
     it('pressing ctrl + shift + z should call handleRedo', () => {
-        const handleRedospy = spyOn(component.creationService, 'handleRedo');
+        const handleRedospy = spyOn(component, 'handleRedo');
         const event = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'z' });
         window.dispatchEvent(event);
         expect(handleRedospy).toHaveBeenCalledTimes(1);

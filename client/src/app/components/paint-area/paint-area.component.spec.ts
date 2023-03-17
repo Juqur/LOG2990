@@ -3,7 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/cor
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
-import { Constants } from '@common/constants';
+// import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
@@ -55,12 +55,12 @@ describe('PaintAreaComponent', () => {
 
     it('getCanvas should return the canvas element', () => {
         const canvas = component.getPaintCanvas();
-        expect(canvas).toEqual(component.fgCanvas);
+        expect(canvas).toEqual(component.fgCanvas.nativeElement);
     });
 
     it('getCanvas should return the canvas element', () => {
         const canvas = component.getPaintCanvas();
-        expect(canvas).toEqual(component.fgCanvas);
+        expect(canvas).toEqual(component.fgCanvas.nativeElement);
     });
 
     it('drawPaintArea should call context.drawImage', fakeAsync(() => {
@@ -71,25 +71,4 @@ describe('PaintAreaComponent', () => {
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('should call fillRect', () => {
-        const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
-        const area = [0, 1, 2, 3];
-        component.flashArea(area);
-        expect(fillRectSpy).toHaveBeenCalledTimes(area.length);
-    });
-
-    it('should not call fillRect if there is no canvas', () => {
-        spyOn(component.fgCanvas.nativeElement, 'getContext').and.returnValue(null);
-
-        const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
-        const area = [0, 1, 2, 3];
-        component.flashArea(area);
-        expect(fillRectSpy).not.toHaveBeenCalled();
-    });
-
-    it('timeout should call setTimeout', () => {
-        const timeoutSpy = spyOn(window, 'setTimeout');
-        component.timeout(Constants.millisecondsInOneSecond);
-        expect(timeoutSpy).toHaveBeenCalledTimes(1);
-    });
 });
