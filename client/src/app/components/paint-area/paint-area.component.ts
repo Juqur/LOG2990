@@ -81,7 +81,7 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     loadBackground(image: string) {
         if (this.canvas) {
-            this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
+            this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas' : 'defaultCanvas';
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
@@ -143,8 +143,9 @@ export class PaintAreaComponent implements AfterViewInit {
         this.tempCanvas.height = this.height;
         this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
-        const currentCanvas = document.body.querySelector('#grid-container')?.querySelector('canvas') as HTMLCanvasElement;
-        document.body.querySelector('#grid-container')?.insertBefore(this.tempCanvas, currentCanvas);
+        const currentCanvas = document.body.querySelector('#' + this.canvas.nativeElement.id);
+        currentCanvas?.parentNode?.insertBefore(this.tempCanvas, currentCanvas);
+        // document.body.querySelector('#grid-container')?.insertBefore(this.tempCanvas, currentCanvas);
         this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.canvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
@@ -215,7 +216,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {
             this.canvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
-            document.body.querySelector('#grid-container')?.removeChild(this.tempCanvas);
+            document.body.querySelector('#' + this.canvas.nativeElement.id)?.parentNode?.removeChild(this.tempCanvas);
         }
         // this.undoRedoService.addState(this.canvas.nativeElement.getContext('2d'));
     }
