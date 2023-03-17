@@ -37,11 +37,19 @@ export class DrawService {
         console.log(this.paintColor);
     }
 
+    /**
+     * setBrushSize sets the brush size of the context
+     *
+     * @param size The size of the brush
+     */
     setBrushSize(size: number): void {
         this.brushSize = size;
         this.context.lineWidth = size;
     }
 
+    /**
+     * paintBrush sets the attributes for a brush
+     */
     paintBrush(): void {
         this.context.globalCompositeOperation = 'source-over';
         this.context.strokeStyle = this.paintColor;
@@ -49,6 +57,9 @@ export class DrawService {
         this.context.lineCap = 'round';
     }
 
+    /**
+     * eraseBrush sets the attributes for an eraser
+     */
     eraseBrush(): void {
         this.context.globalCompositeOperation = 'destination-out';
         this.context.lineWidth = this.brushSize;
@@ -66,8 +77,13 @@ export class DrawService {
         this.context.fillText('ERREUR', coord.x, coord.y);
     }
 
+    /**
+     * Method used to draw on the canvas at a given coordinate
+     *
+     * @param prevCoord the previous coordinate
+     * @param actCoord the current coordinate
+     */
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
-        //console.log(this.context.lineWidth);
         console.log(this.context.strokeStyle);
         console.log(this.paintColor);
         this.context.beginPath();
@@ -83,7 +99,7 @@ export class DrawService {
 
     /**
      * drawRect draws a rectangle on the canvas
-     * 
+     *
      * @param coord starting coordinate of the rectangle
      * @param width the width of the rectangle
      * @param height the height of the rectangle

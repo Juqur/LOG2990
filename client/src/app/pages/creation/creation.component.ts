@@ -27,9 +27,9 @@ export class CreationComponent implements OnDestroy {
 
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
-        if ($event.ctrlKey && $event.shiftKey && $event.key === 'Z') {
+        if ($event.ctrlKey && $event.shiftKey && ($event.key === 'Z' || $event.key === 'z')) {
             this.creationService.handleRedo();
-        } else if ($event.ctrlKey && $event.key === 'z') {
+        } else if ($event.ctrlKey && ($event.key === 'Z' || $event.key === 'z')) {
             this.creationService.handleUndo();
         }
     }
