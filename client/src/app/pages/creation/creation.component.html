@@ -51,7 +51,7 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-paint-area #defaultArea [isDiff]="false" (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #defaultArea (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
@@ -105,7 +105,7 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-paint-area #diffArea [isDiff]="true" (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #diffArea (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
