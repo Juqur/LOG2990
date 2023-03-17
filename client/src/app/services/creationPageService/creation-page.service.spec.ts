@@ -216,17 +216,17 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call errorDIalog if a or the canvasses are null and not call DifferenceService detectDifferences', () => {
-        service['creationSpecs'].defaultCanvasCtx = null;
-        service['creationSpecs'].diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].defaultBgCanvasCtx = null;
+        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
         service.detectDifference();
 
-        service['creationSpecs'].defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffCanvasCtx = null;
+        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].diffBgCanvasCtx = null;
         service.detectDifference();
 
-        service['creationSpecs'].defaultCanvasCtx = null;
-        service['creationSpecs'].diffCanvasCtx = null;
+        service['creationSpecs'].defaultBgCanvasCtx = null;
+        service['creationSpecs'].diffBgCanvasCtx = null;
         service.detectDifference();
 
         expect(errorDialogSpy).toHaveBeenCalledTimes(3);
@@ -234,8 +234,8 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should not call errorDIalog if none of the canvases are null and call DifferenceService detectDifferences', () => {
-        service['creationSpecs'].defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -256,8 +256,8 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call errorDIalog if DifferenceService detectDifferences returned no LevelDifference', () => {
-        service['creationSpecs'].defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
 
         diffServiceSpy.detectDifferences.and.returnValue(undefined);
@@ -268,8 +268,8 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference correctly set the number of differences and isSaveable', () => {
-        service['creationSpecs'].defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -290,8 +290,8 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
-        service['creationSpecs'].defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -315,8 +315,8 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call openDialog if the game is not saveable', () => {
-        service['creationSpecs'].defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -332,8 +332,8 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call openDialog if the game is saveable', () => {
-        service['creationSpecs'].defaultCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -447,7 +447,7 @@ describe('CreationPageService', () => {
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
-        service['creationSpecs'].defaultCanvasCtx = null;
+        service['creationSpecs'].defaultBgCanvasCtx = null;
         service['showDefaultImage']();
 
         imageSpy.onload();
@@ -491,7 +491,7 @@ describe('CreationPageService', () => {
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
         const errorDialogSpy = spyOn(service, 'errorDialog' as never);
-        service['creationSpecs'].diffCanvasCtx = null;
+        service['creationSpecs'].diffBgCanvasCtx = null;
         service['showDiffImage']();
 
         imageSpy.onload();

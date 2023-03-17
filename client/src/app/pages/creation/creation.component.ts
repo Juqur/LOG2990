@@ -24,13 +24,12 @@ export class CreationComponent implements OnDestroy {
 
     constructor(public creationService: CreationPageService) {}
 
-
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
         if ($event.ctrlKey && $event.shiftKey && ($event.key === 'Z' || $event.key === 'z')) {
-            this.creationService.handleRedo();
+            this.handleRedo();
         } else if ($event.ctrlKey && ($event.key === 'Z' || $event.key === 'z')) {
-            this.creationService.handleUndo();
+            this.handleUndo();
         }
     }
 
@@ -49,4 +48,53 @@ export class CreationComponent implements OnDestroy {
         const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.creationService.eraseBrushMode(defaultCtx, diffCtx);
     }
+
+    findDifference(): void {
+        const defaultCtx = this.defaultPaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;;
+        const diffCtx = this.diffPaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;
+        this.creationService.detectDifference(defaultCtx, diffCtx);
+    }
+
+    /**
+     * When the user's mouse is realeased from the canvas, this method is called
+     * It adds both canvas to the undo/redo stack
+     * It also resets the redo stack
+     */
+    addToUndoRedoStack(): void {
+        const leftCanvas = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const rightCanvas = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        UndoRedoService.resetRedoStack();
+        UndoRedoService.addToStack(leftCanvas, rightCanvas);
+    }
+
+    /**
+     * When the user press on the undo button or press ctrl z, this method is called
+     */
+    handleUndo(): void {
+        this.applyChanges(UndoRedoService.undo());
+    }
+
+    /**
+     * When the user press on the redo button or press ctrl shift z, this method is called
+     */
+    handleRedo(): void {
+        this.applyChanges(UndoRedoService.redo());
+    }
+
+    /**
+     * After the undo or redo function has been called, this method will apply the changes to the canvas
+     *
+     * @param canvas takes 2 canvas, the default(left) canvas and the diff(right) canvas
+     * @returns undefined if the canvas is undefined
+     */
+    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
+        if (!canvas) return;
+
+        this.defaultPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        this.diffPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+
+        this.defaultPaintArea.getPaintCanvas().getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
+        this.diffPaintArea.getPaintCanvas().getContext('2d')?.drawImage(canvas.diffCanvas, 0, 0);
+    }
+
 }

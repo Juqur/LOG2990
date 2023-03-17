@@ -103,6 +103,15 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    mergeCanvas(): HTMLCanvasElement {
+        const resultCanvas = document.createElement('canvas');
+        resultCanvas.width = this.width;
+        resultCanvas.height = this.height;
+        resultCanvas.getContext('2d')?.drawImage(this.bgCanvas.nativeElement, 0, 0);
+        resultCanvas.getContext('2d')?.drawImage(this.fgCanvas.nativeElement, 0, 0);
+        return resultCanvas;
+    }
+
     createTempCanvas() {
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.className = 'draw';

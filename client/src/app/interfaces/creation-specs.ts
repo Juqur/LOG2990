@@ -6,6 +6,6 @@ export interface CreationSpecs {
     radius: number;
     nbDifferences: number;
     differences: LevelDifferences | undefined;
-    defaultCanvasCtx: CanvasRenderingContext2D | null;
-    diffCanvasCtx: CanvasRenderingContext2D | null;
+    defaultBgCanvasCtx: CanvasRenderingContext2D | null;
+    diffBgCanvasCtx: CanvasRenderingContext2D | null;
 }

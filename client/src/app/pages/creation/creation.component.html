@@ -3,7 +3,7 @@
         <section id="top-area">
             <button mat-button routerLink="/config"><span>Retour</span></button>
             <div class="zone-button-container">
-                <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">
+                <button class="button-reset" color="orange">
                     Dupliquer un avant-plan
                     <mat-icon>image_search</mat-icon>
                 </button>
@@ -51,7 +51,7 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-paint-area #defaultArea [isDiff]="false" (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #defaultArea [isDiff]="false" (mouseup)="this.addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
@@ -105,7 +105,7 @@
                         <button class="button-reset" title="Téléverser une image">Téléverser une image</button>
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                     </div>
-                    <app-paint-area #diffArea [isDiff]="true" (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #diffArea [isDiff]="true" (mouseup)="this.addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
@@ -140,7 +140,7 @@
                 ></mat-slider>
             </div>
             <div class="zone-button-container">
-                <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">
+                <button class="button-reset" color="orange" (click)="this.findDifference()">
                     Valider les différences
                     <mat-icon>image_search</mat-icon>
                 </button>
@@ -167,10 +167,10 @@
                 </div>
             </div>
             <div class="zone-button-container">
-                <button class="button-reset" color="orange" (click)="this.creationService.handleUndo()">
+                <button class="button-reset" color="orange" (click)="this.handleUndo()">
                     <mat-icon>undo</mat-icon>
                 </button>
-                <button class="button-reset" color="orange" (click)="this.creationService.handleRedo()">
+                <button class="button-reset" color="orange" (click)="this.handleRedo()">
                     <mat-icon>redo</mat-icon>
                 </button>
             </div>

@@ -8,7 +8,6 @@ import { DifferenceDetectorService } from '@app/services/difference-detector.ser
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 import { LevelFormData } from '@common/levelFormData';
 
@@ -39,18 +38,18 @@ export class CreationPageService {
             brushSize: 1,
             nbDifferences: Constants.INIT_DIFF_NB,
             differences: new LevelDifferences(),
-            defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
-            diffCanvasCtx: document.createElement('canvas').getContext('2d'),
+            defaultBgCanvasCtx: document.createElement('canvas').getContext('2d'),
+            diffBgCanvasCtx: document.createElement('canvas').getContext('2d'),
         } as CreationSpecs;
 
+        this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasCtx?.canvas as HTMLCanvasElement;
+        this.canvasShare.diffCanvas = this.creationSpecs.diffBgCanvasCtx?.canvas as HTMLCanvasElement;
         this.getEmptyBMPFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.creationSpecs.diffImageFile = res;
+            this.showDefaultImage();
+            this.showDiffImage();
         });
-
-        this.canvasShare.defaultCanvas = this.creationSpecs.defaultCanvasCtx?.canvas as HTMLCanvasElement;
-
-        this.canvasShare.diffCanvas = this.creationSpecs.diffCanvasCtx?.canvas as HTMLCanvasElement;
 
         this.drawServiceDefault = new DrawService();
         this.drawServiceDiff = new DrawService();
@@ -187,14 +186,14 @@ export class CreationPageService {
      * launches a popUp display the result as a white and black image where the black
      * sections are differences while the white are regions shared between images.
      */
-    detectDifference(): void {
-        if (!this.creationSpecs.defaultCanvasCtx || !this.creationSpecs.diffCanvasCtx) {
+    detectDifference(defaultMergedCtx : CanvasRenderingContext2D, diffMergedCtx : CanvasRenderingContext2D): void {
+        if (!this.creationSpecs.defaultBgCanvasCtx || !this.creationSpecs.diffBgCanvasCtx) {
             this.errorDialog('Canvas manquant');
             return;
-        }
+        };
         this.creationSpecs.differences = this.diffService.detectDifferences(
-            this.creationSpecs.defaultCanvasCtx,
-            this.creationSpecs.diffCanvasCtx,
+            defaultMergedCtx,
+            diffMergedCtx,
             this.creationSpecs.radius,
         );
         if (!this.creationSpecs.differences) {
@@ -309,48 +308,6 @@ export class CreationPageService {
     }
 
     /**
-     * When the user's mouse is realeased from the canvas, this method is called
-     * It adds both canvas to the undo/redo stack
-     * It also resets the redo stack
-     */
-    addToUndoRedoStack(): void {
-        const leftCanvas = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const rightCanvas = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        UndoRedoService.resetRedoStack();
-        UndoRedoService.addToStack(leftCanvas, rightCanvas);
-    }
-
-    /**
-     * When the user press on the undo button or press ctrl z, this method is called
-     */
-    handleUndo(): void {
-        this.applyChanges(UndoRedoService.undo());
-    }
-
-    /**
-     * When the user press on the redo button or press ctrl shift z, this method is called
-     */
-    handleRedo(): void {
-        this.applyChanges(UndoRedoService.redo());
-    }
-
-    /**
-     * After the undo or redo function has been called, this method will apply the changes to the canvas
-     *
-     * @param canvas takes 2 canvas, the default(left) canvas and the diff(right) canvas
-     * @returns undefined if the canvas is undefined
-     */
-    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
-        if (!canvas) return;
-
-        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
-
-        this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
-        this.canvasShare.diffCanvas.getContext('2d')?.drawImage(canvas.diffCanvas, 0, 0);
-    }
-
-    /**
      * This method is used to get the File() object associated with the image_empty.bmp.
      *
      * @returns a file Object containing the image_empty.bmp
@@ -371,7 +328,7 @@ export class CreationPageService {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
         image.onload = () => {
-            if (!this.creationSpecs.defaultCanvasCtx) {
+            if (!this.creationSpecs.defaultBgCanvasCtx) {
                 this.errorDialog('Aucun canvas de base.');
                 return;
             }
@@ -382,7 +339,7 @@ export class CreationPageService {
             this.canvasShare.defaultCanvas.width = image.width;
             this.canvasShare.defaultCanvas.height = image.height;
             (this.canvasShare.defaultCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.defaultCanvasCtx = this.canvasShare.defaultCanvas.getContext('2d');
+            this.creationSpecs.defaultBgCanvasCtx = this.canvasShare.defaultCanvas.getContext('2d');
         };
     }
 
@@ -393,7 +350,7 @@ export class CreationPageService {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
         image.onload = () => {
-            if (!this.creationSpecs.diffCanvasCtx) {
+            if (!this.creationSpecs.diffBgCanvasCtx) {
                 this.errorDialog('Aucun canvas de différence.');
                 return;
             }
@@ -404,7 +361,7 @@ export class CreationPageService {
             this.canvasShare.diffCanvas.width = image.width;
             this.canvasShare.diffCanvas.height = image.height;
             (this.canvasShare.diffCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.diffCanvasCtx = this.canvasShare.diffCanvas.getContext('2d');
+            this.creationSpecs.diffBgCanvasCtx = this.canvasShare.diffCanvas.getContext('2d');
         };
     }
 
