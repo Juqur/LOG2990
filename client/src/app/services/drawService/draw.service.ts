@@ -13,7 +13,7 @@ import { Vec2 } from '@app/interfaces/vec2';
 export class DrawService {
     context: CanvasRenderingContext2D;
     private paintColor = 'black';
-    brushSize = 10;
+    private brushSize = 10;
 
     /**
      * Getter for the width of the canvas
@@ -35,6 +35,11 @@ export class DrawService {
         this.context.fillStyle = color;
         console.log(this.context.fillStyle);
         console.log(this.paintColor);
+    }
+
+    setBrushSize(size: number): void {
+        this.brushSize = size;
+        this.context.lineWidth = size;
     }
 
     paintBrush(): void {

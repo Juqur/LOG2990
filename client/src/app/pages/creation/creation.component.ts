@@ -20,7 +20,7 @@ export class CreationComponent implements OnDestroy {
     @ViewChild('defaultArea', { static: false }) defaultPaintArea!: PaintAreaComponent;
     @ViewChild('diffArea', { static: false }) diffPaintArea!: PaintAreaComponent;
     diffSliderValue = Constants.SLIDER_DEFAULT;
-    brushSize: number;
+    brushSliderValue = 1;
 
     constructor(public creationService: CreationPageService) {}
 

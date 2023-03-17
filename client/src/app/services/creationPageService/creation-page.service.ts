@@ -36,6 +36,7 @@ export class CreationPageService {
             defaultImageFile: new File([], ''),
             diffImageFile: new File([], ''),
             radius: Constants.RADIUS_DEFAULT,
+            brushSize: 1,
             nbDifferences: Constants.INIT_DIFF_NB,
             differences: new LevelDifferences(),
             defaultCanvasCtx: document.createElement('canvas').getContext('2d'),
@@ -165,8 +166,19 @@ export class CreationPageService {
      *
      * @param value the index of the new slider value
      */
-    sliderChange(value: number): void {
+    diffSliderChange(value: number): void {
         this.creationSpecs.radius = Constants.RADIUS_TABLE[value];
+    }
+
+    /**
+     * Changes the value of the brush size depending on a value given as parameter.
+     *
+     * @param value the index of the new slider value
+     */
+    brushSliderChange(event: any): void {
+        console.log(event.value);
+        this.drawServiceDefault.setBrushSize(event.value);
+        this.drawServiceDiff.setBrushSize(event.value);
     }
 
     /**
