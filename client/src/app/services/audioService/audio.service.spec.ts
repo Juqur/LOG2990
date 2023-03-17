@@ -56,13 +56,12 @@ describe('AudioService', () => {
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    // it('reset should not call audio.load if the soundtrack is undefined', () => {
-    //     service['soundtrack'] = undefined;
-    //     service['soundtrack'].load();
-    //     const spy = spyOn(Audio.prototype, 'load');
-    //     service.reset();
-    //     expect(spy).toHaveBeenCalledTimes(1);
-    // });
+    it('reset should not call audio.load if the soundtrack is undefined', () => {
+        service['soundtrack'] = undefined as unknown as HTMLAudioElement;
+        const spy = spyOn(Audio.prototype, 'load');
+        service.reset();
+        expect(spy).not.toHaveBeenCalled();
+    });
 
     it('quickPlay should call play', () => {
         const spyPlay = spyOn(Audio.prototype, 'play');
