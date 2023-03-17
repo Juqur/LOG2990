@@ -33,7 +33,6 @@ describe('TimerService', () => {
         it('should start the timer for a single player game', () => {
             const expectedTime = 0;
             service.startTimer('socket', server, true);
-
             expect(service['timeMap'].get('socket')).toEqual(expectedTime + 1);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
@@ -41,10 +40,17 @@ describe('TimerService', () => {
         it('should start the timer for a multiplayer game', () => {
             const expectedTime = 120;
             service.startTimer('socket', server, false, 'secondSocket');
-
             expect(service['timeMap'].get('socket')).toEqual(expectedTime - 1);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
             expect(service['timeIntervalMap'].get('secondSocket')).toBeDefined();
+        });
+
+        it('should emit the time every second', () => {
+            const expectedTime = 0;
+            const timeToAdvance = 1000;
+            service.startTimer('socket', server, true);
+            jest.advanceTimersByTime(timeToAdvance);
+            expect(server.to('socket').emit).toHaveBeenCalledWith('sendTime', expectedTime + 1);
         });
     });
 
