@@ -85,10 +85,20 @@ describe('GamePageService', () => {
         expect(service['diffImageSrc']).toEqual(environment.serverUrl + 'modified/1.bmp');
     });
 
-    // it('should send a click to the server', () => {
-    //     service.sendClick(1);
-    //     expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', { position: 1 });
-    // });
+    it('should return the mousePosition if it is valid', () => {
+        mouseServiceSpy.getMousePosition.and.returnValue(1);
+        expect(service.verifyClick(new MouseEvent('click'))).toEqual(1);
+    });
+
+    it('should return -1 if it is not valid', () => {
+        mouseServiceSpy.getMousePosition.and.returnValue(null);
+        expect(service.verifyClick(new MouseEvent('click'))).toEqual(Constants.minusOne);
+    });
+
+    it('should reset the audio service', () => {
+        service.resetAudio();
+        expect(audioServiceSpy.reset).toHaveBeenCalled();
+    });
 
     it('should play a victory audio and open a victory dialog', () => {
         service.handleVictory();
