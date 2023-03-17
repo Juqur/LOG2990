@@ -83,7 +83,7 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     loadBackground(image: string) {
         if (this.bgCanvas) {
-            this.bgCanvas.nativeElement.id = this.isDiff ? 'diffCanvas' : 'defaultCanvas';
+            this.bgCanvas.nativeElement.id = this.isDiff ? 'diffImgCanvas' : 'defaultImgCanvas';
             const context = this.bgCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
@@ -101,38 +101,6 @@ export class PaintAreaComponent implements AfterViewInit {
             this.bgCanvas.nativeElement.style.backgroundColor = 'white';
             this.bgCanvas.nativeElement.focus();
         }
-    }
-
-    /**
-     * Fills a given area of the canvas in red.
-     *
-     * @param area the area to flash
-     */
-    flashArea(area: number[]) {
-        let x = 0;
-        let y = 0;
-        const context = this.bgCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        if (!context) {
-            return;
-        }
-        area.forEach((pixelData) => {
-            x = (pixelData / Constants.PIXEL_SIZE) % this.width;
-            y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
-
-            context.fillStyle = 'red';
-            context.fillRect(x, y, 1, 1);
-        });
-    }
-
-    /**
-     * This function creates a new timeout with a given time in milliseconds as a parameter.
-     *\
-     *
-     * @param ms a number of milliseconds
-     * @return promise that resolves after ms milliseconds
-     */
-    async timeout(ms: number) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     createTempCanvas() {

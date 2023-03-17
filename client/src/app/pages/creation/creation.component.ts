@@ -42,5 +42,11 @@ export class CreationComponent implements OnDestroy {
         const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;;
         const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.creationService.paintBrushMode(defaultCtx, diffCtx);
-    }   
+    }
+
+    setEraseBrushMode(): void {
+        const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;;
+        const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.creationService.eraseBrushMode(defaultCtx, diffCtx);
+    }
 }

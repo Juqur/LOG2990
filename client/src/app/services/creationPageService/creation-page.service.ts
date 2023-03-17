@@ -279,11 +279,11 @@ export class CreationPageService {
      * When the user press on the erase brush button, this method is called
      * It sets the mouse service to Erase mode
      */
-    eraseBrushMode(): void {
+    eraseBrushMode(defaultCtx : CanvasRenderingContext2D, diffCtx : CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.context = defaultCtx;
+        this.drawServiceDiff.context = diffCtx;
         this.drawServiceDefault.eraseBrush();
         this.drawServiceDiff.eraseBrush();
     }
