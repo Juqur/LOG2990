@@ -76,9 +76,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.gamePageService.resetAudio();
-        this.socketHandler.removeListener('onProcessedClick');
-        this.socketHandler.removeListener('onVictory');
-        this.socketHandler.removeListener('onDefeat');
+        this.socketHandler.removeListener('game', 'onProcessedClick');
+        this.socketHandler.removeListener('game', 'onVictory');
+        this.socketHandler.removeListener('game', 'onDefeat');
     }
 
     /**
