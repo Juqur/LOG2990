@@ -12,8 +12,8 @@ export class TimerService {
      * It starts the the timer at 0 for classic games and at 120 for timed games.
      * Creates an interval that emits the time to the player every second.
      *
-     * @param socket The socket of the player who is used to start the timer
-     * @param isClassic Boolean value that determines if the game is classic or timed
+     * @param socket The socket of the player who is used to start the timer.
+     * @param isClassic Boolean value that determines if the game is classic or timed.
      */
     // eslint-disable-next-line max-params
     startTimer(socketId: string, server: Server, isClassic: boolean, secondSocketId?: string): void {
@@ -30,10 +30,10 @@ export class TimerService {
     }
 
     /**
-     * Stops the timer for both single player and multiplayer games
-     * Deletes the interval and the time of the player in the maps
+     * Stops the timer for both single player and multiplayer games.
+     * Deletes the interval and the time of the player in the maps.
      *
-     * @param socket The socket of the player who is used to stop the timer
+     * @param socket The socket of the player who is used to stop the timer.
      */
     stopTimer(socketId: string): void {
         const interval = this.timeIntervalMap.get(socketId);
@@ -45,10 +45,10 @@ export class TimerService {
     }
 
     /**
-     * Adds a given time the timer of a player
+     * Adds a given time the timer of a player.
      *
-     * @param socket The socket of the player who is used to add time to the timer
-     * @param time The time that is added to the timer
+     * @param socket The socket of the player who is used to add time to the timer.
+     * @param time The time that is added to the timer.
      */
     addTime(socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
@@ -58,10 +58,10 @@ export class TimerService {
     }
 
     /**
-     * Removes a given time the timer of a player
+     * Removes a given time the timer of a player.
      *
-     * @param socket The socket of the player who is used to add time to the timer
-     * @param time The time that is removed to the timer
+     * @param socket The socket of the player who is used to add time to the timer.
+     * @param time The time that is removed to the timer.
      */
     subtractTime(socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
