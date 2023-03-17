@@ -1,5 +1,5 @@
-import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
@@ -27,15 +27,9 @@ describe('GamePageComponent', () => {
     let communicationServiceSpy: SpyObj<CommunicationService>;
     let activatedRoute: SpyObj<ActivatedRoute>;
 
-    const gameData: GameData = {
-        differencePixels: [],
-        totalDifferences: 1,
-        amountOfDifferencesFound: 1,
-        amountOfDifferencesFoundSecondPlayer: 1,
-    };
-
-    beforeEach(async () => {
+    beforeEach(() => {
         gamePageServiceSpy = jasmine.createSpyObj('GamePageService', [
+            'ngOnInit',
             'verifyClick',
             'validateResponse',
             'resetAudio',
@@ -49,12 +43,13 @@ describe('GamePageComponent', () => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['getLevel']);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
-        communicationServiceSpy.getLevel.and.returnValue(of({} as Level));
         activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
         activatedRoute.snapshot.params = { id: 1 };
         activatedRoute.snapshot.queryParams = { playerName: 'Alice', opponent: 'Bob' };
+    });
 
-        await TestBed.configureTestingModule({
+    beforeEach(() => {
+        TestBed.configureTestingModule({
             declarations: [
                 GamePageComponent,
                 PlayAreaComponent,
@@ -64,7 +59,7 @@ describe('GamePageComponent', () => {
                 ChatMessageComponent,
                 MessageBoxComponent,
             ],
-            imports: [AppMaterialModule, HttpClientModule, RouterTestingModule],
+            imports: [AppMaterialModule, HttpClientTestingModule, RouterTestingModule],
             providers: [
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: SocketHandler, useValue: socketHandlerSpy },
@@ -85,117 +80,162 @@ describe('GamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should reset the audio when leaving the page', () => {
-        component.ngOnDestroy();
-        expect(gamePageServiceSpy.resetAudio).toHaveBeenCalled();
-    });
-
-    it('should set the opponents found differences correctly if it is a multiplayer match', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                callback(gameData as any);
-            }
+    describe('ngOnDestroy', () => {
+        it('should reset the audio when leaving the page', () => {
+            component.ngOnDestroy();
+            expect(gamePageServiceSpy.resetAudio).toHaveBeenCalled();
         });
-        expect(component['secondPlayerDifferencesCount']).toEqual(1);
-    });
 
-    it('should not set the opponents found differences correctly if it is a solo match', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                callback(gameData as any);
-            }
+        it('should remove the onProcessedClick listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('onProcessedClick');
         });
-        expect(component['secondPlayerDifferencesCount']).toEqual(0);
-    });
 
-    it('should set the amount of difference found by the player', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onProcessedClick') {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                callback(gameData as any);
-            }
+        it('should remove the onVictory listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('onVictory');
         });
-        component.handleSocket();
-        expect(component['playerDifferencesCount']).toEqual(1);
-    });
 
-    it('should handle victory if server sends victory request', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onVictory') {
-                callback({} as never);
-            }
+        it('should remove the onDefeat listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('onDefeat');
         });
-        component.handleSocket();
-        expect(gamePageServiceSpy.handleVictory).toHaveBeenCalled();
     });
 
-    it('should handle defeat if server sends defeat request', () => {
-        socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-            if (eventName === 'onDefeat') {
-                callback({} as never);
-            }
+    describe('handleSocket', () => {
+        it('should set the opponents found differences correctly if it is a multiplayer match', () => {
+            const expectedDifferences = 5;
+            const data = { amountOfDifferencesFoundSecondPlayer: expectedDifferences } as unknown as GameData;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'onProcessedClick') {
+                    callback(data as never);
+                }
+            });
+            component.handleSocket();
+            expect(component['secondPlayerDifferencesCount']).toEqual(expectedDifferences);
         });
-        component.handleSocket();
-        expect(gamePageServiceSpy.handleDefeat).toHaveBeenCalled();
+
+        it('should not set the opponents found differences correctly if it is a solo match', () => {
+            const spy = spyOn(component, 'secondPlayerDifferencesCount' as never);
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'onProcessedClick') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(spy).not.toHaveBeenCalled();
+        });
+
+        it('should set the amount of difference found by the player', () => {
+            const expectedDifferences = 5;
+            const data = { amountOfDifferencesFound: expectedDifferences } as unknown as GameData;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'onProcessedClick') {
+                    callback(data as never);
+                }
+            });
+            component.handleSocket();
+            expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
+        });
+
+        it('should handle victory if server sends victory request', () => {
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'onVictory') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.handleVictory).toHaveBeenCalledTimes(1);
+        });
+
+        it('should handle defeat if server sends defeat request', () => {
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'onDefeat') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.handleDefeat).toHaveBeenCalledTimes(1);
+        });
     });
 
-    it('should set levelId, playerName and secondPlayerName from route', () => {
-        spyOn(component, 'settingGameLevel');
-        spyOn(component, 'settingGameImage');
-        component.getGameLevel();
-        expect(component['levelId']).toBe(1);
-        expect(component.playerName).toBe('Alice');
-        expect(component.secondPlayerName).toBe('Bob');
+    describe('getGameLevel', () => {
+        it('should set levelId, playerName and secondPlayerName from route', () => {
+            spyOn(component, 'settingGameLevel');
+            spyOn(component, 'settingGameImage');
+            component.getGameLevel();
+            expect(component['levelId']).toBe(1);
+            expect(component.playerName).toBe('Alice');
+            expect(component.secondPlayerName).toBe('Bob');
+        });
+
+        it('should call settingGameImage and settingGameLevel when getting the game level', () => {
+            const settingGameLevelSpy = spyOn(component, 'settingGameLevel');
+            const settingGameImageSpy = spyOn(component, 'settingGameImage');
+            component.getGameLevel();
+            expect(settingGameLevelSpy).toHaveBeenCalled();
+            expect(settingGameImageSpy).toHaveBeenCalled();
+        });
     });
 
-    it('should call settingGameImage and settingGameLevel when getting the game level', () => {
-        const settingGameLevelSpy = spyOn(component, 'settingGameLevel');
-        const settingGameImageSpy = spyOn(component, 'settingGameImage');
-        component.getGameLevel();
-        expect(settingGameLevelSpy).toHaveBeenCalled();
-        expect(settingGameImageSpy).toHaveBeenCalled();
+    describe('clickedOnOriginal', () => {
+        it('should send mouse position to the server if you click on the original picture', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component.clickedOnOriginal(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
+            expect(component['clickedOriginalImage']).toBe(true);
+        });
+
+        it('should not send if the mouse position is undefined if clicked on the original image', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            gamePageServiceSpy.verifyClick.and.returnValue(Constants.minusOne);
+            component.clickedOnOriginal(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
+        });
     });
 
-    it('should send mouse position to the server if you click on the original picture', () => {
-        const event: MouseEvent = new MouseEvent('click');
-        const mousePositionReturnValue = 1;
-        gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-        component.clickedOnOriginal(event);
-        expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
-        expect(component['clickedOriginalImage']).toBe(true);
+    describe('clickedOnDiff', () => {
+        it('should not send if the mouse position is undefined if clicked on the difference image', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            gamePageServiceSpy.verifyClick.and.returnValue(Constants.minusOne);
+            component.clickedOnDiff(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
+        });
+
+        it('should send mouse position to the server if you click on the difference picture', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component.clickedOnDiff(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
+            expect(component['clickedOriginalImage']).toBe(false);
+        });
     });
 
-    it('should not send if the mouse position is undefined if clicked on the original image', () => {
-        const event: MouseEvent = new MouseEvent('click');
-        gamePageServiceSpy.verifyClick.and.returnValue(Constants.minusOne);
-        component.clickedOnOriginal(event);
-        expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-        expect(socketHandlerSpy.send).not.toHaveBeenCalled();
-    });
+    describe('settingGameImage', () => {
+        it('should call getLevel', fakeAsync(() => {
+            component['communicationService'] = communicationServiceSpy;
+            component['levelId'] = 1;
+            const expectedDifferences = 3;
+            const level = { id: 0, nbDifferences: expectedDifferences } as unknown as Level;
+            communicationServiceSpy.getLevel.and.returnValue(of(level));
+            component.settingGameLevel();
+            tick();
 
-    it('should not send if the mouse position is undefined if clicked on the difference image', () => {
-        const event: MouseEvent = new MouseEvent('click');
-        gamePageServiceSpy.verifyClick.and.returnValue(Constants.minusOne);
-        component.clickedOnDiff(event);
-        expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-        expect(socketHandlerSpy.send).not.toHaveBeenCalled();
-    });
+            expect(communicationServiceSpy.getLevel).toHaveBeenCalledTimes(1);
+            expect(component['currentLevel']).toEqual(level);
+            expect(component['nbDiff']).toEqual(expectedDifferences);
+        }));
 
-    it('should send mouse position to the server if you click on the difference picture', () => {
-        const event: MouseEvent = new MouseEvent('click');
-        const mousePositionReturnValue = 1;
-        gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-        component.clickedOnDiff(event);
-        expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
-        expect(component['clickedOriginalImage']).toBe(false);
-    });
-
-    it('should throw and error if the client cannot get information from the server', () => {
-        communicationServiceSpy.getLevel.and.throwError('Error');
-        expect(component.settingGameLevel).toThrowError();
+        it('should throw and error if the client cannot get information from the server', () => {
+            communicationServiceSpy.getLevel.and.throwError('Error');
+            expect(component.settingGameLevel).toThrowError();
+        });
     });
 });
