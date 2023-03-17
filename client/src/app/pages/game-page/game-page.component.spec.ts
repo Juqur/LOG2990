@@ -29,7 +29,6 @@ describe('GamePageComponent', () => {
 
     beforeEach(() => {
         gamePageServiceSpy = jasmine.createSpyObj('GamePageService', [
-            'ngOnInit',
             'verifyClick',
             'validateResponse',
             'resetAudio',
@@ -74,6 +73,10 @@ describe('GamePageComponent', () => {
         component['diffPlayArea'] = playAreaComponentSpy;
         component['originalPlayArea'] = playAreaComponentSpy;
         fixture.detectChanges();
+        component['route'] = activatedRoute;
+        component['socketHandler'] = socketHandlerSpy;
+        component['gamePageService'] = gamePageServiceSpy;
+        component['communicationService'] = communicationServiceSpy;
     });
 
     it('should create', () => {
@@ -88,17 +91,17 @@ describe('GamePageComponent', () => {
 
         it('should remove the onProcessedClick listener', () => {
             component.ngOnDestroy();
-            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('onProcessedClick');
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'onProcessedClick');
         });
 
         it('should remove the onVictory listener', () => {
             component.ngOnDestroy();
-            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('onVictory');
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'onVictory');
         });
 
         it('should remove the onDefeat listener', () => {
             component.ngOnDestroy();
-            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('onDefeat');
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'onDefeat');
         });
     });
 
@@ -220,7 +223,6 @@ describe('GamePageComponent', () => {
 
     describe('settingGameImage', () => {
         it('should call getLevel', fakeAsync(() => {
-            component['communicationService'] = communicationServiceSpy;
             component['levelId'] = 1;
             const expectedDifferences = 3;
             const level = { id: 0, nbDifferences: expectedDifferences } as unknown as Level;
