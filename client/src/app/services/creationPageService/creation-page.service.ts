@@ -266,11 +266,11 @@ export class CreationPageService {
      * When the user press on the paint brush button, this method is called
      * It sets the mouse service to Paint mode
      */
-    paintBrushMode(): void {
+    paintBrushMode(defaultCtx : CanvasRenderingContext2D, diffCtx : CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.context = defaultCtx;
+        this.drawServiceDiff.context = diffCtx;
         this.drawServiceDefault.paintBrush();
         this.drawServiceDiff.paintBrush();
     }
@@ -293,7 +293,6 @@ export class CreationPageService {
      * It sets the mouse service to rectangle mode
      */
     rectangleMode(): void {
-        this.paintBrushMode();
         this.mouseServiceDefault.isRectangleMode = true;
         this.mouseServiceDiff.isRectangleMode = true;
     }

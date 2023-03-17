@@ -54,13 +54,13 @@ describe('PaintAreaComponent', () => {
     });
 
     it('getCanvas should return the canvas element', () => {
-        const canvas = component.getCanvas();
-        expect(canvas).toEqual(component.canvas);
+        const canvas = component.getPaintCanvas();
+        expect(canvas).toEqual(component.fgCanvas);
     });
 
     it('getCanvas should return the canvas element', () => {
-        const canvas = component.getCanvas();
-        expect(canvas).toEqual(component.canvas);
+        const canvas = component.getPaintCanvas();
+        expect(canvas).toEqual(component.fgCanvas);
     });
 
     it('drawPaintArea should call context.drawImage', fakeAsync(() => {
@@ -79,7 +79,7 @@ describe('PaintAreaComponent', () => {
     });
 
     it('should not call fillRect if there is no canvas', () => {
-        spyOn(component.canvas.nativeElement, 'getContext').and.returnValue(null);
+        spyOn(component.fgCanvas.nativeElement, 'getContext').and.returnValue(null);
 
         const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
         const area = [0, 1, 2, 3];

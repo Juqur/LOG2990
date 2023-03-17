@@ -18,7 +18,7 @@
                     [(ngModel)]="brushSliderValue"
                     (change)="this.creationService.brushSliderChange($event)"
                 ></mat-slider>
-                <button class="button-settings" color="orange" (click)="this.creationService.paintBrushMode()">
+                <button class="button-settings" color="orange" (click)="this.setPaintBrushMode()">
                     <mat-icon>mode_edit</mat-icon>
                 </button>
                 <button class="button-settings" color="orange" (click)="this.creationService.rectangleMode()" title="Rectangle">

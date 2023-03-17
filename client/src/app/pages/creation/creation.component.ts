@@ -37,4 +37,10 @@ export class CreationComponent implements OnDestroy {
     ngOnDestroy(): void {
         UndoRedoService.resetAllStacks();
     }
+
+    setPaintBrushMode(): void {
+        const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;;
+        const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.creationService.paintBrushMode(defaultCtx, diffCtx);
+    }   
 }

@@ -1,3 +1,13 @@
-#canvas {
+#grid-container {
+    position: relative;
+}
+
+canvas {
     border: 1px solid black;
+}
+
+#foreground-canvas, #background-canvas, #diffDrawCanvas, #defaultDrawCanvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
 }

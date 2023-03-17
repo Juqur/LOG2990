@@ -21,7 +21,8 @@ import { Constants } from '@common/constants';
 export class PaintAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
-    @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('foregroundCanvas', { static: false }) fgCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('backgroundCanvas', { static: false }) bgCanvas!: ElementRef<HTMLCanvasElement>;
     undoRedoService: UndoRedoService = new UndoRedoService();
     currentImage: HTMLImageElement;
     buttonPressed = '';
@@ -62,14 +63,15 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     ngAfterViewInit(): void {
         this.loadBackground(this.image);
-        this.canvas.nativeElement.addEventListener('mousedown', this.canvasClick.bind(this));
-        this.canvas.nativeElement.addEventListener('mouseup', this.canvasRelease.bind(this));
-        this.canvas.nativeElement.addEventListener('mousemove', this.canvasDrag.bind(this));
-        this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.fgCanvas.nativeElement.id = this.isDiff ? 'diffDrawCanvas' : 'defaultDrawCanvas';
+        this.fgCanvas.nativeElement.addEventListener('mousedown', this.canvasClick.bind(this));
+        this.fgCanvas.nativeElement.addEventListener('mouseup', this.canvasRelease.bind(this));
+        this.fgCanvas.nativeElement.addEventListener('mousemove', this.canvasDrag.bind(this));
+        this.drawService.context = this.fgCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
     }
 
-    getCanvas() {
-        return this.canvas;
+    getPaintCanvas() {
+        return this.fgCanvas.nativeElement;
     }
 
     /**
@@ -80,15 +82,15 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param image the image source
      */
     loadBackground(image: string) {
-        if (this.canvas) {
-            this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas' : 'defaultCanvas';
-            const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        if (this.bgCanvas) {
+            this.bgCanvas.nativeElement.id = this.isDiff ? 'diffCanvas' : 'defaultCanvas';
+            const context = this.bgCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDiff) {
                 // Default canvas (left canvas)
-                this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
+                this.canvasSharing.defaultCanvas = this.bgCanvas.nativeElement;
             } else {
                 // Diff canvas (right canvas)
-                this.canvasSharing.diffCanvas = this.canvas.nativeElement;
+                this.canvasSharing.diffCanvas = this.bgCanvas.nativeElement;
             }
             this.currentImage = new Image();
             this.currentImage.crossOrigin = 'anonymous';
@@ -96,8 +98,8 @@ export class PaintAreaComponent implements AfterViewInit {
             this.currentImage.onload = () => {
                 context.drawImage(this.currentImage, 0, 0, this.width, this.height);
             };
-            this.canvas.nativeElement.style.backgroundColor = 'white';
-            this.canvas.nativeElement.focus();
+            this.bgCanvas.nativeElement.style.backgroundColor = 'white';
+            this.bgCanvas.nativeElement.focus();
         }
     }
 
@@ -109,7 +111,7 @@ export class PaintAreaComponent implements AfterViewInit {
     flashArea(area: number[]) {
         let x = 0;
         let y = 0;
-        const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        const context = this.bgCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         if (!context) {
             return;
         }
@@ -137,13 +139,14 @@ export class PaintAreaComponent implements AfterViewInit {
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.className = 'draw';
         this.tempCanvas.style.position = 'absolute';
-        this.tempCanvas.style.top = this.canvas.nativeElement.offsetTop + 'px';
-        this.tempCanvas.style.left = this.canvas.nativeElement.offsetLeft + 'px';
+        this.tempCanvas.style.top = this.fgCanvas.nativeElement.offsetTop + 'px';
+        this.tempCanvas.style.left = this.fgCanvas.nativeElement.offsetLeft + 'px';
         this.tempCanvas.width = this.width;
         this.tempCanvas.height = this.height;
         this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
-        const currentCanvas = document.body.querySelector('#' + this.canvas.nativeElement.id);
+        const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id);
+        console.log(currentCanvas);
         currentCanvas?.parentNode?.insertBefore(this.tempCanvas, currentCanvas);
         // document.body.querySelector('#grid-container')?.insertBefore(this.tempCanvas, currentCanvas);
         this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
@@ -157,7 +160,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
         // console.log(this.isRectangle);
         if (!this.mouseService.isRectangleMode) {
-            this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawService.context = this.fgCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawService.draw(this.lastMousePosition);
         } else {
             this.createTempCanvas();
@@ -180,7 +183,7 @@ export class PaintAreaComponent implements AfterViewInit {
         if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
             this.canvasRelease(event);
         } else {
-            this.drawService.context = this.canvas.nativeElement.getContext('2d', {
+            this.drawService.context = this.fgCanvas.nativeElement.getContext('2d', {
                 willReadFrequently: true,
             }) as CanvasRenderingContext2D;
             this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
@@ -203,20 +206,13 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
-    handleAreaNotFoundInOriginal() {
-        // this.audioService.playSound('./assets/audio/failed.mp3');
-        this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawService.draw({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        // this.mouseService.changeClickState();
-    }
-
     canvasRelease(event: MouseEvent) {
         console.log('release');
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {
-            this.canvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
-            document.body.querySelector('#' + this.canvas.nativeElement.id)?.parentNode?.removeChild(this.tempCanvas);
+            this.fgCanvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
+            document.body.querySelector('#' + this.fgCanvas.nativeElement.id)?.parentNode?.removeChild(this.tempCanvas);
         }
         // this.undoRedoService.addState(this.canvas.nativeElement.getContext('2d'));
     }
