@@ -383,6 +383,8 @@ export class CreationPageService {
     colorPickerMode() {
         this.mouseServiceDefault.mouseDrawColor = this.color;
         this.mouseServiceDiff.mouseDrawColor = this.color;
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDefault.setPaintColor(this.color);
         this.drawServiceDiff.setPaintColor(this.color);
     }

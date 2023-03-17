@@ -11,7 +11,7 @@
             <div id="draw-tools-container">
                 <label class="info-txt" for="values">Epaisseur:</label>
                 <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1"
-                    [(ngModel)]="sliderValue"></mat-slider>
+                    [(ngModel)]="brushSize"></mat-slider>
                 <button class="button-settings" color="orange" (click)="this.creationService.paintBrushMode()">
                     <mat-icon>mode_edit</mat-icon>
                 </button>
@@ -109,8 +109,8 @@
         <section id="bottom-area">
             <div id="enlargissement-container">
                 <label class="info-txt" for="values">Rayon d'élargissement:</label>
-                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="sliderValue"
-                    (change)="this.creationService.sliderChange(sliderValue)"></mat-slider>
+                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="diffSliderValue"
+                    (change)="this.creationService.sliderChange(diffSliderValue)"></mat-slider>
             </div>
             <div class="zone-button-container">
                 <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">

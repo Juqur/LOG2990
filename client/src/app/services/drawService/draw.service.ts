@@ -12,8 +12,8 @@ import { Vec2 } from '@app/interfaces/vec2';
  */
 export class DrawService {
     context: CanvasRenderingContext2D;
-    paintColor = 'black';
-    private brushSize = 10;
+    private paintColor = 'black';
+    brushSize = 10;
 
     /**
      * Getter for the width of the canvas
@@ -62,7 +62,9 @@ export class DrawService {
     }
 
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
-        //console.log(this.context.fillStyle);
+        //console.log(this.context.lineWidth);
+        console.log(this.context.strokeStyle);
+        console.log(this.paintColor);
         this.context.beginPath();
         this.context.moveTo(prevCoord.x, prevCoord.y);
         if (actCoord.x !== -1 && actCoord.y !== -1) {
