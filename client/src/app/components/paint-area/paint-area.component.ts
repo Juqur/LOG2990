@@ -142,7 +142,10 @@ export class PaintAreaComponent implements AfterViewInit {
         this.tempCanvas.style.left = this.canvas.nativeElement.offsetLeft + 'px';
         this.tempCanvas.width = this.width;
         this.tempCanvas.height = this.height;
-        document.body.querySelector('#grid-container')?.insertBefore(this.tempCanvas, this.canvas.nativeElement);
+        this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
+        const currentCanvas = document.body.querySelector('#grid-container')?.querySelector('canvas') as HTMLCanvasElement;
+        document.body.querySelector('#grid-container')?.insertBefore(this.tempCanvas, currentCanvas);
         this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.canvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));

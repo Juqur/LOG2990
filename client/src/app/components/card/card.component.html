@@ -3,7 +3,7 @@
         <h2 class="level-name">{{ level.name }}</h2>
     </div>
     <div class="image-container">
-        <img src="{{ getImg + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
+        <img src="{{ imagePath + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
         <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon"
             alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
     </div>
@@ -19,7 +19,8 @@
             </div>
             <div class="action-button-container" *ngIf="!isSelectionPage">
                 <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
-                <button mat-raised-button class="action-button delete-button">Effacer</button>
+                <button (click)="deleteLevel(level.id)" mat-raised-button
+                    class="action-button delete-button">Effacer</button>
             </div>
         </div>
     </div>

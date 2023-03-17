@@ -421,12 +421,16 @@ export class CreationComponent implements OnInit {
     }
 
     rectangleMode() {
+        this.paintBrushMode();
         this.mouseServiceDefault.isRectangleMode = true;
         this.mouseServiceDiff.isRectangleMode = true;
     }
 
     colorPickerMode() {
-        console.log(this.color);
+        this.mouseServiceDefault.mouseDrawColor = this.color;
+        this.mouseServiceDiff.mouseDrawColor = this.color;
+        this.drawServiceDefault.setPaintColor(this.color);
+        this.drawServiceDiff.setPaintColor(this.color);
     }
 
     addToUndoRedoStack() {
