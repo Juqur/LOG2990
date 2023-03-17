@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Difference } from '@app/classes/difference';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { Level } from '@app/levels';
@@ -25,7 +25,7 @@ import { LevelFormData } from '@common/levelFormData';
  * @author Simon Gagné
  * @class CreationComponent
  */
-export class CreationComponent implements OnInit {
+export class CreationComponent implements OnInit, OnDestroy {
     @ViewChild('defaultArea', { static: false }) defaultPaintArea!: PaintAreaComponent;
     @ViewChild('diffArea', { static: false }) diffPaintArea!: PaintAreaComponent;
 
@@ -89,6 +89,10 @@ export class CreationComponent implements OnInit {
         this.canvasShare.diffCanvas = this.diffCanvasCtx?.canvas as HTMLCanvasElement;
         this.defaultArea = new PaintAreaComponent(this.drawServiceDefault, this.canvasShare, this.mouseServiceDefault);
         this.modifiedArea = new PaintAreaComponent(this.drawServiceDiff, this.canvasShare, this.mouseServiceDiff);
+    }
+
+    ngOnDestroy(): void {
+        UndoRedoService.resetAllStacks();
     }
 
     /**

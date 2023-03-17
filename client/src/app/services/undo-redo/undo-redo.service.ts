@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Constants } from '@common/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -6,8 +7,8 @@ import { Injectable } from '@angular/core';
 export class UndoRedoService {
     static canvasStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
     static redoStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
-    static undoPointer: number = -1;
-    static redoPointer: number = -1;
+    static undoPointer: number = Constants.EMPTYSTACK;
+    static redoPointer: number = Constants.EMPTYSTACK;
 
     static addToStack(defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D): void {
         const tempDefaultCanvas = document.createElement('canvas');
@@ -50,11 +51,10 @@ export class UndoRedoService {
     }
 
     static redo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
-        // const action = this.redoStack[this.redoPointer--];
-        if (this.redoPointer > 0) {
+        if (this.redoPointer >= 0) {
             this.undoPointer++;
             const action = this.redoStack[this.redoPointer--];
-            this.canvasStack.push(action as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
+            this.canvasStack.push(this.redoStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
             this.print();
             return action;
         }
@@ -63,12 +63,17 @@ export class UndoRedoService {
 
     static resetRedoStack() {
         this.redoStack = [];
-        this.redoPointer = -1;
+        this.redoPointer = Constants.EMPTYSTACK;
     }
 
     static resetUndoStack() {
         this.canvasStack = [];
-        this.undoPointer = -1;
+        this.undoPointer = Constants.EMPTYSTACK;
+    }
+
+    static resetAllStacks() {
+        this.resetRedoStack();
+        this.resetUndoStack();
     }
 
     static resizeUndoStack() {
@@ -80,7 +85,7 @@ export class UndoRedoService {
     }
 
     static isUndoStackEmpty(): boolean {
-        return this.undoPointer === -1;
+        return this.undoPointer === Constants.EMPTYSTACK;
     }
 
     static print() {

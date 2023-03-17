@@ -73,6 +73,9 @@ export namespace Constants {
 
     // Card Component
     export const MAX_NAME_LENGTH = 300;
+
+    // Undo/Redo Service
+    export const EMPTYSTACK = -1;
 }
 
 export enum MouseButton {
