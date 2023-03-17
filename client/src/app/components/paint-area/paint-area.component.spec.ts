@@ -65,7 +65,7 @@ describe('PaintAreaComponent', () => {
 
     it('drawPaintArea should call context.drawImage', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-        component.drawPaintArea(environment.serverUrl + 'originals/1.bmp');
+        component.loadBackground(environment.serverUrl + 'originals/1.bmp');
         component.currentImage.dispatchEvent(new Event('load'));
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);

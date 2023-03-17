@@ -147,7 +147,7 @@ export class CreationPageService {
     /**
      * This methods clears all modifications made to the default image.
      */
-    resetDefault(): void {
+    resetDefaultBackground(): void {
         this.restartGame();
         this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
     }
@@ -155,7 +155,7 @@ export class CreationPageService {
     /**
      * This method clears all modifications made to the different image.
      */
-    resetDiff(): void {
+    resetDiffBackground(): void {
         this.restartGame();
         this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
     }
