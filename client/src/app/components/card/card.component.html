@@ -3,7 +3,7 @@
         <h2 class="level-name">{{ level.name }}</h2>
     </div>
     <div class="image-container">
-        <img src="{{ imagePath + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
+        <img src="{{ this.imagePath + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
         <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon"
             alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
     </div>

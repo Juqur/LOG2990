@@ -1,7 +1,7 @@
-import { Difference } from './difference';
+import { LevelDifferences } from './difference';
 
 describe('Difference', () => {
     it('should create an instance', () => {
-        expect(new Difference()).toBeTruthy();
+        expect(new LevelDifferences()).toBeTruthy();
     });
 });
