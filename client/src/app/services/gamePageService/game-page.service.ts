@@ -71,13 +71,10 @@ export class GamePageService {
      * @param event The mouse event.
      */
     verifyClick(event: MouseEvent): number {
-        if (this.mouseService.getCanClick()) {
-            this.mouseService.setClickState(false);
-            const mousePosition = this.mouseService.getMousePosition(event);
-            if (!mousePosition) return Constants.minusOne;
-            return mousePosition;
-        }
-        return Constants.minusOne;
+        const mousePosition = this.mouseService.getMousePosition(event);
+        this.mouseService.setClickState(false);
+        if (!mousePosition) return Constants.minusOne;
+        return mousePosition;
     }
 
     resetAudio(): void {
@@ -146,7 +143,7 @@ export class GamePageService {
      * @param y the y coordinate of the pixel
      * @returns the rgba value of the pixel
      */
-    pick(x: number, y: number): string {
+    private pick(x: number, y: number): string {
         const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const pixel = context.getImageData(x, y, 1, 1);
         const data = pixel.data;
@@ -161,7 +158,7 @@ export class GamePageService {
      *
      * @param area the area to copy
      */
-    copyArea(area: number[]): void {
+    private copyArea(area: number[]): void {
         let x = 0;
         let y = 0;
         const context = this.tempDiffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -180,7 +177,7 @@ export class GamePageService {
      * To avoid flashing issue, it copies to a third temporary canvas.
      * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
-    resetCanvas(): void {
+    private resetCanvas(): void {
         this.diffPlayArea
             .timeout(Constants.millisecondsInOneSecond)
             .then(() => {
@@ -203,7 +200,7 @@ export class GamePageService {
     /**
      * This method will copy/paste the context of the temp canvas to the difference canvas.
      */
-    copyDiffPlayAreaContext(): void {
+    private copyDiffPlayAreaContext(): void {
         const contextTemp = this.tempDiffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
