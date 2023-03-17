@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
@@ -40,7 +40,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
     playerName: string;
     playerDifferencesCount: number = 0;
-    secondPlayerName: string = '';
+    secondPlayerName: string;
     secondPlayerDifferencesCount: number = 0;
     originalImageSrc: string = '';
     diffImageSrc: string = '';
@@ -52,7 +52,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line max-params
     constructor(
         private route: ActivatedRoute,
-        private router: Router,
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
         private communicationService: CommunicationService,
@@ -65,21 +64,23 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It also connects to the the game socket and handles the response.
      */
     ngOnInit(): void {
-        this.router.events.forEach((event) => {
-            if (event instanceof NavigationStart) {
-                this.gamePageService.resetAudio();
-            }
-        });
         this.gamePageService.resetImagesData();
         this.getGameLevel();
         this.handleSocket();
     }
 
+    /**
+     * This method is called when the component is destroyed.
+     * It removes the listeners from the socket.
+     *
+     */
     ngOnDestroy(): void {
+        this.gamePageService.resetAudio();
         this.socketHandler.removeListener('onProcessedClick');
         this.socketHandler.removeListener('onVictory');
         this.socketHandler.removeListener('onDefeat');
     }
+
     /**
      * This method handles the socket connection.
      * It connects to the game socket and sends the level id to the server.
@@ -105,6 +106,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.gamePageService.handleDefeat();
         });
     }
+
     /**
      * This method handles the case where the user clicks on the original image
      * It will send the click to the server
@@ -113,11 +115,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     clickedOnOriginal(event: MouseEvent) {
         const mousePosition = this.gamePageService.verifyClick(event);
-        if (mousePosition) {
-            this.socketHandler.send('game', 'onClick', { mousePosition });
+        if (mousePosition >= 0) {
+            this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = true;
         }
     }
+
     /**
      * This method handles the case where the user clicks on the difference image
      * It will send the click to the server
@@ -126,8 +129,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     clickedOnDiff(event: MouseEvent): void {
         const mousePosition = this.gamePageService.verifyClick(event);
-        if (mousePosition) {
-            this.socketHandler.send('game', 'onClick', { mousePosition });
+        if (mousePosition >= 0) {
+            this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = false;
         }
     }
@@ -162,11 +165,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * This method will set the game images.
      */
     settingGameImage(): void {
-        try {
-            this.originalImageSrc = environment.serverUrl + 'original/' + this.levelId + '.bmp';
-            this.diffImageSrc = environment.serverUrl + 'modified/' + this.levelId + '.bmp';
-        } catch (error) {
-            throw new Error("Couldn't load images");
-        }
+        this.originalImageSrc = environment.serverUrl + 'original/' + this.levelId + '.bmp';
+        this.diffImageSrc = environment.serverUrl + 'modified/' + this.levelId + '.bmp';
     }
 }

@@ -18,7 +18,7 @@
         </section>
         <section id="play-area-container">
             <app-play-area [isDiff]="false" [image]="originalImageSrc" (click)="clickedOnOriginal($event)" #originalPlayArea></app-play-area>
-            <div id="between-images">
+            <div *ngIf="!secondPlayerName" id="between-images">
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
                 </button>
