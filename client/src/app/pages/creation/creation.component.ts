@@ -62,12 +62,15 @@ export class CreationComponent implements OnInit {
 
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
+        let canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined;
         if ($event.ctrlKey && $event.shiftKey && $event.key === 'Z') {
-            UndoRedoService.redo();
+            if (!UndoRedoService.isRedoStackEmpty()) {
+                canvas = UndoRedoService.redo();
+            }
         } else if ($event.ctrlKey && $event.key === 'z') {
-            const canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined = UndoRedoService.undo();
-            this.applyChanges(canvas);
+            canvas = UndoRedoService.undo();
         }
+        this.applyChanges(canvas);
     }
 
     /**
@@ -429,6 +432,8 @@ export class CreationComponent implements OnInit {
     addToUndoRedoStack() {
         const leftCanvas = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const rightCanvas = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        UndoRedoService.resetRedoStack();
+        // UndoRedoService.resizeUndoStack();
         UndoRedoService.addToStack(leftCanvas, rightCanvas);
     }
 

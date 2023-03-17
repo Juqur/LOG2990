@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 export class UndoRedoService {
     static canvasStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
     static redoStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
-    static pointer: number = -1;
+    static undoPointer: number = -1;
     stateStack: CanvasRenderingContext2D[] = [];
 
     static addToStack(defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D) {
@@ -27,26 +27,42 @@ export class UndoRedoService {
         // if (this.pointer < this.actionStack.length - 1) {
         //     this.actionStack.splice(this.pointer + 1, this.actionStack.length - this.pointer);
         // }
-        this.pointer++;
-        console.log(this.canvasStack, this.pointer);
+        this.undoPointer++;
+        console.log(this.canvasStack);
     }
 
     static undo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         // const action = this.canvasStack.pop();
-        if (this.pointer <= 0) {
+        if (this.undoPointer <= 0) {
+            this.undoPointer = -1;
+            this.canvasStack = [];
             return { defaultCanvas: document.createElement('canvas'), diffCanvas: document.createElement('canvas') };
         }
-        const action = this.canvasStack[--this.pointer];
-        // this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
-        console.log('undo ', this.pointer);
+        const action = this.canvasStack[--this.undoPointer];
+        this.redoStack.push(this.canvasStack.pop() as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
+        // this.redoStack.push(action);
         console.log(this.canvasStack);
-        console.log(this.canvasStack[this.pointer]);
-        console.log(this.redoStack);
         return action;
     }
 
-    static redo() {
-        console.log('redo');
+    static redo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
+        const action = this.redoStack.pop();
+        this.canvasStack.push(action as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement });
+        this.undoPointer++;
+        console.log(this.canvasStack);
+        return action;
+    }
+
+    static resetRedoStack() {
+        this.redoStack = [];
+    }
+
+    static resizeUndoStack() {
+        this.canvasStack.length = this.undoPointer + 1;
+    }
+
+    static isRedoStackEmpty(): boolean {
+        return this.redoStack.length === 0;
     }
     // constructor() {}
 
