@@ -79,11 +79,17 @@ export class SocketHandler {
         }
     }
 
-    removeListener(event: string): void {
+    /**
+     * Removes the event listener for a given event and gateway.
+     *
+     * @param type The gateway on which to remove the event listener.
+     * @param event The event to remove the listener for.
+     */
+    removeListener(gateway: string, event: string): void {
         const index = this.socketListenersList.indexOf(event);
         if (index >= 0) {
             this.socketListenersList.splice(index, 1);
-            this.getSocket('game')?.off(event);
+            this.getSocket(gateway)?.off(event);
         }
     }
 
