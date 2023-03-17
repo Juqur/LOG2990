@@ -1,6 +1,6 @@
+import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
-import { MS_TO_S, TIMED_GAME_MODE_LENGTH } from './timer.service.constants';
 
 @Injectable()
 export class TimerService {
@@ -17,12 +17,12 @@ export class TimerService {
      */
     // eslint-disable-next-line max-params
     startTimer(socketId: string, server: Server, isClassic: boolean, secondSocketId?: string): void {
-        this.timeMap.set(socketId, isClassic ? 0 : TIMED_GAME_MODE_LENGTH);
+        this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
             server.to(socketId).emit('sendTime', time);
             this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
-        }, MS_TO_S);
+        }, Constants.millisecondsInOneSecond);
         this.timeIntervalMap.set(socketId, interval);
         if (secondSocketId) {
             this.timeIntervalMap.set(secondSocketId, interval);
