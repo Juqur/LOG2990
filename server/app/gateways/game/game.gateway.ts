@@ -1,5 +1,4 @@
 import { GameService } from '@app/services/game/game.service';
-import { ImageService } from '@app/services/image/image.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -18,7 +17,7 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private imageService: ImageService, private gameService: GameService, private timerService: TimerService) {}
+    constructor(private gameService: GameService, private timerService: TimerService) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -106,15 +105,52 @@ export class GameGateway {
         secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
 
+    @SubscribeMessage(GameEvents.OnDeleteLevel)
+    onDeleteLevel(socket: Socket, levelId: number): void {
+        for (const socketIds of this.gameService.getAndDeletePlayersWaitingForGame(levelId)) {
+            this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
+        }
+        this.server.emit(GameEvents.DeleteLevel, levelId);
+        if (this.gameService.verifyIfLevelIsBeingPlayed(levelId)) {
+            this.gameService.addLevelToDeletionQueue(levelId);
+        }
+    }
+
     /**
      * This method is called when a player disconnects.
-     * It deletes the player from all the maps and rooms
+     *
+     * @param socket the socket of the player
+     */
+    @SubscribeMessage(GameEvents.OnAbandonGame)
+    onAbandonGame(socket: Socket): void {
+        this.handlePlayerLeavingGame(socket);
+    }
+
+    /**
+     * This method is called when a player disconnects.
      *
      * @param socket the socket of the player
      */
     handleDisconnect(socket: Socket): void {
-        this.gameService.deleteUserFromGame(socket);
-        this.timerService.stopTimer(socket.id);
-        // Make sure to remove the player from the opponents room if he is in a multiplayer game
+        this.handlePlayerLeavingGame(socket);
+    }
+    /**
+     * This method deletes the player from all the maps and rooms.
+     * It stops the timer of the player.
+     * It removes the level from the deletion queue if it is there.
+     * If the match is multiplayer, the other player wins.
+     *
+     * @param socket the socket of the player.
+     */
+    private handlePlayerLeavingGame(socket: Socket): void {
+        if (this.gameService.getGameState(socket.id)) {
+            this.gameService.removeLevelToDeletionQueue(this.gameService.getGameState(socket.id).gameId);
+            if (this.gameService.getGameState(socket.id).secondPlayerId) {
+                const secondPlayerSocket = this.server.sockets.sockets.get(this.gameService.getGameState(socket.id).secondPlayerId);
+                secondPlayerSocket.emit(GameEvents.OnVictory);
+            }
+            this.gameService.deleteUserFromGame(socket);
+            this.timerService.stopTimer(socket.id);
+        }
     }
 }

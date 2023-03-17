@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
+import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
-import { take } from 'rxjs';
 
 /**
  * This service is in charge of keeping track of the levels to display and update them
@@ -19,7 +19,7 @@ export class LevelService {
     private currentShownPage: number = 0;
     private shownLevels: Level[];
 
-    constructor(private communicationService: CommunicationService) {
+    constructor(communicationService: CommunicationService, private socketHandler: SocketHandler) {
         communicationService.getLevels().subscribe((value) => {
             this.levels = value;
             this.shownLevels = this.levels.slice(0, Constants.levelsPerPage);
@@ -88,15 +88,16 @@ export class LevelService {
      * @param levelId The id of the level to delete.
      */
     deleteLevel(levelId: number): void {
-        this.communicationService
-            .deleteLevel(levelId)
-            .pipe(take(1))
-            .subscribe((confirmation) => {
-                if (confirmation) {
-                    this.levels = this.levels.filter((level) => level.id !== levelId);
-                    this.updatePageLevels();
-                }
-            });
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.send('game', 'onDeleteLevel', levelId);
+        this.removeCard(levelId);
+    }
+
+    removeCard(levelId: number): void {
+        this.levels = this.levels.filter((level) => level.id !== levelId);
+        this.updatePageLevels();
     }
 
     /**

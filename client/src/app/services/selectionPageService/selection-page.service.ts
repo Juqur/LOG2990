@@ -44,6 +44,7 @@ export class SelectionPageService implements OnDestroy {
         this.socketHandler.removeListener('game', 'playerSelection');
         this.socketHandler.removeListener('game', 'startClassicMultiplayerGame');
         this.socketHandler.removeListener('game', 'rejectedGame');
+        this.socketHandler.removeListener('game', 'shutDownGame');
     }
 
     /**
@@ -70,6 +71,12 @@ export class SelectionPageService implements OnDestroy {
         });
         this.socketHandler.on('game', 'startClassicMultiplayerGame', (data) => {
             this.startMultiplayerGame(data as StartGameData);
+        });
+        this.socketHandler.on('game', 'shutDownGame', () => {
+            this.closeDialogOnDeletedLevel();
+        });
+        this.socketHandler.on('game', 'deleteLevel', (gameId) => {
+            levelService.removeCard(gameId as number);
         });
         this.socketHandler.on('game', 'rejectedGame', () => {
             this.waitingForAcceptation = false;
@@ -101,7 +108,7 @@ export class SelectionPageService implements OnDestroy {
         };
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
+            if (result && this.waitingForSecondPlayer) {
                 this.waitForMatch(levelId, result);
             }
         });
@@ -210,5 +217,19 @@ export class SelectionPageService implements OnDestroy {
         this.router.navigate([`/game/${data.levelId}/`], {
             queryParams: { playerName: data.playerName, opponent: data.secondPlayerName },
         });
+    }
+
+    /**
+     * This method is called when a level gets deleted while a player is waiting for a match.
+     */
+    private closeDialogOnDeletedLevel(): void {
+        this.waitingForAcceptation = false;
+        this.waitingForSecondPlayer = false;
+        this.popUpService.dialogRef.close();
+        this.dialog = {
+            textToSend: "Le niveau n'existe plus, veuillez en choisir un autre",
+            closeButtonMessage: 'OK',
+        };
+        this.popUpService.openDialog(this.dialog);
     }
 }

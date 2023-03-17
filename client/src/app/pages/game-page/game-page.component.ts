@@ -168,4 +168,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.originalImageSrc = environment.serverUrl + 'original/' + this.levelId + '.bmp';
         this.diffImageSrc = environment.serverUrl + 'modified/' + this.levelId + '.bmp';
     }
+
+    abandonGame(): void {
+        this.socketHandler.send('game', 'onAbandonGame');
+    }
 }

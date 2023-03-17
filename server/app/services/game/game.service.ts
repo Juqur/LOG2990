@@ -15,6 +15,7 @@ export interface GameState {
     playerName: string;
     secondPlayerId?: string;
     waitingForSecondPlayer?: boolean;
+    isInGame?: boolean;
 }
 
 export enum VictoryType {
@@ -30,6 +31,7 @@ export enum VictoryType {
 @Injectable()
 export class GameService {
     private playerGameMap = new Map<string, GameState>();
+    private levelDeletionQueue: number[] = [];
 
     constructor(private imageService: ImageService) {}
 
@@ -57,9 +59,11 @@ export class GameService {
         if (gameState.secondPlayerId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.secondPlayerId));
+            this.removeLevelToDeletionQueue(gameState.gameId);
             return true;
         } else if (gameState.foundDifferences.length === totalDifferences) {
             this.deleteUserFromGame(socket);
+            this.removeLevelToDeletionQueue(gameState.gameId);
             return true;
         }
         return false;
@@ -72,6 +76,9 @@ export class GameService {
             playerName: data.playerName,
             waitingForSecondPlayer: data.waitingSecondPlayer,
         };
+        if (!data.waitingSecondPlayer) {
+            playerGameState.isInGame = true;
+        }
         this.playerGameMap.set(socketId, playerGameState);
     }
 
@@ -89,21 +96,24 @@ export class GameService {
     changeMultiplayerGameState(socketId: string, secondPlayerId: string, playerName: string): void {
         const secondPlayerGameState: GameState = this.playerGameMap.get(secondPlayerId);
         secondPlayerGameState.secondPlayerId = socketId;
-        secondPlayerGameState.waitingForSecondPlayer = false;
         this.playerGameMap.set(secondPlayerId, secondPlayerGameState);
         this.playerGameMap.set(socketId, {
-            gameId: -1,
+            gameId: secondPlayerGameState.gameId,
             foundDifferences: [],
             playerName,
             secondPlayerId,
-            waitingForSecondPlayer: false,
+            waitingForSecondPlayer: true,
         });
     }
 
     connectRooms(socket: Socket, secondPlayerSocket: Socket): void {
         socket.join(secondPlayerSocket.id);
         secondPlayerSocket.join(socket.id);
-        this.changeSecondPlayerGameState(socket.id, secondPlayerSocket.id);
+        this.changeGameStatesForGame(socket.id, secondPlayerSocket.id);
+    }
+
+    getLevelDeletionQueue(): number[] {
+        return this.levelDeletionQueue;
     }
 
     deleteUserFromGame(socket: Socket): void {
@@ -120,11 +130,49 @@ export class GameService {
         return this.playerGameMap.get(socketId);
     }
 
-    private changeSecondPlayerGameState(socketId: string, secondPlayerSocketId: string): void {
+    getAndDeletePlayersWaitingForGame(gameId: number): string[] {
+        const listOfPlayersToRemove: string[] = [];
+        for (const [socketId, gameState] of this.playerGameMap.entries()) {
+            if (gameState.waitingForSecondPlayer && gameState.gameId === gameId) {
+                listOfPlayersToRemove.push(socketId);
+                this.playerGameMap.delete(socketId);
+            }
+        }
+        return listOfPlayersToRemove;
+    }
+
+    verifyIfLevelIsBeingPlayed(levelId: number): boolean {
+        for (const gameState of this.playerGameMap.values()) {
+            if (gameState.gameId === levelId && gameState.isInGame) {
+                return true;
+            }
+        }
+        this.imageService.deleteLevelData(levelId);
+        return false;
+    }
+
+    addLevelToDeletionQueue(levelId: number): void {
+        this.levelDeletionQueue.push(levelId);
+    }
+
+    removeLevelToDeletionQueue(levelId: number): void {
+        const index = this.levelDeletionQueue.indexOf(levelId);
+        if (index >= 0) {
+            this.levelDeletionQueue.splice(index, 1);
+            this.imageService.deleteLevelData(levelId);
+        }
+    }
+
+    private changeGameStatesForGame(socketId: string, secondPlayerSocketId: string): void {
+        const gameState = this.playerGameMap.get(socketId);
+        gameState.isInGame = true;
+        gameState.waitingForSecondPlayer = false;
+        this.playerGameMap.set(socketId, gameState);
+
         const secondPlayerGameState = this.playerGameMap.get(secondPlayerSocketId);
         secondPlayerGameState.waitingForSecondPlayer = false;
         secondPlayerGameState.secondPlayerId = socketId;
-        secondPlayerGameState.gameId = this.playerGameMap.get(socketId).gameId;
+        secondPlayerGameState.isInGame = true;
         this.playerGameMap.set(secondPlayerSocketId, secondPlayerGameState);
     }
 }
