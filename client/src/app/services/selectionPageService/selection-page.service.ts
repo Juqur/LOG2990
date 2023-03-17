@@ -28,10 +28,15 @@ export interface StartGameData {
 export class SelectionPageService implements OnDestroy {
     waitingForSecondPlayer: boolean = true;
     waitingForAcceptation: boolean = true;
+    private dialog: DialogData;
 
     // eslint-disable-next-line max-params
     constructor(private socketHandler: SocketHandler, private router: Router, private popUpService: PopUpService) {}
 
+    /**
+     * This method is called when the page is destroyed.
+     * It removes all the socket listeners.
+     */
     ngOnDestroy(): void {
         this.socketHandler.removeListener('updateSelection');
         this.socketHandler.removeListener('invalidName');
@@ -72,8 +77,6 @@ export class SelectionPageService implements OnDestroy {
         });
     }
 
-    // TODO: Rework this function -Pierre
-
     /**
      * This method is called when a player creates a game.
      * It asks the player for his name.
@@ -83,7 +86,7 @@ export class SelectionPageService implements OnDestroy {
     startGameDialog(levelId: number): void {
         this.waitingForAcceptation = true;
         this.waitingForSecondPlayer = true;
-        const saveDialogData: DialogData = {
+        this.dialog = {
             textToSend: 'Veuillez entrer votre nom',
             inputData: {
                 inputLabel: 'Nom du joueur',
@@ -96,9 +99,8 @@ export class SelectionPageService implements OnDestroy {
             },
             closeButtonMessage: 'Lancer la partie',
         };
-        this.popUpService.openDialog(saveDialogData);
+        this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-            console.log(result);
             if (result) {
                 this.waitForMatch(levelId, result);
             }
@@ -114,11 +116,11 @@ export class SelectionPageService implements OnDestroy {
      */
     private waitForMatch(id: number, name: string): void {
         this.socketHandler.send('game', 'onGameSelection', { levelId: id, playerName: name });
-        const loadingDialogData: DialogData = {
+        this.dialog = {
             textToSend: "En attente d'un autre joueur",
             closeButtonMessage: 'Annuler',
         };
-        this.popUpService.openDialog(loadingDialogData);
+        this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
             if (this.waitingForSecondPlayer) {
                 this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
@@ -146,11 +148,11 @@ export class SelectionPageService implements OnDestroy {
      */
     private openInvalidNameDialog(): void {
         this.popUpService.dialogRef.close();
-        const invalidNameDialogData: DialogData = {
+        this.dialog = {
             textToSend: 'Le nom choisi est trop court, veuillez en choisir un autre',
             closeButtonMessage: 'OK',
         };
-        this.popUpService.openDialog(invalidNameDialogData);
+        this.popUpService.openDialog(this.dialog);
     }
 
     /**
@@ -160,11 +162,11 @@ export class SelectionPageService implements OnDestroy {
     private openToBeAcceptedDialog(): void {
         this.waitingForSecondPlayer = false;
         this.popUpService.dialogRef.close();
-        const toBeAcceptedDialogData: DialogData = {
+        this.dialog = {
             textToSend: "Partie trouvée ! En attente de l'approbation de l'autre joueur.",
             closeButtonMessage: 'Annuler',
         };
-        this.popUpService.openDialog(toBeAcceptedDialogData);
+        this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
             if (this.waitingForAcceptation) {
                 this.socketHandler.send('game', 'onGameRejected', {});
@@ -181,12 +183,12 @@ export class SelectionPageService implements OnDestroy {
     private openPlayerSelectionDialog(name: string): void {
         this.waitingForSecondPlayer = false;
         this.popUpService.dialogRef.close();
-        const toBeAcceptedDialogData: DialogData = {
+        this.dialog = {
             textToSend: 'Voulez-vous autoriser ' + name + ' à participer à votre jeu ?',
             closeButtonMessage: 'Annuler',
             isConfirmation: true,
         };
-        this.popUpService.openDialog(toBeAcceptedDialogData);
+        this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
             if (confirmation) {
                 this.socketHandler.send('game', 'onGameAccepted', {});
