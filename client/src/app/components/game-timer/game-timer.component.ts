@@ -49,6 +49,6 @@ export class GameTimerComponent implements OnInit, OnDestroy {
      * Removes the listener for the 'sendTime' event.
      */
     ngOnDestroy(): void {
-        this.socketHandler.removeListener('sendTime');
+        this.socketHandler.removeListener('game', 'sendTime');
     }
 }

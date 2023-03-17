@@ -78,7 +78,7 @@ describe('GameTimerComponent', () => {
     describe('ngOnDestroy', () => {
         it('should remove the "sendTime" event listener', () => {
             component.ngOnDestroy();
-            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('sendTime');
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'sendTime');
         });
     });
 });
