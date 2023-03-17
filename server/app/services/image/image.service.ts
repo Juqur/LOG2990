@@ -1,9 +1,9 @@
 import { Message } from '@app/model/schema/message.schema';
-import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
+import { DEFAULT_TIME_VALUES } from './image.service.constants';
 
 /**
  * This service is used to get the amount of differences left between the two images.
@@ -135,9 +135,9 @@ export class ImageService {
                 id: newId,
                 name: levelData.name,
                 playerSolo: ['Bot1', 'Bot2', 'Bot3'],
-                timeSolo: Constants.timeSolo,
+                timeSolo: DEFAULT_TIME_VALUES,
                 playerMulti: ['Bot1', 'Bot2', 'Bot3'],
-                timeMulti: Constants.timeMulti,
+                timeMulti: DEFAULT_TIME_VALUES,
                 isEasy: levelData.isEasy === 'true',
                 nbDifferences: levelData.nbDifferences,
             };

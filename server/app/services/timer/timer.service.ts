@@ -1,6 +1,6 @@
-import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
+import { MS_TO_S, TIMED_GAME_MODE_LENGTH } from './timer.service.constants';
 
 @Injectable()
 export class TimerService {
@@ -8,21 +8,21 @@ export class TimerService {
     private timeIntervalMap = new Map<string, NodeJS.Timeout>();
 
     /**
-     * Starts a timer for both single player and multiplayer games
-     * It starts the the timer at 0 for classic games and at 120 for timed games
-     * Creates an interval that emits the time to the player every second
+     * Starts a timer for both single player and multiplayer games.
+     * It starts the the timer at 0 for classic games and at 120 for timed games.
+     * Creates an interval that emits the time to the player every second.
      *
      * @param socket The socket of the player who is used to start the timer
      * @param isClassic Boolean value that determines if the game is classic or timed
      */
     // eslint-disable-next-line max-params
     startTimer(socketId: string, server: Server, isClassic: boolean, secondPlayerId?: string): void {
-        this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
+        this.timeMap.set(socketId, isClassic ? 0 : TIMED_GAME_MODE_LENGTH);
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
             server.to(socketId).emit('sendTime', time);
             this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
-        }, Constants.millisecondsInOneSecond);
+        }, MS_TO_S);
         this.timeIntervalMap.set(socketId, interval);
         if (secondPlayerId) {
             this.timeIntervalMap.set(secondPlayerId, interval);
