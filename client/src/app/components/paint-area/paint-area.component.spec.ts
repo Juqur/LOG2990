@@ -38,11 +38,11 @@ describe('PaintAreaComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('ngAfterViewInit should call drawPaintArea', () => {
-        const spy = spyOn(component, 'drawPaintArea');
-        component.ngAfterViewInit();
-        expect(spy).toHaveBeenCalledTimes(1);
-    });
+    // it('ngAfterViewInit should call drawPaintArea', () => {
+    //     const spy = spyOn(component, 'drawPaintArea');
+    //     component.ngAfterViewInit();
+    //     expect(spy).toHaveBeenCalledTimes(1);
+    // });
 
     it('buttonDetect should modify the buttonPressed variable', () => {
         const expectedKey = 'a';

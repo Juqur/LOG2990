@@ -175,7 +175,8 @@ export class CreationPageService {
      *
      * @param value the index of the new slider value
      */
-    brushSliderChange(event: unknown): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    brushSliderChange(event: any): void {
         console.log(event.value);
         this.drawServiceDefault.setBrushSize(event.value);
         this.drawServiceDiff.setBrushSize(event.value);
