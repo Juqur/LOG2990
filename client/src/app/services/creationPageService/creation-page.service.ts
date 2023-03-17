@@ -5,24 +5,24 @@ import { CreationSpecs } from '@app/interfaces/creation-specs';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
+import { DrawService } from '@app/services/drawService/draw.service';
+import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 import { LevelFormData } from '@common/levelFormData';
-import { DrawService } from '../drawService/draw.service';
-import { MouseService } from '../mouse.service';
-import { UndoRedoService } from '../undo-redo/undo-redo.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CreationPageService {
+    color = Constants.BLACK;
     private creationSpecs: CreationSpecs;
     private isSaveable = false;
     private differenceAmountMsg = '';
     private submitFunction: (value: string) => boolean;
-    color = Constants.BLACK;
-    drawServiceDefault: DrawService;
-    drawServiceDiff: DrawService;
+    private drawServiceDefault: DrawService;
+    private drawServiceDiff: DrawService;
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
@@ -249,6 +249,63 @@ export class CreationPageService {
         }
     }
 
+    paintBrushMode() {
+        this.mouseServiceDefault.isRectangleMode = false;
+        this.mouseServiceDiff.isRectangleMode = false;
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.paintBrush();
+        this.drawServiceDiff.paintBrush();
+    }
+
+    eraseBrushMode() {
+        this.mouseServiceDefault.isRectangleMode = false;
+        this.mouseServiceDiff.isRectangleMode = false;
+        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDefault.eraseBrush();
+        this.drawServiceDiff.eraseBrush();
+    }
+
+    rectangleMode() {
+        this.paintBrushMode();
+        this.mouseServiceDefault.isRectangleMode = true;
+        this.mouseServiceDiff.isRectangleMode = true;
+    }
+
+    colorPickerMode() {
+        this.mouseServiceDefault.mouseDrawColor = this.color;
+        this.mouseServiceDiff.mouseDrawColor = this.color;
+        this.drawServiceDefault.setPaintColor(this.color);
+        this.drawServiceDiff.setPaintColor(this.color);
+    }
+
+    addToUndoRedoStack() {
+        const leftCanvas = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const rightCanvas = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        UndoRedoService.resetRedoStack();
+        // UndoRedoService.resizeUndoStack();
+        UndoRedoService.addToStack(leftCanvas, rightCanvas);
+    }
+
+    handleUndo() {
+        this.applyChanges(UndoRedoService.undo());
+    }
+
+    handleRedo() {
+        this.applyChanges(UndoRedoService.redo());
+    }
+
+    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined) {
+        if (!canvas) return;
+
+        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
+        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+
+        this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
+        this.canvasShare.diffCanvas.getContext('2d')?.drawImage(canvas.diffCanvas, 0, 0);
+    }
+
     /**
      * This method is used to get the File() object associated with the image_empty.bmp.
      *
@@ -354,54 +411,5 @@ export class CreationPageService {
             textToSend: msg,
             closeButtonMessage: 'Fermer',
         });
-    }
-
-    paintBrushMode() {
-        this.mouseServiceDefault.isRectangleMode = false;
-        this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDefault.paintBrush();
-        this.drawServiceDiff.paintBrush();
-    }
-
-    eraseBrushMode() {
-        this.mouseServiceDefault.isRectangleMode = false;
-        this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.context = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDefault.eraseBrush();
-        this.drawServiceDiff.eraseBrush();
-    }
-
-    rectangleMode() {
-        this.paintBrushMode();
-        this.mouseServiceDefault.isRectangleMode = true;
-        this.mouseServiceDiff.isRectangleMode = true;
-    }
-
-    colorPickerMode() {
-        this.mouseServiceDefault.mouseDrawColor = this.color;
-        this.mouseServiceDiff.mouseDrawColor = this.color;
-        this.drawServiceDefault.setPaintColor(this.color);
-        this.drawServiceDiff.setPaintColor(this.color);
-    }
-
-    addToUndoRedoStack() {
-        const leftCanvas = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const rightCanvas = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        UndoRedoService.resetRedoStack();
-        // UndoRedoService.resizeUndoStack();
-        UndoRedoService.addToStack(leftCanvas, rightCanvas);
-    }
-
-    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined) {
-        if (!canvas) return;
-
-        this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
-
-        this.canvasShare.defaultCanvas.getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
-        this.canvasShare.diffCanvas.getContext('2d')?.drawImage(canvas.diffCanvas, 0, 0);
     }
 }

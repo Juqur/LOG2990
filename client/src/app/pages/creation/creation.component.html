@@ -10,22 +10,25 @@
             </div>
             <div id="draw-tools-container">
                 <label class="info-txt" for="values">Epaisseur:</label>
-                <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1"
-                    [(ngModel)]="sliderValue"></mat-slider>
+                <mat-slider id="thicknessSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="sliderValue"></mat-slider>
                 <button class="button-settings" color="orange" (click)="this.creationService.paintBrushMode()">
                     <mat-icon>mode_edit</mat-icon>
                 </button>
-                <button class="button-settings" color="orange" (click)="this.creationService.rectangleMode()"
-                    title="Rectangle">
+                <button class="button-settings" color="orange" (click)="this.creationService.rectangleMode()" title="Rectangle">
                     <mat-icon>rectangle</mat-icon>
                 </button>
-                <button class="button-reset" color="orange" (click)="this.creationService.eraseBrushMode()"
-                    title="Efface">
+                <button class="button-reset" color="orange" (click)="this.creationService.eraseBrushMode()" title="Efface">
                     <img src="assets/images/eraser.png" alt="efface" />
                 </button>
                 <label for="colorPicker"></label>
-                <input type="color" id="colorPicker" name="colorPicker" (input)="this.creationService.colorPickerMode()"
-                    title="Selecteur de couleur" [(ngModel)]="this.creationService.color" />
+                <input
+                    type="color"
+                    id="colorPicker"
+                    name="colorPicker"
+                    (input)="this.creationService.colorPickerMode()"
+                    title="Selecteur de couleur"
+                    [(ngModel)]="this.creationService.color"
+                />
                 <!-- <img src="assets/images/colour.png" alt="couleur" /> -->
             </div>
         </section>
@@ -42,17 +45,21 @@
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                         <p>left</p>
                     </div>
-                    <app-paint-area #defaultArea [isDiff]="false"
-                        (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #defaultArea [isDiff]="false" (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
                         Téléverser Image Originale
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="default image" id="default" accept=".bmp"
+                    <input
+                        type="file"
+                        name="default image"
+                        id="default"
+                        accept=".bmp"
                         (change)="this.creationService.defaultImageSelector($event)"
-                        (click)="this.creationService.cleanSrc($event)" />
+                        (click)="this.creationService.cleanSrc($event)"
+                    />
                     <button class="button-reset" color="orange" (click)="this.creationService.resetDefault()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -65,9 +72,14 @@
                         Téléverser Image Commune
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="both images" id="both" accept=".bmp"
+                    <input
+                        type="file"
+                        name="both images"
+                        id="both"
+                        accept=".bmp"
                         (change)="this.creationService.bothImagesSelector($event)"
-                        (click)="this.creationService.cleanSrc($event)" />
+                        (click)="this.creationService.cleanSrc($event)"
+                    />
                 </div>
 
                 <button class="button-settings" color="orange" (click)="this.creationService.resetDefault()">
@@ -88,17 +100,21 @@
                         <button class="button-reset" title="Dupliquer">Dupliquer</button>
                         <p>asdf</p>
                     </div>
-                    <app-paint-area #diffArea [isDiff]="true"
-                        (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
+                    <app-paint-area #diffArea [isDiff]="true" (mouseup)="this.creationService.addToUndoRedoStack()"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
                         Téléverser Image Modifiée
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
-                    <input type="file" name="diff image" id="diff" accept=".bmp"
+                    <input
+                        type="file"
+                        name="diff image"
+                        id="diff"
+                        accept=".bmp"
                         (change)="this.creationService.diffImageSelector($event)"
-                        (click)="this.creationService.cleanSrc($event)" />
+                        (click)="this.creationService.cleanSrc($event)"
+                    />
                     <button class="button-reset" color="orange" (click)="this.creationService.resetDiff()">
                         Réinitialiser La Zone
                         <mat-icon>restart_alt</mat-icon>
@@ -109,16 +125,26 @@
         <section id="bottom-area">
             <div id="enlargissement-container">
                 <label class="info-txt" for="values">Rayon d'élargissement:</label>
-                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="sliderValue"
-                    (change)="this.creationService.sliderChange(sliderValue)"></mat-slider>
+                <mat-slider
+                    id="radiusSlider"
+                    [min]="0"
+                    [max]="3"
+                    tickInterval="1"
+                    [(ngModel)]="sliderValue"
+                    (change)="this.creationService.sliderChange(sliderValue)"
+                ></mat-slider>
             </div>
             <div class="zone-button-container">
                 <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">
                     Valider les différences
                     <mat-icon>image_search</mat-icon>
                 </button>
-                <button [ngClass]="{ 'button-disabled': !creationService.saveable }" class="button-settings"
-                    color="orange" (click)="this.creationService.saveGame()">
+                <button
+                    [ngClass]="{ 'button-disabled': !creationService.saveable }"
+                    class="button-settings"
+                    color="orange"
+                    (click)="this.creationService.saveGame()"
+                >
                     Sauvegarder le jeu
                     <mat-icon>save</mat-icon>
                 </button>
@@ -136,13 +162,11 @@
                 </div>
             </div>
             <div class="zone-button-container">
-                <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">
-                    Annuler
-                    <mat-icon>image_search</mat-icon>
+                <button class="button-reset" color="orange" (click)="this.creationService.handleUndo()">
+                    <img src="../../../assets/images/undo.png" alt="Undo" class="undo-redo" />
                 </button>
-                <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">
-                    Refaire
-                    <mat-icon>image_search</mat-icon>
+                <button class="button-reset" color="orange" (click)="this.creationService.handleRedo()">
+                    <img src="../../../assets/images/redo.png" alt="Redo" class="undo-redo" />
                 </button>
             </div>
         </section>

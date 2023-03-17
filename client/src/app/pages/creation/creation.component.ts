@@ -22,21 +22,15 @@ export class CreationComponent implements OnDestroy {
     sliderValue = Constants.SLIDER_DEFAULT;
 
     // eslint-disable-next-line max-params
-    constructor(
-        public creationService: CreationPageService,
-    ) { }
+    constructor(public creationService: CreationPageService) {}
 
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
-        let canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined;
         if ($event.ctrlKey && $event.shiftKey && $event.key === 'Z') {
-            if (!UndoRedoService.isRedoStackEmpty()) {
-                canvas = UndoRedoService.redo();
-            }
+            this.creationService.handleRedo();
         } else if ($event.ctrlKey && $event.key === 'z') {
-            canvas = UndoRedoService.undo();
+            this.creationService.handleUndo();
         }
-        this.creationService.applyChanges(canvas);
     }
 
     ngOnDestroy(): void {
