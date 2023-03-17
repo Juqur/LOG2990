@@ -9,17 +9,20 @@ export enum GameEvents {
     SendTime = 'sendTime',
     OnDefeat = 'onDefeat',
     OnVictory = 'onVictory',
-
-    // Game Selection
+    OnDeleteLevel = 'onDeleteLevel',
     OnGameSelection = 'onGameSelection',
     OnGameAccepted = 'onGameAccepted',
     OnGameRejected = 'onGameRejected',
     OnGameCancelledWhileWaitingForSecondPlayer = 'onGameCancelledWhileWaitingForSecondPlayer',
     OnGameCancelledWhileWaitingForAcceptation = 'onGameCancelledWhileWaitingForAcceptation',
+    OnAbandonGame = 'onAbandonGame',
+
     UpdateSelection = 'updateSelection',
     InvalidName = 'invalidName',
     ToBeAccepted = 'toBeAccepted',
     PlayerSelection = 'playerSelection',
     RejectedGame = 'rejectedGame',
     StartClassicMultiplayerGame = 'startClassicMultiplayerGame',
+    ShutDownGame = 'shutDownGame',
+    DeleteLevel = 'deleteLevel',
 }
