@@ -108,5 +108,28 @@ export class CreationComponent implements OnDestroy {
         diffCanvas.getContext('2d')?.drawImage(tempCanvas, 0, 0);
     }
 
+    clearDefaultCanvas(): void {
+        this.defaultPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+    }
+
+    clearDiffCanvas(): void {
+        this.diffPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+    }
+
+    duplicateDefaultCanvas(): void {
+        const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
+        const diffCanvas = this.diffPaintArea.getPaintCanvas();
+        diffCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        diffCanvas.getContext('2d')?.drawImage(defaultCanvas, 0, 0);
+    }
+
+    duplicateDiffCanvas(): void {
+        const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
+        const diffCanvas = this.diffPaintArea.getPaintCanvas();
+        defaultCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        defaultCanvas.getContext('2d')?.drawImage(diffCanvas, 0, 0);
+    }
+    
+
 
 }

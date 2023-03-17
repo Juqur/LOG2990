@@ -149,6 +149,10 @@ export class CreationPageService {
     resetDefaultBackground(): void {
         this.restartGame();
         this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
+        this.getEmptyBMPFile().then((res) => {
+            this.creationSpecs.defaultImageFile = res;
+            this.showDefaultImage();
+        });
     }
 
     /**
@@ -157,6 +161,10 @@ export class CreationPageService {
     resetDiffBackground(): void {
         this.restartGame();
         this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+        this.getEmptyBMPFile().then((res) => {
+            this.creationSpecs.diffImageFile = res;
+            this.showDiffImage();
+        });
     }
 
     /**
@@ -327,6 +335,7 @@ export class CreationPageService {
     private showDefaultImage(): void {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
+        console.log(image.src);
         image.onload = () => {
             if (!this.creationSpecs.defaultBgCanvasCtx) {
                 this.errorDialog('Aucun canvas de base.');
