@@ -81,11 +81,17 @@ export class DrawService {
         this.context.stroke();
     }
 
+    /**
+     * drawRect draws a rectangle on the canvas
+     * 
+     * @param coord starting coordinate of the rectangle
+     * @param width the width of the rectangle
+     * @param height the height of the rectangle
+     */
     drawRect(coord: Vec2, width: number, height: number): void {
         this.context.beginPath();
         this.context.rect(coord.x, coord.y, width, height);
         this.context.fill();
         this.context.stroke();
-        // les la le de des oublie pas de créer un canvas par dessus et de le fusionner lorsque tu relaches le clic
     }
 }

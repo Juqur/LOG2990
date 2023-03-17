@@ -33,4 +33,66 @@ describe('DrawService', () => {
         service.drawError({ x: 1, y: 1 } as Vec2);
         expect(service.context.fillStyle.toString()).toEqual('#ff0000');
     });
+
+    it('setPaintColor should set the color of the context', () => {
+        service.setPaintColor('#000000');
+        expect(service.context.strokeStyle).toEqual('#000000');
+        expect(service.context.fillStyle).toEqual('#000000');
+    });
+
+    it('setBrushSize should set the brush size of the context', () => {
+        service.setBrushSize(10);
+        expect(service.context.lineWidth).toEqual(10);
+    });
+
+    it('paintBrush should set attributes for a brush', () => {
+        service.paintBrush();
+        expect(service.context.lineCap).toEqual('round');
+        expect(service.context.globalCompositeOperation).toEqual('source-over');
+        // expect(service.context.strokeStyle).toEqual(service.paintColor);
+        // expect(service.context.lineWidth).toEqual(service.brushSize);
+    });
+
+    it('eraseBrush should set attributes for an eraser', () => {
+        service.eraseBrush();
+        expect(service.context.lineCap).toEqual('square');
+        expect(service.context.globalCompositeOperation).toEqual('destination-out');
+        // expect(service.context.lineWidth).toEqual(service.brushSize);
+    });
+
+    it('draw should call the correct method when cursor in the canvas', () => {
+        const beginPathSpy = spyOn(service.context, 'beginPath');
+        const moveToSpy = spyOn(service.context, 'moveTo');
+        const lineToSpy = spyOn(service.context, 'lineTo');
+        const strokeSpy = spyOn(service.context, 'stroke');
+        service.draw({ x: 1, y: 1 } as Vec2, { x: 2, y: 2 } as Vec2);
+        expect(beginPathSpy).toHaveBeenCalled();
+        expect(moveToSpy).toHaveBeenCalled();
+        expect(lineToSpy).toHaveBeenCalled();
+        expect(strokeSpy).toHaveBeenCalled();
+    });
+
+    it('draw should not call the correct method when cursor not in the canvas', () => {
+        const beginPathSpy = spyOn(service.context, 'beginPath');
+        const moveToSpy = spyOn(service.context, 'moveTo');
+        const lineToSpy = spyOn(service.context, 'lineTo');
+        const strokeSpy = spyOn(service.context, 'stroke');
+        service.draw({ x: 1, y: 1 } as Vec2, { x: -1, y: -1 } as Vec2);
+        expect(beginPathSpy).toHaveBeenCalled();
+        expect(moveToSpy).toHaveBeenCalled();
+        expect(lineToSpy).toHaveBeenCalled();
+        expect(strokeSpy).toHaveBeenCalled();
+    });
+
+    it('drawRect should call the correct method', () => {
+        const beginPathSpy = spyOn(service.context, 'beginPath');
+        const rectSpy = spyOn(service.context, 'rect');
+        const fillSpy = spyOn(service.context, 'fill');
+        const strokeSpy = spyOn(service.context, 'stroke');
+        service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
+        expect(beginPathSpy).toHaveBeenCalledTimes(1);
+        expect(rectSpy).toHaveBeenCalledTimes(1);
+        expect(fillSpy).toHaveBeenCalledTimes(1);
+        expect(strokeSpy).toHaveBeenCalledTimes(1);
+    });
 });
