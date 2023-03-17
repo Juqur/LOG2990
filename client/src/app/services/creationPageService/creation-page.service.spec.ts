@@ -56,7 +56,14 @@ describe('CreationPageService', () => {
     it('constructor should correctly initialize', fakeAsync(() => {
         spyOn<any>(service, 'getEmptyBMPFile').and.returnValue(Promise.resolve(new File([''], '')));
         spyOn(HTMLCanvasElement.prototype, 'getContext').and.returnValue(null);
-        const creationService = new CreationPageService(new CanvasSharingService(), diffServiceSpy, popUpServiceSpy, communicationSpy);
+        const creationService = new CreationPageService(
+            new CanvasSharingService(),
+            diffServiceSpy,
+            popUpServiceSpy,
+            communicationSpy,
+            mouseServiceSpy,
+            mouseServiceSpy,
+        );
         expect(creationService['canvasShare'].defaultCanvas).toBeUndefined();
         expect(creationService['canvasShare'].diffCanvas).toBeUndefined();
         expect(service['submitFunction']('')).toBeFalse();

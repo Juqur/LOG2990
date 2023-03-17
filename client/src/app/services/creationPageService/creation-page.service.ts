@@ -175,6 +175,7 @@ export class CreationPageService {
      *
      * @param value the index of the new slider value
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     brushSliderChange(event: any): void {
         console.log(event.value);
         this.drawServiceDefault.setBrushSize(event.value);
@@ -261,7 +262,11 @@ export class CreationPageService {
         }
     }
 
-    paintBrushMode() {
+    /**
+     * When the user press on the paint brush button, this method is called
+     * It sets the mouse service to Paint mode
+     */
+    paintBrushMode(): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -270,7 +275,11 @@ export class CreationPageService {
         this.drawServiceDiff.paintBrush();
     }
 
-    eraseBrushMode() {
+    /**
+     * When the user press on the erase brush button, this method is called
+     * It sets the mouse service to Erase mode
+     */
+    eraseBrushMode(): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -279,36 +288,60 @@ export class CreationPageService {
         this.drawServiceDiff.eraseBrush();
     }
 
-    rectangleMode() {
+    /**
+     * When the user press on the rectangle button, this method is called
+     * It sets the mouse service to rectangle mode
+     */
+    rectangleMode(): void {
         this.paintBrushMode();
         this.mouseServiceDefault.isRectangleMode = true;
         this.mouseServiceDiff.isRectangleMode = true;
     }
 
-    colorPickerMode() {
+    /**
+     * When the user press on the color picker button, this method is called
+     * It sets the color of the paint brush and the Rectangle brush to the color
+     */
+    colorPickerMode(): void {
         this.mouseServiceDefault.mouseDrawColor = this.color;
         this.mouseServiceDiff.mouseDrawColor = this.color;
         this.drawServiceDefault.setPaintColor(this.color);
         this.drawServiceDiff.setPaintColor(this.color);
     }
 
-    addToUndoRedoStack() {
+    /**
+     * When the user's mouse is realeased from the canvas, this method is called
+     * It adds both canvas to the undo/redo stack
+     * It also resets the redo stack
+     */
+    addToUndoRedoStack(): void {
         const leftCanvas = this.canvasShare.defaultCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const rightCanvas = this.canvasShare.diffCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         UndoRedoService.resetRedoStack();
-        // UndoRedoService.resizeUndoStack();
         UndoRedoService.addToStack(leftCanvas, rightCanvas);
     }
 
-    handleUndo() {
+    /**
+     * When the user press on the undo button or press ctrl z, this method is called
+     */
+    handleUndo(): void {
         this.applyChanges(UndoRedoService.undo());
     }
 
-    handleRedo() {
+    /**
+     * When the user press on the redo button or press ctrl shift z, this method is called
+     */
+    handleRedo(): void {
         this.applyChanges(UndoRedoService.redo());
     }
 
-    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined) {
+    /**
+     * After the undo or redo function has been called, this method will apply the changes to the canvas
+     *
+     * @param canvas takes 2 canvas, the default(left) canvas and the diff(right) canvas
+     * @returns undefined if the canvas is undefined
+     */
+    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
 
         this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
