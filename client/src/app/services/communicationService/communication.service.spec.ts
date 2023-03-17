@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { LevelFormData } from '@app/classes/level-form-data';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
 import { environment } from 'src/environments/environment';
 

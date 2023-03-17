@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { LevelFormData } from '@app/classes/level-form-data';
 import { Level } from '@app/levels';
-import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
