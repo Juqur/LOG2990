@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { LevelFormData } from '@app/classes/level-form-data';
 import { Level } from '@app/levels';
-import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -37,6 +37,7 @@ export class CommunicationService {
      * @returns an observable on the appropriate level.
      */
     getLevel(levelId: number): Observable<Level> {
+        console.log('Get level has been truely called');
         return this.http.get<Level>(`${this.baseUrl}api` + '/image/' + levelId).pipe(catchError(this.handleError<Level>('basicGet')));
     }
 

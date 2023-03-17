@@ -5,15 +5,14 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { GameEvents } from './game.gateway.events';
 
-@WebSocketGateway({ cors: true })
-@Injectable()
-
 /**
  * This gateway is used to handle the game logic.
  *
  * @author Junaid Qureshi
  * @class GameGateway
  */
+@WebSocketGateway({ cors: true })
+@Injectable()
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
