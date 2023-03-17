@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,7 +18,7 @@ import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 
-fdescribe('GamePageComponent', () => {
+describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
@@ -27,7 +27,7 @@ fdescribe('GamePageComponent', () => {
     let communicationServiceSpy: SpyObj<CommunicationService>;
     let activatedRoute: SpyObj<ActivatedRoute>;
 
-    beforeEach(async () => {
+    beforeEach(() => {
         gamePageServiceSpy = jasmine.createSpyObj('GamePageService', [
             'ngOnInit',
             'verifyClick',
@@ -43,12 +43,13 @@ fdescribe('GamePageComponent', () => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['getLevel']);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
-        communicationServiceSpy.getLevel.and.returnValue(of({} as Level));
         activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
         activatedRoute.snapshot.params = { id: 1 };
         activatedRoute.snapshot.queryParams = { playerName: 'Alice', opponent: 'Bob' };
+    });
 
-        await TestBed.configureTestingModule({
+    beforeEach(() => {
+        TestBed.configureTestingModule({
             declarations: [
                 GamePageComponent,
                 PlayAreaComponent,
@@ -58,7 +59,7 @@ fdescribe('GamePageComponent', () => {
                 ChatMessageComponent,
                 MessageBoxComponent,
             ],
-            imports: [AppMaterialModule, HttpClientModule, RouterTestingModule],
+            imports: [AppMaterialModule, HttpClientTestingModule, RouterTestingModule],
             providers: [
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: SocketHandler, useValue: socketHandlerSpy },
@@ -217,10 +218,12 @@ fdescribe('GamePageComponent', () => {
         });
     });
 
-    fdescribe('settingGameImage', () => {
+    describe('settingGameImage', () => {
         it('should call getLevel', fakeAsync(() => {
+            component['communicationService'] = communicationServiceSpy;
+            component['levelId'] = 1;
             const expectedDifferences = 3;
-            const level = { nbDifferences: expectedDifferences } as unknown as Level;
+            const level = { id: 0, nbDifferences: expectedDifferences } as unknown as Level;
             communicationServiceSpy.getLevel.and.returnValue(of(level));
             component.settingGameLevel();
             tick();

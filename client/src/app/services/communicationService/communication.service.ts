@@ -7,15 +7,15 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service is used in order to make HTTP requests to the server.
  *
  * @author Junaid Qureshi
  * @class CommunicationService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class CommunicationService {
     private readonly baseUrl: string = environment.serverUrl;
 
