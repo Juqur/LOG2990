@@ -77,6 +77,6 @@ export class AudioService {
      * Method used to reset the audio back to it's base state.
      */
     reset(): void {
-        this.soundtrack.load();
+        this.soundtrack?.load();
     }
 }
