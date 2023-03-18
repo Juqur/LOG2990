@@ -104,11 +104,11 @@ export class GameService {
         if (gameState.secondPlayerId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.secondPlayerId));
-            this.removeLevelToDeletionQueue(gameState.gameId);
+            this.removeLevelFromDeletionQueue(gameState.gameId);
             return true;
         } else if (gameState.foundDifferences.length === totalDifferences) {
             this.deleteUserFromGame(socket);
-            this.removeLevelToDeletionQueue(gameState.gameId);
+            this.removeLevelFromDeletionQueue(gameState.gameId);
             return true;
         }
         return false;
@@ -161,7 +161,7 @@ export class GameService {
      * @param secondPlayerId The socket id of the second player.
      * @param playerName The name of the player.
      */
-    changeMultiplayerGameState(socketId: string, secondPlayerId: string, playerName: string): void {
+    setupMultiplayerGameStates(socketId: string, secondPlayerId: string, playerName: string): void {
         const secondPlayerGameState: GameState = this.playerGameMap.get(secondPlayerId);
         secondPlayerGameState.secondPlayerId = socketId;
         this.playerGameMap.set(secondPlayerId, secondPlayerGameState);
@@ -216,7 +216,7 @@ export class GameService {
                 return true;
             }
         }
-        this.removeLevelToDeletionQueue(levelId);
+        this.removeLevelFromDeletionQueue(levelId);
         return false;
     }
 
@@ -231,7 +231,7 @@ export class GameService {
      * This method removes the level id from the levelDeletionQueue if it is found in it.
      * It also deletes the level from the server.
      */
-    removeLevelToDeletionQueue(levelId: number): void {
+    removeLevelFromDeletionQueue(levelId: number): void {
         const index = this.levelDeletionQueue.indexOf(levelId);
         if (index >= 0) {
             this.levelDeletionQueue.splice(index, 1);
