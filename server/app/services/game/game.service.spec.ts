@@ -22,6 +22,26 @@ describe('GameService', () => {
         expect(service).toBeDefined();
     });
 
+    describe('getLevelDeletionQueue', () => {
+        it('should return the correct data', () => {
+            const expectedQueue = [1, 2, 3];
+            service['levelDeletionQueue'] = expectedQueue;
+            expect(service.getLevelDeletionQueue()).toEqual(expectedQueue);
+        });
+    });
+
+    describe('getGameState', () => {
+        it('should return the correct data', () => {
+            const expectedGameState = {
+                gameId: 0,
+                foundDifferences: [1],
+                playerName: 'player',
+            };
+            service['playerGameMap'].set('socket', expectedGameState);
+            expect(service.getGameState('socket')).toEqual(expectedGameState);
+        });
+    });
+
     describe('getImageInfoOnClick', () => {
         it('should return the correct data', async () => {
             service['playerGameMap'].set('socket', {
