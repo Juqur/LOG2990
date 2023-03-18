@@ -19,12 +19,10 @@ export class MouseService {
 
     private differenceCounter: number = 0;
     private mousePosition: Vec2 = { x: 0, y: 0 };
-    // private url = ''; // The URL the service needs to send the value at.
     private canClick: boolean = true;
     private numberOfDifference: number = 0;
     private endGameAudio = new AudioService();
-    // private isOutOfBound: boolean = false;
-    isRectangleMode: boolean = false;
+    isRectangleMode: boolean = true;
     mouseDrawColor: string = 'black';
 
     constructor(
@@ -156,8 +154,6 @@ export class MouseService {
     async mouseDrag(event: MouseEvent): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            // console.log(this.mousePosition);
-            // this.isOutOfBound = true;
         }
         return Promise.resolve([]);
     }

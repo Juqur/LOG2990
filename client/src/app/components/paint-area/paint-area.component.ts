@@ -29,9 +29,10 @@ export class PaintAreaComponent implements AfterViewInit {
     private isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
+    private isShiftPressed = false;
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) { }
 
     /**
      * Getter for the canvas width
@@ -53,9 +54,24 @@ export class PaintAreaComponent implements AfterViewInit {
      *
      * @param event the keyboardEvent to process.
      */
-    @HostListener('keydown', ['$event'])
+    @HostListener('window:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
+        if (event.key === 'Shift') {
+            this.isShiftPressed = true;
+        }
+    }
+
+    /**
+     * This method listens for key presses and updates the buttonPressed attribute in
+     * consequences.
+     *
+     * @param event the keyboardEvent to process.
+     */
+    @HostListener('window:keyup', ['$event'])
+    buttonRelease(event: KeyboardEvent) {
+        if (event.key === 'Shift') {
+            this.isShiftPressed = false;
+        }
     }
 
     /**
@@ -123,9 +139,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
         const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id);
-        console.log(currentCanvas);
         currentCanvas?.parentNode?.insertBefore(this.tempCanvas, currentCanvas);
-        // document.body.querySelector('#grid-container')?.insertBefore(this.tempCanvas, currentCanvas);
         this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.canvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
@@ -135,7 +149,6 @@ export class PaintAreaComponent implements AfterViewInit {
         this.isDragging = true;
         this.mouseService.mouseDrag(event);
         this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        // console.log(this.isRectangle);
         if (!this.mouseService.isRectangleMode) {
             this.drawService.context = this.fgCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawService.draw(this.lastMousePosition);
@@ -179,12 +192,30 @@ export class PaintAreaComponent implements AfterViewInit {
                 willReadFrequently: true,
             }) as CanvasRenderingContext2D;
             this.drawService.context.clearRect(0, 0, this.width, this.height);
-            this.drawService.drawRect(this.lastMousePosition, accCoords.x - this.lastMousePosition.x, accCoords.y - this.lastMousePosition.y);
+            if (this.isShiftPressed) {
+                //let squareSizeY = squareSizeX;
+                //let size = 0;
+                let squareSizeX = 0;
+                let squareSizeY = 0;
+                let xDistance = accCoords.x - this.lastMousePosition.x;
+                let yDistance = accCoords.y - this.lastMousePosition.y;
+                // let squareSizeX = Math.abs(accCoords.x - this.lastMousePosition.x) > Math.abs(accCoords.y - this.lastMousePosition.y) ? (accCoords.x - this.lastMousePosition.x) : (accCoords.y - this.lastMousePosition.y);
+                if (Math.abs(xDistance) > Math.abs(yDistance)) {
+                    squareSizeX = xDistance;
+                    squareSizeY = ((yDistance > 0 && xDistance > 0) || (yDistance < 0 && xDistance < 0)) ? squareSizeX : -squareSizeX;
+                } else {
+                    squareSizeY = yDistance;
+                    squareSizeX = ((xDistance > 0 && yDistance > 0) || (xDistance < 0 && yDistance < 0)) ? squareSizeY : -squareSizeY;
+                }
+                this.drawService.drawRect(this.lastMousePosition, squareSizeX, squareSizeY);
+            }
+            else {
+                this.drawService.drawRect(this.lastMousePosition, accCoords.x - this.lastMousePosition.x, accCoords.y - this.lastMousePosition.y);
+            }
         }
     }
 
     canvasRelease(event: MouseEvent) {
-        console.log('release');
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {

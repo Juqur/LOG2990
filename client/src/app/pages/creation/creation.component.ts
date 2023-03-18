@@ -106,14 +106,17 @@ export class CreationComponent implements OnDestroy {
         defaultCanvas.getContext('2d')?.drawImage(diffCanvas, 0, 0);
         diffCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         diffCanvas.getContext('2d')?.drawImage(tempCanvas, 0, 0);
+        this.addToUndoRedoStack();
     }
 
     clearDefaultCanvas(): void {
         this.defaultPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        this.addToUndoRedoStack();
     }
 
     clearDiffCanvas(): void {
         this.diffPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        this.addToUndoRedoStack();
     }
 
     duplicateDefaultCanvas(): void {
@@ -121,6 +124,7 @@ export class CreationComponent implements OnDestroy {
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
         diffCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         diffCanvas.getContext('2d')?.drawImage(defaultCanvas, 0, 0);
+        this.addToUndoRedoStack();
     }
 
     duplicateDiffCanvas(): void {
@@ -128,8 +132,6 @@ export class CreationComponent implements OnDestroy {
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
         defaultCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         defaultCanvas.getContext('2d')?.drawImage(diffCanvas, 0, 0);
+        this.addToUndoRedoStack();
     }
-    
-
-
 }

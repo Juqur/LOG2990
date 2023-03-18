@@ -184,7 +184,6 @@ export class CreationPageService {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     brushSliderChange(event: any): void {
-        console.log(event.value);
         this.drawServiceDefault.setBrushSize(event.value);
         this.drawServiceDiff.setBrushSize(event.value);
     }
@@ -335,7 +334,6 @@ export class CreationPageService {
     private showDefaultImage(): void {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
-        console.log(image.src);
         image.onload = () => {
             if (!this.creationSpecs.defaultBgCanvasCtx) {
                 this.errorDialog('Aucun canvas de base.');
