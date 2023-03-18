@@ -76,7 +76,7 @@ export class GameGateway {
         }
         const secondPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
         if (secondPlayerId) {
-            this.gameService.changeMultiplayerGameState(socket.id, secondPlayerId, data.playerName);
+            this.gameService.setupMultiplayerGameStates(socket.id, secondPlayerId, data.playerName);
             socket.emit(GameEvents.ToBeAccepted);
             this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.PlayerSelection, data.playerName);
         } else {
@@ -111,11 +111,17 @@ export class GameGateway {
         this.server.emit(GameEvents.UpdateSelection, { levelId: gameState.gameId, canJoin: false });
     }
 
+    /**
+     * This method is called when a player cancels a game while waiting for a second player.
+     * It updates the selection page join button
+     * It deletes the player from the game
+     *
+     * @param socket The socket of the player.
+     */
     @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
     onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).gameId, canJoin: false });
         this.gameService.deleteUserFromGame(socket);
-        this.timerService.stopTimer(socket.id);
     }
 
     /**
@@ -147,14 +153,13 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnDeleteLevel)
     onDeleteLevel(socket: Socket, levelId: number): void {
+        this.server.emit(GameEvents.DeleteLevel, levelId);
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.server.emit(GameEvents.DeleteLevel, levelId);
         if (this.gameService.verifyIfLevelIsBeingPlayed(levelId)) {
             this.gameService.addLevelToDeletionQueue(levelId);
         }
-        this.server.emit(GameEvents.UpdateSelection, { levelId, canJoin: false });
     }
 
     /**
@@ -184,10 +189,11 @@ export class GameGateway {
      * @param socket the socket of the player.
      */
     private handlePlayerLeavingGame(socket: Socket): void {
-        if (this.gameService.getGameState(socket.id)) {
-            this.gameService.removeLevelToDeletionQueue(this.gameService.getGameState(socket.id).gameId);
-            if (this.gameService.getGameState(socket.id).secondPlayerId) {
-                const secondPlayerSocket = this.server.sockets.sockets.get(this.gameService.getGameState(socket.id).secondPlayerId);
+        const gameState = this.gameService.getGameState(socket.id);
+        if (gameState) {
+            this.gameService.removeLevelFromDeletionQueue(gameState.gameId);
+            if (gameState.secondPlayerId) {
+                const secondPlayerSocket = this.server.sockets.sockets.get(gameState.secondPlayerId);
                 secondPlayerSocket.emit(GameEvents.OnVictory);
             }
             this.gameService.deleteUserFromGame(socket);
