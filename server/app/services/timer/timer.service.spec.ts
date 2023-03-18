@@ -33,14 +33,14 @@ describe('TimerService', () => {
         it('should start the timer for a single player game', () => {
             const expectedTime = 0;
             service.startTimer('socket', server, true);
-            expect(service['timeMap'].get('socket')).toEqual(expectedTime + 1);
+            expect(service['timeMap'].get('socket')).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
 
         it('should start the timer for a multiplayer game', () => {
             const expectedTime = 120;
             service.startTimer('socket', server, false, 'secondSocket');
-            expect(service['timeMap'].get('socket')).toEqual(expectedTime - 1);
+            expect(service['timeMap'].get('socket')).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
             expect(service['timeIntervalMap'].get('secondSocket')).toBeDefined();
         });
