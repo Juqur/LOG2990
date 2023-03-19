@@ -62,10 +62,13 @@ export class GameService {
     getPlayersWaitingForGame(gameId: number): string[] {
         const listOfPlayersToRemove: string[] = [];
         for (const [socketId, gameState] of this.playerGameMap.entries()) {
-            if (gameState.gameId === gameId && gameState.otherSocketId) {
+            if (gameState.gameId === gameId && !gameState.isInGame) {
                 listOfPlayersToRemove.push(socketId);
-                this.playerGameMap.delete(socketId);
             }
+        }
+
+        for (const socketId of listOfPlayersToRemove) {
+            this.playerGameMap.delete(socketId);
         }
         return listOfPlayersToRemove;
     }
@@ -164,27 +167,6 @@ export class GameService {
         return undefined;
     }
 
-    // /**
-    //  * This method updates the game state of the player and the opponent.
-    //  *
-    //  * @param socketId The socket id of the player.
-    //  * @param secondPlayerId The socket id of the second player.
-    //  * @param playerName The name of the player.
-    //  */
-    // setupMultiplayerGameStates(socketId: string, secondPlayerId: string, playerName: string): void {
-    //     const secondPlayerGameState: GameState = this.playerGameMap.get(secondPlayerId);
-    //     secondPlayerGameState.otherSocketId = socketId;
-    //     this.playerGameMap.set(secondPlayerId, secondPlayerGameState);
-    //     this.playerGameMap.set(socketId, {
-    //         gameId: secondPlayerGameState.gameId,
-    //         foundDifferences: [],
-    //         playerName,
-    //         isInGame: false,
-    //         otherSocketId,
-    //         waitingForSecondPlayer: true,
-    //     });
-    // }
-
     /**
      * This method connects the rooms of the two players.
      * It also sets the isInGame property to true.
@@ -192,10 +174,12 @@ export class GameService {
      * @param socketId The socket id of the player.
      * @param secondPlayerId The socket id of the second player.
      */
-    connectRooms(socket: Socket, secondPlayerSocket: Socket): void {
-        socket.join(secondPlayerSocket.id);
-        secondPlayerSocket.join(socket.id);
-        this.bindPlayers(socket.id, secondPlayerSocket.id);
+    connectRooms(socket: Socket, otherSocket: Socket): void {
+        this.playerGameMap.get(socket.id).isInGame = true;
+        this.playerGameMap.get(otherSocket.id).isInGame = true;
+        socket.join(otherSocket.id);
+        otherSocket.join(socket.id);
+        this.bindPlayers(socket.id, otherSocket.id);
     }
 
     /**
