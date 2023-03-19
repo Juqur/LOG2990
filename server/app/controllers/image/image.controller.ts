@@ -18,6 +18,8 @@ export class ImageController {
 
     /**
      * Gets all the level information.
+     * This method also checks if the level is currently in the deletion queue and removes it from the list.
+     * It also checks if the level is currently in the queue and sets the canJoin property to true.
      *
      * @returns The array of levels data stored in the server.
      */
@@ -31,6 +33,14 @@ export class ImageController {
             for (let i = 0; i < levels.length; i++) {
                 if (levels[i].id === levelId) {
                     levels.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        for (const levelId of this.gameService.getLevelsCurrentlyInQueue()) {
+            for (const level of levels) {
+                if (level.id === levelId) {
+                    level.canJoin = true;
                     break;
                 }
             }
