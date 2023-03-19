@@ -17,14 +17,13 @@ export class MouseService {
     };
     closePath: string = '/selection';
 
+    isRectangleMode: boolean = true;
+    mouseDrawColor: string = 'black';
     private differenceCounter: number = 0;
     private mousePosition: Vec2 = { x: 0, y: 0 };
     private canClick: boolean = true;
     private numberOfDifference: number = 0;
     private endGameAudio = new AudioService();
-    isRectangleMode: boolean = true;
-    mouseDrawColor: string = 'black';
-
     constructor(
         private communicationService: CommunicationService,
         public popUpService: PopUpService /* private socketHandler: SocketHandler */,
@@ -147,10 +146,19 @@ export class MouseService {
         this.numberOfDifference = numberOfDifference;
     }
 
+    /**
+     * Resets the difference counter to 0.
+     */
     resetCounter(): void {
         this.differenceCounter = 0;
     }
 
+    /**
+     * Returns the mouse position.
+     *
+     * @param event the mouse event
+     * @returns a 2D vector containing the mouse position.
+     */
     async mouseDrag(event: MouseEvent): Promise<number[]> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };

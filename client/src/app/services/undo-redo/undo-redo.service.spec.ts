@@ -100,7 +100,7 @@ describe('UndoRedoService', () => {
     it('when undoPointer is 0 on undo, undoPointer should be decremented', () => {
         UndoRedoService.undoPointer = 0;
         UndoRedoService.undo();
-        expect(UndoRedoService.undoPointer).toEqual(-1);
+        expect(UndoRedoService.undoPointer).toEqual(Constants.minusOne);
     });
 
     it('when undoPointer is 0 on undo, undoStack.pop should be called', () => {

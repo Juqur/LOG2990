@@ -25,14 +25,13 @@ export class PaintAreaComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas', { static: false }) bgCanvas!: ElementRef<HTMLCanvasElement>;
     undoRedoService: UndoRedoService = new UndoRedoService();
     currentImage: HTMLImageElement;
-    buttonPressed = '';
+    isShiftPressed = false;
     private isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
-    private isShiftPressed = false;
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) { }
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
 
     /**
      * Getter for the canvas width
@@ -49,7 +48,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * This method listens for key presses and updates the buttonPressed attribute in
+     * This method listens for a shift key press and updates the isShiftPressed attribute in
      * consequences.
      *
      * @param event the keyboardEvent to process.
@@ -62,7 +61,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * This method listens for key presses and updates the buttonPressed attribute in
+     * This method listens for a shift key release and updates the isShiftPressed attribute in
      * consequences.
      *
      * @param event the keyboardEvent to process.
@@ -86,6 +85,9 @@ export class PaintAreaComponent implements AfterViewInit {
         this.drawService.context = this.fgCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
     }
 
+    /**
+     * Getter for the foreground canvas.
+     */
     getPaintCanvas() {
         return this.fgCanvas.nativeElement;
     }
@@ -119,6 +121,11 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * Merges the background and foreground canvas into one canvas.
+     *
+     * @returns an HTMLCanvasElement containing the result.
+     */
     mergeCanvas(): HTMLCanvasElement {
         const resultCanvas = document.createElement('canvas');
         resultCanvas.width = this.width;
@@ -128,6 +135,10 @@ export class PaintAreaComponent implements AfterViewInit {
         return resultCanvas;
     }
 
+    /**
+     * Creates a temporary canvas on top of the foreground canvas.
+     * It is used to display the rectangle in real time before applying it to the foreground canvas.
+     */
     createTempCanvas() {
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.className = 'draw';
@@ -145,6 +156,11 @@ export class PaintAreaComponent implements AfterViewInit {
         this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
     }
 
+    /**
+     * Detects the mouse click on the canvas, and calls the appropriate function for drawing.
+     *
+     * @param event the mouse event
+     */
     canvasClick(event: MouseEvent) {
         this.isDragging = true;
         this.mouseService.mouseDrag(event);
@@ -157,6 +173,12 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * Detects the mouse movement on the canvas when clicking on it.
+     * It then calls the appropriate function for drawing.
+     *
+     * @param event the mouse event
+     */
     canvasDrag(event: MouseEvent) {
         if (this.mouseService) {
             if (this.isDragging) {
@@ -167,6 +189,11 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * Paints the canvas in real time on mouse movement.
+     *
+     * @param event the mouse event
+     */
     canvasPaint(event: MouseEvent) {
         this.mouseService.mouseDrag(event);
         const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
@@ -182,6 +209,12 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * Shows a rectangle on the tempCanvas in real time on mouse movement.
+     * When shift is pressed, the rectangle is a square.
+     *
+     * @param event the mouse event
+     */
     canvasRectangularDrag(event: MouseEvent) {
         this.mouseService.mouseDrag(event);
         const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
@@ -193,28 +226,30 @@ export class PaintAreaComponent implements AfterViewInit {
             }) as CanvasRenderingContext2D;
             this.drawService.context.clearRect(0, 0, this.width, this.height);
             if (this.isShiftPressed) {
-                //let squareSizeY = squareSizeX;
-                //let size = 0;
                 let squareSizeX = 0;
                 let squareSizeY = 0;
-                let xDistance = accCoords.x - this.lastMousePosition.x;
-                let yDistance = accCoords.y - this.lastMousePosition.y;
-                // let squareSizeX = Math.abs(accCoords.x - this.lastMousePosition.x) > Math.abs(accCoords.y - this.lastMousePosition.y) ? (accCoords.x - this.lastMousePosition.x) : (accCoords.y - this.lastMousePosition.y);
+                const xDistance = accCoords.x - this.lastMousePosition.x;
+                const yDistance = accCoords.y - this.lastMousePosition.y;
                 if (Math.abs(xDistance) > Math.abs(yDistance)) {
                     squareSizeX = xDistance;
-                    squareSizeY = ((yDistance > 0 && xDistance > 0) || (yDistance < 0 && xDistance < 0)) ? squareSizeX : -squareSizeX;
+                    squareSizeY = (yDistance > 0 && xDistance > 0) || (yDistance < 0 && xDistance < 0) ? squareSizeX : -squareSizeX;
                 } else {
                     squareSizeY = yDistance;
-                    squareSizeX = ((xDistance > 0 && yDistance > 0) || (xDistance < 0 && yDistance < 0)) ? squareSizeY : -squareSizeY;
+                    squareSizeX = (xDistance > 0 && yDistance > 0) || (xDistance < 0 && yDistance < 0) ? squareSizeY : -squareSizeY;
                 }
                 this.drawService.drawRect(this.lastMousePosition, squareSizeX, squareSizeY);
-            }
-            else {
+            } else {
                 this.drawService.drawRect(this.lastMousePosition, accCoords.x - this.lastMousePosition.x, accCoords.y - this.lastMousePosition.y);
             }
         }
     }
 
+    /**
+     * Detects the mouse release on the canvas.
+     * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
+     *
+     * @param event the mouse event
+     */
     canvasRelease(event: MouseEvent) {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };

@@ -41,8 +41,8 @@ describe('DrawService', () => {
     });
 
     it('setBrushSize should set the brush size of the context', () => {
-        service.setBrushSize(10);
-        expect(service.context.lineWidth).toEqual(10);
+        service.setBrushSize(Constants.ten);
+        expect(service.context.lineWidth).toEqual(Constants.ten);
     });
 
     it('paintBrush should set attributes for a brush', () => {

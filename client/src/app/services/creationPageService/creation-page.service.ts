@@ -193,16 +193,12 @@ export class CreationPageService {
      * launches a popUp display the result as a white and black image where the black
      * sections are differences while the white are regions shared between images.
      */
-    detectDifference(defaultMergedCtx : CanvasRenderingContext2D, diffMergedCtx : CanvasRenderingContext2D): void {
+    detectDifference(defaultMergedCtx: CanvasRenderingContext2D, diffMergedCtx: CanvasRenderingContext2D): void {
         if (!this.creationSpecs.defaultBgCanvasCtx || !this.creationSpecs.diffBgCanvasCtx) {
             this.errorDialog('Canvas manquant');
             return;
-        };
-        this.creationSpecs.differences = this.diffService.detectDifferences(
-            defaultMergedCtx,
-            diffMergedCtx,
-            this.creationSpecs.radius,
-        );
+        }
+        this.creationSpecs.differences = this.diffService.detectDifferences(defaultMergedCtx, diffMergedCtx, this.creationSpecs.radius);
         if (!this.creationSpecs.differences) {
             this.errorDialog('Veuillez fournir des images non vides');
             return;
@@ -272,7 +268,7 @@ export class CreationPageService {
      * When the user press on the paint brush button, this method is called
      * It sets the mouse service to Paint mode
      */
-    paintBrushMode(defaultCtx : CanvasRenderingContext2D, diffCtx : CanvasRenderingContext2D): void {
+    paintBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = defaultCtx;
@@ -285,7 +281,7 @@ export class CreationPageService {
      * When the user press on the erase brush button, this method is called
      * It sets the mouse service to Erase mode
      */
-    eraseBrushMode(defaultCtx : CanvasRenderingContext2D, diffCtx : CanvasRenderingContext2D): void {
+    eraseBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = defaultCtx;

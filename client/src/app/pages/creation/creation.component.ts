@@ -37,20 +37,29 @@ export class CreationComponent implements OnDestroy {
         UndoRedoService.resetAllStacks();
     }
 
+    /**
+     * Sets the drawing mode to paint brush
+     */
     setPaintBrushMode(): void {
-        const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;;
+        const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.creationService.paintBrushMode(defaultCtx, diffCtx);
     }
 
+    /**
+     * Sets the drawing mode to erase brush
+     */
     setEraseBrushMode(): void {
-        const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;;
+        const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.creationService.eraseBrushMode(defaultCtx, diffCtx);
     }
 
+    /**
+     * Merges the layers of the canvas and calls the detectDifference function
+     */
     findDifference(): void {
-        const defaultCtx = this.defaultPaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;;
+        const defaultCtx = this.defaultPaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;
         const diffCtx = this.diffPaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;
         this.creationService.detectDifference(defaultCtx, diffCtx);
     }

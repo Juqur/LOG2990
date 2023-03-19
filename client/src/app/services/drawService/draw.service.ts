@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
+import { Constants } from '@common/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -84,7 +85,7 @@ export class DrawService {
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
         this.context.beginPath();
         this.context.moveTo(prevCoord.x, prevCoord.y);
-        if (actCoord.x !== -1 && actCoord.y !== -1) {
+        if (actCoord.x !== Constants.minusOne && actCoord.y !== Constants.minusOne) {
             this.context.lineTo(actCoord.x, actCoord.y);
         } else {
             this.context.lineTo(prevCoord.x + 1, prevCoord.y);

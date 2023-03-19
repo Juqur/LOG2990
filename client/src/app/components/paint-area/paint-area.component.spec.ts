@@ -44,13 +44,26 @@ describe('PaintAreaComponent', () => {
     //     expect(spy).toHaveBeenCalledTimes(1);
     // });
 
-    it('buttonDetect should modify the buttonPressed variable', () => {
-        const expectedKey = 'a';
+    it('buttonDetect should detect when shift is pressed', () => {
+        const expectedKey = 'Shift';
         const buttonEvent = {
             key: expectedKey,
         } as KeyboardEvent;
         component.buttonDetect(buttonEvent);
-        expect(component.buttonPressed).toEqual(expectedKey);
+        expect(component.isShiftPressed).toEqual(true);
+    });
+
+    it('buttonRelease should detect when shift is released', () => {
+        const expectedKey = 'Shift';
+        const buttonEvent = {
+            key: expectedKey,
+        } as KeyboardEvent;
+        const releaseEvent = new KeyboardEvent('keyup', {
+            key: expectedKey,
+        });
+        component.buttonDetect(buttonEvent);
+        component.buttonRelease(releaseEvent);
+        expect(component.isShiftPressed).toEqual(false);
     });
 
     it('getCanvas should return the canvas element', () => {
@@ -70,5 +83,4 @@ describe('PaintAreaComponent', () => {
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
-
 });

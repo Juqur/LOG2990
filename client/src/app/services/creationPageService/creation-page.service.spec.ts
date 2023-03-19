@@ -267,7 +267,7 @@ describe('CreationPageService', () => {
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }); */
 
-    /*it('detectDifference correctly set the number of differences and isSaveable', () => {
+    /* it('detectDifference correctly set the number of differences and isSaveable', () => {
         service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
         service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
@@ -289,7 +289,7 @@ describe('CreationPageService', () => {
         expect(service['isSaveable']).toBeTrue();
     }); */
 
-    /*it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
+    /* it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
         service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
         service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
@@ -314,7 +314,7 @@ describe('CreationPageService', () => {
         expect(service['differenceAmountMsg']).toEqual(' (Attention, le nombre de différences est trop élevé)');
     });*/
 
-    /*it('detectDifference should call openDialog if the game is not saveable', () => {
+    /* it('detectDifference should call openDialog if the game is not saveable', () => {
         service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
         service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
@@ -331,7 +331,7 @@ describe('CreationPageService', () => {
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     });*/
 
-    /*it('detectDifference should call openDialog if the game is saveable', () => {
+    /* it('detectDifference should call openDialog if the game is saveable', () => {
         service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
         service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
