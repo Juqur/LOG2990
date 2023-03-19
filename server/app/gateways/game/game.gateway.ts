@@ -202,9 +202,9 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnAbandonGame)
     onAbandonGame(socket: Socket): void {
-        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId; // is there a better way ?
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        secondPlayerSocket.emit(GameEvents.OpponentAbandoned);
+        // const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId; // is there a better way ?
+        // const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        // secondPlayerSocket.emit(GameEvents.OpponentAbandoned);
         this.handlePlayerLeavingGame(socket);
     }
 

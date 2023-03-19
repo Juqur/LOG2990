@@ -5,6 +5,6 @@
             <p id="sender-name">{{ name }}</p>
             <p>]</p>
         </div>
-        <p id="message-text">{{ message.text }}</p>
+        <p id="message-text" [ngClass]="this.message.senderId === 'system' ? this.message.senderId : ''">{{ message.text }}</p>
     </div>
 </div>
