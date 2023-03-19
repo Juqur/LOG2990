@@ -16,7 +16,7 @@ describe('PaintAreaComponent', () => {
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState', 'mouseDrag']);
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw','drawRect', 'setPaintColor']);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw', 'drawRect', 'setPaintColor']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -282,5 +282,4 @@ describe('PaintAreaComponent', () => {
         const tempCanvasElement = document.body.querySelector('.draw');
         expect(tempCanvasElement).toBeNull();
     });
-
 });
