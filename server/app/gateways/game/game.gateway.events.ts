@@ -4,14 +4,11 @@ export enum GameEvents {
     OnClick = 'onClick',
     OnLeave = 'onLeave',
     OnSecondPlayerJoined = 'onSecondPlayerJoined',
-    UpdateDifferenceAmount = 'updateDifferenceAmount',
-    OnProcessedClick = 'onProcessedClick',
     OnDeleteLevel = 'onDeleteLevel',
     OnGameSelection = 'onGameSelection',
     OnGameAccepted = 'onGameAccepted',
     OnGameRejected = 'onGameRejected',
     OnGameCancelledWhileWaitingForSecondPlayer = 'onGameCancelledWhileWaitingForSecondPlayer',
-    OnGameCancelledWhileWaitingForAcceptation = 'onGameCancelledWhileWaitingForAcceptation',
     OnAbandonGame = 'onAbandonGame',
 
     UpdateSelection = 'updateSelection',
@@ -25,4 +22,5 @@ export enum GameEvents {
     SendTime = 'sendTime',
     Defeat = 'defeat',
     Victory = 'victory',
+    ProcessedClick = 'processedClick',
 }
