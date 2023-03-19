@@ -95,7 +95,7 @@ export class GameService {
      * @returns A GameState object containing the game data.
      */
     async getImageInfoOnClick(socketId: string, position: number): Promise<GameData> {
-        const gameState = this.playerGameMap.get(socketId);
+        const gameState = this.getGameState(socketId);
         const id: string = gameState.levelId as unknown as string;
         const response = await this.imageService.findDifference(id, gameState.foundDifferences, position);
         return {
@@ -133,11 +133,12 @@ export class GameService {
     /**
      * This method creates a new game state for the player.
      * It creates a new entry in the playerGameMap.
-     * If the player is not in a multiplayer game, it sets the isInGame property to true.
+     * If the game is solo, it is implied that the game is already found and the player is in the game.
+     * If the game is multiplayer, it has to match make therefore the game is not found and the player is not in the game.
      *
      * @param socketId The socket id of the player.
-     * @param data The data containing the level id, the player name and a boolean for waitingSecondPlayer if it is a multiplayer game.
-     * @param isMultiplayer A boolean indicating whether the game is multiplayer.
+     * @param data The data containing the level id, the player name.
+     * @param isMultiplayer A boolean flag indicating whether the game is multiplayer.
      */
     createGameState(socketId: string, data: { levelId: number; playerName: string }, isMultiplayer: boolean): void {
         const playerGameState: GameState = {
@@ -240,12 +241,12 @@ export class GameService {
      * @param otherSocketId The socket id of the other player.
      */
     bindPlayers(socketId: string, otherSocketId: string): void {
-        const gameState = this.playerGameMap.get(socketId);
+        const gameState = this.getGameState(socketId);
         gameState.isGameFound = true;
         gameState.otherSocketId = otherSocketId;
         this.playerGameMap.set(socketId, gameState);
 
-        const otherGameState = this.playerGameMap.get(otherSocketId);
+        const otherGameState = this.getGameState(otherSocketId);
         otherGameState.isGameFound = true;
         otherGameState.otherSocketId = socketId;
         this.playerGameMap.set(otherSocketId, otherGameState);
