@@ -23,11 +23,12 @@ describe('GameGateway', () => {
 
     beforeEach(async () => {
         gameState = {
-            gameId: 1,
+            levelId: 1,
             foundDifferences: [],
             playerName: 'Alice',
             isInGame: false,
             isGameFound: false,
+            isInCheatMode: false,
         };
         timerService = createStubInstance<TimerService>(TimerService);
         gameService = createStubInstance<GameService>(GameService);
@@ -176,17 +177,18 @@ describe('GameGateway', () => {
 
         it('should emit to the player that the game has started', () => {
             const secondGameState: GameState = {
-                gameId: 1,
+                levelId: 1,
                 foundDifferences: [],
                 playerName: 'Bob',
                 isGameFound: true,
                 isInGame: true,
+                isInCheatMode: false,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             const emitSpy = jest.spyOn(socket, 'emit');
             gateway.onGameAccepted(socket);
             expect(emitSpy).toBeCalledWith('startClassicMultiplayerGame', {
-                levelId: gameState.gameId,
+                levelId: gameState.levelId,
                 playerName: gameState.playerName,
                 secondPlayerName: secondGameState.playerName,
             });
@@ -194,17 +196,18 @@ describe('GameGateway', () => {
 
         it('should emit to the opponent that the game has started', () => {
             const secondGameState: GameState = {
-                gameId: 1,
+                levelId: 1,
                 foundDifferences: [],
                 playerName: 'Bob',
                 isGameFound: true,
                 isInGame: true,
+                isInCheatMode: false,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             const emitSpy = jest.spyOn(socketSecondPlayer, 'emit');
             gateway.onGameAccepted(socket);
             expect(emitSpy).toBeCalledWith('startClassicMultiplayerGame', {
-                levelId: gameState.gameId,
+                levelId: gameState.levelId,
                 playerName: secondGameState.playerName,
                 secondPlayerName: gameState.playerName,
             });
@@ -219,7 +222,7 @@ describe('GameGateway', () => {
         it('should update the selection page', () => {
             const emitSpy = jest.spyOn(server, 'emit');
             gateway.onGameAccepted(socket);
-            expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.gameId, canJoin: false });
+            expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: false });
         });
     });
 
@@ -227,7 +230,7 @@ describe('GameGateway', () => {
         it('should update the selection page', () => {
             const emitSpy = jest.spyOn(server, 'emit');
             gateway.onGameCancelledWhileWaitingForSecondPlayer(socket);
-            expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.gameId, canJoin: false });
+            expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: false });
         });
 
         it('should delete the user from the game map', () => {
@@ -241,7 +244,7 @@ describe('GameGateway', () => {
         it('should update the selection page', () => {
             const emitSpy = jest.spyOn(server, 'emit');
             gateway.onGameRejected(socket);
-            expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.gameId, canJoin: false });
+            expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: false });
         });
 
         it('should delete the user and the opponent from the game map', () => {
@@ -306,7 +309,7 @@ describe('GameGateway', () => {
         it('should remove level from deletion queue', () => {
             const removeLevelFromDeletionQueueSpy = jest.spyOn(gameService, 'removeLevelFromDeletionQueue');
             gateway['handlePlayerLeavingGame'](socket);
-            expect(removeLevelFromDeletionQueueSpy).toBeCalledWith(gameState.gameId);
+            expect(removeLevelFromDeletionQueueSpy).toBeCalledWith(gameState.levelId);
         });
 
         it('should emit to the opponent that he has won by default', () => {
