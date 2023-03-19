@@ -46,6 +46,8 @@ export class GameGateway {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
+        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+
         const message: string = dataToSend.differencePixels.length === 0 ? 'ERREUR' : 'Différence trouvée';
         const playerName: string = this.gameService.getGameState(socket.id).otherSocketId
             ? ' par ' + this.gameService.getGameState(socket.id).playerName
@@ -56,9 +58,9 @@ export class GameGateway {
             text: message + playerName,
         };
         socket.emit(GameEvents.MessageSent, chatMessage);
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        secondPlayerSocket.emit(GameEvents.MessageSent, chatMessage);
-
+        if (this.gameService.getGameState(socket.id).otherSocketId) {
+            secondPlayerSocket.emit(GameEvents.MessageSent, chatMessage);
+        }
         if (secondPlayerId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
             secondPlayerSocket.emit(GameEvents.ProcessedClick, dataToSend);
