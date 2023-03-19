@@ -43,11 +43,11 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnClick)
     async onClick(socket: Socket, position: number): Promise<void> {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
-        socket.emit(GameEvents.OnProcessedClick, dataToSend);
+        socket.emit(GameEvents.ProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
         if (secondPlayerId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
-            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnProcessedClick, dataToSend);
+            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
         }
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);

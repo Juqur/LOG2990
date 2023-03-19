@@ -88,7 +88,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It checks if the difference is in the original image or in the diff image, and if the game is finished.
      */
     handleSocket() {
-        this.socketHandler.on('game', 'onProcessedClick', (data) => {
+        this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
             if (gameData.amountOfDifferencesFoundSecondPlayer) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
