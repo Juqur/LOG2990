@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
@@ -45,6 +45,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     originalImageSrc: string = '';
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
+    isInCheatMode: boolean = false;
 
     private levelId: number;
     private clickedOriginalImage: boolean = true;
@@ -56,6 +57,28 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private gamePageService: GamePageService,
         private communicationService: CommunicationService,
     ) {}
+
+    /**
+     * Listener for the key press event. It is called when ever we press on a key inside the game page.
+     *
+     * @param event the key up event.
+     */
+    @HostListener('document:keydown', ['$event'])
+    handleKeyDownEvent(event: KeyboardEvent) {
+        if (event.key === 't') {
+            if (!this.isInCheatMode) {
+                this.isInCheatMode = !this.isInCheatMode;
+                this.socketHandler.send('game', 'onStartCheatMode');
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.setImages(this.levelId);
+                return;
+            }
+            this.isInCheatMode = !this.isInCheatMode;
+            this.socketHandler.send('game', 'onStopCheatMode');
+            this.gamePageService.stopCheatMode();
+        }
+        // Probably need to tell the server we entered cheat mode.
+    }
 
     /**
      * This method is called when the component is initialized.
@@ -79,6 +102,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.removeListener('game', 'onProcessedClick');
         this.socketHandler.removeListener('game', 'onVictory');
         this.socketHandler.removeListener('game', 'onDefeat');
+        this.socketHandler.removeListener('game', 'startCheatMode');
+        this.gamePageService.stopCheatMode();
     }
 
     /**
@@ -94,16 +119,20 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             }
             this.playerDifferencesCount = gameData.amountOfDifferencesFound;
-            const response = this.gamePageService.validateResponse(gameData.differencePixels);
+            // const response = this.gamePageService.validateResponse(gameData.differencePixels);
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-            this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
+            this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
         });
         this.socketHandler.on('game', 'onVictory', () => {
             this.gamePageService.handleVictory();
         });
         this.socketHandler.on('game', 'onDefeat', () => {
             this.gamePageService.handleDefeat();
+        });
+        this.socketHandler.on('game', 'startCheatMode', (data) => {
+            const differences = data as number[];
+            this.gamePageService.startCheatMode(differences);
         });
     }
 

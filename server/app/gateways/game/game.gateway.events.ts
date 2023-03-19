@@ -16,6 +16,8 @@ export enum GameEvents {
     OnGameCancelledWhileWaitingForSecondPlayer = 'onGameCancelledWhileWaitingForSecondPlayer',
     OnGameCancelledWhileWaitingForAcceptation = 'onGameCancelledWhileWaitingForAcceptation',
     OnAbandonGame = 'onAbandonGame',
+    OnStartCheatMode = 'onStartCheatMode',
+    OnStopCheatMode = 'onStopCheatMode',
 
     UpdateSelection = 'updateSelection',
     InvalidName = 'invalidName',
@@ -25,4 +27,5 @@ export enum GameEvents {
     StartClassicMultiplayerGame = 'startClassicMultiplayerGame',
     ShutDownGame = 'shutDownGame',
     DeleteLevel = 'deleteLevel',
+    StartCheatMode = 'startCheatMode',
 }

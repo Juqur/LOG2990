@@ -34,6 +34,9 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu de sélection',
     };
     private closePath: string = '/selection';
+    private isInCheatMode: boolean = false;
+    private flashInterval: ReturnType<typeof setInterval>;
+    private missing: number[];
 
     // eslint-disable-next-line max-params
     constructor(
@@ -106,16 +109,17 @@ export class GamePageService {
      * @param gameData Values of the game
      * @param clickedOriginalImage boolean that represents if the player clicked on the original image or the difference image
      */
-    handleResponse(response: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
-        if (!clickedOriginalImage) {
-            if (response) {
-                this.handleAreaFoundInDiff(gameData.differencePixels);
+    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
+        const response = this.validateResponse(gameData.differencePixels);
+        if (response) {
+            if (!clickedOriginalImage) {
+                this.handleAreaFoundInDiff(gameData.differencePixels, isInCheatMode);
             } else {
-                this.handleAreaNotFoundInDiff();
+                this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode);
             }
         } else {
-            if (response) {
-                this.handleAreaFoundInOriginal(gameData.differencePixels);
+            if (!clickedOriginalImage) {
+                this.handleAreaNotFoundInDiff();
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
@@ -134,6 +138,29 @@ export class GamePageService {
         this.audioService.create('./assets/audio/LossSound.mp3');
         this.audioService.reset();
         this.audioService.play();
+    }
+
+    /**
+     * Method that initiates the cheat mode
+     *
+     * @param differences the differences to have flash
+     */
+    startCheatMode(differences: number[]) {
+        this.missing = differences.filter((item) => {
+            return !this.imagesData.includes(item);
+        });
+        this.flashInterval = setInterval(() => {
+            this.diffPlayArea.flashArea(this.missing);
+            this.originalPlayArea.flashArea(this.missing);
+            this.resetCanvas();
+        }, Constants.millisecondsQuarterOfSecond);
+    }
+
+    /**
+     * Method that stops the cheat mode.
+     */
+    stopCheatMode() {
+        clearInterval(this.flashInterval);
     }
 
     /**
@@ -214,12 +241,19 @@ export class GamePageService {
      *
      * @param result the current area found
      */
-    private handleAreaFoundInDiff(result: number[]): void {
+    private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
+        if (isInCheatMode) {
+            this.missing = this.missing.filter((item) => {
+                return !result.includes(item);
+            });
+        }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.diffPlayArea.flashArea(result);
-        this.originalPlayArea.flashArea(result);
-        this.resetCanvas();
+        if (!this.isInCheatMode) {
+            this.diffPlayArea.flashArea(result);
+            this.originalPlayArea.flashArea(result);
+            this.resetCanvas();
+        }
     }
 
     /**
@@ -239,7 +273,12 @@ export class GamePageService {
      *
      * @param result the current area found
      */
-    private handleAreaFoundInOriginal(result: number[]): void {
+    private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
+        if (isInCheatMode) {
+            this.missing = this.missing.filter((item) => {
+                return !result.includes(item);
+            });
+        }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);

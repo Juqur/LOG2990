@@ -172,6 +172,17 @@ export class GameGateway {
         this.handlePlayerLeavingGame(socket);
     }
 
+    @SubscribeMessage(GameEvents.OnStartCheatMode)
+    async onStartCheatMode(socket: Socket): Promise<void> {
+        const data = await this.gameService.startCheatMode(socket.id);
+        socket.emit(GameEvents.StartCheatMode, data);
+    }
+
+    @SubscribeMessage(GameEvents.OnStopCheatMode)
+    onStopCheatMode(socket: Socket): void {
+        this.gameService.stopCheatMode(socket.id);
+    }
+
     /**
      * This method is called when a player disconnects.
      *

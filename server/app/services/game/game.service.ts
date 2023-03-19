@@ -16,6 +16,7 @@ export interface GameState {
     secondPlayerId?: string;
     waitingForSecondPlayer?: boolean;
     isInGame?: boolean;
+    isInCheatMode: boolean;
 }
 
 export enum VictoryType {
@@ -128,6 +129,7 @@ export class GameService {
             foundDifferences: [],
             playerName: data.playerName,
             waitingForSecondPlayer: data.waitingSecondPlayer,
+            isInCheatMode: false,
         };
         if (!data.waitingSecondPlayer) {
             playerGameState.isInGame = true;
@@ -171,6 +173,7 @@ export class GameService {
             playerName,
             secondPlayerId,
             waitingForSecondPlayer: false,
+            isInCheatMode: false,
         });
     }
 
@@ -237,6 +240,24 @@ export class GameService {
             this.levelDeletionQueue.splice(index, 1);
             this.imageService.deleteLevelData(levelId);
         }
+    }
+
+    async startCheatMode(socketId: string): Promise<number[]> {
+        const gameState = this.getGameState(socketId);
+        gameState.isInCheatMode = true;
+        const differencesGroups = await this.imageService.getAllDifferences(gameState.gameId.toString());
+        let differences: number[] = [];
+        differencesGroups.forEach((element) => {
+            differences = differences.concat(element);
+        });
+        this.playerGameMap.set(socketId, gameState);
+        return differences;
+    }
+
+    stopCheatMode(socketId: string): void {
+        const gameState = this.getGameState(socketId);
+        gameState.isInCheatMode = false;
+        this.playerGameMap.set(socketId, gameState);
     }
 
     /**
