@@ -79,7 +79,7 @@ export class GameService {
     getJoinableLevels(): number[] {
         const listOfLevels: number[] = [];
         for (const gameState of this.playerGameMap.values()) {
-            if (gameState.gameId && !listOfLevels.includes(gameState.gameId) && !gameState.isGameFound) {
+            if (!listOfLevels.includes(gameState.gameId) && !gameState.isGameFound) {
                 listOfLevels.push(gameState.gameId);
             }
         }
@@ -112,7 +112,7 @@ export class GameService {
      *
      * @param socketId The socket id of the player.
      * @param server The server object.
-     * @param totalDifferences the total amount of differences in the level.
+     * @param totalDifferences The total amount of differences in the level.
      * @returns A boolean indicating whether the player has won.
      */
     verifyWinCondition(socket: Socket, server: Server, totalDifferences: number): boolean {
@@ -190,9 +190,9 @@ export class GameService {
      */
     deleteUserFromGame(socket: Socket): void {
         if (this.playerGameMap.get(socket.id)) {
-            const secondPlayerId = this.playerGameMap.get(socket.id).otherSocketId;
-            if (secondPlayerId) {
-                socket.leave(secondPlayerId);
+            const otherSocketId = this.playerGameMap.get(socket.id).otherSocketId;
+            if (otherSocketId) {
+                socket.leave(otherSocketId);
             }
             this.playerGameMap.delete(socket.id);
         }
