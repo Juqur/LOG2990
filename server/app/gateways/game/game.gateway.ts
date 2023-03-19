@@ -175,12 +175,22 @@ export class GameGateway {
         this.handlePlayerLeavingGame(socket);
     }
 
+    /**
+     * Method called when the player toggles on the cheat mode.
+     *
+     * @param socket the socket of the player
+     */
     @SubscribeMessage(GameEvents.OnStartCheatMode)
     async onStartCheatMode(socket: Socket): Promise<void> {
         const data = await this.gameService.startCheatMode(socket.id);
         socket.emit(GameEvents.StartCheatMode, data);
     }
 
+    /**
+     * Method called when the player toggles off the cheat mode.
+     *
+     * @param socket the socket of the player
+     */
     @SubscribeMessage(GameEvents.OnStopCheatMode)
     onStopCheatMode(socket: Socket): void {
         this.gameService.stopCheatMode(socket.id);

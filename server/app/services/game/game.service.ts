@@ -236,6 +236,14 @@ export class GameService {
         }
     }
 
+    /**
+     * This method starts the cheat mode and returns an array containing the coordinates of all the pixels
+     * which are part of differences. It does so by changing the isInCheatMode attribute of the game state
+     * to true.
+     *
+     * @param socketId the id of the associated socket
+     * @returns an array containing all the differences of the level.
+     */
     async startCheatMode(socketId: string): Promise<number[]> {
         const gameState = this.getGameState(socketId);
         gameState.isInCheatMode = true;
@@ -248,6 +256,11 @@ export class GameService {
         return differences;
     }
 
+    /**
+     * This method stops the cheat mode on a given socket by changing the isInCheatMode attribute of the game state to false.
+     *
+     * @param socketId the id off the associated socket.
+     */
     stopCheatMode(socketId: string): void {
         const gameState = this.getGameState(socketId);
         gameState.isInCheatMode = false;

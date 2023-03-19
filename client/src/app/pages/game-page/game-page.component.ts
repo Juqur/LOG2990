@@ -60,6 +60,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     /**
      * Listener for the key press event. It is called when ever we press on a key inside the game page.
+     * In this specific case, we check if the key 't' was pressed and if to we toggle on and off the cheat mode.
      *
      * @param event the key up event.
      */
@@ -111,6 +112,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It connects to the game socket and sends the level id to the server.
      * It also handles the response from the server.
      * It checks if the difference is in the original image or in the diff image, and if the game is finished.
+     * It checks if we have entered the cheat mode.
      */
     handleSocket() {
         this.socketHandler.on('game', 'processedClick', (data) => {
@@ -121,7 +123,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
             this.playerDifferencesCount = gameData.amountOfDifferencesFound;
-            // const response = this.gamePageService.validateResponse(gameData.differencePixels);
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
