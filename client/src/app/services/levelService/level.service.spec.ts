@@ -105,8 +105,10 @@ describe('LevelService', () => {
     ];
 
     beforeEach(() => {
-        communicationServiceMock = jasmine.createSpyObj('CommunicationService', ['getLevels']);
+        communicationServiceMock = jasmine.createSpyObj('CommunicationService', ['getLevels', 'deleteLevel']);
         communicationServiceMock.getLevels.and.returnValue(of(levelExpectedArray));
+        communicationServiceMock.deleteLevel.and.returnValue(of(true));
+
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [{ provide: CommunicationService, useValue: communicationServiceMock }],
@@ -152,6 +154,13 @@ describe('LevelService', () => {
         expect(service.isEndOfList()).toEqual(false);
         service['currentShownPage'] = 1;
         expect(service.isEndOfList()).toEqual(true);
+    });
+
+    it('deleteLevel should correctly delete a level', () => {
+        const spy = spyOn(service, 'updatePageLevels' as never);
+        service.deleteLevel(1);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(service['levels']).toEqual(levelExpectedArray.slice(1, levelExpectedArray.length));
     });
 
     it('updatePageLevels should correctly update the shownLevel attribute', () => {

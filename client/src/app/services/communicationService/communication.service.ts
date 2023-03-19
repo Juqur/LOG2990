@@ -1,21 +1,21 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { LevelFormData } from '@app/classes/level-form-data';
 import { Level } from '@app/levels';
-import { LevelFormData } from '@common/levelFormData';
 import { Message } from '@common/message';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service is used in order to make HTTP requests to the server.
  *
  * @author Junaid Qureshi
  * @class CommunicationService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class CommunicationService {
     private readonly baseUrl: string = environment.serverUrl;
 
@@ -37,6 +37,7 @@ export class CommunicationService {
      * @returns an observable on the appropriate level.
      */
     getLevel(levelId: number): Observable<Level> {
+        console.log('Get level has been truely called');
         return this.http.get<Level>(`${this.baseUrl}api` + '/image/' + levelId).pipe(catchError(this.handleError<Level>('basicGet')));
     }
 
@@ -83,7 +84,7 @@ export class CommunicationService {
     }
 
     /**
-     * This functions is used to send a request to the server to create a new game. It returns, if teh creation was
+     * This functions is used to send a request to the server to create a new game. It returns, if the creation was
      * successful the gameId which represents the game.
      *
      * @param imageId the id of the image linked to the new game we wish to start
@@ -94,6 +95,16 @@ export class CommunicationService {
             map((response) => response.body),
             catchError(this.handleError<string | null>('basicPost')),
         );
+    }
+
+    /**
+     * This functions is used to send a request to the server to delete a level.
+     *
+     * @param imageId The id of the level to delete in the database.
+     * @returns the confirmation of the deletion.
+     */
+    deleteLevel(levelId: number): Observable<boolean> {
+        return this.http.delete<boolean>(`${this.baseUrl}api` + '/image/' + levelId);
     }
 
     /**

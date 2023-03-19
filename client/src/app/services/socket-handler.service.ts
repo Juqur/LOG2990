@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 })
 export class SocketHandler {
     private sockets: Map<string, Socket> = new Map<string, Socket>();
-    private socketListenersMap: string[] = [];
+    private socketListenersList: string[] = [];
 
     /**
      * Gets the socket of its kind, according to the given gateway.
@@ -73,11 +73,24 @@ export class SocketHandler {
      * @param action The action to perform on that event
      */
     on<T>(gateway: string, event: string, action: (data: T) => void): void {
-        if (!this.socketListenersMap.find((listener) => listener === event)) {
+        if (!this.socketListenersList.find((listener) => listener === event)) {
             this.getSocket(gateway)?.on(event, action);
-            this.socketListenersMap.push(event);
+            this.socketListenersList.push(event);
         }
-        console.log(this.socketListenersMap);
+    }
+
+    /**
+     * Removes the event listener for a given event and gateway.
+     *
+     * @param type The gateway on which to remove the event listener.
+     * @param event The event to remove the listener for.
+     */
+    removeListener(gateway: string, event: string): void {
+        const index = this.socketListenersList.indexOf(event);
+        if (index >= 0) {
+            this.socketListenersList.splice(index, 1);
+            this.getSocket(gateway)?.off(event);
+        }
     }
 
     /**

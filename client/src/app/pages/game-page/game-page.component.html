@@ -1,7 +1,9 @@
 <app-scale-container>
     <div class="container">
         <section id="top-area">
-            <button mat-button (click)="abandon()"><span>Abandonner</span></button>
+            <button (click)="abandonGame()" mat-button routerLink="/home">
+                <span>Abandonner</span>
+            </button>
             <app-game-timer></app-game-timer>
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">
@@ -18,7 +20,7 @@
         </section>
         <section id="play-area-container">
             <app-play-area [isDiff]="false" [image]="originalImageSrc" (click)="clickedOnOriginal($event)" #originalPlayArea></app-play-area>
-            <div id="between-images">
+            <div *ngIf="!secondPlayerName" id="between-images">
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
                 </button>

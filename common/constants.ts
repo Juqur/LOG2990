@@ -14,7 +14,7 @@ export namespace Constants {
     export const thousand: number = 1000;
 
     // Global time constants
-    export const secondsPerMinute: number = 60;
+    export const SECONDS_PER_MINUTE: number = 60;
 
     // Page display
     export const levelsPerPage: number = 4;
@@ -33,6 +33,7 @@ export namespace Constants {
     export const twoMinutesTimer: number = 120;
     export const tenMinutesTimer: number = 600;
     export const eightMinutesWait: number = 480000;
+    export const PADDING_NUMBER: number = 10;
 
     // Chat message
     export const maxNameLength: number = 11;
@@ -62,6 +63,7 @@ export namespace Constants {
     export const INIT_DIFF_NB = 0;
     export const BMP_BPP_POS = 28;
     export const BMP_BPP = 24;
+    export const MAX_GAME_NAME_LENGTH = 10;
 
     // Game constants
     export const INIT_COUNTDOWN_TIME = 30;
@@ -72,6 +74,17 @@ export namespace Constants {
 
     // Card Component
     export const MAX_NAME_LENGTH = 300;
+    export const TIMED_GAME_MODE_LENGTH = 120;
+    export const DEFAULT_LEVEL = {
+        id: 0,
+        name: 'no name',
+        playerSolo: ['player 1', 'player 2', 'player 3'],
+        timeSolo: [-1, -1, -1],
+        playerMulti: ['player 1', 'player 2', 'player 3'],
+        timeMulti: [-1, -1, -1],
+        isEasy: true,
+        nbDifferences: 7,
+    };
 }
 
 export enum MouseButton {

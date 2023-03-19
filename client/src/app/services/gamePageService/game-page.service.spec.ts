@@ -25,13 +25,15 @@ describe('GamePageService', () => {
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
 
     const gameData: GameData = {
-        differences: [],
-        amountOfDifferences: 0,
+        differencePixels: [],
+        totalDifferences: 0,
+        amountOfDifferencesFound: 0,
+        amountOfDifferencesFoundSecondPlayer: 0,
     };
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'setClickState']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
@@ -79,13 +81,23 @@ describe('GamePageService', () => {
 
     it('should correctly set default and difference images', () => {
         service.setImages(1);
-        expect(service['originalImageSrc']).toEqual(environment.serverUrl + 'originals/1.bmp');
-        expect(service['diffImageSrc']).toEqual(environment.serverUrl + 'modifiees/1.bmp');
+        expect(service['originalImageSrc']).toEqual(environment.serverUrl + 'original/1.bmp');
+        expect(service['diffImageSrc']).toEqual(environment.serverUrl + 'modified/1.bmp');
     });
 
-    it('should send a click to the server', () => {
-        service.sendClick(1);
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', { position: 1 });
+    it('should return the mousePosition if it is valid', () => {
+        mouseServiceSpy.getMousePosition.and.returnValue(1);
+        expect(service.verifyClick(new MouseEvent('click'))).toEqual(1);
+    });
+
+    it('should return -1 if it is not valid', () => {
+        mouseServiceSpy.getMousePosition.and.returnValue(null);
+        expect(service.verifyClick(new MouseEvent('click'))).toEqual(Constants.minusOne);
+    });
+
+    it('should reset the audio service', () => {
+        service.resetAudio();
+        expect(audioServiceSpy.reset).toHaveBeenCalled();
     });
 
     it('should play a victory audio and open a victory dialog', () => {

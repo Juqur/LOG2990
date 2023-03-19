@@ -1,43 +1,23 @@
-import { ImageService } from '@app/services/image/image.service';
+import { GameService } from '@app/services/game/game.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage, SenderType } from '@common/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { randomUUID } from 'crypto';
 import { Server, Socket } from 'socket.io';
-import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 import { GameEvents } from './game.gateway.events';
 
-export interface GameData {
-    differences: number[];
-    amountOfDifferences: number;
-    amountOfDifferencesSecondPlayer?: number;
-}
-
-export interface GameState {
-    gameId: number;
-    foundDifferences: number[];
-    playerName: string;
-    secondPlayerId: string;
-    waitingForSecondPlayer: boolean;
-}
-
-@WebSocketGateway({ cors: true })
-@Injectable()
-
 /**
- * This gateway is used to handle the game logic.
+ * This gateway is used to all socket events.
  *
  * @author Junaid Qureshi
  * @class GameGateway
  */
+@WebSocketGateway({ cors: true })
+@Injectable()
 export class GameGateway {
     @WebSocketServer() private server: Server;
-    private playerRoomMap = new Map<string, string>();
-    private playerGameMap = new Map<string, GameState>();
-    private timeMap = new Map<string, number>();
-    private timeIntervalMap = new Map<string, NodeJS.Timeout>();
 
-    constructor(private imageService: ImageService) {}
+    constructor(private gameService: GameService, private timerService: TimerService) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -48,66 +28,35 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
-        const roomId = randomUUID();
-        this.playerRoomMap.set(socket.id, roomId);
-        this.playerGameMap.set(socket.id, {
-            gameId: data.levelId,
-            foundDifferences: [],
-            playerName: data.playerName,
-            secondPlayerId: '',
-            waitingForSecondPlayer: false,
-        });
-        socket.join(roomId);
-        this.timeMap.set(socket.id, 0);
-        const interval = setInterval(() => {
-            const time = this.timeMap.get(socket.id);
-            this.timeMap.set(socket.id, time + 1);
-            socket.emit(GameEvents.SendTime, time + 1);
-        }, DELAY_BEFORE_EMITTING_TIME);
-        this.timeIntervalMap.set(socket.id, interval);
+        this.gameService.createNewGame(socket.id, { levelId: data.levelId, playerName: data.playerName });
+        this.timerService.startTimer(socket.id, this.server, true);
     }
 
+    /**
+     * This method is called when a player clicks on the image. It sends back the information the client needs.
+     * It also checks if the player is in a multiplayer match and sends the information to the other player.
+     * It also checks if the player has won the game and sends a victory event to the client.
+     * If the match is multiplayer, it also checks if the player has won and said a defeat event to the other player.
+     *
+     * @param socket The socket of the player.
+     * @param position The position of the pixel that was clicked.
+     */
     @SubscribeMessage(GameEvents.OnClick)
-    async onClick(socket: Socket, data: { position: number }): Promise<void> {
-        const gameState = this.playerGameMap.get(socket.id);
-        const id: string = gameState.gameId as unknown as string;
-        const rep = await this.imageService.findDifference(id, gameState.foundDifferences, data.position);
-        const dataToSend: GameData = {
-            differences: rep.foundDifference,
-            amountOfDifferences: gameState.foundDifferences.length,
-        };
+    async onClick(socket: Socket, position: number): Promise<void> {
+        const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.OnProcessedClick, dataToSend);
-        if (gameState.foundDifferences.length === rep.totalDifferences) {
-            socket.emit(GameEvents.OnVictory);
-            this.playerGameMap.delete(socket.id);
-            this.playerRoomMap.delete(socket.id);
-            this.timeMap.delete(socket.id);
-            clearInterval(this.timeIntervalMap.get(socket.id));
+        const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
+        if (secondPlayerId) {
+            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
+            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnProcessedClick, dataToSend);
         }
-        if (rep.foundDifference.length > 0 && gameState.secondPlayerId !== '') {
-            const room = this.playerRoomMap.get(socket.id);
-            dataToSend.amountOfDifferencesSecondPlayer = gameState.foundDifferences.length;
-            dataToSend.amountOfDifferences = this.playerGameMap.get(gameState.secondPlayerId).foundDifferences.length;
-            socket.broadcast.to(room).emit(GameEvents.OnProcessedClick, dataToSend);
-
-            const message: ChatMessage = {
-                sender: 'Système',
-                senderId: SenderType.System,
-                text: 'Différence trouvée par ' + gameState.playerName,
-            };
-            this.server.to(room).emit(GameEvents.MessageSent, message);
-
-            if (gameState.foundDifferences.length >= Math.ceil(rep.totalDifferences / 2)) {
-                socket.emit(GameEvents.OnVictory);
-                socket.broadcast.to(room).emit(GameEvents.OnDefeat);
-                this.playerGameMap.delete(socket.id);
-                this.playerGameMap.delete(gameState.secondPlayerId);
-                this.playerRoomMap.delete(socket.id);
-                this.playerRoomMap.delete(gameState.secondPlayerId);
-                this.timeMap.delete(socket.id);
-                this.timeMap.delete(gameState.secondPlayerId);
-                clearInterval(this.timeIntervalMap.get(socket.id));
-                clearInterval(this.timeIntervalMap.get(gameState.secondPlayerId));
+        if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
+            socket.emit(GameEvents.OnVictory);
+            this.timerService.stopTimer(socket.id);
+            this.gameService.deleteUserFromGame(socket);
+            if (secondPlayerId) {
+                this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnDefeat);
+                this.timerService.stopTimer(secondPlayerId);
             }
         } else if (rep.foundDifference.length === 0 && gameState.secondPlayerId !== '') {
             const room = this.playerRoomMap.get(socket.id);
@@ -120,139 +69,106 @@ export class GameGateway {
         }
     }
 
+    /**
+     * This method is called when the player creates or joins an online game.
+     * It checks if the name is valid.
+     * It checks if there is a room available and if there is, it sends an invite to the other player.
+     * If there is no room available, it creates a new room and updates the selection page.
+     *
+     * @param socket The socket of the player.
+     * @param data The data of the player, including the gameId and the playerName
+     */
     @SubscribeMessage(GameEvents.OnGameSelection)
     onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
         if (data.playerName.length <= 2) {
             socket.emit(GameEvents.InvalidName);
         }
-        for (const [secondPlayer, secondPlayerGameState] of this.playerGameMap.entries()) {
-            if (secondPlayer !== socket.id && secondPlayerGameState.gameId === data.levelId) {
-                const room = this.playerRoomMap.get(secondPlayer);
-                if (this.server.sockets.adapter.rooms.get(room).size === 1 && secondPlayerGameState.waitingForSecondPlayer) {
-                    // If the code reaches here, the player is trying to join a game
-                    console.log('second player joined a game');
-                    secondPlayerGameState.waitingForSecondPlayer = false;
-                    secondPlayerGameState.secondPlayerId = socket.id;
-                    this.playerGameMap.set(secondPlayer, secondPlayerGameState);
-                    this.playerGameMap.set(socket.id, {
-                        gameId: -1,
-                        foundDifferences: [],
-                        playerName: data.playerName,
-                        secondPlayerId: secondPlayer,
-                        waitingForSecondPlayer: false,
-                    });
-                    socket.emit(GameEvents.ToBeAccepted);
-                    this.server.to(room).emit(GameEvents.PlayerSelection, data.playerName);
-                    return;
-                }
-            }
+        const secondPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
+        if (secondPlayerId) {
+            this.gameService.setupMultiplayerGameStates(socket.id, secondPlayerId, data.playerName);
+            socket.emit(GameEvents.ToBeAccepted);
+            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.PlayerSelection, data.playerName);
+        } else {
+            this.gameService.createNewGame(socket.id, { levelId: data.levelId, playerName: data.playerName, waitingSecondPlayer: true });
+            this.server.emit(GameEvents.UpdateSelection, { levelId: data.levelId, canJoin: true });
         }
-        // If the code reaches here, the player is the first player to join the game
-        const roomId = randomUUID();
-        this.playerRoomMap.set(socket.id, roomId);
-        this.playerGameMap.set(socket.id, {
-            gameId: data.levelId,
-            foundDifferences: [],
-            playerName: data.playerName,
-            secondPlayerId: '',
-            waitingForSecondPlayer: true,
-        });
-        socket.join(roomId);
-        console.log(socket.id);
-        console.log(this.playerGameMap.get(socket.id));
-        this.server.emit(GameEvents.UpdateSelection, { levelId: data.levelId, canJoin: true });
     }
-
-    @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
-    onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
-        console.log('game cancelled while waiting for second player ' + socket.id);
-        this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(socket.id).gameId, canJoin: false });
-        socket.leave(this.playerRoomMap.get(socket.id));
-        this.playerRoomMap.delete(socket.id);
-        this.playerGameMap.delete(socket.id);
-    }
-
+    /**
+     * This method is called when a player accepts a game invite.
+     * It connects the two rooms and sends the information both players needs.
+     * It starts the timer and updates the selection page.
+     *
+     * @param socket The socket of the player.
+     */
     @SubscribeMessage(GameEvents.OnGameAccepted)
     onGameAccepted(socket: Socket): void {
-        const room = this.playerRoomMap.get(socket.id);
-        console.log(socket.id);
-        console.log(this.playerGameMap.get(socket.id));
-        const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        secondPlayerSocket.join(room);
-        this.playerRoomMap.set(secondPlayerId, room);
-        const secondPlayerGameState = this.playerGameMap.get(secondPlayerId);
-        secondPlayerGameState.waitingForSecondPlayer = false;
-        secondPlayerGameState.secondPlayerId = socket.id;
-        secondPlayerGameState.gameId = this.playerGameMap.get(socket.id).gameId;
-        this.playerGameMap.set(secondPlayerId, secondPlayerGameState);
+        const gameState = this.gameService.getGameState(socket.id);
+        const secondPlayerSocket = this.server.sockets.sockets.get(gameState.secondPlayerId);
+        this.gameService.connectRooms(socket, secondPlayerSocket);
+        const secondPlayerName = this.gameService.getGameState(gameState.secondPlayerId).playerName;
         socket.emit(GameEvents.StartClassicMultiplayerGame, {
-            levelId: secondPlayerGameState.gameId,
-            playerName: this.playerGameMap.get(socket.id).playerName,
-            secondPlayerName: secondPlayerGameState.playerName,
+            levelId: gameState.gameId,
+            playerName: gameState.playerName,
+            secondPlayerName,
         });
         secondPlayerSocket.emit(GameEvents.StartClassicMultiplayerGame, {
-            levelId: secondPlayerGameState.gameId,
-            playerName: secondPlayerGameState.playerName,
-            secondPlayerName: this.playerGameMap.get(socket.id).playerName,
+            levelId: gameState.gameId,
+            playerName: secondPlayerName,
+            secondPlayerName: gameState.playerName,
         });
-        this.timeMap.set(room, 0);
-        const interval = setInterval(() => {
-            const time = this.timeMap.get(room);
-            this.timeMap.set(room, time + 1);
-            this.server.to(room).emit(GameEvents.SendTime, time + 1);
-        }, DELAY_BEFORE_EMITTING_TIME);
-        this.timeIntervalMap.set(room, interval);
-        this.server.emit(GameEvents.UpdateSelection, { levelId: secondPlayerGameState.gameId, canJoin: false });
+        this.timerService.startTimer(socket.id, this.server, true, secondPlayerSocket.id);
+        this.server.emit(GameEvents.UpdateSelection, { levelId: gameState.gameId, canJoin: false });
     }
 
+    /**
+     * This method is called when a player cancels a game while waiting for a second player.
+     * It updates the selection page join button
+     * It deletes the player from the game
+     *
+     * @param socket The socket of the player.
+     */
+    @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
+    onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
+        this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).gameId, canJoin: false });
+        this.gameService.deleteUserFromGame(socket);
+    }
+
+    /**
+     * This method is called when a player rejects a game.
+     * It updates the selection page join button
+     * It deletes the player and the other player from the game
+     * It emits a event to the other player to tell them that the game was rejected
+     *
+     * @param socket the socket of the player
+     */
     @SubscribeMessage(GameEvents.OnGameRejected)
     onGameRejected(socket: Socket): void {
-        console.log('game rejected');
-        if (this.playerGameMap.has(socket.id)) {
-            this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(socket.id).gameId, canJoin: false });
-            const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
-            const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-            this.playerGameMap.delete(socket.id);
-            this.playerRoomMap.delete(socket.id);
-            this.playerGameMap.delete(secondPlayerId);
-            secondPlayerSocket.emit(GameEvents.RejectedGame);
-        }
+        this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).gameId, canJoin: false });
+        const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
+        this.gameService.deleteUserFromGame(socket);
+        this.gameService.deleteUserFromGame(this.server.sockets.sockets.get(secondPlayerId));
+        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
 
-    @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForAcceptation)
-    onGameCancelledWhileWaitingForAcceptation(socket: Socket): void {
-        console.log('game cancelled');
-        if (this.playerGameMap.has(socket.id)) {
-            const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
-            const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-            this.server.emit(GameEvents.UpdateSelection, { levelId: this.playerGameMap.get(secondPlayerId).gameId, canJoin: false });
-            this.playerGameMap.delete(secondPlayerId);
-            this.playerRoomMap.delete(secondPlayerId);
-            this.playerGameMap.delete(socket.id);
-            secondPlayerSocket.emit(GameEvents.RejectedGame);
+    /**
+     * This method is called when a player tries to delete a level.
+     * It checks if the level is being played and if it is, it adds it to the deletion queue.
+     * It also emits a event to all players to shut down anyone trying to play the level.
+     * It also removes the level from the list of levels that players can join.
+     *
+     * @param socket the socket of the player.
+     * @param levelId the id of the level to be deleted.
+     */
+    @SubscribeMessage(GameEvents.OnDeleteLevel)
+    onDeleteLevel(socket: Socket, levelId: number): void {
+        this.server.emit(GameEvents.DeleteLevel, levelId);
+        for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
+            this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-    }
-
-    @SubscribeMessage(GameEvents.OnAbandon)
-    onAbandon(socket: Socket): void {
-        const room = this.playerRoomMap.get(socket.id);
-        const gameState = this.playerGameMap.get(socket.id);
-        const message: ChatMessage = {
-            sender: 'Système',
-            senderId: SenderType.System,
-            text: gameState.playerName + ' a abandonné la partie.',
-        };
-        this.server.to(room).emit(GameEvents.MessageSent, message);
-        socket.broadcast.to(room).emit(GameEvents.OpponentAbandoned);
-
-        this.timeIntervalMap.get(room).unref();
-        this.timeIntervalMap.delete(room);
-        this.timeMap.delete(room);
-        clearInterval(this.timeIntervalMap.get(socket.id));
-        clearInterval(this.timeIntervalMap.get(gameState.secondPlayerId));
-        this.playerRoomMap.delete(socket.id);
-        this.playerGameMap.delete(socket.id);
+        if (this.gameService.verifyIfLevelIsBeingPlayed(levelId)) {
+            this.gameService.addLevelToDeletionQueue(levelId);
+        }
     }
 
     @SubscribeMessage(GameEvents.OnMessageReception)
@@ -267,20 +183,40 @@ export class GameGateway {
 
     /**
      * This method is called when a player disconnects.
-     * It deletes the player from all the maps
+     *
+     * @param socket the socket of the player
+     */
+    @SubscribeMessage(GameEvents.OnAbandonGame)
+    onAbandonGame(socket: Socket): void {
+        this.handlePlayerLeavingGame(socket);
+    }
+
+    /**
+     * This method is called when a player disconnects.
      *
      * @param socket the socket of the player
      */
     handleDisconnect(socket: Socket): void {
-        console.log('disconnected');
-        socket.leave(this.playerRoomMap.get(socket.id));
-        this.playerRoomMap.delete(socket.id);
-        this.playerGameMap.delete(socket.id);
-        if (this.timeIntervalMap.has(socket.id)) {
-            this.timeIntervalMap.get(socket.id).unref();
-            this.timeIntervalMap.delete(socket.id);
+        this.handlePlayerLeavingGame(socket);
+    }
+    /**
+     * This method deletes the player from all the maps and rooms.
+     * It stops the timer of the player.
+     * It removes the level from the deletion queue if it is there.
+     * If the match is multiplayer, the other player wins.
+     *
+     * @param socket the socket of the player.
+     */
+    private handlePlayerLeavingGame(socket: Socket): void {
+        const gameState = this.gameService.getGameState(socket.id);
+        if (gameState) {
+            this.gameService.removeLevelFromDeletionQueue(gameState.gameId);
+            if (gameState.secondPlayerId) {
+                const secondPlayerSocket = this.server.sockets.sockets.get(gameState.secondPlayerId);
+                secondPlayerSocket.emit(GameEvents.OnVictory);
+            }
+            this.gameService.deleteUserFromGame(socket);
+            this.timerService.stopTimer(socket.id);
         }
-        this.timeIntervalMap.delete(socket.id);
-        this.timeMap.delete(socket.id);
     }
 }

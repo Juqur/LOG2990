@@ -6,19 +6,18 @@ import { AudioService } from '@app/services/audioService/audio.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service contains all the logic for the game page.
  *
  * @author Junaid Qureshi
  * @class GamePageService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class GamePageService {
     private imagesData: number[] = [];
     private originalImageSrc: string = '';
@@ -42,7 +41,6 @@ export class GamePageService {
 
     // eslint-disable-next-line max-params
     constructor(
-        private socketHandler: SocketHandler,
         private mouseService: MouseService,
         private popUpService: PopUpService,
         private audioService: AudioService,
@@ -72,12 +70,19 @@ export class GamePageService {
     }
 
     /**
-     * This method sends the click to the server.
+     * This method verifies whether the click is valid or not.
      *
-     * @param position position of the click
+     * @param event The mouse event.
      */
-    sendClick(position: number): void {
-        this.socketHandler.send('game', 'onClick', { position });
+    verifyClick(event: MouseEvent): number {
+        const mousePosition = this.mouseService.getMousePosition(event);
+        this.mouseService.setClickState(false);
+        if (!mousePosition) return Constants.minusOne;
+        return mousePosition;
+    }
+
+    resetAudio(): void {
+        this.audioService.reset();
     }
 
     /**
@@ -93,8 +98,8 @@ export class GamePageService {
      * @param levelId The id of the level
      */
     setImages(levelId: number): void {
-        this.originalImageSrc = environment.serverUrl + 'originals/' + levelId + '.bmp';
-        this.diffImageSrc = environment.serverUrl + 'modifiees/' + levelId + '.bmp';
+        this.originalImageSrc = environment.serverUrl + 'original/' + levelId + '.bmp';
+        this.diffImageSrc = environment.serverUrl + 'modified/' + levelId + '.bmp';
     }
 
     /**
@@ -108,13 +113,13 @@ export class GamePageService {
     handleResponse(response: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
         if (!clickedOriginalImage) {
             if (response) {
-                this.handleAreaFoundInDiff(gameData.differences);
+                this.handleAreaFoundInDiff(gameData.differencePixels);
             } else {
                 this.handleAreaNotFoundInDiff();
             }
         } else {
             if (response) {
-                this.handleAreaFoundInOriginal(gameData.differences);
+                this.handleAreaFoundInOriginal(gameData.differencePixels);
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
@@ -143,14 +148,13 @@ export class GamePageService {
     }
 
     /**
-    /**
      * The equivalent of eyedropper tool.
      *
      * @param x the x coordinate of the pixel
      * @param y the y coordinate of the pixel
      * @returns the rgba value of the pixel
      */
-    pick(x: number, y: number): string {
+    private pick(x: number, y: number): string {
         const context = this.originalPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const pixel = context.getImageData(x, y, 1, 1);
         const data = pixel.data;
@@ -165,7 +169,7 @@ export class GamePageService {
      *
      * @param area the area to copy
      */
-    copyArea(area: number[]): void {
+    private copyArea(area: number[]): void {
         let x = 0;
         let y = 0;
         const context = this.tempDiffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -184,13 +188,13 @@ export class GamePageService {
      * To avoid flashing issue, it copies to a third temporary canvas.
      * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
-    resetCanvas(): void {
+    private resetCanvas(): void {
         this.diffPlayArea
             .timeout(Constants.millisecondsInOneSecond)
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                this.mouseService.changeClickState();
+                this.mouseService.setClickState(true);
             })
             .then(() => {
                 setTimeout(() => {
@@ -207,7 +211,7 @@ export class GamePageService {
     /**
      * This method will copy/paste the context of the temp canvas to the difference canvas.
      */
-    copyDiffPlayAreaContext(): void {
+    private copyDiffPlayAreaContext(): void {
         const contextTemp = this.tempDiffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -221,25 +225,23 @@ export class GamePageService {
      *
      * @param result the current area found
      */
-    handleAreaFoundInDiff(result: number[]): void {
+    private handleAreaFoundInDiff(result: number[]): void {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.diffPlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
-        this.mouseService.changeClickState();
         this.resetCanvas();
     }
 
     /**
      * Will be called when the user does not find a difference in the difference canvas.
      */
-    handleAreaNotFoundInDiff(): void {
+    private handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.mouseService.changeClickState();
         this.resetCanvas();
     }
 
@@ -253,7 +255,6 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);
         this.diffPlayArea.flashArea(result);
-        this.mouseService.changeClickState();
         this.resetCanvas();
     }
 
@@ -266,10 +267,9 @@ export class GamePageService {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.mouseService.changeClickState();
         this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-            this.mouseService.changeClickState();
+            this.mouseService.setClickState(true);
         });
     }
 }

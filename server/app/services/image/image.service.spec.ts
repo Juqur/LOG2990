@@ -133,20 +133,21 @@ describe('ImageService', () => {
 
     describe('findDifference', () => {
         it('should return the correct array that contains the selected index', async () => {
+            const expected = { differencePixels: TestConstants.CLUSTERS_TEST1[0], totalDifferences: TestConstants.CLUSTERS_TEST1.length };
             const foundDifferences = [];
             jest.spyOn(service, 'getAllDifferences').mockResolvedValue(TestConstants.CLUSTERS_TEST1);
             jest.spyOn(service, 'getIndex').mockReturnValue(0);
             const result = await service.findDifference('', foundDifferences, 0);
-            expect(result).toStrictEqual(TestConstants.CLUSTERS_TEST1[0]);
+            expect(result).toStrictEqual(expected);
         });
 
         it('should return an empty array if the index is undefined', async () => {
+            const expected = { differencePixels: [], totalDifferences: TestConstants.CLUSTERS_TEST1.length };
             jest.spyOn(service, 'getAllDifferences').mockResolvedValue(TestConstants.CLUSTERS_TEST1);
             jest.spyOn(service, 'getIndex').mockReturnValue(undefined);
-
             const position = undefined;
             const result = await service.findDifference('', [], position);
-            expect(result).toStrictEqual([]);
+            expect(result).toStrictEqual(expected);
         });
     });
 
@@ -185,8 +186,8 @@ describe('ImageService', () => {
             const error = new Error('Failed to write file');
             fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
             fs.promises.writeFile = jest.fn();
-            mockSyncWrite.mockImplementation((path, data, cb) => {
-                cb(error);
+            mockSyncWrite.mockImplementation((path, data, callback) => {
+                callback(error);
             });
 
             const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
@@ -199,8 +200,8 @@ describe('ImageService', () => {
             const error = new Error('Failed to rename file');
             fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
             fs.promises.writeFile = jest.fn();
-            mockSyncRename.mockImplementation((path, data, cb) => {
-                cb(error);
+            mockSyncRename.mockImplementation((path, data, callback) => {
+                callback(error);
             });
 
             const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
@@ -214,14 +215,90 @@ describe('ImageService', () => {
             fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
             fs.promises.writeFile = jest.fn();
             mockSyncRename.mockImplementationOnce(jest.fn());
-            mockSyncRename.mockImplementation((path, data, cb) => {
-                cb(error);
+            mockSyncRename.mockImplementation((path, data, callback) => {
+                callback(error);
             });
 
             const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
             expect(service['confirmUpload']).not.toHaveBeenCalled();
             expect(service['handleErrors']).toHaveBeenCalledTimes(1);
             expect(result).toEqual(error);
+        });
+    });
+
+    describe('deleteLevelData', () => {
+        const levelId = 1;
+        const mockSyncUnlink = jest.spyOn(fs, 'unlink');
+        let spyGetLevel: jest.SpyInstance;
+        let spyGetLevels: jest.SpyInstance;
+
+        beforeEach(() => {
+            mockSyncUnlink.mockImplementation();
+            spyGetLevel = jest.spyOn(service, 'getLevel').mockResolvedValue(levels.find((item) => item.id === levelId));
+            spyGetLevels = jest.spyOn(service, 'getLevels').mockResolvedValue(levels);
+            fs.promises.writeFile = jest.fn();
+        });
+
+        it('should call getLevel', async () => {
+            await service.deleteLevelData(levelId);
+            expect(spyGetLevel).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call getLevels', async () => {
+            await service.deleteLevelData(levelId);
+            expect(spyGetLevels).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call unlink', async () => {
+            await service.deleteLevelData(levelId);
+            expect(mockSyncUnlink).toHaveBeenCalled();
+        });
+
+        it('should call writeFile', async () => {
+            await service.deleteLevelData(levelId);
+            expect(fs.promises.writeFile).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return true on normal use case', async () => {
+            const result = await service.deleteLevelData(levelId);
+            expect(result).toBeTruthy();
+        });
+
+        it('should return false if the level does not exist', async () => {
+            spyGetLevel.mockResolvedValue(undefined);
+            const result = await service.deleteLevelData(levelId);
+            expect(result).toBeFalsy();
+        });
+
+        it('should return false if an error is being raised', async () => {
+            const error = new Error('Failed to write file');
+            fs.promises.writeFile = jest.fn().mockRejectedValue(error);
+            const result = await service.deleteLevelData(levelId);
+            expect(result).toBeFalsy();
+        });
+
+        it('should return false when unlink fails', async () => {
+            const error = new Error('Failed to write file');
+            mockSyncUnlink.mockImplementationOnce((path, callback) => {
+                callback(error);
+            });
+            let result = await service.deleteLevelData(levelId);
+            expect(result).toBeFalsy();
+
+            mockSyncUnlink.mockImplementationOnce(jest.fn()).mockImplementationOnce((path, callback) => {
+                callback(error);
+            });
+            result = await service.deleteLevelData(levelId);
+            expect(result).toBeFalsy();
+
+            mockSyncUnlink
+                .mockImplementationOnce(jest.fn())
+                .mockImplementationOnce(jest.fn())
+                .mockImplementationOnce((path, callback) => {
+                    callback(error);
+                });
+            result = await service.deleteLevelData(levelId);
+            expect(result).toBeFalsy();
         });
     });
 

@@ -1,2 +1,0 @@
-export const MAX_GAME_LENGTH = 120;
-export const DELAY_BEFORE_EMITTING_TIME = 1000;

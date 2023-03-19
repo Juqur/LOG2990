@@ -1,9 +1,9 @@
 import { Message } from '@app/model/schema/message.schema';
-import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
+import { DEFAULT_TIME_VALUES } from './image.service.constants';
 
 /**
  * This service is used to get the amount of differences left between the two images.
@@ -15,8 +15,8 @@ import { promises as fsp } from 'fs';
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
-    readonly pathModified: string = '../server/assets/images/modifiees/';
-    readonly pathOriginal: string = '../server/assets/images/originals/';
+    readonly pathModified: string = '../server/assets/images/modified/';
+    readonly pathOriginal: string = '../server/assets/images/original/';
     readonly pathData: string = '../server/assets/data/';
 
     /**
@@ -111,13 +111,13 @@ export class ImageService {
         fileName: string,
         foundDifferences: number[],
         position: number,
-    ): Promise<{ foundDifference: number[]; totalDifferences: number }> {
+    ): Promise<{ differencePixels: number[]; totalDifferences: number }> {
         const allDifferences = await this.getAllDifferences(fileName);
         const index = this.getIndex(allDifferences, foundDifferences, position);
         const foundDifferenceArray = allDifferences[index];
         return foundDifferenceArray !== undefined
-            ? { foundDifference: foundDifferenceArray, totalDifferences: allDifferences.length }
-            : { foundDifference: [], totalDifferences: allDifferences.length };
+            ? { differencePixels: foundDifferenceArray, totalDifferences: allDifferences.length }
+            : { differencePixels: [], totalDifferences: allDifferences.length };
     }
 
     /**
@@ -135,9 +135,9 @@ export class ImageService {
                 id: newId,
                 name: levelData.name,
                 playerSolo: ['Bot1', 'Bot2', 'Bot3'],
-                timeSolo: Constants.timeSolo,
+                timeSolo: DEFAULT_TIME_VALUES,
                 playerMulti: ['Bot1', 'Bot2', 'Bot3'],
-                timeMulti: Constants.timeMulti,
+                timeMulti: DEFAULT_TIME_VALUES,
                 isEasy: levelData.isEasy === 'true',
                 nbDifferences: levelData.nbDifferences,
             };
@@ -146,19 +146,51 @@ export class ImageService {
             allDifferences.push(level);
 
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.rename(levelData.imageOriginal.path, this.pathOriginal + newId + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
             fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
-                throw error;
+                if (error) throw error;
             });
             await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(allDifferences));
 
             return this.confirmUpload();
         } catch (error) {
             return this.handleErrors(error);
+        }
+    }
+
+    /**
+     * Deletes the level in the json file.
+     *
+     * @param id The id of the level to be deleted.
+     * @returns The confirmation of the deletion.
+     */
+    async deleteLevelData(id: number): Promise<boolean> {
+        try {
+            const level = await this.getLevel(id);
+            if (level === undefined) {
+                return false;
+            }
+
+            const allDifferences = await this.getLevels();
+            const updatedDifferences = allDifferences.filter((difference) => difference.id !== level.id);
+
+            fs.unlink(this.pathDifference + id + '.json', (error) => {
+                if (error) throw error;
+            });
+            fs.unlink(this.pathOriginal + id + '.bmp', (error) => {
+                if (error) throw error;
+            });
+            fs.unlink(this.pathModified + id + '.bmp', (error) => {
+                if (error) throw error;
+            });
+            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(updatedDifferences));
+            return true;
+        } catch (error) {
+            return false;
         }
     }
 

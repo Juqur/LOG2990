@@ -1,4 +1,5 @@
 import { Message } from '@app/model/schema/message.schema';
+import { GameService } from '@app/services/game/game.service';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Level } from 'assets/data/level';
@@ -9,16 +10,18 @@ import { ImageController } from './image.controller';
 describe('ImageController', () => {
     let controller: ImageController;
     let imageService: ImageService;
+    let gameService: GameService;
     let levels: Level[] = [];
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [NestjsFormDataModule],
             controllers: [ImageController],
-            providers: [ImageService],
+            providers: [ImageService, GameService],
         }).compile();
         controller = module.get<ImageController>(ImageController);
         imageService = module.get<ImageService>(ImageService);
+        gameService = module.get<GameService>(GameService);
 
         levels = TestConstants.MOCK_LEVELS;
     });
@@ -29,23 +32,31 @@ describe('ImageController', () => {
 
     describe('getLevels', () => {
         it('should call getLevels', () => {
+            jest.spyOn(gameService, 'getLevelDeletionQueue').mockReturnValue([]);
             const spy = jest.spyOn(imageService, 'getLevels').mockImplementation(jest.fn());
             controller.getLevels();
             expect(spy).toHaveBeenCalledTimes(1);
         });
 
         it('should return the levels', async () => {
+            jest.spyOn(gameService, 'getLevelDeletionQueue').mockReturnValue([]);
             imageService.getLevels = jest.fn().mockResolvedValue(levels);
             const result = await controller.getLevels();
             expect(result).toStrictEqual(levels);
         });
 
-        // We can assume that getLevels will return undefined if it cannot read the file.
-        // It is already handled in image service.
         it('should return undefined if it cannot read the file', async () => {
+            jest.spyOn(gameService, 'getLevelDeletionQueue').mockReturnValue([]);
             imageService.getLevels = jest.fn().mockResolvedValue(undefined);
             const result = await controller.getLevels();
             expect(result).toBeUndefined();
+        });
+
+        it('should remove deleted levels from the list', async () => {
+            jest.spyOn(gameService, 'getLevelDeletionQueue').mockReturnValue([1]);
+            imageService.getLevels = jest.fn().mockResolvedValue(levels);
+            const result = await controller.getLevels();
+            expect(result).toHaveLength(2);
         });
     });
 

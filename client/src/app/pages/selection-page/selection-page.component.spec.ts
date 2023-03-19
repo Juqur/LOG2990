@@ -30,12 +30,6 @@ describe('SelectionPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should reset dialog', () => {
-        const resetDialogSpy = spyOn(component['selectionPageService'], 'resetDialog');
-        component.resetDialog();
-        expect(resetDialogSpy).toHaveBeenCalled();
-    });
-
     it('should setup socket', () => {
         const setupSocketSpy = spyOn(component['selectionPageService'], 'setupSocket');
         component.ngOnInit();

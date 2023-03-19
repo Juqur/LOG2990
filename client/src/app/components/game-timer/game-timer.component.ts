@@ -1,20 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Constants } from '@common/constants';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
+/**
+ * This component ie visual representation of the timer on the screen.
+ *
+ * @author Charles Degrandpré & Junaid Qureshi
+ * @class GameTimerComponent
+ */
 @Component({
     selector: 'app-game-timer',
     templateUrl: './game-timer.component.html',
     styleUrls: ['./game-timer.component.scss'],
 })
-
-/**
- * Is the visual representation of the timer on the screen.
- *
- * @author Charles Degrandpré & Junaid Qureshi
- * @class GameTimerComponent
- */
-export class GameTimerComponent implements OnInit {
+export class GameTimerComponent implements OnInit, OnDestroy {
     gameTimeFormatted: string;
 
     constructor(private socketHandler: SocketHandler) {}
@@ -25,12 +24,12 @@ export class GameTimerComponent implements OnInit {
      *
      * @param time The time to set the timer to.
      */
-    updateTimer(time: number) {
-        const minutes: number = Math.floor(time / Constants.secondsPerMinute);
-        const seconds: number = time - minutes * Constants.secondsPerMinute;
+    updateTimer(time: number): void {
+        const minutes: number = Math.floor(time / Constants.SECONDS_PER_MINUTE);
+        const seconds: number = time % Constants.SECONDS_PER_MINUTE;
 
-        const minutesString: string = minutes < Constants.ten ? '0' + minutes : minutes.toString();
-        const secondsString: string = seconds < Constants.ten ? '0' + seconds : seconds.toString();
+        const minutesString: string = minutes < Constants.PADDING_NUMBER ? '0' + minutes : minutes.toString();
+        const secondsString: string = seconds < Constants.PADDING_NUMBER ? '0' + seconds : seconds.toString();
         this.gameTimeFormatted = 'Time: ' + minutesString + ':' + secondsString;
     }
 
@@ -44,5 +43,12 @@ export class GameTimerComponent implements OnInit {
         this.socketHandler.on('game', 'sendTime', (data: number) => {
             this.updateTimer(data);
         });
+    }
+
+    /**
+     * Removes the listener for the 'sendTime' event.
+     */
+    ngOnDestroy(): void {
+        this.socketHandler.removeListener('game', 'sendTime');
     }
 }

@@ -14,7 +14,7 @@ describe('AudioService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('Create should create a new HTMLAudioElement', () => {
+    it('create should create a new HTMLAudioElement', () => {
         service.create('./assets/audio/click.mp3');
         expect(service['soundtrack']).toBeInstanceOf(HTMLAudioElement);
         expect(service['soundtrack']).toBeTruthy();
@@ -34,26 +34,33 @@ describe('AudioService', () => {
         expect(spyAudioPlay).not.toHaveBeenCalled();
     });
 
-    it('Mute should mute the AudioElement', () => {
+    it('mute should mute the AudioElement', () => {
         service['soundtrack'] = new Audio('');
         service['soundtrack'].load();
         service.mute();
         expect(service['soundtrack'].muted).toBeTrue();
     });
 
-    it('Loop should loop the current AudioElement', () => {
+    it('loop should loop the current AudioElement', () => {
         service['soundtrack'] = new Audio('');
         service['soundtrack'].load();
         service.loop();
         expect(service['soundtrack'].loop).toBeTrue();
     });
 
-    it('Reset should call audio.load', () => {
+    it('reset should call audio.load', () => {
         service['soundtrack'] = new Audio('');
         service['soundtrack'].load();
         const spy = spyOn(Audio.prototype, 'load');
         service.reset();
         expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('reset should not call audio.load if the soundtrack is undefined', () => {
+        service['soundtrack'] = undefined as unknown as HTMLAudioElement;
+        const spy = spyOn(Audio.prototype, 'load');
+        service.reset();
+        expect(spy).not.toHaveBeenCalled();
     });
 
     it('quickPlay should call play', () => {

@@ -7,7 +7,7 @@ import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import { DialogData, PopUpService } from './pop-up.service';
 
-describe('PopUpServiceService', () => {
+describe('PopUpService', () => {
     let service: PopUpService;
     let dialogRef: MatDialogRef<PopUpDialogComponent>;
 
@@ -85,7 +85,6 @@ describe('PopUpServiceService', () => {
                     if (value.length < Constants.ten) return true;
                     return false;
                 },
-                returnValue: 'No return Value',
             },
             closeButtonMessage: 'close button message',
         };
