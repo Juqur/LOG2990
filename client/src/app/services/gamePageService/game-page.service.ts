@@ -145,7 +145,7 @@ export class GamePageService {
     }
 
     /**
-     * The equivalent of eyedropper tool.
+     * This method finds the rgba value of a pixel on the original image.
      *
      * @param x the x coordinate of the pixel
      * @param y the y coordinate of the pixel
