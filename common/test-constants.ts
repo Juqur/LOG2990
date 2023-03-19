@@ -69,4 +69,13 @@ export namespace TestConstants {
     // Level Service constants
     export const TIME_CONSTANTS_SOLO = { sixty: 60, sixty_five: 65, seventy: 70 };
     export const TIME_CONSTANTS_MULTI = { eighty: 80, eighty_three: 83, ninety: 90 };
+
+    // Game Service constants
+    export const PLAYER_GAME_MAP = new Map([
+        ['socket1', { gameId: 0, foundDifferences: [1], playerName: 'player1', isInGame: true, otherSocketId: 'socket2' }],
+        ['socket2', { gameId: 0, foundDifferences: [1], playerName: 'player2', isInGame: true, otherSocketId: 'socket1' }],
+        ['socket3', { gameId: 1, foundDifferences: [2, 5], playerName: 'player3', isInGame: false, otherSocketId: 'socket4' }],
+        ['socket4', { gameId: 1, foundDifferences: [2, 5], playerName: 'player4', isInGame: false, otherSocketId: 'socket3' }],
+        ['socket5', { gameId: 0, foundDifferences: [3], playerName: 'player5', isInGame: false }],
+    ]);
 }
