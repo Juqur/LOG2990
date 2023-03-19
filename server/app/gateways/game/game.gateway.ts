@@ -27,7 +27,7 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
-        this.gameService.createNewGame(socket.id, { levelId: data.levelId, playerName: data.playerName });
+        this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, false);
         this.timerService.startTimer(socket.id, this.server, true);
     }
 
@@ -44,7 +44,7 @@ export class GameGateway {
     async onClick(socket: Socket, position: number): Promise<void> {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.ProcessedClick, dataToSend);
-        const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
+        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
         if (secondPlayerId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
             this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
@@ -73,17 +73,20 @@ export class GameGateway {
     onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
         if (data.playerName.length <= 2) {
             socket.emit(GameEvents.InvalidName);
+            return;
         }
-        const secondPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
-        if (secondPlayerId) {
-            this.gameService.setupMultiplayerGameStates(socket.id, secondPlayerId, data.playerName);
+
+        this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, true);
+        const otherPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
+        if (otherPlayerId) {
+            this.gameService.bindPlayers(socket.id, otherPlayerId);
             socket.emit(GameEvents.ToBeAccepted);
-            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.PlayerSelection, data.playerName);
+            this.server.sockets.sockets.get(otherPlayerId).emit(GameEvents.PlayerSelection, data.playerName);
         } else {
-            this.gameService.createNewGame(socket.id, { levelId: data.levelId, playerName: data.playerName, waitingSecondPlayer: true });
             this.server.emit(GameEvents.UpdateSelection, { levelId: data.levelId, canJoin: true });
         }
     }
+
     /**
      * This method is called when a player accepts a game invite.
      * It connects the two rooms and sends the information both players needs.
@@ -94,9 +97,9 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnGameAccepted)
     onGameAccepted(socket: Socket): void {
         const gameState = this.gameService.getGameState(socket.id);
-        const secondPlayerSocket = this.server.sockets.sockets.get(gameState.secondPlayerId);
+        const secondPlayerSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
         this.gameService.connectRooms(socket, secondPlayerSocket);
-        const secondPlayerName = this.gameService.getGameState(gameState.secondPlayerId).playerName;
+        const secondPlayerName = this.gameService.getGameState(gameState.otherSocketId).playerName;
         socket.emit(GameEvents.StartClassicMultiplayerGame, {
             levelId: gameState.gameId,
             playerName: gameState.playerName,
@@ -135,7 +138,7 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnGameRejected)
     onGameRejected(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).gameId, canJoin: false });
-        const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
+        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
         this.gameService.deleteUserFromGame(socket);
         this.gameService.deleteUserFromGame(this.server.sockets.sockets.get(secondPlayerId));
         const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
@@ -192,9 +195,9 @@ export class GameGateway {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
             this.gameService.removeLevelFromDeletionQueue(gameState.gameId);
-            if (gameState.secondPlayerId) {
-                const secondPlayerSocket = this.server.sockets.sockets.get(gameState.secondPlayerId);
-                secondPlayerSocket.emit(GameEvents.Victory);
+            if (gameState.otherSocketId) {
+                const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
+                otherSocket.emit(GameEvents.Victory);
             }
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);
