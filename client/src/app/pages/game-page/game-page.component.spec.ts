@@ -91,17 +91,17 @@ describe('GamePageComponent', () => {
 
         it('should remove the onProcessedClick listener', () => {
             component.ngOnDestroy();
-            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'onProcessedClick');
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'processedClick');
         });
 
         it('should remove the onVictory listener', () => {
             component.ngOnDestroy();
-            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'onVictory');
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'victory');
         });
 
         it('should remove the onDefeat listener', () => {
             component.ngOnDestroy();
-            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'onDefeat');
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'defeat');
         });
     });
 
@@ -110,7 +110,7 @@ describe('GamePageComponent', () => {
             const expectedDifferences = 5;
             const data = { amountOfDifferencesFoundSecondPlayer: expectedDifferences } as unknown as GameData;
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-                if (eventName === 'onProcessedClick') {
+                if (eventName === 'processedClick') {
                     callback(data as never);
                 }
             });
@@ -121,7 +121,7 @@ describe('GamePageComponent', () => {
         it('should not set the opponents found differences correctly if it is a solo match', () => {
             const spy = spyOn(component, 'secondPlayerDifferencesCount' as never);
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-                if (eventName === 'onProcessedClick') {
+                if (eventName === 'processedClick') {
                     callback({} as never);
                 }
             });
@@ -133,7 +133,7 @@ describe('GamePageComponent', () => {
             const expectedDifferences = 5;
             const data = { amountOfDifferencesFound: expectedDifferences } as unknown as GameData;
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-                if (eventName === 'onProcessedClick') {
+                if (eventName === 'processedClick') {
                     callback(data as never);
                 }
             });
@@ -143,7 +143,7 @@ describe('GamePageComponent', () => {
 
         it('should handle victory if server sends victory request', () => {
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-                if (eventName === 'onVictory') {
+                if (eventName === 'victory') {
                     callback({} as never);
                 }
             });
@@ -153,7 +153,7 @@ describe('GamePageComponent', () => {
 
         it('should handle defeat if server sends defeat request', () => {
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-                if (eventName === 'onDefeat') {
+                if (eventName === 'defeat') {
                     callback({} as never);
                 }
             });
