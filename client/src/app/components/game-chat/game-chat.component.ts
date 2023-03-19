@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ChatMessage } from '@common/chat-messages';
 import { SocketHandler } from 'src/app/services/socket-handler.service';
 
@@ -15,7 +15,9 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @class GameChatComponent
  */
 export class GameChatComponent implements OnInit, OnDestroy {
+    @Input() isMultiplayer: boolean = true;
     messages: ChatMessage[] = [];
+    mode: string = '';
 
     constructor(private socketHandler: SocketHandler) {}
 

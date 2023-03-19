@@ -23,6 +23,7 @@ export enum GameEvents {
     DeleteLevel = 'deleteLevel',
     SendTime = 'sendTime',
     Defeat = 'defeat',
+    OpponentAbandoned = 'opponentAbandoned',
     Victory = 'victory',
     ProcessedClick = 'processedClick',
 }

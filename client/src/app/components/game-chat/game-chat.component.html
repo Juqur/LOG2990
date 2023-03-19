@@ -8,6 +8,6 @@ Inspired by https://dribbble.com/supahfunk
                 <app-chat-message [message]="message"></app-chat-message>
             </div>
         </div>
-        <app-message-box class="zero-padding"></app-message-box>
+        <app-message-box *ngIf="isMultiplayer"></app-message-box>
     </div>
 </section>

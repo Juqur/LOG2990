@@ -104,6 +104,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
         });
+        this.socketHandler.on('game', 'opponentAbandoned', () => {
+            this.gamePageService.handleOpponentAbandon();
+        });
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
         });
