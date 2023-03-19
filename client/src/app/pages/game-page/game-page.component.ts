@@ -92,8 +92,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
             const gameData = data as GameData;
             if (gameData.amountOfDifferencesFoundSecondPlayer) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
+            } else {
+                this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.playerDifferencesCount = gameData.amountOfDifferencesFound;
+
             const response = this.gamePageService.validateResponse(gameData.differencePixels);
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
