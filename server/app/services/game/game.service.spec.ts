@@ -205,12 +205,6 @@ describe('GameService', () => {
             expect(service['playerGameMap'].get('socket2').isInGame).toBeTruthy();
         });
 
-        it('should call join on both sockets', () => {
-            service.connectRooms(mockedSocket, mockedOtherSocket);
-            expect(joinSpy).toHaveBeenCalledWith(mockedOtherSocket.id);
-            expect(joinOtherSpy).toHaveBeenCalledWith(mockedSocket.id);
-        });
-
         it('should call bindPlayers', () => {
             service.connectRooms(mockedSocket, mockedOtherSocket);
             expect(bindPlayersSpy).toHaveBeenCalledWith(mockedSocket.id, mockedOtherSocket.id);

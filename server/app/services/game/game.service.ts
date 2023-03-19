@@ -188,7 +188,7 @@ export class GameService {
      */
     deleteUserFromGame(socket: Socket): void {
         if (this.playerGameMap.get(socket.id)) {
-            const otherSocketId = this.playerGameMap.get(socket.id).otherSocketId;
+            const otherSocketId = this.getGameState(socket.id).otherSocketId;
             if (otherSocketId) {
                 socket.leave(otherSocketId);
             }
