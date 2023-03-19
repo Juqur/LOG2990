@@ -32,7 +32,14 @@ describe('GameService', () => {
 
     describe('getGameState', () => {
         it('should return the correct data', () => {
-            const expectedGameState = { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false };
+            const expectedGameState = {
+                gameId: 0,
+                foundDifferences: [],
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+            };
             service['playerGameMap'] = new Map<string, GameState>([['socket1', expectedGameState]]);
             service['playerGameMap'].set('socket', expectedGameState);
             expect(service.getGameState('socket')).toEqual(expectedGameState);
@@ -264,7 +271,7 @@ describe('GameService', () => {
 
         it('should call removeLevelFromDeletionQueue if the level is not found among the played games', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true }],
+                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true, isInCheatMode: false }],
             ]);
             service.verifyIfLevelIsBeingPlayed(0);
             expect(removeLevelQueueSpy).toHaveBeenCalledWith(0);
@@ -272,7 +279,7 @@ describe('GameService', () => {
 
         it('should return true if the level is being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: true, isGameFound: true }],
+                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: true, isGameFound: true, isInCheatMode: false }],
             ]);
             const result = service.verifyIfLevelIsBeingPlayed(0);
             expect(result).toBeTruthy();
@@ -280,7 +287,7 @@ describe('GameService', () => {
 
         it('should return false if the level is not being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true }],
+                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true, isInCheatMode: false }],
             ]);
             const result = service.verifyIfLevelIsBeingPlayed(0);
             expect(result).toBeFalsy();
@@ -319,8 +326,8 @@ describe('GameService', () => {
     describe('bindPlayers', () => {
         it('should update both sockets correctly', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false }],
-                ['socket2', { gameId: 0, foundDifferences: [], playerName: 'player2', isInGame: false, isGameFound: false }],
+                ['socket1', { gameId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false, isInCheatMode: false }],
+                ['socket2', { gameId: 0, foundDifferences: [], playerName: 'player2', isInGame: false, isGameFound: false, isInCheatMode: false }],
             ]);
             service.bindPlayers('socket1', 'socket2');
             expect(service['playerGameMap'].get('socket1').isGameFound).toBeTruthy();

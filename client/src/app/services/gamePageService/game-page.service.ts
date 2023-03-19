@@ -169,6 +169,7 @@ export class GamePageService {
      */
     stopCheatMode() {
         clearInterval(this.flashInterval);
+        this.missing = [];
     }
 
     /**

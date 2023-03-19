@@ -126,24 +126,28 @@ describe('GamePageService', () => {
 
     it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
         const spy = spyOn<any>(service, 'handleAreaFoundInDiff');
+        spyOn(service, 'validateResponse').and.returnValue(true);
         service.handleResponse(true, gameData, false);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaNotFoundInDiff if the area clicked was the difference canvas and a difference was not found', () => {
         const spy = spyOn<any>(service, 'handleAreaNotFoundInDiff');
+        spyOn(service, 'validateResponse').and.returnValue(false);
         service.handleResponse(false, gameData, false);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaFoundInOriginal if the area clicked was the original canvas and a difference was found', () => {
         const spy = spyOn<any>(service, 'handleAreaFoundInOriginal');
-        service.handleResponse(true, gameData, true);
+        spyOn(service, 'validateResponse').and.returnValue(true);
+        service.handleResponse(false, gameData, true);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaNotFoundInOriginal if the area clicked was the original canvas and a difference was not found', () => {
         const spy = spyOn<any>(service, 'handleAreaNotFoundInOriginal');
+        spyOn(service, 'validateResponse').and.returnValue(false);
         service.handleResponse(false, gameData, true);
         expect(spy).toHaveBeenCalled();
     });
@@ -159,21 +163,39 @@ describe('GamePageService', () => {
     it('handleAreaFoundInDiff should call multiple functions', () => {
         const result = [1, 2, 3];
         const audioSpy = spyOn(AudioService, 'quickPlay');
-        service['handleAreaFoundInDiff'](result);
+        service['handleAreaFoundInDiff'](result, false);
         expect(service['imagesData']).toEqual(result);
         service['imagesData'] = [];
         expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
         expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
     });
 
+    it('handleAreaFoundInDiff should correctly set the missing attribute', () => {
+        const result = [1, 2, 3];
+        spyOn(AudioService, 'quickPlay');
+        service['missing'] = [1, 2, 3];
+        service['handleAreaFoundInDiff'](result, true);
+        expect(service['missing']).toEqual([]);
+        service['imagesData'] = [];
+    });
+
     it('handleAreaFoundInOriginal should call multiple functions', () => {
         const result = [1, 2, 3];
         const audioSpy = spyOn(AudioService, 'quickPlay');
-        service['handleAreaFoundInOriginal'](result);
+        service['handleAreaFoundInOriginal'](result, false);
         expect(service['imagesData']).toEqual(result);
         service['imagesData'] = [];
         expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
+    });
+
+    it('handleAreaFoundInOriginal should correctly set the missing attribute', () => {
+        const result = [1, 2, 3];
+        spyOn(AudioService, 'quickPlay');
+        service['missing'] = [1, 2, 3];
+        service['handleAreaFoundInOriginal'](result, true);
+        expect(service['missing']).toEqual([]);
+        service['imagesData'] = [];
     });
 
     it('handleAreaNotFoundInOriginal should call multiple functions', () => {
@@ -206,4 +228,28 @@ describe('GamePageService', () => {
         service['copyArea'](area);
         expect(pickSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('startCheatMode should make the appropriate function calls ', fakeAsync(() => {
+        const data = [1, 2, 3];
+        service['imagesData'] = [1, 2];
+        const spy = spyOn<any>(service, 'resetCanvas');
+        service.startCheatMode(data);
+        tick(Constants.millisecondsQuarterOfSecond);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
+        expect(service['missing']).toEqual([3]);
+        clearInterval(service['flashInterval']);
+    }));
+
+    it('stopCheatMode should clear the flash interval', fakeAsync(() => {
+        service['missing'] = [1, 2, 3];
+        service['flashInterval'] = setInterval(() => {
+            // do nothing
+        }, Constants.millisecondsInOneSecond);
+        const spy = spyOn(window, 'clearInterval').and.callThrough();
+        tick();
+        service.stopCheatMode();
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(service['missing']).toEqual([]);
+    }));
 });
