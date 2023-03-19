@@ -33,7 +33,6 @@ export class MessageBoxComponent implements OnInit {
      * @returns message formated in a ChatMessage interface.
      */
     createMessage(message: string): ChatMessage {
-        console.log('display name' + this.displayName);
         return {
             sender: this.displayName,
             senderId: SenderType.Player,

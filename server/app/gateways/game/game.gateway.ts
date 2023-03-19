@@ -58,15 +58,16 @@ export class GameGateway {
                 this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnDefeat);
                 this.timerService.stopTimer(secondPlayerId);
             }
-        } else if (rep.foundDifference.length === 0 && gameState.secondPlayerId !== '') {
-            const room = this.playerRoomMap.get(socket.id);
-            const message: ChatMessage = {
-                sender: 'Système',
-                senderId: SenderType.System,
-                text: 'ERREUR par ' + gameState.playerName,
-            };
-            this.server.to(room).emit(GameEvents.MessageSent, message);
         }
+        // else if (rep.foundDifference.length === 0 && gameState.secondPlayerId !== '') {
+        //     const room = this.playerRoomMap.get(socket.id);
+        //     const message: ChatMessage = {
+        //         sender: 'Système',
+        //         senderId: SenderType.System,
+        //         text: 'ERREUR par ' + gameState.playerName,
+        //     };
+        //     this.server.to(room).emit(GameEvents.MessageSent, message);
+        // }
     }
 
     /**
@@ -173,12 +174,15 @@ export class GameGateway {
 
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
-        const room = this.playerRoomMap.get(socket.id);
+        // const room = this.playerRoomMap.get(socket.id); // room is unclear, would like to change to room
 
-        message.sender = this.playerGameMap.get(socket.id).playerName;
+        message.sender = this.gameService.getGameState(socket.id).playerName;
         socket.emit(GameEvents.MessageSent, message);
+
         message.senderId = SenderType.Opponent;
-        socket.broadcast.to(room).emit(GameEvents.MessageSent, message);
+        const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId; // is there a better way ?
+        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        secondPlayerSocket.emit(GameEvents.MessageSent, message);
     }
 
     /**
