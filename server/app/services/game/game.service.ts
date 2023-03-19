@@ -71,6 +71,19 @@ export class GameService {
     }
 
     /**
+     * This method gets a list of levels currently in the queue.
+     */
+    getLevelsCurrentlyInQueue(): number[] {
+        const listOfLevels: number[] = [];
+        for (const gameState of this.playerGameMap.values()) {
+            if (gameState.gameId && !listOfLevels.includes(gameState.gameId) && !gameState.isGameFound) {
+                listOfLevels.push(gameState.gameId);
+            }
+        }
+        return listOfLevels;
+    }
+
+    /**
      * This method is called when a player clicks on a pixel.
      * It uses imageService to detect whether the pixel is a difference pixel.
      *
