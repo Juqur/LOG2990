@@ -1,6 +1,5 @@
 import { ImageService } from '@app/services/image/image.service';
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { Server, Socket } from 'socket.io';
 
 export interface GameData {
@@ -178,8 +177,6 @@ export class GameService {
     connectRooms(socket: Socket, otherSocket: Socket): void {
         this.playerGameMap.get(socket.id).isInGame = true;
         this.playerGameMap.get(otherSocket.id).isInGame = true;
-        socket.join(otherSocket.id);
-        otherSocket.join(socket.id);
         this.bindPlayers(socket.id, otherSocket.id);
     }
 
@@ -252,9 +249,5 @@ export class GameService {
         otherGameState.isGameFound = true;
         otherGameState.otherSocketId = socketId;
         this.playerGameMap.set(otherSocketId, otherGameState);
-    }
-
-    private generateRoomId() {
-        return randomUUID();
     }
 }
