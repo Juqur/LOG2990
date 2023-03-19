@@ -161,10 +161,12 @@ export class GameService {
      * @param socketId The socket id of the player.
      * @param secondPlayerId The socket id of the second player.
      */
-    connectRooms(socket: Socket, secondPlayerSocket: Socket): void {
-        socket.join(secondPlayerSocket.id);
-        secondPlayerSocket.join(socket.id);
-        this.bindPlayers(socket.id, secondPlayerSocket.id);
+    connectRooms(socket: Socket, otherSocket: Socket): void {
+        this.playerGameMap.get(socket.id).isInGame = true;
+        this.playerGameMap.get(otherSocket.id).isInGame = true;
+        socket.join(otherSocket.id);
+        otherSocket.join(socket.id);
+        this.bindPlayers(socket.id, otherSocket.id);
     }
 
     /**
