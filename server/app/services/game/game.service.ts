@@ -13,9 +13,9 @@ export interface GameState {
     gameId: number;
     foundDifferences: number[];
     playerName: string;
+    isInGame: boolean;
     secondPlayerId?: string;
     waitingForSecondPlayer?: boolean;
-    isInGame?: boolean;
 }
 
 export enum VictoryType {
@@ -62,7 +62,7 @@ export class GameService {
     getPlayersWaitingForGame(gameId: number): string[] {
         const listOfPlayersToRemove: string[] = [];
         for (const [socketId, gameState] of this.playerGameMap.entries()) {
-            if (gameState.waitingForSecondPlayer && gameState.gameId === gameId) {
+            if (gameState.gameId === gameId && gameState.waitingForSecondPlayer) {
                 listOfPlayersToRemove.push(socketId);
                 this.playerGameMap.delete(socketId);
             }
@@ -127,11 +127,9 @@ export class GameService {
             gameId: data.levelId,
             foundDifferences: [],
             playerName: data.playerName,
+            isInGame: data.waitingSecondPlayer ? false : true,
             waitingForSecondPlayer: data.waitingSecondPlayer,
         };
-        if (!data.waitingSecondPlayer) {
-            playerGameState.isInGame = true;
-        }
         this.playerGameMap.set(socketId, playerGameState);
     }
 
@@ -169,6 +167,7 @@ export class GameService {
             gameId: secondPlayerGameState.gameId,
             foundDifferences: [],
             playerName,
+            isInGame: false,
             secondPlayerId,
             waitingForSecondPlayer: false,
         });
