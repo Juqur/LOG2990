@@ -52,6 +52,14 @@ describe('ImageController', () => {
             expect(result).toBeUndefined();
         });
 
+        it('should set canJoin to true if the level is joinable', async () => {
+            jest.spyOn(gameService, 'getLevelDeletionQueue').mockReturnValue([]);
+            jest.spyOn(gameService, 'getJoinableLevels').mockReturnValue([1]);
+            imageService.getLevels = jest.fn().mockResolvedValue(levels);
+            const result = await controller.getLevels();
+            expect(result[0].canJoin).toBeTruthy();
+        });
+
         it('should remove deleted levels from the list', async () => {
             jest.spyOn(gameService, 'getLevelDeletionQueue').mockReturnValue([1]);
             imageService.getLevels = jest.fn().mockResolvedValue(levels);

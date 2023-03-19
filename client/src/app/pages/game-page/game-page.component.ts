@@ -76,9 +76,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.gamePageService.resetAudio();
-        this.socketHandler.removeListener('game', 'onProcessedClick');
-        this.socketHandler.removeListener('game', 'onVictory');
-        this.socketHandler.removeListener('game', 'onDefeat');
+        this.socketHandler.removeListener('game', 'processedClick');
+        this.socketHandler.removeListener('game', 'victory');
+        this.socketHandler.removeListener('game', 'defeat');
     }
 
     /**
@@ -88,24 +88,23 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It checks if the difference is in the original image or in the diff image, and if the game is finished.
      */
     handleSocket() {
-        this.socketHandler.on('game', 'onProcessedClick', (data) => {
+        this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
             if (gameData.amountOfDifferencesFoundSecondPlayer) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
+            } else {
+                this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.playerDifferencesCount = gameData.amountOfDifferencesFound;
+
             const response = this.gamePageService.validateResponse(gameData.differencePixels);
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
         });
-        // this.socketHandler.on('game', 'opponentAbandoned', () => {
-        //     this.gamePageService.handleOpponentAbandon();
-        // });
-        this.socketHandler.on('game', 'onVictory', () => {
+        this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
         });
-        this.socketHandler.on('game', 'onDefeat', () => {
+        this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
         });
     }

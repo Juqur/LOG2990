@@ -13,9 +13,9 @@ export interface GameState {
     gameId: number;
     foundDifferences: number[];
     playerName: string;
-    secondPlayerId?: string;
-    waitingForSecondPlayer?: boolean;
-    isInGame?: boolean;
+    isInGame: boolean;
+    isGameFound: boolean;
+    otherSocketId?: string;
 }
 
 export enum VictoryType {
@@ -26,7 +26,7 @@ export enum VictoryType {
 /**
  * This service is used to handle the game logic.
  *
- * @author Junaid Qureshi
+ * @author Junaid Qureshi & Pierre Tran
  * @class GameService
  */
 @Injectable()
@@ -62,12 +62,28 @@ export class GameService {
     getPlayersWaitingForGame(gameId: number): string[] {
         const listOfPlayersToRemove: string[] = [];
         for (const [socketId, gameState] of this.playerGameMap.entries()) {
-            if (gameState.waitingForSecondPlayer && gameState.gameId === gameId) {
+            if (gameState.gameId === gameId && !gameState.isInGame) {
                 listOfPlayersToRemove.push(socketId);
-                this.playerGameMap.delete(socketId);
             }
         }
+
+        for (const socketId of listOfPlayersToRemove) {
+            this.playerGameMap.delete(socketId);
+        }
         return listOfPlayersToRemove;
+    }
+
+    /**
+     * This method gets a list of levels currently joinable.
+     */
+    getJoinableLevels(): number[] {
+        const listOfLevels: number[] = [];
+        for (const gameState of this.playerGameMap.values()) {
+            if (!listOfLevels.includes(gameState.gameId) && !gameState.isGameFound) {
+                listOfLevels.push(gameState.gameId);
+            }
+        }
+        return listOfLevels;
     }
 
     /**
@@ -75,7 +91,7 @@ export class GameService {
      * It uses imageService to detect whether the pixel is a difference pixel.
      *
      * @param socketId The socket id of the player.
-     * @param position  The position of the pixel that was clicked.
+     * @param position The position of the pixel that was clicked.
      * @returns A GameState object containing the game data.
      */
     async getImageInfoOnClick(socketId: string, position: number): Promise<GameData> {
@@ -96,14 +112,14 @@ export class GameService {
      *
      * @param socketId The socket id of the player.
      * @param server The server object.
-     * @param totalDifferences the total amount of differences in the level.
+     * @param totalDifferences The total amount of differences in the level.
      * @returns A boolean indicating whether the player has won.
      */
     verifyWinCondition(socket: Socket, server: Server, totalDifferences: number): boolean {
         const gameState = this.playerGameMap.get(socket.id);
-        if (gameState.secondPlayerId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
+        if (gameState.otherSocketId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
-            this.deleteUserFromGame(server.sockets.sockets.get(gameState.secondPlayerId));
+            this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
             this.removeLevelFromDeletionQueue(gameState.gameId);
             return true;
         } else if (gameState.foundDifferences.length === totalDifferences) {
@@ -115,23 +131,22 @@ export class GameService {
     }
 
     /**
-     * This method creates a new game for the player.
+     * This method creates a new game state for the player.
      * It creates a new entry in the playerGameMap.
      * If the player is not in a multiplayer game, it sets the isInGame property to true.
      *
      * @param socketId The socket id of the player.
      * @param data The data containing the level id, the player name and a boolean for waitingSecondPlayer if it is a multiplayer game.
+     * @param isMultiplayer A boolean indicating whether the game is multiplayer.
      */
-    createNewGame(socketId: string, data: { levelId: number; playerName: string; waitingSecondPlayer?: boolean }): void {
+    createGameState(socketId: string, data: { levelId: number; playerName: string }, isMultiplayer: boolean): void {
         const playerGameState: GameState = {
             gameId: data.levelId,
             foundDifferences: [],
             playerName: data.playerName,
-            waitingForSecondPlayer: data.waitingSecondPlayer,
+            isInGame: !isMultiplayer,
+            isGameFound: !isMultiplayer,
         };
-        if (!data.waitingSecondPlayer) {
-            playerGameState.isInGame = true;
-        }
         this.playerGameMap.set(socketId, playerGameState);
     }
 
@@ -144,34 +159,12 @@ export class GameService {
      * @returns the id of the second player if he is found, undefined otherwise.
      */
     findAvailableGame(socketId: string, levelId: number): string {
-        for (const [secondPlayerId, secondPlayerGameState] of this.playerGameMap.entries()) {
-            if (secondPlayerId !== socketId && secondPlayerGameState.gameId === levelId) {
-                if (secondPlayerGameState.waitingForSecondPlayer) {
-                    return secondPlayerId;
-                }
+        for (const [otherSocketId, otherGameState] of this.playerGameMap.entries()) {
+            if (otherGameState.gameId === levelId && otherSocketId !== socketId && !otherGameState.isGameFound) {
+                return otherSocketId;
             }
         }
         return undefined;
-    }
-
-    /**
-     * This method updates the game state of the player and the opponent.
-     *
-     * @param socketId The socket id of the player.
-     * @param secondPlayerId The socket id of the second player.
-     * @param playerName The name of the player.
-     */
-    setupMultiplayerGameStates(socketId: string, secondPlayerId: string, playerName: string): void {
-        const secondPlayerGameState: GameState = this.playerGameMap.get(secondPlayerId);
-        secondPlayerGameState.secondPlayerId = socketId;
-        this.playerGameMap.set(secondPlayerId, secondPlayerGameState);
-        this.playerGameMap.set(socketId, {
-            gameId: secondPlayerGameState.gameId,
-            foundDifferences: [],
-            playerName,
-            secondPlayerId,
-            waitingForSecondPlayer: false,
-        });
     }
 
     /**
@@ -181,10 +174,12 @@ export class GameService {
      * @param socketId The socket id of the player.
      * @param secondPlayerId The socket id of the second player.
      */
-    connectRooms(socket: Socket, secondPlayerSocket: Socket): void {
-        socket.join(secondPlayerSocket.id);
-        secondPlayerSocket.join(socket.id);
-        this.setInGame(socket.id, secondPlayerSocket.id);
+    connectRooms(socket: Socket, otherSocket: Socket): void {
+        this.playerGameMap.get(socket.id).isInGame = true;
+        this.playerGameMap.get(otherSocket.id).isInGame = true;
+        socket.join(otherSocket.id);
+        otherSocket.join(socket.id);
+        this.bindPlayers(socket.id, otherSocket.id);
     }
 
     /**
@@ -195,9 +190,9 @@ export class GameService {
      */
     deleteUserFromGame(socket: Socket): void {
         if (this.playerGameMap.get(socket.id)) {
-            const secondPlayerId = this.playerGameMap.get(socket.id).secondPlayerId;
-            if (secondPlayerId) {
-                socket.leave(secondPlayerId);
+            const otherSocketId = this.playerGameMap.get(socket.id).otherSocketId;
+            if (otherSocketId) {
+                socket.leave(otherSocketId);
             }
             this.playerGameMap.delete(socket.id);
         }
@@ -240,18 +235,21 @@ export class GameService {
     }
 
     /**
-     * This method sets the isInGame property to true for the two players.
+     * Binds the two players together by their socket ids.
+     * It is used to match make the players, but unofficially since it needs confirmation.
      *
-     * @param socketId The socket id of the first player.
-     * @param secondPlayerSocketId The socket id of the second player.
+     * @param socketId The socket id of the player.
+     * @param otherSocketId The socket id of the other player.
      */
-    private setInGame(socketId: string, secondPlayerSocketId: string): void {
+    bindPlayers(socketId: string, otherSocketId: string): void {
         const gameState = this.playerGameMap.get(socketId);
-        gameState.isInGame = true;
+        gameState.isGameFound = true;
+        gameState.otherSocketId = otherSocketId;
         this.playerGameMap.set(socketId, gameState);
 
-        const secondPlayerGameState = this.playerGameMap.get(secondPlayerSocketId);
-        secondPlayerGameState.isInGame = true;
-        this.playerGameMap.set(secondPlayerSocketId, secondPlayerGameState);
+        const otherGameState = this.playerGameMap.get(otherSocketId);
+        otherGameState.isGameFound = true;
+        otherGameState.otherSocketId = socketId;
+        this.playerGameMap.set(otherSocketId, otherGameState);
     }
 }

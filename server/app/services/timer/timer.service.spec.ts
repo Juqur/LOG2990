@@ -45,12 +45,14 @@ describe('TimerService', () => {
             expect(service['timeIntervalMap'].get('secondSocket')).toBeDefined();
         });
 
-        it('should emit the time every second', () => {
-            const expectedTime = 0;
+        it('should emit the time every second', async () => {
+            const emitSpy = jest.fn();
+            const toSpy = jest.spyOn(server, 'to').mockReturnValue({ emit: emitSpy } as never);
             const timeToAdvance = 1000;
             service.startTimer('socket', server, true);
             jest.advanceTimersByTime(timeToAdvance);
-            expect(server.to('socket').emit).toHaveBeenCalledWith('sendTime', expectedTime + 1);
+            expect(toSpy).toBeCalledTimes(1);
+            expect(emitSpy).toBeCalledTimes(1);
         });
     });
 

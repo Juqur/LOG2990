@@ -126,6 +126,10 @@ export class GamePageService {
         }
     }
 
+    /**
+     * This method is called when the player wins.
+     * It will open a dialog and play a sound.
+     */
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
@@ -140,6 +144,10 @@ export class GamePageService {
         this.audioService.play();
     }
 
+    /**
+     * This method is called when the player wins.
+     * It will open a dialog and play a sound.
+     */
     handleDefeat(): void {
         this.popUpService.openDialog(this.loseDialogData, this.closePath);
         this.audioService.create('./assets/audio/LossSound.mp3');
@@ -148,7 +156,7 @@ export class GamePageService {
     }
 
     /**
-     * The equivalent of eyedropper tool.
+     * This method finds the rgba value of a pixel on the original image.
      *
      * @param x the x coordinate of the pixel
      * @param y the y coordinate of the pixel
