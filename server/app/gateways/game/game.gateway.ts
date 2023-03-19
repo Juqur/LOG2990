@@ -6,7 +6,7 @@ import { Server, Socket } from 'socket.io';
 import { GameEvents } from './game.gateway.events';
 
 /**
- * This gateway is used to all socket events.
+ * This gateway is used to handle to all socket events.
  *
  * @author Junaid Qureshi
  * @class GameGateway
@@ -43,18 +43,18 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnClick)
     async onClick(socket: Socket, position: number): Promise<void> {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
-        socket.emit(GameEvents.OnProcessedClick, dataToSend);
+        socket.emit(GameEvents.ProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).secondPlayerId;
         if (secondPlayerId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
-            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnProcessedClick, dataToSend);
+            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
         }
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
-            socket.emit(GameEvents.OnVictory);
+            socket.emit(GameEvents.Victory);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
             if (secondPlayerId) {
-                this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.OnDefeat);
+                this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.Defeat);
                 this.timerService.stopTimer(secondPlayerId);
             }
         }
@@ -194,7 +194,7 @@ export class GameGateway {
             this.gameService.removeLevelFromDeletionQueue(gameState.gameId);
             if (gameState.secondPlayerId) {
                 const secondPlayerSocket = this.server.sockets.sockets.get(gameState.secondPlayerId);
-                secondPlayerSocket.emit(GameEvents.OnVictory);
+                secondPlayerSocket.emit(GameEvents.Victory);
             }
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);

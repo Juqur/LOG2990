@@ -169,7 +169,7 @@ export class GameService {
             playerName,
             isInGame: false,
             secondPlayerId,
-            waitingForSecondPlayer: false,
+            waitingForSecondPlayer: true,
         });
     }
 
@@ -247,10 +247,12 @@ export class GameService {
     private setInGame(socketId: string, secondPlayerSocketId: string): void {
         const gameState = this.playerGameMap.get(socketId);
         gameState.isInGame = true;
+        gameState.waitingForSecondPlayer = false;
         this.playerGameMap.set(socketId, gameState);
 
         const secondPlayerGameState = this.playerGameMap.get(secondPlayerSocketId);
         secondPlayerGameState.isInGame = true;
+        secondPlayerGameState.waitingForSecondPlayer = false;
         this.playerGameMap.set(secondPlayerSocketId, secondPlayerGameState);
     }
 }
