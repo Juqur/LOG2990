@@ -5,7 +5,7 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
-// import { LevelDifferences } from '@app/classes/difference';
+import { LevelDifferences } from '@app/classes/difference';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
@@ -14,6 +14,7 @@ import { MouseService } from '@app/services/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
+import { DrawService } from '../drawService/draw.service';
 import { CreationPageService } from './creation-page.service';
 import SpyObj = jasmine.SpyObj;
 
@@ -23,6 +24,9 @@ describe('CreationPageService', () => {
     let diffServiceSpy: SpyObj<DifferenceDetectorService>;
     let communicationSpy: SpyObj<CommunicationService>;
     let popUpServiceSpy: any;
+    let drawServiceDefaultSpy: SpyObj<DrawService>;
+    let drawServiceDiffSpy: SpyObj<DrawService>;
+
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
@@ -31,6 +35,8 @@ describe('CreationPageService', () => {
         popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
         popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
+        drawServiceDefaultSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush','eraseBrush']);
+        drawServiceDiffSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush','eraseBrush']);
     });
 
     beforeEach(() => {
@@ -43,10 +49,14 @@ describe('CreationPageService', () => {
                 { provide: DifferenceDetectorService, useValue: diffServiceSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: CommunicationService, useValue: communicationSpy },
+                { provide: DrawService, useValue: drawServiceDefaultSpy },
+                { provide: DrawService, useValue: drawServiceDiffSpy },
             ],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         });
         service = TestBed.inject(CreationPageService);
+        drawServiceDefaultSpy = (service as any).drawServiceDefault;
+        drawServiceDiffSpy = (service as any).drawServiceDiff;
     });
 
     it('should be created', () => {
@@ -204,7 +214,7 @@ describe('CreationPageService', () => {
         expect(getContextSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('slider change should correctly update the value of the radius', () => {
+    it('diffSlider change should correctly update the value of the radius', () => {
         service.diffSliderChange(0);
         expect(service['creationSpecs'].radius).toEqual(Constants.RADIUS_TABLE[0]);
         service.diffSliderChange(1);
@@ -215,27 +225,21 @@ describe('CreationPageService', () => {
         expect(service['creationSpecs'].radius).toEqual(Constants.RADIUS_TABLE[3]);
     });
 
-    /* it('detectDifference should call errorDIalog if a or the canvasses are null and not call DifferenceService detectDifferences', () => {
-        service['creationSpecs'].defaultBgCanvasCtx = null;
-        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        const errorDialogSpy = spyOn<any>(service, 'errorDialog');
-        service.detectDifference();
+    it('brushSlider change should correctly update the value of both draw services', () => {
+        const mockEvent = { value: Constants.thirty };
+        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'setBrushSize');
+        const diffDrawSpy = spyOn(drawServiceDiffSpy, 'setBrushSize');
+        service.brushSliderChange(mockEvent);
+        // expect(drawServiceDefaultSpy.setBrushSize).toHaveBeenCalledWith(Constants.thirty);
+        // expect(drawServiceDiffSpy.setBrushSize).toHaveBeenCalledWith(Constants.thirty);
+        expect(defaultDrawSpy).toHaveBeenCalledOnceWith(Constants.thirty);
+        expect(diffDrawSpy).toHaveBeenCalledWith(Constants.thirty);
+    });
 
-        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffBgCanvasCtx = null;
-        service.detectDifference();
+    it('detectDifference should not call errorDIalog if none of the canvases are null and call DifferenceService detectDifferences', () => {
+        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
-        service['creationSpecs'].defaultBgCanvasCtx = null;
-        service['creationSpecs'].diffBgCanvasCtx = null;
-        service.detectDifference();
-
-        expect(errorDialogSpy).toHaveBeenCalledTimes(3);
-        expect(diffServiceSpy.detectDifferences).not.toHaveBeenCalled();
-    }); */
-
-    /* it('detectDifference should not call errorDIalog if none of the canvases are null and call DifferenceService detectDifferences', () => {
-        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -249,27 +253,27 @@ describe('CreationPageService', () => {
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference();
+        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(errorDialogSpy).not.toHaveBeenCalled();
         expect(diffServiceSpy.detectDifferences).toHaveBeenCalledTimes(1);
-    }); */
+    });
 
-    /* it('detectDifference should call errorDIalog if DifferenceService detectDifferences returned no LevelDifference', () => {
-        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
+    it('detectDifference should call errorDIalog if DifferenceService detectDifferences returned no LevelDifference', () => {
+        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
 
         diffServiceSpy.detectDifferences.and.returnValue(undefined);
 
-        service.detectDifference();
+        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
-    }); */
+    }); 
 
-    /* it('detectDifference correctly set the number of differences and isSaveable', () => {
-        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
+    it('detectDifference correctly set the number of differences and isSaveable', () => {
+        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -283,15 +287,15 @@ describe('CreationPageService', () => {
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference();
+        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).toBeTrue();
-    }); */
+    });
 
-    /* it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
-        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
+    it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
+        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -301,22 +305,22 @@ describe('CreationPageService', () => {
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference();
+        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
         expect(service['differenceAmountMsg']).toEqual(' (Attention, le nombre de différences est trop bas)');
 
         mockLevelDifference.clusters = [[1], [1], [1], [1], [1], [1], [1], [1], [1], [1]];
-        service.detectDifference();
+        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
         expect(service['differenceAmountMsg']).toEqual(' (Attention, le nombre de différences est trop élevé)');
-    });*/
+    });
 
-    /* it('detectDifference should call openDialog if the game is not saveable', () => {
-        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
+    it('detectDifference should call openDialog if the game is not saveable', () => {
+        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -326,14 +330,14 @@ describe('CreationPageService', () => {
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference();
+        service.detectDifference(diffBgCanvasCtx, defaultBgCanvasCtx);
 
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
-    });*/
+    });
 
-    /* it('detectDifference should call openDialog if the game is saveable', () => {
-        service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
+    it('detectDifference should call openDialog if the game is saveable', () => {
+        // service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
+        // service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();
@@ -346,7 +350,7 @@ describe('CreationPageService', () => {
         service.detectDifference(mockLevelDifference.canvas, mockLevelDifference.canvas);
 
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
-    });*/
+    });
 
     it('save game should call open dialog twice if we can save and post level was successful', () => {
         service['isSaveable'] = true;
@@ -384,6 +388,43 @@ describe('CreationPageService', () => {
         service.saveGame();
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('paintBrushMode should should call the correct draw functions', () => {
+        const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'paintBrush');
+        const diffDrawSpy = spyOn(drawServiceDiffSpy, 'paintBrush');
+        service.paintBrushMode(defaultCanvasCtx, diffCanvasCtx);
+        expect(mouseServiceSpy.isRectangleMode).toBeFalse();
+
+        expect(defaultDrawSpy).toHaveBeenCalledTimes(1);
+        expect(diffDrawSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('eraseBrushMode should call the correct draw functions', () => {
+        const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'eraseBrush');
+        const diffDrawSpy = spyOn(drawServiceDiffSpy, 'eraseBrush');
+        service.eraseBrushMode(defaultCanvasCtx, diffCanvasCtx);
+        expect(mouseServiceSpy.isRectangleMode).toBeFalse();
+
+        expect(defaultDrawSpy).toHaveBeenCalledTimes(1);
+        expect(diffDrawSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('rectangleMode should set isRectangleMode to true', () => {
+        service.rectangleMode();
+        expect(mouseServiceSpy.isRectangleMode).toBeTrue();
+    });
+
+    it('colorPickerMode should call the correct draw functions', () => {
+        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'setPaintColor');
+        const diffDrawSpy = spyOn(drawServiceDiffSpy, 'setPaintColor');
+        service.colorPickerMode();
+        expect(defaultDrawSpy).toHaveBeenCalledTimes(1);
+        expect(diffDrawSpy).toHaveBeenCalledTimes(1);
     });
 
     it('getEmptyBMPFile should return a new File with the correct src', fakeAsync(async () => {

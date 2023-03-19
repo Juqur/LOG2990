@@ -194,10 +194,6 @@ export class CreationPageService {
      * sections are differences while the white are regions shared between images.
      */
     detectDifference(defaultMergedCtx: CanvasRenderingContext2D, diffMergedCtx: CanvasRenderingContext2D): void {
-        if (!this.creationSpecs.defaultBgCanvasCtx || !this.creationSpecs.diffBgCanvasCtx) {
-            this.errorDialog('Canvas manquant');
-            return;
-        }
         this.creationSpecs.differences = this.diffService.detectDifferences(defaultMergedCtx, diffMergedCtx, this.creationSpecs.radius);
         if (!this.creationSpecs.differences) {
             this.errorDialog('Veuillez fournir des images non vides');
