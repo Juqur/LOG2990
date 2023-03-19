@@ -71,9 +71,9 @@ export class GameService {
     }
 
     /**
-     * This method gets a list of levels currently in the queue.
+     * This method gets a list of levels currently joinable.
      */
-    getLevelsCurrentlyInQueue(): number[] {
+    getJoinableLevels(): number[] {
         const listOfLevels: number[] = [];
         for (const gameState of this.playerGameMap.values()) {
             if (gameState.gameId && !listOfLevels.includes(gameState.gameId) && !gameState.isGameFound) {

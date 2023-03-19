@@ -37,7 +37,7 @@ export class ImageController {
                 }
             }
         }
-        for (const levelId of this.gameService.getLevelsCurrentlyInQueue()) {
+        for (const levelId of this.gameService.getJoinableLevels()) {
             for (const level of levels) {
                 if (level.id === levelId) {
                     level.canJoin = true;
