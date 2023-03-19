@@ -54,6 +54,7 @@ describe('UndoRedoService', () => {
         expect(action).toBeUndefined();
     });
 
+    // CE TEST NE MARCHE PAS 1 FOIS SUR 4 (POURQUOI?)
     it('should redo', () => {
         const defaultCanvas = document.createElement('canvas');
         const defaultCanvasCtx = defaultCanvas.getContext('2d');

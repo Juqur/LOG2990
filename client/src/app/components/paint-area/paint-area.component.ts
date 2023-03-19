@@ -26,7 +26,7 @@ export class PaintAreaComponent implements AfterViewInit {
     undoRedoService: UndoRedoService = new UndoRedoService();
     currentImage: HTMLImageElement;
     isShiftPressed = false;
-    private isDragging = false;
+    isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
 
@@ -136,7 +136,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Creates a temporary canvas on top of the foreground canvas.
+     * Creates a temporary canvas on top of the other canvases.
      * It is used to display the rectangle in real time before applying it to the foreground canvas.
      */
     createTempCanvas() {
@@ -257,6 +257,5 @@ export class PaintAreaComponent implements AfterViewInit {
             this.fgCanvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
             document.body.querySelector('#' + this.fgCanvas.nativeElement.id)?.parentNode?.removeChild(this.tempCanvas);
         }
-        // this.undoRedoService.addState(this.canvas.nativeElement.getContext('2d'));
     }
 }

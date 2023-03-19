@@ -15,7 +15,7 @@ describe('PlayAreaComponent', () => {
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess', 'drawPlayArea']);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -51,11 +51,6 @@ describe('PlayAreaComponent', () => {
         } as KeyboardEvent;
         component.buttonDetect(buttonEvent);
         expect(component.buttonPressed).toEqual(expectedKey);
-    });
-
-    it('getCanvas should return the canvas element', () => {
-        const canvas = component.getCanvas();
-        expect(canvas).toEqual(component.canvas);
     });
 
     it('getCanvas should return the canvas element', () => {
