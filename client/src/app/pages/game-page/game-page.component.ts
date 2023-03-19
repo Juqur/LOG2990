@@ -99,10 +99,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
         });
-        this.socketHandler.on('game', 'onVictory', () => {
+        this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
         });
-        this.socketHandler.on('game', 'onDefeat', () => {
+        this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
         });
     }

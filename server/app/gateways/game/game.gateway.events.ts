@@ -6,9 +6,6 @@ export enum GameEvents {
     OnSecondPlayerJoined = 'onSecondPlayerJoined',
     UpdateDifferenceAmount = 'updateDifferenceAmount',
     OnProcessedClick = 'onProcessedClick',
-    SendTime = 'sendTime',
-    OnDefeat = 'onDefeat',
-    OnVictory = 'onVictory',
     OnDeleteLevel = 'onDeleteLevel',
     OnGameSelection = 'onGameSelection',
     OnGameAccepted = 'onGameAccepted',
@@ -25,4 +22,7 @@ export enum GameEvents {
     StartClassicMultiplayerGame = 'startClassicMultiplayerGame',
     ShutDownGame = 'shutDownGame',
     DeleteLevel = 'deleteLevel',
+    SendTime = 'sendTime',
+    Defeat = 'defeat',
+    Victory = 'victory',
 }
