@@ -6,7 +6,7 @@ import { Server, Socket } from 'socket.io';
 import { GameEvents } from './game.gateway.events';
 
 /**
- * This gateway is used to all socket events.
+ * This gateway is used to handle to all socket events.
  *
  * @author Junaid Qureshi
  * @class GameGateway
