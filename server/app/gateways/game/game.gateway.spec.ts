@@ -26,6 +26,8 @@ describe('GameGateway', () => {
             gameId: 1,
             foundDifferences: [],
             playerName: 'Alice',
+            isInGame: false,
+            isGameFound: false,
         };
         timerService = createStubInstance<TimerService>(TimerService);
         gameService = createStubInstance<GameService>(GameService);
@@ -62,7 +64,7 @@ describe('GameGateway', () => {
     describe('onJoinSoloClassicGame', () => {
         it('should call timer service and game service when player joins a solo game', () => {
             const timerSpy = jest.spyOn(timerService, 'startTimer');
-            const gameSpy = jest.spyOn(gameService, 'createNewGame');
+            const gameSpy = jest.spyOn(gameService, 'createGameState');
             const data = { levelId: 1, playerName: 'test' };
             gateway.onJoinSoloClassicGame(socket, data);
             expect(gameSpy).toHaveBeenCalled();
@@ -77,19 +79,19 @@ describe('GameGateway', () => {
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             const emitSpy = jest.spyOn(socket, 'emit');
             await gateway.onClick(socket, 1);
-            expect(emitSpy).toBeCalledWith('onProcessedClick', gameData);
+            expect(emitSpy).toBeCalledWith('processedClick', gameData);
         });
 
         it('should emit to the opponent when player clicks', async () => {
-            gameState.secondPlayerId = '1';
+            gameState.otherSocketId = '1';
             jest.spyOn(gameService, 'getImageInfoOnClick').mockReturnValue(Promise.resolve(gameData));
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(false);
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             const emitSpy = jest.spyOn(socket, 'emit');
             const emitSecondPlayerSpy = jest.spyOn(socketSecondPlayer, 'emit');
             await gateway.onClick(socket, 1);
-            expect(emitSpy).toBeCalledWith('onProcessedClick', gameData);
-            expect(emitSecondPlayerSpy).toBeCalledWith('onProcessedClick', gameData);
+            expect(emitSpy).toBeCalledWith('processedClick', gameData);
+            expect(emitSecondPlayerSpy).toBeCalledWith('processedClick', gameData);
         });
 
         it('should emit a victory event if player wins', async () => {
@@ -103,14 +105,14 @@ describe('GameGateway', () => {
 
             await gateway.onClick(socket, 1);
 
-            expect(emitSpy).toBeCalledWith('onProcessedClick', gameData);
-            expect(emitSpy).toBeCalledWith('onVictory');
+            expect(emitSpy).toBeCalledWith('processedClick', gameData);
+            expect(emitSpy).toBeCalledWith('victory');
             expect(timerSpy).toBeCalled();
             expect(gameSpy).toBeCalled();
         });
 
         it('should emit a defeat to the opponent event if player wins', async () => {
-            gameState.secondPlayerId = '1';
+            gameState.otherSocketId = '1';
             jest.spyOn(gameService, 'getImageInfoOnClick').mockReturnValue(Promise.resolve(gameData));
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(true);
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
@@ -120,8 +122,8 @@ describe('GameGateway', () => {
 
             await gateway.onClick(socket, 1);
 
-            expect(emitSecondPlayerSpy).toBeCalledWith('onProcessedClick', gameData);
-            expect(emitSecondPlayerSpy).toBeCalledWith('onDefeat');
+            expect(emitSecondPlayerSpy).toBeCalledWith('processedClick', gameData);
+            expect(emitSecondPlayerSpy).toBeCalledWith('defeat');
         });
     });
 
@@ -147,22 +149,13 @@ describe('GameGateway', () => {
             expect(emitSpy).toBeCalledWith('playerSelection', name);
         });
 
-        it('should setup both player game states if player finds a match', () => {
-            const secondPlayerId = '1';
-            const name = 'Alice';
-            jest.spyOn(gameService, 'findAvailableGame').mockReturnValue(secondPlayerId);
-            const setupMultiplayerSpy = jest.spyOn(gameService, 'setupMultiplayerGameStates');
-            gateway.onGameSelection(socket, { playerName: name, levelId: 1 });
-            expect(setupMultiplayerSpy).toBeCalledWith(socket.id, secondPlayerId, name);
-        });
-
         it('should create a new game if player does not find a match', () => {
             const levelId = 1;
             const name = 'Alice';
             jest.spyOn(gameService, 'findAvailableGame').mockReturnValue(undefined);
-            const createNewGameSpy = jest.spyOn(gameService, 'createNewGame');
+            const createNewGameSpy = jest.spyOn(gameService, 'createGameState');
             gateway.onGameSelection(socket, { playerName: name, levelId });
-            expect(createNewGameSpy).toBeCalledWith(socket.id, { levelId, playerName: name, waitingSecondPlayer: true });
+            expect(createNewGameSpy).toBeCalledWith(socket.id, { levelId, playerName: name }, true);
         });
 
         it('should update the selection page if player does not find a match', () => {
@@ -186,6 +179,8 @@ describe('GameGateway', () => {
                 gameId: 1,
                 foundDifferences: [],
                 playerName: 'Bob',
+                isGameFound: true,
+                isInGame: true,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             const emitSpy = jest.spyOn(socket, 'emit');
@@ -202,6 +197,8 @@ describe('GameGateway', () => {
                 gameId: 1,
                 foundDifferences: [],
                 playerName: 'Bob',
+                isGameFound: true,
+                isInGame: true,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             const emitSpy = jest.spyOn(socketSecondPlayer, 'emit');
@@ -313,11 +310,11 @@ describe('GameGateway', () => {
         });
 
         it('should emit to the opponent that he has won by default', () => {
-            gameState.secondPlayerId = '1';
+            gameState.otherSocketId = '1';
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             const emitSpy = jest.spyOn(socketSecondPlayer, 'emit');
             gateway['handlePlayerLeavingGame'](socket);
-            expect(emitSpy).toBeCalledWith('onVictory');
+            expect(emitSpy).toBeCalledWith('victory');
         });
 
         it('should delete the user from the game map', () => {
