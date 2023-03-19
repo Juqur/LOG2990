@@ -8,6 +8,7 @@ export interface Level {
     timeMulti: number[];
     isEasy: boolean;
     nbDifferences: number;
+    canJoin?: boolean;
 }
 
 export interface LevelData {
