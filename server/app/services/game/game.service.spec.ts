@@ -246,20 +246,6 @@ describe('GameService', () => {
     });
 
     describe('verifyIfLevelIsBeingPlayed', () => {
-        let removeLevelQueueSpy: jest.SpyInstance;
-
-        beforeEach(() => {
-            removeLevelQueueSpy = jest.spyOn(service, 'removeLevelFromDeletionQueue' as never).mockImplementation();
-        });
-
-        it('should call removeLevelFromDeletionQueue if the level is not found among the played games', () => {
-            service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true }],
-            ]);
-            service.verifyIfLevelIsBeingPlayed(0);
-            expect(removeLevelQueueSpy).toHaveBeenCalledWith(0);
-        });
-
         it('should return true if the level is being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
                 ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: true, isGameFound: true }],
@@ -317,6 +303,14 @@ describe('GameService', () => {
             expect(service['playerGameMap'].get('socket1').otherSocketId).toBe('socket2');
             expect(service['playerGameMap'].get('socket2').isGameFound).toBeTruthy();
             expect(service['playerGameMap'].get('socket2').otherSocketId).toBe('socket1');
+        });
+    });
+
+    describe('deleteLevel', () => {
+        it('should call deleteLevelData', () => {
+            const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
+            service.deleteLevel(0);
+            expect(deleteLevelDataSpy).toHaveBeenCalled();
         });
     });
 });
