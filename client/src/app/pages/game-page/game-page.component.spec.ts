@@ -163,20 +163,20 @@ describe('GamePageComponent', () => {
         });
     });
 
-    describe('getGameLevel', () => {
+    describe('settingGameParameters', () => {
         it('should set levelId, playerName and secondPlayerName from route', () => {
-            spyOn(component, 'settingGameLevel');
-            spyOn(component, 'settingGameImage');
-            component.getGameLevel();
+            spyOn(component, 'settingGameLevel' as never);
+            spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
             expect(component['levelId']).toBe(1);
             expect(component.playerName).toBe('Alice');
             expect(component.secondPlayerName).toBe('Bob');
         });
 
         it('should call settingGameImage and settingGameLevel when getting the game level', () => {
-            const settingGameLevelSpy = spyOn(component, 'settingGameLevel');
-            const settingGameImageSpy = spyOn(component, 'settingGameImage');
-            component.getGameLevel();
+            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
+            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
             expect(settingGameLevelSpy).toHaveBeenCalled();
             expect(settingGameImageSpy).toHaveBeenCalled();
         });
@@ -228,7 +228,7 @@ describe('GamePageComponent', () => {
             const expectedDifferences = 3;
             const level = { id: 0, nbDifferences: expectedDifferences } as unknown as Level;
             communicationServiceSpy.getLevel.and.returnValue(of(level));
-            component.settingGameLevel();
+            component['settingGameLevel']();
             tick();
 
             expect(communicationServiceSpy.getLevel).toHaveBeenCalledTimes(1);
@@ -238,7 +238,7 @@ describe('GamePageComponent', () => {
 
         it('should throw and error if the client cannot get information from the server', () => {
             communicationServiceSpy.getLevel.and.throwError('Error');
-            expect(component.settingGameLevel).toThrowError();
+            expect(component['settingGameLevel']).toThrowError();
         });
     });
 

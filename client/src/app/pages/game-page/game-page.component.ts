@@ -59,7 +59,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.gamePageService.resetImagesData();
-        this.getGameLevel();
+        this.settingGameParameters();
         this.handleSocket();
     }
 
@@ -131,9 +131,16 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * This method emits a socket event if the player decides to abandon the game.
+     */
+    abandonGame(): void {
+        this.socketHandler.send('game', 'onAbandonGame');
+    }
+
+    /**
      * Get the game level from the server when the game is loaded.
      */
-    getGameLevel(): void {
+    private settingGameParameters(): void {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
@@ -145,7 +152,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     /**
      * This method will set the game level.
      */
-    settingGameLevel(): void {
+    private settingGameLevel(): void {
         try {
             this.communicationService.getLevel(this.levelId).subscribe((value) => {
                 this.currentLevel = value;
@@ -159,15 +166,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     /**
      * This method will set the game images.
      */
-    settingGameImage(): void {
+    private settingGameImage(): void {
         this.originalImageSrc = environment.serverUrl + 'original/' + this.levelId + '.bmp';
         this.diffImageSrc = environment.serverUrl + 'modified/' + this.levelId + '.bmp';
-    }
-
-    /**
-     * This method emits a socket event if the player decides to abandon the game.
-     */
-    abandonGame(): void {
-        this.socketHandler.send('game', 'onAbandonGame');
     }
 }
