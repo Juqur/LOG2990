@@ -47,31 +47,8 @@ export class GameGateway {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
-        // const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
 
         this.chatService.getSystemMessage(socket, dataToSend, this.gameService);
-
-        /// //// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
-        // const message: string = dataToSend.differencePixels.length === 0 ? 'ERREUR' : 'Différence trouvée';
-        // const playerName: string = this.gameService.getGameState(socket.id).otherSocketId
-        //     ? ' par ' + this.gameService.getGameState(socket.id).playerName
-        //     : '';
-        // const chatMessage: ChatMessage = {
-        //     sender: 'Système',
-        //     senderId: SenderType.System,
-        //     text: message + playerName,
-        // };
-        // socket.emit(GameEvents.MessageSent, chatMessage);
-        // if (this.gameService.getGameState(socket.id).otherSocketId) {
-        //     secondPlayerSocket.emit(GameEvents.MessageSent, chatMessage);
-        //     // socket.to(secondPlayerId).emit(GameEvents.MessageSent, chatMessage);
-        // }
-        // if (secondPlayerId) {
-        //     dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
-        //     secondPlayerSocket.emit(GameEvents.ProcessedClick, dataToSend);
-        //     // socket.to(secondPlayerId).emit(GameEvents.MessageSent, dataToSend);
-        // }
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
@@ -221,9 +198,6 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnAbandonGame)
     onAbandonGame(socket: Socket): void {
-        // const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId; // is there a better way ?
-        // const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        // secondPlayerSocket.emit(GameEvents.OpponentAbandoned);
         this.handlePlayerLeavingGame(socket);
     }
 
@@ -248,6 +222,8 @@ export class GameGateway {
         if (gameState) {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
             if (gameState.otherSocketId) {
+                // const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId; // is there a better way ?
+                // socket.to(secondPlayerId).emit(GameEvents.OpponentAbandoned);
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 otherSocket.emit(GameEvents.Victory);
                 this.gameService.deleteUserFromGame(otherSocket);
