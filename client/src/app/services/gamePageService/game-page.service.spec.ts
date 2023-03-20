@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -43,7 +43,7 @@ describe('GamePageService', () => {
         playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
 
         TestBed.configureTestingModule({
-            imports: [HttpClientModule],
+            imports: [HttpClientTestingModule],
             providers: [
                 { provide: SocketHandler, useValue: socketHandlerSpy },
                 { provide: MouseService, useValue: mouseServiceSpy },
