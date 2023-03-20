@@ -86,7 +86,7 @@ export class GameService {
      * @returns A GameState object containing the game data.
      */
     async getImageInfoOnClick(socketId: string, position: number): Promise<GameData> {
-        const gameState = this.getGameState(socketId);
+        const gameState = this.playerGameMap.get(socketId);
         const id: string = gameState.levelId as unknown as string;
         const response = await this.imageService.findDifference(id, gameState.foundDifferences, position);
         return {
@@ -182,7 +182,7 @@ export class GameService {
      */
     deleteUserFromGame(socket: Socket): void {
         if (this.playerGameMap.get(socket.id)) {
-            const otherSocketId = this.getGameState(socket.id).otherSocketId;
+            const otherSocketId = this.playerGameMap.get(socket.id).otherSocketId;
             if (otherSocketId) {
                 socket.leave(otherSocketId);
             }
@@ -246,12 +246,12 @@ export class GameService {
      * @param otherSocketId The socket id of the other player.
      */
     bindPlayers(socketId: string, otherSocketId: string): void {
-        const gameState = this.getGameState(socketId);
+        const gameState = this.playerGameMap.get(socketId);
         gameState.isGameFound = true;
         gameState.otherSocketId = otherSocketId;
         this.playerGameMap.set(socketId, gameState);
 
-        const otherGameState = this.getGameState(otherSocketId);
+        const otherGameState = this.playerGameMap.get(otherSocketId);
         otherGameState.isGameFound = true;
         otherGameState.otherSocketId = socketId;
         this.playerGameMap.set(otherSocketId, otherGameState);
