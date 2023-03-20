@@ -35,7 +35,7 @@ export class GameGateway {
      * This method is called when a player clicks on the image. It sends back the information the client needs.
      * It also checks if the player is in a multiplayer match and sends the information to the other player.
      * It also checks if the player has won the game and sends a victory event to the client.
-     * If the match is multiplayer, it also checks if the player has won and said a defeat event to the other player.
+     * If the match is multiplayer, it also checks if the player has won and sends a defeat event to the other player.
      *
      * @param socket The socket of the player.
      * @param position The position of the pixel that was clicked.
