@@ -60,7 +60,7 @@ export class TimerService {
     }
 
     /**
-     * Removes a given time the timer of a player.
+     * Removes time of the timer of a player.
      *
      * @param socket The socket of the player who is used to add time to the timer.
      * @param time The time that is removed to the timer.
