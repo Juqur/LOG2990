@@ -172,7 +172,7 @@ export class GameGateway {
     }
 
     /**
-     * This method is called when a player disconnects.
+     * This method is called when a player abandons a game.
      *
      * @param socket the socket of the player
      */
