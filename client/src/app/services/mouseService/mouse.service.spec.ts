@@ -41,13 +41,13 @@ describe('MouseService', () => {
     });
 
     it('getX should return the correct value', () => {
-        const expectedValue = 1;
+        const expectedValue = 7;
         service['mousePosition'] = { x: expectedValue, y: 1 };
         expect(service.getX()).toEqual(expectedValue);
     });
 
     it('getY should return the correct value', () => {
-        const expectedValue = 1;
+        const expectedValue = 7;
         service['mousePosition'] = { x: 1, y: expectedValue };
         expect(service.getY()).toEqual(expectedValue);
     });
