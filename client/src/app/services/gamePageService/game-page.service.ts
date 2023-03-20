@@ -77,7 +77,7 @@ export class GamePageService {
     verifyClick(event: MouseEvent): number {
         const invalid = -1;
         const mousePosition = this.mouseService.getMousePosition(event);
-        this.mouseService.setClickState(false);
+        this.mouseService.canClick = false;
         return mousePosition || invalid;
     }
 
@@ -198,7 +198,7 @@ export class GamePageService {
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                this.mouseService.setClickState(true);
+                this.mouseService.canClick = true;
             })
             .then(() => {
                 setTimeout(() => {
@@ -274,7 +274,7 @@ export class GamePageService {
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
         this.diffPlayArea.timeout(delay).then(() => {
             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-            this.mouseService.setClickState(true);
+            this.mouseService.canClick = true;
         });
     }
 }

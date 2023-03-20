@@ -29,7 +29,7 @@ describe('GamePageService', () => {
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'setClickState']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);

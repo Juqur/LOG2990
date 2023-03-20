@@ -25,7 +25,7 @@ describe('CreationPageService', () => {
     let popUpServiceSpy: any;
 
     beforeEach(() => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getX', 'getY']);
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog', 'dialogRef']);

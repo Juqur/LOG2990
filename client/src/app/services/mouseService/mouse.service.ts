@@ -12,8 +12,8 @@ import { Constants, MouseButton } from '@common/constants';
     providedIn: 'root',
 })
 export class MouseService {
+    canClick: boolean = true;
     private mousePosition: Vec2 = { x: 0, y: 0 };
-    private canClick: boolean = true;
 
     /**
      * Takes the mouse event to calculate the position of the mouse
@@ -46,23 +46,5 @@ export class MouseService {
      */
     getY(): number {
         return this.mousePosition.y;
-    }
-
-    /**
-     * Sets the value of canClick to the value passed in.
-     *
-     * @param value The value to set the canClick attribute to.
-     */
-    setClickState(value: boolean): void {
-        this.canClick = value;
-    }
-
-    /**
-     * Getter of the canClick attribute.
-     *
-     * @returns The boolean indicating if a click can be processed.
-     */
-    getCanClick(): boolean {
-        return this.canClick;
     }
 }
