@@ -14,6 +14,7 @@ export class MouseService {
     winGameDialogData: DialogData = {
         textToSend: 'Vous avez gagné!',
         closeButtonMessage: 'Retour au menu de sélection',
+        mustProcess: true,
     };
     closePath: string = '/selection';
 

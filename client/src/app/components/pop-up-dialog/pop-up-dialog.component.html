@@ -1,6 +1,6 @@
 <ol>
     <p class="display-paragraph">{{ data.textToSend }}</p>
-    <mat-icon class="close-icon" [mat-dialog-close]="">close</mat-icon>
+    <mat-icon *ngIf="!data.mustProcess" class="close-icon" [mat-dialog-close]="">close</mat-icon>
     <div *ngIf="data.inputData">
         <input
             id="pop-up-input"

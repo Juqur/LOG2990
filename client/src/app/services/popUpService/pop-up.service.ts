@@ -9,6 +9,7 @@ export interface DialogData {
     imgSrc?: string;
     isConfirmation?: boolean;
     closeButtonMessage: string;
+    mustProcess: boolean;
 }
 
 export interface InputData {
@@ -54,10 +55,18 @@ export class PopUpService {
      * @param routToGo the route to send the user to once the pop-up is closed.
      */
     openDialog(dataToSend: DialogData, routeToGo?: string): void {
-        this.dialogRef = this.dialog.open(PopUpDialogComponent, {
-            width: '500px',
-            data: dataToSend,
-        });
+        if (dataToSend.mustProcess) {
+            this.dialogRef = this.dialog.open(PopUpDialogComponent, {
+                width: '500px',
+                data: dataToSend,
+                disableClose: true,
+            });
+        } else {
+            this.dialogRef = this.dialog.open(PopUpDialogComponent, {
+                width: '500px',
+                data: dataToSend,
+            });
+        }
 
         this.dialogRef.afterClosed().subscribe(() => {
             if (routeToGo) {
