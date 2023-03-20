@@ -22,6 +22,8 @@ export class CreationPageService {
     private submitFunction: (value: string) => boolean;
     private drawServiceDefault: DrawService;
     private drawServiceDiff: DrawService;
+    private defaultUploadFile: File;
+    private diffUploadFile: File;
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
@@ -208,15 +210,24 @@ export class CreationPageService {
             this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
         else if (this.creationSpecs.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT)
             this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
+        else this.differenceAmountMsg = '';
         this.popUpService.openDialog({
             textToSend: this.isSaveable
                 ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'
                 : 'Image de différence (contient ' +
-                  this.creationSpecs.nbDifferences +
-                  ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
+                this.creationSpecs.nbDifferences +
+                ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
             imgSrc: this.creationSpecs.differences.canvas.canvas.toDataURL(),
             closeButtonMessage: 'Fermer',
         });
+        if (this.isSaveable) {
+            this.toImgFile(defaultMergedCtx).then((res) => {
+                this.defaultUploadFile = new File([res], 'default.bmp', { type: 'image/bmp' });
+            });
+            this.toImgFile(diffMergedCtx).then((res) => {
+                this.diffUploadFile = new File([res], 'diff.bmp', { type: 'image/bmp' });
+            });
+        }
     }
 
     /**
@@ -224,7 +235,7 @@ export class CreationPageService {
      * to give a name to their new game and saves it.
      */
     saveGame(): void {
-        if (this.isSaveable) {
+        if (this.isSaveable && this.defaultUploadFile && this.diffUploadFile) {
             this.popUpService.openDialog({
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
@@ -237,8 +248,8 @@ export class CreationPageService {
                 if (this.creationSpecs.differences) {
                     this.communicationService
                         .postLevel({
-                            imageOriginal: this.creationSpecs.defaultImageFile,
-                            imageDiff: this.creationSpecs.diffImageFile,
+                            imageOriginal: this.defaultUploadFile,
+                            imageDiff: this.diffUploadFile,
                             name: result,
                             isEasy: (!this.creationSpecs.differences.isHard).toString(),
                             clusters: JSON.stringify(this.creationSpecs.differences.clusters),
@@ -390,6 +401,13 @@ export class CreationPageService {
             reader.readAsArrayBuffer(imageFile);
         });
     }
+
+    async toImgFile(currentCtx: CanvasRenderingContext2D): Promise<Blob> {
+        return new Promise(resolve => {
+            currentCtx.canvas.toBlob(blob => resolve(blob as Blob));
+        });
+    }
+
 
     /**
      * This methods re initializes the game games values to prevent the user from saving
