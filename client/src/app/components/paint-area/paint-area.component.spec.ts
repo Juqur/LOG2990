@@ -227,7 +227,54 @@ describe('PaintAreaComponent', () => {
         component.canvasClick(mouseEvent);
         mouseEvent = {
             offsetX: 250,
-            offsetY: 310,
+            offsetY: 300,
+            button: 0,
+        } as MouseEvent;
+        mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
+        mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
+        component.canvasRectangularDrag(mouseEvent);
+        expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
+        expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+    });
+
+    it('canvasRectangularDrag should draw a square in the right quadrand', () => {
+        let mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+        mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
+        mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
+        component.isShiftPressed = true;
+        mouseServiceSpy.isRectangleMode = true;
+        component.canvasClick(mouseEvent);
+        mouseEvent = {
+            offsetX: 250,
+            offsetY: 100,
+            button: 0,
+        } as MouseEvent;
+        mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
+        mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
+        component.canvasRectangularDrag(mouseEvent);
+        expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
+        expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+    });
+
+
+    it('canvasRectangularDrag should draw a square in the right quadrand', () => {
+        let mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+        mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
+        mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
+        component.isShiftPressed = true;
+        mouseServiceSpy.isRectangleMode = true;
+        component.canvasClick(mouseEvent);
+        mouseEvent = {
+            offsetX: 150,
+            offsetY: 100,
             button: 0,
         } as MouseEvent;
         mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
@@ -251,6 +298,29 @@ describe('PaintAreaComponent', () => {
         mouseEvent = {
             offsetX: 50,
             offsetY: 100,
+            button: 0,
+        } as MouseEvent;
+        mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
+        mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
+        component.canvasRectangularDrag(mouseEvent);
+        expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
+        expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+    });
+
+    it('canvasRectangularDrag should draw a square in the right quadrant', () => {
+        let mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+        mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
+        mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
+        component.isShiftPressed = true;
+        mouseServiceSpy.isRectangleMode = true;
+        component.canvasClick(mouseEvent);
+        mouseEvent = {
+            offsetX: 10,
+            offsetY: 150,
             button: 0,
         } as MouseEvent;
         mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
