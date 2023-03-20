@@ -7,7 +7,6 @@ import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
-import { Constants } from '@common/constants';
 import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
 import { GamePageService } from './game-page.service';
@@ -214,9 +213,10 @@ describe('GamePageService', () => {
     });
 
     describe('resetCanvas', () => {
-        it('should refresh the area and copy a part of the original canvas', fakeAsync(() => {
+        it('should call drawPlayArea twice', fakeAsync(() => {
+            const delay = 1000;
             service['resetCanvas']();
-            tick(Constants.millisecondsInOneSecond);
+            tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));
     });

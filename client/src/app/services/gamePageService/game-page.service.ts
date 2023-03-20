@@ -192,8 +192,9 @@ export class GamePageService {
      * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
     private resetCanvas(): void {
+        const delay = 1000; // ms
         this.diffPlayArea
-            .timeout(Constants.millisecondsInOneSecond)
+            .timeout(delay)
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
