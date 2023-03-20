@@ -89,8 +89,9 @@ describe('GamePageService', () => {
     });
 
     it('should return -1 if it is not valid', () => {
+        const expected = -1;
         mouseServiceSpy.getMousePosition.and.returnValue(null);
-        expect(service.verifyClick(new MouseEvent('click'))).toEqual(Constants.minusOne);
+        expect(service.verifyClick(new MouseEvent('click'))).toEqual(expected);
     });
 
     it('should reset the audio service', () => {

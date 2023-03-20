@@ -61,6 +61,7 @@ export class GamePageService {
      *
      * @param originalPlayArea The reference to the original play area.
      * @param diffPlayArea The reference to the diff play area.
+     * @param tempDiffPlayArea The reference to the temp diff play area.
      */
     setPlayArea(originalPlayArea: PlayAreaComponent, diffPlayArea: PlayAreaComponent, tempDiffPlayArea: PlayAreaComponent): void {
         this.originalPlayArea = originalPlayArea;
@@ -74,10 +75,10 @@ export class GamePageService {
      * @param event The mouse event.
      */
     verifyClick(event: MouseEvent): number {
+        const invalid = -1;
         const mousePosition = this.mouseService.getMousePosition(event);
         this.mouseService.setClickState(false);
-        if (!mousePosition) return Constants.minusOne;
-        return mousePosition;
+        return mousePosition || invalid;
     }
 
     /**
