@@ -168,8 +168,13 @@ describe('SelectionPageService', () => {
     });
 
     describe('startGameDialog', () => {
+        let waitForMatchSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            waitForMatchSpy = spyOn(service, 'waitForMatch' as never);
+        });
+
         it('should open a dialog when a player creates a game and when the player closes the dialog', () => {
-            const waitForMatchSpy = spyOn(service, 'waitForMatch' as never);
             service.startGameDialog(1);
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
             expect(waitForMatchSpy).toHaveBeenCalledTimes(1);
