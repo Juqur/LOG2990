@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { GameService, GameState } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
 import { TimerService } from '@app/services/timer/timer.service';
