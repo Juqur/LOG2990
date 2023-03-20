@@ -50,6 +50,11 @@ export class GameGateway {
 
         this.chatService.sendSystemMessage(socket, dataToSend, this.gameService);
 
+        if (secondPlayerId) {
+            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
+            socket.to(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
+        }
+
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
             this.timerService.stopTimer(socket.id);
@@ -212,10 +217,13 @@ export class GameGateway {
         if (gameState) {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
             if (gameState.otherSocketId) {
-                // this.chatService.abandonSequence(socket, this.gameService);
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
-                otherSocket.emit(GameEvents.Victory);
+
+                this.chatService.abandonMessage(socket, this.gameService);
+
+                otherSocket.emit(GameEvents.OpponentAbandoned);
                 this.gameService.deleteUserFromGame(otherSocket);
+                // otherSocket.emit(GameEvents.Victory);
             }
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);

@@ -23,10 +23,6 @@ export class ChatService {
         if (gameService.getGameState(socket.id).otherSocketId) {
             socket.to(secondPlayerId).emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
         }
-        if (secondPlayerId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = gameService.getGameState(socket.id).foundDifferences.length;
-            socket.to(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
-        }
     }
 
     /**
@@ -47,11 +43,9 @@ export class ChatService {
         socket.to(secondPlayerId).emit(GameEvents.MessageSent, message);
     }
 
-    abandonSequence(socket: Socket, gameService: GameService): void {
-        const playerName: string = gameService.getGameState(socket.id).otherSocketId ? ' par ' + gameService.getGameState(socket.id).playerName : '';
+    abandonMessage(socket: Socket, gameService: GameService): void {
+        const playerName: string = gameService.getGameState(socket.id).playerName;
         socket.emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
-        const secondPlayerId = gameService.getGameState(socket.id).otherSocketId;
-        socket.to(secondPlayerId).emit(GameEvents.OpponentAbandoned);
     }
 
     private getSystemChatMessage(message: string): ChatMessage {
