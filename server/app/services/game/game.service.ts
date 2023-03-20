@@ -246,7 +246,7 @@ export class GameService {
     async startCheatMode(socketId: string): Promise<number[]> {
         const gameState = this.getGameState(socketId);
         gameState.isInCheatMode = true;
-        const differencesGroups = await this.imageService.getAllDifferences(gameState.gameId.toString());
+        const differencesGroups = await this.imageService.getAllDifferences(gameState.levelId.toString());
         let differences: number[] = [];
         differencesGroups.forEach((element) => {
             differences = differences.concat(element);

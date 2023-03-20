@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -159,6 +160,7 @@ describe('GameService', () => {
                 playerName: 'player',
                 isInGame: true,
                 isGameFound: true,
+                isInCheatMode: false,
             });
         });
 
@@ -170,6 +172,7 @@ describe('GameService', () => {
                 playerName: 'player',
                 isInGame: false,
                 isGameFound: false,
+                isInCheatMode: false,
             });
         });
     });
@@ -328,6 +331,42 @@ describe('GameService', () => {
             expect(service['playerGameMap'].get('socket1').otherSocketId).toBe('socket2');
             expect(service['playerGameMap'].get('socket2').isGameFound).toBeTruthy();
             expect(service['playerGameMap'].get('socket2').otherSocketId).toBe('socket1');
+        });
+    });
+
+    describe('startCheatMode', () => {
+        it('should return all the differences as a single array', () => {
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+            });
+            const spy = jest.spyOn(service['imageService'], 'getAllDifferences');
+            spy.mockImplementation().mockReturnValue(Promise.resolve([[1], [2], [3]]));
+            const result = service.startCheatMode('socket1');
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(result).toStrictEqual(Promise.resolve([1, 2, 3]));
+        });
+    });
+
+    describe('stopCheatMode', () => {
+        it('should set isInCheatMode to false', () => {
+            service['playerGameMap'] = new Map<string, GameState>([
+                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false, isInCheatMode: true }],
+            ]);
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: true,
+            });
+            service.stopCheatMode('socket1');
+            expect(service['playerGameMap'].get('socket1').isInCheatMode).toEqual(false);
         });
     });
 });

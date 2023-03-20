@@ -55,7 +55,6 @@ describe('GameGateway', () => {
         Object.defineProperty(socketNameSpace, 'sockets', { value: socketMaps });
         server.sockets.sockets.get = jest.fn().mockReturnValue(socketSecondPlayer);
         gateway['server'] = server;
-
         jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
     });
 
@@ -294,6 +293,22 @@ describe('GameGateway', () => {
             const handlePlayerLeavingGameSpy = jest.spyOn(gateway, 'handlePlayerLeavingGame' as never);
             gateway.onAbandonGame(socket);
             expect(handlePlayerLeavingGameSpy).toBeCalledWith(socket);
+        });
+    });
+
+    describe('onStartCheatMode', () => {
+        it('should call startCheatMode', () => {
+            const startCheatModeSpy = jest.spyOn(gameService, 'startCheatMode' as never).mockImplementation();
+            gateway.onStartCheatMode(socket);
+            expect(startCheatModeSpy).toBeCalledWith(socket.id);
+        });
+    });
+
+    describe('onStopCheatMode', () => {
+        it('should call stopCheatMode', () => {
+            const stopCheatModeSpy = jest.spyOn(gameService, 'stopCheatMode' as never).mockImplementation();
+            gateway.onStopCheatMode(socket);
+            expect(stopCheatModeSpy).toBeCalledWith(socket.id);
         });
     });
 
