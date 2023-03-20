@@ -25,7 +25,7 @@ export class ImageController {
      */
     @Get('/allLevels')
     @ApiOkResponse({
-        description: 'Returns the card data',
+        description: 'Returns data for all levels',
     })
     async getLevels(): Promise<Level[]> {
         const levels = await this.imageService.getLevels();
