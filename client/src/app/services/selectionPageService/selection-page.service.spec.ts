@@ -215,36 +215,36 @@ describe('SelectionPageService', () => {
     describe('openInvalidNameDialog', () => {
         it('should open a dialog when the player enters an invalid name', () => {
             service['openInvalidNameDialog']();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
         });
     });
 
     describe('openToBeAcceptedDialog', () => {
         it('should let the player know that another user has to accept the invitation', () => {
             service['openToBeAcceptedDialog']();
-            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
         });
 
         it('should let the player cancel the invitation', () => {
             service['openToBeAcceptedDialog']();
-            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
         });
 
         it('should emit a socket event when the player accepts the invitation', () => {
             service['openPlayerSelectionDialog']('');
-            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameAccepted', {});
         });
 
         it('should emit a socket event when the player rejects the invitation', () => {
             dialogRefSpy.afterClosed.and.returnValue(of(false));
             service['openPlayerSelectionDialog']('');
-            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
         });
     });
@@ -267,8 +267,8 @@ describe('SelectionPageService', () => {
     describe('closeDialogOnDeletedLevel', () => {
         it('should open a dialog when the level gets deleted while waiting for a player', () => {
             service['closeDialogOnDeletedLevel']();
-            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
         });
     });
 });
