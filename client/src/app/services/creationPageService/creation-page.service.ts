@@ -16,8 +16,8 @@ import { LevelFormData } from '@common/levelFormData';
 })
 export class CreationPageService {
     color = Constants.BLACK;
-    private creationSpecs: CreationSpecs;
     isSaveable = false;
+    private creationSpecs: CreationSpecs;
     private differenceAmountMsg = '';
     private submitFunction: (value: string) => boolean;
     private drawServiceDefault: DrawService;

@@ -99,6 +99,7 @@ export class CreationComponent implements OnDestroy {
      */
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
+        this.setPaintBrushMode();
         this.creationService.saveFalse();
         const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -111,6 +112,7 @@ export class CreationComponent implements OnDestroy {
     }
 
     swapCanvas(): void {
+        this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
         const tempCanvas = defaultCanvas.cloneNode() as HTMLCanvasElement;
@@ -138,6 +140,7 @@ export class CreationComponent implements OnDestroy {
     }
 
     duplicateDefaultCanvas(): void {
+        this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
         const diffCanvasContext = diffCanvas.getContext('2d') as CanvasRenderingContext2D;
@@ -147,6 +150,7 @@ export class CreationComponent implements OnDestroy {
     }
 
     duplicateDiffCanvas(): void {
+        this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
         const defaultCanvasContext = defaultCanvas.getContext('2d') as CanvasRenderingContext2D;
