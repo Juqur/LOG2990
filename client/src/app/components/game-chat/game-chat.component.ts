@@ -14,9 +14,9 @@ import { ChatMessage } from '@common/chat-messages';
     styleUrls: ['./game-chat.component.scss'],
 })
 export class GameChatComponent implements OnInit, OnDestroy {
+    @ViewChild('messagesContainer') messagesContainer: ElementRef<HTMLElement>;
     @Input() isMultiplayer: boolean = true;
     @Input() playerName: string = '';
-    @ViewChild('messagesContainer') messagesContainer: ElementRef<HTMLElement>;
     private messages: ChatMessage[] = [];
 
     constructor(private socketHandler: SocketHandler) {}
@@ -26,18 +26,6 @@ export class GameChatComponent implements OnInit, OnDestroy {
      */
     get messagesList(): ChatMessage[] {
         return this.messages;
-    }
-
-    /**
-     * Method in charge of creating a new message once it has been received by the server.
-     *
-     * @param message The message received.
-     */
-    receiveMessage(message: ChatMessage): void {
-        this.messages.push(message);
-        if (this.messagesContainer) {
-            this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
-        }
     }
 
     ngOnInit(): void {
@@ -58,5 +46,18 @@ export class GameChatComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'messageSent', (message: ChatMessage) => {
             this.receiveMessage(message);
         });
+    }
+
+    /**
+     * Method in charge of creating a new message once it has been received by the server.
+     * Also auto scrolls to the last message
+     *
+     * @param message The message received.
+     */
+    private receiveMessage(message: ChatMessage): void {
+        this.messages.push(message);
+        if (this.messagesContainer) {
+            this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+        }
     }
 }

@@ -18,26 +18,8 @@ export class MessageBoxComponent implements OnInit {
 
     constructor(private socketHandler: SocketHandler) {}
 
-    /**
-     * Getter for the display name attribute.
-     */
-    get name(): string {
-        return this.playerName;
-    }
-
-    /**
-     * returns a Message object with the given message and the display name.
-     * since the sender is the player, the senderId is always SenderType.Player.
-     *
-     * @param message the message to send.
-     * @returns message formated in a ChatMessage interface.
-     */
-    createMessage(message: string): ChatMessage {
-        return {
-            sender: this.playerName,
-            senderId: SenderType.Player,
-            text: message,
-        };
+    ngOnInit(): void {
+        this.createSocket();
     }
 
     /**
@@ -70,13 +52,24 @@ export class MessageBoxComponent implements OnInit {
     /**
      * Starts the socket if it was not already started.
      */
-    createSocket(): void {
+    private createSocket(): void {
         if (!this.socketHandler.isSocketAlive('game')) {
             this.socketHandler.connect('game');
         }
     }
 
-    ngOnInit(): void {
-        this.createSocket();
+    /**
+     * returns a Message object with the given message and the display name.
+     * since the sender is the player, the senderId is always SenderType.Player.
+     *
+     * @param message the message to send.
+     * @returns message formated in a ChatMessage interface.
+     */
+    private createMessage(message: string): ChatMessage {
+        return {
+            sender: this.playerName,
+            senderId: SenderType.Player,
+            text: message,
+        };
     }
 }

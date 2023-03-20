@@ -37,19 +37,19 @@ export class ChatMessageComponent implements OnInit {
         this.chatMessage = message;
     }
 
+    ngOnInit(): void {
+        this.formatNameLength();
+    }
+
     /**
      * Limits the length of the name displayed to Constants.maxNameLengthShown. This has no impact
      * on the length of the name saved.
      */
-    formatNameLength(): void {
+    private formatNameLength(): void {
         if (this.chatMessage.sender.length > Constants.maxNameLength) {
             this.displayName = this.chatMessage.sender.substring(0, Constants.maxNameLengthShown) + '...';
         } else {
             this.displayName = this.chatMessage.sender;
         }
-    }
-
-    ngOnInit(): void {
-        this.formatNameLength();
     }
 }
