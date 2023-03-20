@@ -27,15 +27,15 @@ export class GamePageService {
     private tempDiffPlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData = {
         textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu de sélection',
+        closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
     private loseDialogData: DialogData = {
         textToSend: 'Vous avez perdu!',
-        closeButtonMessage: 'Retour au menu de sélection',
+        closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
-    private closePath: string = '/selection';
+    private closePath: string = '/home';
 
     // eslint-disable-next-line max-params
     constructor(
