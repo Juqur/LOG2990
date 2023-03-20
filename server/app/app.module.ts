@@ -1,4 +1,3 @@
-import { ChatGateway } from '@app/gateways/chat/chat.gateway';
 import { GameGateway } from '@app/gateways/game/game.gateway';
 // import { Course, courseSchema } from '@app/model/database/course';
 import { Logger, Module } from '@nestjs/common';
@@ -30,6 +29,6 @@ import { TimerService } from './services/timer/timer.service';
         // MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
     controllers: [ImageController],
-    providers: [ChatGateway, GameGateway, ImageService, GameService, ChatService, TimerService, Logger],
+    providers: [GameGateway, ImageService, GameService, ChatService, TimerService, Logger],
 })
 export class AppModule {}
