@@ -10,11 +10,12 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { GameData, GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { GamePageService } from '@app/services/gamePageService/game-page.service';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
+import { GameData } from '@common/game-data';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 

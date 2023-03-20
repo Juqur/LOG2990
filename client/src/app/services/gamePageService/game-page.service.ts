@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Vec2 } from '@app/interfaces/vec2';
-import { GameData } from '@app/pages/game-page/game-page.component';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
+import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
 
 /**

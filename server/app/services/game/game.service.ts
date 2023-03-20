@@ -1,13 +1,7 @@
 import { ImageService } from '@app/services/image/image.service';
+import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-
-export interface GameData {
-    differencePixels: number[];
-    totalDifferences: number;
-    amountOfDifferencesFound: number;
-    amountOfDifferencesFoundSecondPlayer?: number;
-}
 
 export interface GameState {
     levelId: number;

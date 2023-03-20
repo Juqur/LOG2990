@@ -1,6 +1,7 @@
-import { GameData, GameService, GameState } from '@app/services/game/game.service';
+import { GameService, GameState } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
 import { TimerService } from '@app/services/timer/timer.service';
+import { GameData } from '@common/game-data';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Namespace, Server, Socket } from 'socket.io';

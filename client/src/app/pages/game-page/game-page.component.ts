@@ -7,14 +7,8 @@ import { DrawService } from '@app/services/drawService/draw.service';
 import { GamePageService } from '@app/services/gamePageService/game-page.service';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
+import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
-
-export interface GameData {
-    differencePixels: number[];
-    totalDifferences: number;
-    amountOfDifferencesFound: number;
-    amountOfDifferencesFoundSecondPlayer?: number;
-}
 
 /**
  * This component represents the game, it is the component that creates a game page.

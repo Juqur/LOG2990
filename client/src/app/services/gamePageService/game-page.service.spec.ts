@@ -2,7 +2,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { GameData } from '@app/pages/game-page/game-page.component';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DrawService } from '@app/services/drawService/draw.service';
@@ -10,6 +9,7 @@ import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
+import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
 import { GamePageService } from './game-page.service';
 
