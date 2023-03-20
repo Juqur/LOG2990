@@ -73,7 +73,7 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnGameSelection)
     onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
-        if (data.playerName.length <= 2) {
+        if (data.playerName.length <= 1) {
             socket.emit(GameEvents.InvalidName);
             return;
         }
