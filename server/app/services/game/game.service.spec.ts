@@ -187,13 +187,9 @@ describe('GameService', () => {
 
         const mockedSocket = { id: 'socket1', join: jest.fn() } as unknown as Socket;
         const mockedOtherSocket = { id: 'socket2', join: jest.fn() } as unknown as Socket;
-        let joinSpy: jest.SpyInstance;
-        let joinOtherSpy: jest.SpyInstance;
         let bindPlayersSpy: jest.SpyInstance;
 
         beforeEach(() => {
-            joinSpy = jest.spyOn(mockedSocket, 'join').mockImplementation();
-            joinOtherSpy = jest.spyOn(mockedOtherSocket, 'join').mockImplementation();
             bindPlayersSpy = jest.spyOn(service, 'bindPlayers').mockImplementation();
             service['playerGameMap'].set('socket1', mockedGameState);
             service['playerGameMap'].set('socket2', mockedOtherGameState);
