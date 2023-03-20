@@ -50,6 +50,7 @@ export class GamePageService {
         private drawServiceDiff: DrawService,
         private drawServiceOriginal: DrawService,
     ) {}
+
     /**
      * This method validates validates the click of a plyer after it has been checked by the server.
      *
@@ -131,7 +132,7 @@ export class GamePageService {
 
     /**
      * This method is called when the player wins.
-     * It will open a dialog and play a sound.
+     * It will open a dialog and play a victory sound.
      */
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
@@ -140,6 +141,10 @@ export class GamePageService {
         this.audioService.play();
     }
 
+    /**
+     * This method is called when other player abandons.
+     * It will open a dialog and play a victory sound.
+     */
     handleOpponentAbandon(): void {
         this.popUpService.openDialog(this.opponentAbandonedGameDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
@@ -148,8 +153,8 @@ export class GamePageService {
     }
 
     /**
-     * This method is called when the player wins.
-     * It will open a dialog and play a sound.
+     * This method is called when the player loses.
+     * It will open a dialog and play a losing sound.
      */
     handleDefeat(): void {
         this.popUpService.openDialog(this.loseDialogData, this.closePath);

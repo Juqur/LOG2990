@@ -204,6 +204,7 @@ export class GameGateway {
     handleDisconnect(socket: Socket): void {
         this.handlePlayerLeavingGame(socket);
     }
+
     /**
      * This method deletes the player from all the maps and rooms.
      * It stops the timer of the player.
@@ -218,12 +219,9 @@ export class GameGateway {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
-
                 this.chatService.abandonMessage(socket, this.gameService);
-
                 otherSocket.emit(GameEvents.OpponentAbandoned);
                 this.gameService.deleteUserFromGame(otherSocket);
-                // otherSocket.emit(GameEvents.Victory);
             }
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);

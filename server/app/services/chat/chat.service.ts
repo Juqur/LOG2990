@@ -9,7 +9,7 @@ export class ChatService {
     /**
      * This method sends a message to the other player.
      * It is used to send a message to the other player when a difference is found
-     * or when a player clicked on a wring difference.
+     * or when a player clicked on a wrong difference.
      *
      * @param socket The socket of the player.
      * @param dataToSend The data to send to the players.
@@ -43,12 +43,27 @@ export class ChatService {
         socket.to(secondPlayerId).emit(GameEvents.MessageSent, message);
     }
 
+    /**
+     * This method sends a message to the other player.
+     * It is used to send a message to the other player when a player leaves the game.
+     * It also changes the senderID accordingly for the color of display.
+     * It also changes the sender name to the name of the player who sent the message.
+     *
+     * @param socket The socket of the player.
+     * @param gameService The game service of game.gateway.ts.
+     */
     abandonMessage(socket: Socket, gameService: GameService): void {
         const secondPlayerId = gameService.getGameState(socket.id).otherSocketId;
         const playerName: string = gameService.getGameState(socket.id).playerName;
         socket.to(secondPlayerId).emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
     }
 
+    /**
+     * This method creates a ChatMessage object with
+     * the sender set to 'Système' and the senderId set to SenderType.System.
+     *
+     * @param message the message to send.
+     */
     private getSystemChatMessage(message: string): ChatMessage {
         return {
             sender: 'Système',
