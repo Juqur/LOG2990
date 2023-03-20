@@ -603,4 +603,10 @@ describe('CreationPageService', () => {
         const result = service.differenceMsg;
         expect(result).toEqual('3 differences');
     }));
+
+    it('saveFalse should set isSave', fakeAsync(() => {
+        service['isSaveable'] = true;
+        service.saveFalse();
+        expect(service['isSaveable']).toBeFalse();
+    }));
 });

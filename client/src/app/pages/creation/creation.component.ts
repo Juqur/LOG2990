@@ -72,6 +72,7 @@ export class CreationComponent implements OnDestroy {
     addToUndoRedoStack(): void {
         const leftCanvas = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const rightCanvas = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.creationService.saveFalse();
         UndoRedoService.resetRedoStack();
         UndoRedoService.addToStack(leftCanvas, rightCanvas);
     }
@@ -98,7 +99,7 @@ export class CreationComponent implements OnDestroy {
      */
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
-
+        this.creationService.saveFalse();
         const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 

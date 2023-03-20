@@ -17,7 +17,7 @@ import { LevelFormData } from '@common/levelFormData';
 export class CreationPageService {
     color = Constants.BLACK;
     private creationSpecs: CreationSpecs;
-    private isSaveable = false;
+    isSaveable = false;
     private differenceAmountMsg = '';
     private submitFunction: (value: string) => boolean;
     private drawServiceDefault: DrawService;
@@ -69,13 +69,6 @@ export class CreationPageService {
     }
 
     /**
-     * Getter for the isSaveable attribute
-     */
-    get saveable(): boolean {
-        return this.isSaveable;
-    }
-
-    /**
      * Getter for the number of differences last verified.
      */
     get nbDifferences(): number {
@@ -87,6 +80,20 @@ export class CreationPageService {
      */
     get differenceMsg(): string {
         return this.differenceAmountMsg;
+    }
+
+    /**
+     * Getter for the isSaveable attribute
+     */
+    get saveable(): boolean {
+        return this.isSaveable;
+    }
+
+    /**
+     * Sets isSaveable to false as it shouldnt be set to true from outside the service.
+     */
+    saveFalse(): void {
+        this.isSaveable = false;
     }
 
     /**

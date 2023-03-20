@@ -18,7 +18,7 @@ describe('CreationComponent', () => {
     let fixture: ComponentFixture<CreationComponent>;
 
     beforeEach(() => {
-        creationPageServiceSpy = jasmine.createSpyObj('CreationPageService', ['paintBrushMode', 'eraseBrushMode', 'detectDifference']);
+        creationPageServiceSpy = jasmine.createSpyObj('CreationPageService', ['paintBrushMode', 'eraseBrushMode', 'detectDifference', 'saveFalse']);
     });
 
     beforeEach(async () => {
@@ -135,6 +135,7 @@ describe('CreationComponent', () => {
         const resetRedoStackSpy = spyOn(UndoRedoService, 'resetRedoStack');
         const addToStackSpy = spyOn(UndoRedoService, 'addToStack');
         component.addToUndoRedoStack();
+        expect(creationPageServiceSpy.saveFalse).toHaveBeenCalledTimes(1);
         expect(resetRedoStackSpy).toHaveBeenCalledTimes(1);
         expect(addToStackSpy).toHaveBeenCalledTimes(1);
     });
@@ -163,6 +164,7 @@ describe('CreationComponent', () => {
         expect(diffCtx.clearRect).toHaveBeenCalledTimes(1);
         expect(defaultCtx.drawImage).toHaveBeenCalledTimes(1);
         expect(diffCtx.drawImage).toHaveBeenCalledTimes(1);
+        expect(creationPageServiceSpy.saveFalse).toHaveBeenCalledTimes(1);
     });
 
     it('should not perform changes when canvas is undefined', () => {
