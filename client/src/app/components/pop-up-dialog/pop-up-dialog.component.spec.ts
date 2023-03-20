@@ -19,6 +19,7 @@ describe('PopUpDialogComponent', () => {
             textToSend: 'Hello',
             inputData: inputMockData,
             closeButtonMessage: 'Return to selection page',
+            mustProcess: false,
         };
     });
 

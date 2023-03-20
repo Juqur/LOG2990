@@ -34,12 +34,14 @@ export class CardComponent {
             },
         },
         closeButtonMessage: 'Débuter la partie',
+        mustProcess: false,
     };
 
     private deleteDialogData: DialogData = {
         textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
         isConfirmation: true,
         closeButtonMessage: '',
+        mustProcess: true,
     };
 
     constructor(private router: Router, public popUpService: PopUpService) {}
