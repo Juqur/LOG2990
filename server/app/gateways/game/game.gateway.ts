@@ -125,8 +125,8 @@ export class GameGateway {
      *
      * @param socket The socket of the player.
      */
-    @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
-    onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
+    @SubscribeMessage(GameEvents.OnCancelledWhileWaiting)
+    onCancelledWhileWaiting(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).levelId, canJoin: false });
         this.gameService.deleteUserFromGame(socket);
     }

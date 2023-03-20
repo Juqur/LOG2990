@@ -224,16 +224,16 @@ describe('GameGateway', () => {
         });
     });
 
-    describe('onGameCancelledWhileWaitingForSecondPlayer', () => {
+    describe('onCancelledWhileWaiting', () => {
         it('should update the selection page', () => {
             const emitSpy = jest.spyOn(server, 'emit');
-            gateway.onGameCancelledWhileWaitingForSecondPlayer(socket);
+            gateway.onCancelledWhileWaiting(socket);
             expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: false });
         });
 
         it('should delete the user from the game map', () => {
             const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
-            gateway.onGameCancelledWhileWaitingForSecondPlayer(socket);
+            gateway.onCancelledWhileWaiting(socket);
             expect(deleteUserFromGameSpy).toBeCalledWith(socket);
         });
     });

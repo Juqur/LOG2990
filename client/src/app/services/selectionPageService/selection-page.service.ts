@@ -132,7 +132,7 @@ export class SelectionPageService implements OnDestroy {
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
             if (this.waitingForOtherPlayer) {
-                this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
+                this.socketHandler.send('game', 'onCancelledWhileWaiting', {});
             }
         });
     }

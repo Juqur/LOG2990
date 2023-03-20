@@ -168,7 +168,7 @@ describe('SelectionPageService', () => {
         service['waitForMatch'](id, name);
         expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
         expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameSelection', { levelId: id, playerName: name });
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
+        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onCancelledWhileWaiting', {});
     });
 
     it('should update levels correctly by updating the canJoin attribute', () => {
