@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { ChatMessage, SenderType } from '@common/chat-messages';
-import { SocketHandler } from 'src/app/services/socket-handler.service';
 
-@Component({
-    selector: 'app-message-box',
-    templateUrl: './message-box.component.html',
-    styleUrls: ['./message-box.component.scss'],
-})
 /**
  * This component represents the box in chat to write and send a message.
  *
  * @author Charles Degrandpré
  * @class MessageBoxComponent
  */
+@Component({
+    selector: 'app-message-box',
+    templateUrl: './message-box.component.html',
+    styleUrls: ['./message-box.component.scss'],
+})
 export class MessageBoxComponent implements OnInit {
     private displayName: string = '';
 

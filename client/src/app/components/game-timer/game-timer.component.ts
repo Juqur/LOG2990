@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
-import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 /**
  * This component ie visual representation of the timer on the screen.

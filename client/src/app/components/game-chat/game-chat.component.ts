@@ -1,12 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { ChatMessage } from '@common/chat-messages';
-import { SocketHandler } from 'src/app/services/socket-handler.service';
-
-@Component({
-    selector: 'app-game-chat',
-    templateUrl: './game-chat.component.html',
-    styleUrls: ['./game-chat.component.scss'],
-})
 
 /**
  * Is the "container" of all messages sent in the game be they player sent or system sent.
@@ -14,6 +8,11 @@ import { SocketHandler } from 'src/app/services/socket-handler.service';
  * @author Charles Degrandpré
  * @class GameChatComponent
  */
+@Component({
+    selector: 'app-game-chat',
+    templateUrl: './game-chat.component.html',
+    styleUrls: ['./game-chat.component.scss'],
+})
 export class GameChatComponent implements OnInit, OnDestroy {
     @Input() isMultiplayer: boolean = true;
     messages: ChatMessage[] = [];

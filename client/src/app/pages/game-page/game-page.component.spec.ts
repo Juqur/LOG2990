@@ -13,7 +13,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameData, GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { GamePageService } from '@app/services/gamePageService/game-page.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;

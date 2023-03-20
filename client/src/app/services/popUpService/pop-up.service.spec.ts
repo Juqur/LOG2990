@@ -38,6 +38,7 @@ describe('PopUpService', () => {
         const dialogData: DialogData = {
             textToSend: 'some text',
             closeButtonMessage: 'close button message',
+            mustProcess: false,
         };
 
         service.openDialog(dialogData);
@@ -51,6 +52,7 @@ describe('PopUpService', () => {
         const dialogData: DialogData = {
             textToSend: 'some text',
             closeButtonMessage: 'close button message',
+            mustProcess: false,
         };
         service.openDialog(dialogData);
 
@@ -65,6 +67,7 @@ describe('PopUpService', () => {
         const dialogData: DialogData = {
             textToSend: 'some text',
             closeButtonMessage: 'close button message',
+            mustProcess: false,
         };
         const routeToGo = '/some-route';
 
@@ -87,12 +90,38 @@ describe('PopUpService', () => {
                 },
             },
             closeButtonMessage: 'close button message',
+            mustProcess: false,
         };
 
         service.openDialog(dialogData);
 
         service.dialogRef.afterClosed().subscribe((result) => {
             expect(result).toEqual('Hello');
+        });
+    });
+
+    it('If dialog data has mustProcess as true we should correctly call open for the dialog', () => {
+        spyOn(dialogRef, 'afterClosed').and.returnValue(of('Hello'));
+        const spy = spyOn(service.dialog, 'open').and.returnValue(dialogRef);
+
+        const dialogData: DialogData = {
+            textToSend: 'some text',
+            inputData: {
+                inputLabel: 'Name',
+                submitFunction: (value) => {
+                    if (value.length < Constants.ten) return true;
+                    return false;
+                },
+            },
+            closeButtonMessage: 'close button message',
+            mustProcess: true,
+        };
+
+        service.openDialog(dialogData);
+        expect(spy).toHaveBeenCalledOnceWith(PopUpDialogComponent, {
+            width: '500px',
+            data: dialogData,
+            disableClose: true,
         });
     });
 });
