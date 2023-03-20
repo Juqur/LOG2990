@@ -31,7 +31,7 @@ export class PaintAreaComponent implements AfterViewInit {
     private tempCanvas: HTMLCanvasElement;
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) { }
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
 
     /**
      * Getter for the canvas width
