@@ -95,7 +95,7 @@ export class GamePageService {
     }
 
     /**
-     * This method the pictures to the correct sources.
+     * This methods returns the image source url for both images.
      *
      * @param levelId The id of the level.
      */
