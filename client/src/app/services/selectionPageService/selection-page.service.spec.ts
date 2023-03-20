@@ -174,6 +174,20 @@ describe('SelectionPageService', () => {
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
             expect(waitForMatchSpy).toHaveBeenCalledTimes(1);
         });
+
+        it('should return false from the dialog in name is invalid', () => {
+            dialogRefSpy.afterClosed.and.returnValue(of(false));
+            service['startGameDialog'](1);
+            const value = service['dialog'].inputData?.submitFunction('');
+            expect(value).toBeFalse();
+        });
+
+        it('should return true from the dialog in name is valid', () => {
+            dialogRefSpy.afterClosed.and.returnValue(of(false));
+            service['startGameDialog'](1);
+            const value = service['dialog'].inputData?.submitFunction('Bob');
+            expect(value).toBeTruthy();
+        });
     });
 
     describe('waitForMatch', () => {
@@ -187,78 +201,74 @@ describe('SelectionPageService', () => {
         });
     });
 
-    it('should update levels correctly by updating the canJoin attribute', () => {
-        const data: SelectionData = {
-            levelId: 1,
-            canJoin: true,
-        };
-        service['updateSelection'](data, levelServiceSpy);
-        expect(levelServiceSpy.allLevels[0].canJoin).toBeTrue();
-    });
-
-    it('should return false from the dialog in name is invalid', () => {
-        dialogRefSpy.afterClosed.and.returnValue(of(false));
-        service['startGameDialog'](1);
-        const value = service['dialog'].inputData?.submitFunction('');
-        expect(value).toBeFalse();
-    });
-
-    it('should return true from the dialog in name is valid', () => {
-        dialogRefSpy.afterClosed.and.returnValue(of(false));
-        service['startGameDialog'](1);
-        const value = service['dialog'].inputData?.submitFunction('Bob');
-        expect(value).toBeTruthy();
-    });
-
-    it('should open a dialog when the player enters an invalid name', () => {
-        service['openInvalidNameDialog']();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
-    });
-
-    it('should let the player know that another user has to accept the invitation', () => {
-        service['openToBeAcceptedDialog']();
-        expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
-    });
-
-    it('should let the player cancel the invitation', () => {
-        service['openToBeAcceptedDialog']();
-        expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
-    });
-
-    it('should emit a socket event when the player accepts the invitation', () => {
-        service['openPlayerSelectionDialog']('');
-        expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameAccepted', {});
-    });
-
-    it('should emit a socket event when the player rejects the invitation', () => {
-        dialogRefSpy.afterClosed.and.returnValue(of(false));
-        service['openPlayerSelectionDialog']('');
-        expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
-    });
-
-    it('should navigate to the game page when the player accepts the invitation', () => {
-        const gameData: StartGameData = {
-            levelId: 1,
-            playerName: 'Alice',
-            secondPlayerName: 'Bob',
-        };
-        service['startMultiplayerGame'](gameData);
-        expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith([`/game/${gameData.levelId}/`], {
-            queryParams: { playerName: gameData.playerName, opponent: gameData.secondPlayerName },
+    describe('updateSelection', () => {
+        it('should update levels correctly by updating the canJoin attribute', () => {
+            const data: SelectionData = {
+                levelId: 1,
+                canJoin: true,
+            };
+            service['updateSelection'](data, levelServiceSpy);
+            expect(levelServiceSpy.allLevels[0].canJoin).toBeTrue();
         });
     });
 
-    it('should open a dialog when the level gets deleted while waiting for a player', () => {
-        service['closeDialogOnDeletedLevel']();
-        expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
-        expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+    describe('openInvalidNameDialog', () => {
+        it('should open a dialog when the player enters an invalid name', () => {
+            service['openInvalidNameDialog']();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+        });
+    });
+
+    describe('openToBeAcceptedDialog', () => {
+        it('should let the player know that another user has to accept the invitation', () => {
+            service['openToBeAcceptedDialog']();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+        });
+
+        it('should let the player cancel the invitation', () => {
+            service['openToBeAcceptedDialog']();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
+        });
+
+        it('should emit a socket event when the player accepts the invitation', () => {
+            service['openPlayerSelectionDialog']('');
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameAccepted', {});
+        });
+
+        it('should emit a socket event when the player rejects the invitation', () => {
+            dialogRefSpy.afterClosed.and.returnValue(of(false));
+            service['openPlayerSelectionDialog']('');
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
+        });
+    });
+
+    describe('startMultiplayerGame', () => {
+        it('should navigate to the game page when the player accepts the invitation', () => {
+            const gameData: StartGameData = {
+                levelId: 1,
+                playerName: 'Alice',
+                secondPlayerName: 'Bob',
+            };
+            service['startMultiplayerGame'](gameData);
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+            expect(routerSpy.navigate).toHaveBeenCalledWith([`/game/${gameData.levelId}/`], {
+                queryParams: { playerName: gameData.playerName, opponent: gameData.secondPlayerName },
+            });
+        });
+    });
+
+    describe('closeDialogOnDeletedLevel', () => {
+        it('should open a dialog when the level gets deleted while waiting for a player', () => {
+            service['closeDialogOnDeletedLevel']();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+        });
     });
 });
