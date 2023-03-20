@@ -335,8 +335,6 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call openDialog if the game is saveable', () => {
-        // service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        // service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();

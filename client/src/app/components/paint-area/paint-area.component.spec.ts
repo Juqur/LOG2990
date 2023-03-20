@@ -5,7 +5,6 @@ import { PaintAreaComponent } from '@app/components/paint-area/paint-area.compon
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-// import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
