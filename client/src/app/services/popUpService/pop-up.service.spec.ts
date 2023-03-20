@@ -85,7 +85,6 @@ describe('PopUpServiceService', () => {
                     if (value.length < Constants.ten) return true;
                     return false;
                 },
-                returnValue: 'No return Value',
             },
             closeButtonMessage: 'close button message',
         };
