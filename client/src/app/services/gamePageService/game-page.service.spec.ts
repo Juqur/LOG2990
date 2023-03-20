@@ -64,11 +64,13 @@ describe('GamePageService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should return false if a different is not found', () => {
-        expect(service.validateResponse([])).toEqual(false);
-    });
-    it('should return true if a different is found', () => {
-        expect(service.validateResponse([1])).toEqual(true);
+    describe('validateResponse', () => {
+        it('should return false if a different is not found', () => {
+            expect(service.validateResponse([])).toEqual(false);
+        });
+        it('should return true if a different is found', () => {
+            expect(service.validateResponse([1])).toEqual(true);
+        });
     });
 
     it('should reset imagesData', () => {

@@ -141,7 +141,6 @@ export class GameService {
      * @param isMultiplayer A boolean flag indicating whether the game is multiplayer.
      */
     createGameState(socketId: string, data: { levelId: number; playerName: string }, isMultiplayer: boolean): void {
-        console.log('--------------');
         const playerGameState: GameState = {
             levelId: data.levelId,
             foundDifferences: [],
@@ -150,7 +149,6 @@ export class GameService {
             isGameFound: !isMultiplayer,
         };
         this.playerGameMap.set(socketId, playerGameState);
-        console.log(this.playerGameMap);
     }
 
     /**

@@ -11,8 +11,8 @@ describe('ChatMessageComponent', () => {
         }).compileComponents();
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
-        component['textMessage'] = {
-            playerId: '1',
+        component['chatMessage'] = {
+            senderId: '1',
             sender: 'I am a super long name',
             text: 'Hello world',
         };
@@ -24,7 +24,7 @@ describe('ChatMessageComponent', () => {
     });
 
     it('Chat message should display the name with the appropriate length', () => {
-        component['textMessage'] = { playerId: '1', sender: 'Charles', text: 'Hello world' };
+        component['chatMessage'] = { senderId: '1', sender: 'Charles', text: 'Hello world' };
 
         component.ngOnInit();
 
@@ -55,8 +55,8 @@ describe('ChatMessageComponent', () => {
     it('A message should have the class player2 if the message has an id of 2', () => {
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
-        component['textMessage'] = {
-            playerId: '2',
+        component['chatMessage'] = {
+            senderId: '2',
             sender: 'I am a super long name',
             text: 'Hello world',
         };

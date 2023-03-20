@@ -34,7 +34,7 @@ describe('MessageBoxComponent', () => {
     });
 
     it('createMessage should return a valid message', () => {
-        const message: ChatMessage = { playerId: '0', sender: '', text: 'someValue' }; // test is not checking for sender
+        const message: ChatMessage = { senderId: '0', sender: '', text: 'someValue' }; // test is not checking for sender
         const returnedMessage: ChatMessage = component.createMessage('someValue'); // has to be updated when sender is added
         expect(returnedMessage).toEqual(message);
     });

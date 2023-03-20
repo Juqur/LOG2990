@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { LevelFormData } from '@app/classes/level-form-data';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { Message } from '@common/message';
+import { HttpMessage } from '@common/http-message';
 import { environment } from 'src/environments/environment';
 
 describe('CommunicationService', () => {
@@ -85,7 +85,7 @@ describe('CommunicationService', () => {
             clusters: '',
             nbDifferences: '',
         };
-        const fakeMessage = { title: 'Hello, world!', body: 'Successfully received' } as Message;
+        const fakeMessage = { title: 'Hello, world!', body: 'Successfully received' } as HttpMessage;
 
         service.postLevel(level).subscribe((response) => {
             expect(response).toEqual(fakeMessage);

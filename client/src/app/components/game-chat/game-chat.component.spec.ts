@@ -41,7 +41,7 @@ describe('GameChatComponent', () => {
     });
 
     it('should add chat message in the message array', () => {
-        const message: ChatMessage = { playerId: '0', sender: 'User', text: 'Hello world' };
+        const message: ChatMessage = { senderId: '0', sender: 'User', text: 'Hello world' };
 
         component.receiveMessage(message);
         expect(component.messages[0]).toEqual(message);
@@ -49,7 +49,7 @@ describe('GameChatComponent', () => {
 
     it('should call receiveMessage when message is sent from the server', () => {
         const spyOnComponent = spyOn(component, 'receiveMessage');
-        const message: ChatMessage = { playerId: '0', sender: 'User', text: 'Hello world' };
+        const message: ChatMessage = { senderId: '0', sender: 'User', text: 'Hello world' };
         const mockSocketHandler = jasmine.createSpyObj('socketHandler', ['on', 'isSocketAlive', 'send', 'connect']);
         mockSocketHandler.isSocketAlive.and.returnValue(false);
         mockSocketHandler.on.and.callFake((gateway: string, event: string, callback: (message: ChatMessage) => void) => {
