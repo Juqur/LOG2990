@@ -140,6 +140,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * It is used to display the rectangle in real time before applying it to the foreground canvas.
      */
     createTempCanvas() {
+        this.drawService.paintBrush();
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.className = 'draw';
         this.tempCanvas.style.position = 'absolute';
