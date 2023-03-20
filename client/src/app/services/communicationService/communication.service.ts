@@ -37,7 +37,6 @@ export class CommunicationService {
      * @returns an observable on the appropriate level.
      */
     getLevel(levelId: number): Observable<Level> {
-        console.log('wtf');
         return this.http.get<Level>(`${this.baseUrl}api` + '/image/' + levelId).pipe(catchError(this.handleError<Level>('basicGet')));
     }
 
