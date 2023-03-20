@@ -1,5 +1,5 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
@@ -52,15 +52,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line max-params
     constructor(
         private route: ActivatedRoute,
-        private router: Router,
         private socketHandler: SocketHandler,
         private gamePageService: GamePageService,
         private communicationService: CommunicationService,
     ) {}
-
-    @HostListener('window:afterunload') goToPage() {
-        this.router.navigate(['/home']);
-    }
 
     /**
      * This method is called when the component is initialized.
