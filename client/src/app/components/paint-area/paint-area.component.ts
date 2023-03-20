@@ -130,8 +130,9 @@ export class PaintAreaComponent implements AfterViewInit {
         const resultCanvas = document.createElement('canvas');
         resultCanvas.width = this.width;
         resultCanvas.height = this.height;
-        resultCanvas.getContext('2d')?.drawImage(this.bgCanvas.nativeElement, 0, 0);
-        resultCanvas.getContext('2d')?.drawImage(this.fgCanvas.nativeElement, 0, 0);
+        const canvasCtx = resultCanvas.getContext('2d') as CanvasRenderingContext2D;
+        canvasCtx.drawImage(this.bgCanvas.nativeElement, 0, 0);
+        canvasCtx.drawImage(this.fgCanvas.nativeElement, 0, 0);
         return resultCanvas;
     }
 
@@ -150,8 +151,9 @@ export class PaintAreaComponent implements AfterViewInit {
         this.tempCanvas.height = this.height;
         this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
-        const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id);
-        currentCanvas?.parentNode?.insertBefore(this.tempCanvas, currentCanvas);
+        const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id) as HTMLCanvasElement;
+        const parentElement = currentCanvas.parentElement as HTMLElement;
+        parentElement.insertBefore(this.tempCanvas, currentCanvas);
         this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.canvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
@@ -164,11 +166,13 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event the mouse event
      */
     canvasClick(event: MouseEvent) {
-        const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id);
-        const siblingDrawElements = currentCanvas?.parentElement?.querySelectorAll('.draw');
-        siblingDrawElements?.forEach((element) => {
+        const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id) as HTMLCanvasElement;
+        const parentElement = currentCanvas.parentElement as HTMLElement;
+        const siblingDrawElements = parentElement.querySelectorAll('.draw') as NodeListOf<HTMLCanvasElement>;
+        siblingDrawElements.forEach((element) => {
             const siblingCanvas = element as HTMLCanvasElement;
-            this.fgCanvas.nativeElement.getContext('2d')?.drawImage(siblingCanvas, 0, 0);
+            const ctx = this.fgCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            ctx.drawImage(siblingCanvas, 0, 0);
             element.remove();
         });
         this.isDragging = true;
@@ -263,8 +267,11 @@ export class PaintAreaComponent implements AfterViewInit {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {
-            this.fgCanvas.nativeElement.getContext('2d')?.drawImage(this.tempCanvas, 0, 0);
-            document.body.querySelector('#' + this.fgCanvas.nativeElement.id)?.parentNode?.removeChild(this.tempCanvas);
+            const ctx = this.fgCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            ctx.drawImage(this.tempCanvas, 0, 0);
+            const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id) as HTMLCanvasElement;
+            const parentElement = currentCanvas.parentElement as HTMLElement;
+            parentElement.removeChild(this.tempCanvas);
         }
     }
 }
