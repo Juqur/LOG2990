@@ -30,7 +30,6 @@ export class SelectionPageService implements OnDestroy {
     waitingForAcceptation: boolean = true;
     private dialog: DialogData;
 
-    // eslint-disable-next-line max-params
     constructor(private socketHandler: SocketHandler, private router: Router, private popUpService: PopUpService) {}
 
     /**
