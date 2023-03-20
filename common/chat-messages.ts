@@ -1,6 +1,7 @@
 /**
- * message interface used for the chat.
- * sender is either system, player1 or player2.
+ * Message interface used for the chat.
+ * Sender is either system, player or opponent.
+ * SenderId is used to define the color of display.
  */
 export interface ChatMessage {
     sender: string;
@@ -10,8 +11,8 @@ export interface ChatMessage {
 
 /**
  * Enum used to identify the sender of a message.
- * player is the client, and opponent is the other player,
- * this is to display the opponent messages in another color
+ * This is to display the opponent messages in another color.
+ * It is used in the senderId attribute of the ChatMessage interface.
  */
 export enum SenderType {
     Undefined = 'undefined',

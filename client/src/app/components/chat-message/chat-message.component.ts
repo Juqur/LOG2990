@@ -47,7 +47,6 @@ export class ChatMessageComponent implements OnInit {
         } else {
             this.displayName = this.chatMessage.sender;
         }
-        console.log(this.message);
     }
 
     ngOnInit(): void {

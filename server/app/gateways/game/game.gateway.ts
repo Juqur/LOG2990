@@ -1,3 +1,4 @@
+import { ChatService } from '@app/services/chat/chat.service';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage, SenderType } from '@common/chat-messages';
@@ -17,7 +18,7 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService) {}
+    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -46,27 +47,31 @@ export class GameGateway {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        // const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
 
-        const message: string = dataToSend.differencePixels.length === 0 ? 'ERREUR' : 'Différence trouvée';
-        const playerName: string = this.gameService.getGameState(socket.id).otherSocketId
-            ? ' par ' + this.gameService.getGameState(socket.id).playerName
-            : '';
-        const chatMessage: ChatMessage = {
-            sender: 'Système',
-            senderId: SenderType.System,
-            text: message + playerName,
-        };
-        socket.emit(GameEvents.MessageSent, chatMessage);
-        if (this.gameService.getGameState(socket.id).otherSocketId) {
-            secondPlayerSocket.emit(GameEvents.MessageSent, chatMessage);
-            // socket.to(secondPlayerId).emit(GameEvents.MessageSent, chatMessage);
-        }
-        if (secondPlayerId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
-            secondPlayerSocket.emit(GameEvents.ProcessedClick, dataToSend);
-            // socket.to(secondPlayerId).emit(GameEvents.MessageSent, dataToSend);
-        }
+        this.chatService.getSystemMessage(socket, dataToSend, this.gameService);
+
+        /// //// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+        // const message: string = dataToSend.differencePixels.length === 0 ? 'ERREUR' : 'Différence trouvée';
+        // const playerName: string = this.gameService.getGameState(socket.id).otherSocketId
+        //     ? ' par ' + this.gameService.getGameState(socket.id).playerName
+        //     : '';
+        // const chatMessage: ChatMessage = {
+        //     sender: 'Système',
+        //     senderId: SenderType.System,
+        //     text: message + playerName,
+        // };
+        // socket.emit(GameEvents.MessageSent, chatMessage);
+        // if (this.gameService.getGameState(socket.id).otherSocketId) {
+        //     secondPlayerSocket.emit(GameEvents.MessageSent, chatMessage);
+        //     // socket.to(secondPlayerId).emit(GameEvents.MessageSent, chatMessage);
+        // }
+        // if (secondPlayerId) {
+        //     dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
+        //     secondPlayerSocket.emit(GameEvents.ProcessedClick, dataToSend);
+        //     // socket.to(secondPlayerId).emit(GameEvents.MessageSent, dataToSend);
+        // }
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
@@ -188,6 +193,14 @@ export class GameGateway {
         }
     }
 
+    /**
+     * This method is called when a player sends a message.
+     * It sends the message to both players, and changes the senderID
+     * accordingly for the color of display.
+     *
+     * @param socket the socket of the player who sent the message
+     * @param message the message to be sent
+     */
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
         // const room = this.playerRoomMap.get(socket.id); // room is unclear, would like to change to room

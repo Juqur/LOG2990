@@ -5,7 +5,7 @@ import { ChatMessage } from '@common/chat-messages';
 /**
  * Is the "container" of all messages sent in the game be they player sent or system sent.
  *
- * @author Charles Degrandpré
+ * @author Charles Degrandpré & Louis Félix St-Amour
  * @class GameChatComponent
  */
 @Component({
@@ -22,11 +22,16 @@ export class GameChatComponent implements OnInit, OnDestroy {
 
     /**
      * Method in charge of creating a new message once it has been received by the server.
+     *
+     * @param message The message received.
      */
     receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
     }
 
+    /**
+     * Method to start listening for messages.
+     */
     listenForMessages(): void {
         if (!this.socketHandler.isSocketAlive('game')) {
             this.socketHandler.connect('game');

@@ -5,7 +5,7 @@ import { ChatMessage, SenderType } from '@common/chat-messages';
 /**
  * This component represents the box in chat to write and send a message.
  *
- * @author Charles Degrandpré
+ * @author Charles Degrandpré & Louis Félix St-Amour
  * @class MessageBoxComponent
  */
 @Component({
@@ -55,7 +55,8 @@ export class MessageBoxComponent implements OnInit {
     }
 
     /**
-     * This method is used to send a message to the server.
+     * This method sends a message to the server
+     * and clears the message box.
      *
      * @param messageInput the HTML input containing the message.
      */
@@ -66,7 +67,7 @@ export class MessageBoxComponent implements OnInit {
     }
 
     /**
-     * starts the socket if it was not already started.
+     * Starts the socket if it was not already started.
      */
     createSocket(): void {
         if (!this.socketHandler.isSocketAlive('game')) {
