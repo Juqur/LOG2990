@@ -1,7 +1,7 @@
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { ChatMessage, SenderType } from '@common/chat-messages';
+import { ChatMessage } from '@common/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -48,7 +48,7 @@ export class GameGateway {
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
 
-        this.chatService.getSystemMessage(socket, dataToSend, this.gameService);
+        this.chatService.sendSystemMessage(socket, dataToSend, this.gameService);
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
@@ -172,23 +172,13 @@ export class GameGateway {
 
     /**
      * This method is called when a player sends a message.
-     * It sends the message to both players, and changes the senderID
-     * accordingly for the color of display.
      *
      * @param socket the socket of the player who sent the message
      * @param message the message to be sent
      */
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
-        // const room = this.playerRoomMap.get(socket.id); // room is unclear, would like to change to room
-
-        message.sender = this.gameService.getGameState(socket.id).playerName;
-        socket.emit(GameEvents.MessageSent, message);
-
-        message.senderId = SenderType.Opponent;
-        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId; // is there a better way ?
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        secondPlayerSocket.emit(GameEvents.MessageSent, message);
+        this.chatService.sendToBothPlayers(socket, message, this.gameService);
     }
 
     /**
@@ -222,8 +212,7 @@ export class GameGateway {
         if (gameState) {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
             if (gameState.otherSocketId) {
-                // const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId; // is there a better way ?
-                // socket.to(secondPlayerId).emit(GameEvents.OpponentAbandoned);
+                // this.chatService.abandonSequence(socket, this.gameService);
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 otherSocket.emit(GameEvents.Victory);
                 this.gameService.deleteUserFromGame(otherSocket);
