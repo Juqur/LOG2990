@@ -575,7 +575,7 @@ describe('CreationPageService', () => {
     it('getImg should return a blob of the canvas', async () => {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        context.fillRect(0, 0, 100, 100);
+        context.fillRect(0, 0, Constants.RECTANGLE_SIZE, Constants.RECTANGLE_SIZE);
         const res = await service.toImgFile(context);
         expect(res instanceof Blob).toBe(true);
     });

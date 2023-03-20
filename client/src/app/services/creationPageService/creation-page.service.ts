@@ -215,8 +215,8 @@ export class CreationPageService {
             textToSend: this.isSaveable
                 ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'
                 : 'Image de différence (contient ' +
-                this.creationSpecs.nbDifferences +
-                ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
+                  this.creationSpecs.nbDifferences +
+                  ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
             imgSrc: this.creationSpecs.differences.canvas.canvas.toDataURL(),
             closeButtonMessage: 'Fermer',
         });
@@ -318,6 +318,19 @@ export class CreationPageService {
     }
 
     /**
+     * This method is used to convert a canvas to a file.
+     * It uses the canvas.toBlob() method to convert the canvas to a Blob object.
+     *
+     * @param currentCtx the context of the canvas we want to convert to a file.
+     * @returns a Promise<Blob> which when resolved gives the Blob object associated with the canvas.
+     */
+    async toImgFile(currentCtx: CanvasRenderingContext2D): Promise<Blob> {
+        return new Promise((resolve) => {
+            currentCtx.canvas.toBlob((blob) => resolve(blob as Blob));
+        });
+    }
+
+    /**
      * This method is used to get the File() object associated with the image_empty.bmp.
      *
      * @returns a file Object containing the image_empty.bmp
@@ -399,18 +412,6 @@ export class CreationPageService {
                 resolve(true);
             };
             reader.readAsArrayBuffer(imageFile);
-        });
-    }
-
-    /**
-     * This method is used to convert a canvas to a file.
-     * It uses the canvas.toBlob() method to convert the canvas to a Blob object.
-     * @param currentCtx the context of the canvas we want to convert to a file.
-     * @returns a Promise<Blob> which when resolved gives the Blob object associated with the canvas.
-     */
-    async toImgFile(currentCtx: CanvasRenderingContext2D): Promise<Blob> {
-        return new Promise(resolve => {
-            currentCtx.canvas.toBlob(blob => resolve(blob as Blob));
         });
     }
 

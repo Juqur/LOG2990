@@ -65,6 +65,7 @@ export namespace Constants {
     export const BLACK = '#000000';
     export const MAX_GAME_NAME_LENGTH = 10;
     export const AREA_TO_DUPLICATE = 15;
+    export const RECTANGLE_SIZE = 100;
 
     // Game constants
     export const INIT_COUNTDOWN_TIME = 30;
