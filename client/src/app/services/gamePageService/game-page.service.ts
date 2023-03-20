@@ -80,6 +80,9 @@ export class GamePageService {
         return mousePosition;
     }
 
+    /**
+     * This method reset the audio service.
+     */
     resetAudio(): void {
         this.audioService.reset();
     }
