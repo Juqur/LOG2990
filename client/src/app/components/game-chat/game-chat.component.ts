@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { ChatMessage } from '@common/chat-messages';
 
@@ -16,10 +16,17 @@ import { ChatMessage } from '@common/chat-messages';
 export class GameChatComponent implements OnInit, OnDestroy {
     @Input() isMultiplayer: boolean = true;
     @Input() playerName: string = '';
-    messages: ChatMessage[] = [];
-    mode: string = '';
+    @ViewChild('messagesContainer') messagesContainer: ElementRef<HTMLElement>;
+    private messages: ChatMessage[] = [];
 
     constructor(private socketHandler: SocketHandler) {}
+
+    /**
+     * Getter for the display name attribute.
+     */
+    get messagesList(): ChatMessage[] {
+        return this.messages;
+    }
 
     /**
      * Method in charge of creating a new message once it has been received by the server.
@@ -28,18 +35,9 @@ export class GameChatComponent implements OnInit, OnDestroy {
      */
     receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
-    }
-
-    /**
-     * Method to start listening for messages.
-     */
-    listenForMessages(): void {
-        if (!this.socketHandler.isSocketAlive('game')) {
-            this.socketHandler.connect('game');
+        if (this.messagesContainer) {
+            this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
         }
-        this.socketHandler.on('game', 'messageSent', (message: ChatMessage) => {
-            this.receiveMessage(message);
-        });
     }
 
     ngOnInit(): void {
@@ -48,5 +46,17 @@ export class GameChatComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.socketHandler.removeListener('game', 'messageSent');
+    }
+
+    /**
+     * Method to start listening for messages.
+     */
+    private listenForMessages(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.on('game', 'messageSent', (message: ChatMessage) => {
+            this.receiveMessage(message);
+        });
     }
 }
