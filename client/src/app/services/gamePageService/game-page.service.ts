@@ -169,7 +169,7 @@ export class GamePageService {
      * This will copy an area of the original image to the difference canvas.
      * It will call pick function to get the rgba value of the pixel.
      *
-     * @param area The area to copy.
+     * @param area The array of pixels that represents the area to copy.
      */
     private copyArea(area: number[]): void {
         let x = 0;
