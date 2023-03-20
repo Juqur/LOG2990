@@ -27,7 +27,6 @@ export class CommunicationService {
      * @returns an observable on the array of all contained levels.
      */
     getLevels(): Observable<Level[]> {
-        console.log('wtf');
         return this.http.get<Level[]>(`${this.baseUrl}api` + '/image/allLevels').pipe(catchError(this.handleError<Level[]>('basicGet')));
     }
 
