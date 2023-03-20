@@ -222,43 +222,118 @@ describe('GamePageService', () => {
     });
 
     describe('handleAreaFoundInDiff', () => {
-        it('should call multiple functions', () => {
-            const result = [1, 2, 3];
-            const audioSpy = spyOn(AudioService, 'quickPlay');
-            service['handleAreaFoundInDiff'](result);
-            expect(service['imagesData']).toEqual(result);
-            service['imagesData'] = [];
-            expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
+        let resetCanvasSpy: jasmine.Spy;
+        let audioSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
+            audioSpy = spyOn(AudioService, 'quickPlay');
+        });
+
+        it('should push the difference array correctly in imagesData', () => {
+            const expectedArray = [0, 1, 2];
+            service['handleAreaFoundInDiff'](expectedArray);
+            expect(service['imagesData']).toEqual(expectedArray);
+        });
+
+        it('should call quickPlay', () => {
+            service['handleAreaFoundInDiff']([]);
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
+        });
+
+        it('should call flashArea', () => {
+            service['handleAreaFoundInDiff']([]);
+            expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
+        });
+
+        it('should call reset canvas', () => {
+            service['handleAreaFoundInDiff']([]);
+            expect(resetCanvasSpy).toHaveBeenCalled();
         });
     });
 
     describe('handleAreaNotFoundInDiff', () => {
+        const mockCanvas = document.createElement('canvas');
+        let resetCanvasSpy: jasmine.Spy;
+        let audioSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
+            audioSpy = spyOn(AudioService, 'quickPlay');
+            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+        });
+
         it('should call quickPlay', () => {
-            const audioSpy = spyOn(AudioService, 'quickPlay');
             service['handleAreaNotFoundInDiff']();
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
+        });
+
+        it('should call drawError', () => {
+            service['handleAreaNotFoundInDiff']();
+            expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call reset canvas', () => {
+            service['handleAreaNotFoundInDiff']();
+            expect(resetCanvasSpy).toHaveBeenCalled();
         });
     });
 
     describe('handleAreaFoundInOriginal', () => {
-        it('should call multiple functions', () => {
-            const result = [1, 2, 3];
-            const audioSpy = spyOn(AudioService, 'quickPlay');
-            service['handleAreaFoundInOriginal'](result);
-            expect(service['imagesData']).toEqual(result);
-            service['imagesData'] = [];
+        let resetCanvasSpy: jasmine.Spy;
+        let audioSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
+            audioSpy = spyOn(AudioService, 'quickPlay');
+        });
+
+        it('should push the difference array correctly in imagesData', () => {
+            const expectedArray = [0, 1, 2];
+            service['handleAreaFoundInOriginal'](expectedArray);
+            expect(service['imagesData']).toEqual(expectedArray);
+        });
+
+        it('should call quickPlay', () => {
+            service['handleAreaFoundInOriginal']([]);
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
+        });
+
+        it('should call flashArea', () => {
+            service['handleAreaFoundInOriginal']([]);
             expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
+        });
+
+        it('should call reset canvas', () => {
+            service['handleAreaFoundInOriginal']([]);
+            expect(resetCanvasSpy).toHaveBeenCalled();
         });
     });
 
     describe('handleAreaNotFoundInOriginal', () => {
+        const mockCanvas = document.createElement('canvas');
+        let resetCanvasSpy: jasmine.Spy;
+        let audioSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
+            audioSpy = spyOn(AudioService, 'quickPlay');
+            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+        });
+
         it('should call quickPlay', () => {
-            const audioSpy = spyOn(AudioService, 'quickPlay');
-            spyOn(service, 'pick' as never);
             service['handleAreaNotFoundInOriginal']();
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
+        });
+
+        it('should call drawError', () => {
+            service['handleAreaNotFoundInOriginal']();
+            expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call timeout', () => {
+            service['handleAreaNotFoundInOriginal']();
+            expect(playAreaComponentSpy).toHaveBeenCalled();
         });
     });
 });
