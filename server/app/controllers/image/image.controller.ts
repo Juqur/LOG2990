@@ -70,21 +70,6 @@ export class ImageController {
     }
 
     /**
-     * Gets the amount of differences between the two images.
-     *
-     * @param formData The data of the level.
-     * @returns The number of differences between the two images.
-     */
-    @Get('/differenceCount')
-    @HttpCode(HttpCodes.OK)
-    @ApiOkResponse({
-        description: 'Returns the number of differences between the two images',
-    })
-    async differenceCount(@Param('differenceFile') differenceFile: string): Promise<number> {
-        return await this.imageService.differencesCount(differenceFile);
-    }
-
-    /**
      * Writes the level data onto a json file for the game information and the images into the assets folder.
      *
      * @param formData The data of the level.
