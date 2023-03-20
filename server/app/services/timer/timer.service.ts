@@ -13,10 +13,12 @@ export class TimerService {
      * Creates an interval that emits the time to the player every second.
      *
      * @param socket The socket of the player who is used to start the timer.
+     * @param server The server that is used to emit the time to the player.
      * @param isClassic Boolean value that determines if the game is classic or timed.
+     * @param otherSocketId The socket id of the other player.
      */
     // eslint-disable-next-line max-params
-    startTimer(socketId: string, server: Server, isClassic: boolean, secondSocketId?: string): void {
+    startTimer(socketId: string, server: Server, isClassic: boolean, otherSocketId?: string): void {
         this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
@@ -24,8 +26,8 @@ export class TimerService {
             this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
         }, Constants.millisecondsInOneSecond);
         this.timeIntervalMap.set(socketId, interval);
-        if (secondSocketId) {
-            this.timeIntervalMap.set(secondSocketId, interval);
+        if (otherSocketId) {
+            this.timeIntervalMap.set(otherSocketId, interval);
         }
     }
 
