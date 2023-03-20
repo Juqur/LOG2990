@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { Constants } from '@common/constants';
+import { Constants, MouseButton } from '@common/constants';
 // import { of } from 'rxjs';
 
 import { MouseService } from './mouse.service';
@@ -82,5 +82,18 @@ describe('MouseService', () => {
         expect(service['canClick']).toEqual(expectedStartValue);
         service.changeClickState();
         expect(service['canClick']).toEqual(expectedEndValue);
+    });
+
+    it('should update mousePosition when left mouse button is pressed', async () => {
+        const event = new MouseEvent('mousedown', {
+            button: MouseButton.Left,
+            offsetX: 100,
+            offsetY: 200
+        } as MouseEvent);
+        await service.mouseDrag(event);
+        const x = service.getX();
+        const y = service.getY();
+        expect(x).toEqual(event.offsetX);
+        expect(y).toEqual(event.offsetY);
     });
 });
