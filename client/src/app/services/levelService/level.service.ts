@@ -41,14 +41,14 @@ export class LevelService {
     }
 
     /**
-     * Getter for the current page number
+     * Getter for the current page number.
      */
     get currentPage(): number {
         return this.currentShownPage;
     }
 
     /**
-     * Getter for the last page number
+     * Getter for the last page number.
      */
     get lastPage(): number {
         return Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
@@ -74,7 +74,7 @@ export class LevelService {
     /**
      * Checks if we have reached the last page.
      *
-     * @returns a boolean indicating if we are on the last page
+     * @returns A boolean indicating if we are on the last page.
      */
     isBeginningOfList(): boolean {
         return this.currentPage <= 0;
