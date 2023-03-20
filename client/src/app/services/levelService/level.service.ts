@@ -72,18 +72,18 @@ export class LevelService {
     }
 
     /**
-     * Checks if we have reached the last page.
+     * Checks if we have reached the first page.
      *
-     * @returns A boolean indicating if we are on the last page.
+     * @returns A boolean indicating it is on first page.
      */
     isBeginningOfList(): boolean {
         return this.currentPage <= 0;
     }
 
     /**
-     * Checks if we have reached the first page.
+     * Checks if we have reached the last page.
      *
-     * @returns The confirmation of the last page.
+     * @returns A boolean indicating it is on last page.
      */
     isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
