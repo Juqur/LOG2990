@@ -12,11 +12,6 @@ export interface GameState {
     otherSocketId?: string;
 }
 
-export enum VictoryType {
-    SoloClassic = 'SoloClassic',
-    MultiplayerClassic = 'MultiplayerClassic',
-}
-
 /**
  * This service is used to handle the game logic.
  *
