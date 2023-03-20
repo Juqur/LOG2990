@@ -28,10 +28,12 @@ export class GamePageService {
     private winGameDialogData: DialogData = {
         textToSend: 'Vous avez gagné!',
         closeButtonMessage: 'Retour au menu de sélection',
+        mustProcess: false,
     };
     private loseDialogData: DialogData = {
         textToSend: 'Vous avez perdu!',
         closeButtonMessage: 'Retour au menu de sélection',
+        mustProcess: false,
     };
     private closePath: string = '/selection';
 
