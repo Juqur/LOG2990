@@ -15,6 +15,7 @@ import { ChatMessage } from '@common/chat-messages';
 })
 export class GameChatComponent implements OnInit, OnDestroy {
     @Input() isMultiplayer: boolean = true;
+    @Input() playerName: string = '';
     messages: ChatMessage[] = [];
     mode: string = '';
 

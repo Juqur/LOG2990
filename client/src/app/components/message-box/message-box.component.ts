@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { ChatMessage, SenderType } from '@common/chat-messages';
 
@@ -14,7 +14,7 @@ import { ChatMessage, SenderType } from '@common/chat-messages';
     styleUrls: ['./message-box.component.scss'],
 })
 export class MessageBoxComponent implements OnInit {
-    private displayName: string = '';
+    @Input() playerName: string = '';
 
     constructor(private socketHandler: SocketHandler) {}
 
@@ -22,7 +22,7 @@ export class MessageBoxComponent implements OnInit {
      * Getter for the display name attribute.
      */
     get name(): string {
-        return this.displayName;
+        return this.playerName;
     }
 
     /**
@@ -34,7 +34,7 @@ export class MessageBoxComponent implements OnInit {
      */
     createMessage(message: string): ChatMessage {
         return {
-            sender: this.displayName,
+            sender: this.playerName,
             senderId: SenderType.Player,
             text: message,
         };
