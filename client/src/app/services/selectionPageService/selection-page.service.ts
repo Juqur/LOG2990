@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { LevelService } from '@app/services/levelService/level.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 
 export interface SelectionData {
     levelId: number;

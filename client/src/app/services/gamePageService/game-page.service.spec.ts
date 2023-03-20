@@ -10,7 +10,7 @@ import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import { GamePageService } from './game-page.service';

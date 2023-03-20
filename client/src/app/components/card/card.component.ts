@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 

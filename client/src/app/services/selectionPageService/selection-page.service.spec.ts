@@ -6,7 +6,7 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LevelService } from '@app/services/levelService/level.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { of } from 'rxjs';
 import { SelectionData, SelectionPageService, StartGameData } from './selection-page.service';
 

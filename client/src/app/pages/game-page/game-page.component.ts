@@ -5,7 +5,7 @@ import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { GamePageService } from '@app/services/gamePageService/game-page.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 
