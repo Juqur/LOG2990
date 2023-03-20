@@ -27,6 +27,13 @@ export class LevelService {
     }
 
     /**
+     * Getter for the levels attribute.
+     */
+    get allLevels(): Level[] {
+        return this.levels;
+    }
+
+    /**
      * Getter for the levelToShow attribute.
      */
     get levelsToShow(): Level[] {

@@ -168,4 +168,8 @@ describe('LevelService', () => {
         service['updatePageLevels']();
         expect(service['shownLevels']).toEqual(levelExpectedArray.slice(Constants.levelsPerPage, levelExpectedArray.length));
     });
+
+    it('allLevels getter should return all ', () => {
+        expect(service.allLevels).toEqual(levelExpectedArray);
+    });
 });

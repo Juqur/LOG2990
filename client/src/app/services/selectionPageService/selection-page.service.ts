@@ -144,7 +144,7 @@ export class SelectionPageService implements OnDestroy {
      * @param levelService The level service used to update the level cards.
      */
     private updateSelection(data: SelectionData, levelService: LevelService): void {
-        levelService.levelsToShow.forEach((level) => {
+        levelService.allLevels.forEach((level) => {
             if (level.id === data.levelId) {
                 level.canJoin = data.canJoin;
             }

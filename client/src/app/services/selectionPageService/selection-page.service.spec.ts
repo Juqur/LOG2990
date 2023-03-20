@@ -35,7 +35,7 @@ describe('SelectionPageService', () => {
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
-        levelServiceSpy = jasmine.createSpyObj('LevelService', ['removeCard'], { levelsToShow: levels });
+        levelServiceSpy = jasmine.createSpyObj('LevelService', ['removeCard'], { allLevels: levels });
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogRefSpy.afterClosed.and.returnValue(of(true));
@@ -177,7 +177,7 @@ describe('SelectionPageService', () => {
             canJoin: true,
         };
         service['updateSelection'](data, levelServiceSpy);
-        expect(levelServiceSpy.levelsToShow[0].canJoin).toBeTrue();
+        expect(levelServiceSpy.allLevels[0].canJoin).toBeTrue();
     });
 
     it('should return false from the dialog in name is invalid', () => {
