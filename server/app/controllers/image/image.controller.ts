@@ -19,13 +19,13 @@ export class ImageController {
     /**
      * Gets all the level information.
      * This method also checks if the level is currently in the deletion queue and removes it from the list.
-     * It also checks if the level is currently in the queue and sets the canJoin property to true.
+     * It also checks if the level is currently joinable and sets the canJoin property to true.
      *
      * @returns The array of levels data stored in the server.
      */
     @Get('/allLevels')
     @ApiOkResponse({
-        description: 'Returns the card data',
+        description: 'Returns data for all levels',
     })
     async getLevels(): Promise<Level[]> {
         const levels = await this.imageService.getLevels();

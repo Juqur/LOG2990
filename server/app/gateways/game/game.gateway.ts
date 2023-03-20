@@ -32,10 +32,12 @@ export class GameGateway {
     }
 
     /**
-     * This method is called when a player clicks on the image. It sends back the information the client needs.
+     * This method is called when a player clicks on the image. It sends back the pixels of the difference,
+     * the total amount of differences in the level, the amount of differences found, and the amount of differences found
+     * by the second player if it is a multiplayer match.
      * It also checks if the player is in a multiplayer match and sends the information to the other player.
      * It also checks if the player has won the game and sends a victory event to the client.
-     * If the match is multiplayer, it also checks if the player has won and said a defeat event to the other player.
+     * If the match is multiplayer, it also checks if the player has won and sends a defeat event to the other player.
      *
      * @param socket The socket of the player.
      * @param position The position of the pixel that was clicked.
@@ -73,7 +75,7 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnGameSelection)
     onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
-        if (data.playerName.length <= 2) {
+        if (data.playerName.length <= 1) {
             socket.emit(GameEvents.InvalidName);
             return;
         }
@@ -91,7 +93,7 @@ export class GameGateway {
 
     /**
      * This method is called when a player accepts a game invite.
-     * It connects the two rooms and sends the information both players needs.
+     * It connects the two rooms and sends the level id, and both players names to each player.
      * It starts the timer and updates the selection page.
      *
      * @param socket The socket of the player.
@@ -119,7 +121,7 @@ export class GameGateway {
     /**
      * This method is called when a player cancels a game while waiting for a second player.
      * It updates the selection page join button
-     * It deletes the player from the game
+     * It removes the player from the game
      *
      * @param socket The socket of the player.
      */
@@ -132,7 +134,7 @@ export class GameGateway {
     /**
      * This method is called when a player rejects a game.
      * It updates the selection page join button
-     * It deletes the player and the other player from the game
+     * It removes the player and the other player from the game
      * It emits a event to the other player to tell them that the game was rejected
      *
      * @param socket the socket of the player
