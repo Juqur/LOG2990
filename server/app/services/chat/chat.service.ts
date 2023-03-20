@@ -44,8 +44,9 @@ export class ChatService {
     }
 
     abandonMessage(socket: Socket, gameService: GameService): void {
+        const secondPlayerId = gameService.getGameState(socket.id).otherSocketId;
         const playerName: string = gameService.getGameState(socket.id).playerName;
-        socket.emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
+        socket.to(secondPlayerId).emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
     }
 
     private getSystemChatMessage(message: string): ChatMessage {
