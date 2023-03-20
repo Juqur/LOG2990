@@ -22,3 +22,9 @@
 #sender > p {
     display: inline-block;
 }
+
+#message-text {
+    word-break: break-all; /* break words that exceed the width of the div */
+    display: inline-block; /* allow the div to be sized by its content */
+    width: 400px; /* set the maximum width of the div */
+}
