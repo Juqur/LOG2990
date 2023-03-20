@@ -229,8 +229,8 @@ export class GameService {
         const index = this.levelDeletionQueue.indexOf(levelId);
         if (index >= 0) {
             this.levelDeletionQueue.splice(index, 1);
-            this.imageService.deleteLevelData(levelId);
         }
+        this.imageService.deleteLevelData(levelId);
     }
 
     /**
