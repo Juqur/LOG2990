@@ -46,6 +46,6 @@ export class GameChatComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.socketHandler.disconnect('game');
+        this.socketHandler.removeListener('game', 'messageSent');
     }
 }
