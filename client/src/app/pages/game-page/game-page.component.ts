@@ -72,7 +72,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.socketHandler.send('game', 'onStopCheatMode');
             this.gamePageService.stopCheatMode();
         }
-        // Probably need to tell the server we entered cheat mode.
     }
 
     /**
