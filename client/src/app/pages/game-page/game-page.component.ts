@@ -61,13 +61,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
     @HostListener('document:keydown', ['$event'])
     handleKeyDownEvent(event: KeyboardEvent) {
         if (event.key === 't') {
-            this.isInCheatMode = !this.isInCheatMode;
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
                 this.gamePageService.setImages(this.levelId);
+                this.isInCheatMode = !this.isInCheatMode;
                 return;
             }
+            this.isInCheatMode = !this.isInCheatMode;
             this.socketHandler.send('game', 'onStopCheatMode');
             this.gamePageService.stopCheatMode();
         }
