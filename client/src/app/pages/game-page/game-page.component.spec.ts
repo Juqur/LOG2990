@@ -120,14 +120,13 @@ describe('GamePageComponent', () => {
         });
 
         it('should not set the opponents found differences correctly if it is a solo match', () => {
-            const spy = spyOn(component, 'secondPlayerDifferencesCount' as never);
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'processedClick') {
                     callback({} as never);
                 }
             });
             component.handleSocket();
-            expect(spy).not.toHaveBeenCalled();
+            expect(component['secondPlayerDifferencesCount']).toEqual(0);
         });
 
         it('should set the amount of difference found by the player', () => {
