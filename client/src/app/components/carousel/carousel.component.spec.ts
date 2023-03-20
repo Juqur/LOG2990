@@ -43,15 +43,15 @@ describe('CarouselComponent', () => {
 
     describe('changeButtonStyle', () => {
         it('should change button style from solo to multi', () => {
-            component.selectedButton = 'solo';
-            component.changeButtonStyle('multi');
-            expect(component.selectedButton).toEqual('multi');
+            component.isSelectedButtonSolo = true;
+            component.changeButtonStyle();
+            expect(component.isSelectedButtonSolo).toBeFalsy();
         });
 
         it('should change button style from multi to solo', () => {
-            component.selectedButton = 'multi';
-            component.changeButtonStyle('solo');
-            expect(component.selectedButton).toEqual('solo');
+            component.isSelectedButtonSolo = false;
+            component.changeButtonStyle();
+            expect(component.isSelectedButtonSolo).toBeTruthy();
         });
     });
 });
