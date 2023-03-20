@@ -62,6 +62,7 @@ describe('GameGateway', () => {
     it('should be defined', () => {
         expect(gateway).toBeDefined();
     });
+
     describe('onJoinSoloClassicGame', () => {
         it('should call timer service and game service when player joins a solo game', () => {
             const timerSpy = jest.spyOn(timerService, 'startTimer');
