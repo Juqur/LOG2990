@@ -235,7 +235,7 @@ describe('CreationPageService', () => {
         expect(diffDrawSpy).toHaveBeenCalledWith(Constants.thirty);
     });
 
-    it('detectDifference should not call errorDIalog if none of the canvases are null and call DifferenceService detectDifferences', () => {
+    it('detectDifference should not call errorDialog if none of the canvases are null and call DifferenceService detectDifferences', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
@@ -258,7 +258,7 @@ describe('CreationPageService', () => {
         expect(diffServiceSpy.detectDifferences).toHaveBeenCalledTimes(1);
     });
 
-    it('detectDifference should call errorDIalog if DifferenceService detectDifferences returned no LevelDifference', () => {
+    it('detectDifference should call errorDialog if DifferenceService detectDifferences returned no LevelDifference', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
@@ -351,6 +351,8 @@ describe('CreationPageService', () => {
 
     it('save game should call open dialog twice if we can save and post level was successful', () => {
         service['isSaveable'] = true;
+        (service as any).defaultUploadFile = new File([], 'test1');
+        (service as any).diffUploadFile = new File([], 'test2');
         popUpServiceSpy.openDialog.and.returnValue({
             afterClosed: () =>
                 of({
@@ -369,6 +371,8 @@ describe('CreationPageService', () => {
 
     it('save game should call open dialog once if we can save and post level was not successful', () => {
         service['isSaveable'] = true;
+        (service as any).defaultUploadFile = new File([], 'test1');
+        (service as any).diffUploadFile = new File([], 'test2');
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
         popUpServiceSpy.openDialog.and.returnValue({
             afterClosed: () =>
@@ -567,6 +571,14 @@ describe('CreationPageService', () => {
         expect(service['canvasShare'].diffCanvas.width).toEqual(Constants.DEFAULT_WIDTH);
         expect(service['canvasShare'].diffCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
     }));
+
+    it('getImg should return a blob of the canvas', async () => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        context.fillRect(0, 0, 100, 100);
+        const res = await service.toImgFile(context);
+        expect(res instanceof Blob).toBe(true);
+    });
 
     it('get radius should return the correct radius', fakeAsync(() => {
         service['creationSpecs'].radius = 3;

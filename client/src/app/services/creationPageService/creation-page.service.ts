@@ -402,15 +402,20 @@ export class CreationPageService {
         });
     }
 
+    /**
+     * This method is used to convert a canvas to a file.
+     * It uses the canvas.toBlob() method to convert the canvas to a Blob object.
+     * @param currentCtx the context of the canvas we want to convert to a file.
+     * @returns a Promise<Blob> which when resolved gives the Blob object associated with the canvas.
+     */
     async toImgFile(currentCtx: CanvasRenderingContext2D): Promise<Blob> {
         return new Promise(resolve => {
             currentCtx.canvas.toBlob(blob => resolve(blob as Blob));
         });
     }
 
-
     /**
-     * This methods re initializes the game games values to prevent the user from saving
+     * This method re initializes the game games values to prevent the user from saving
      * using obsolete values after a change.
      */
     private restartGame(): void {
