@@ -35,7 +35,6 @@ export class ChatService {
      * @param gameService The game service of game.gateway.ts.
      */
     sendToBothPlayers(socket: Socket, message: ChatMessage, gameService: GameService): void {
-        message.sender = gameService.getGameState(socket.id).playerName;
         socket.emit(GameEvents.MessageSent, message);
 
         message.senderId = SenderType.Opponent;
