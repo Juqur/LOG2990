@@ -60,10 +60,12 @@ export class GameGateway {
         socket.emit(GameEvents.MessageSent, chatMessage);
         if (this.gameService.getGameState(socket.id).otherSocketId) {
             secondPlayerSocket.emit(GameEvents.MessageSent, chatMessage);
+            // socket.to(secondPlayerId).emit(GameEvents.MessageSent, chatMessage);
         }
         if (secondPlayerId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
             secondPlayerSocket.emit(GameEvents.ProcessedClick, dataToSend);
+            // socket.to(secondPlayerId).emit(GameEvents.MessageSent, dataToSend);
         }
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
