@@ -2,19 +2,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouseService/mouse.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
 describe('PlayAreaComponent', () => {
-    let mouseServiceSpy: SpyObj<MouseService>;
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
 
     beforeEach(() => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess', 'drawPlayArea']);
     });
 
@@ -22,7 +19,6 @@ describe('PlayAreaComponent', () => {
         TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
             imports: [HttpClientModule],
-            providers: [{ provide: MouseService, useValue: mouseServiceSpy }],
         })
             .overrideProvider(DrawService, { useValue: drawServiceSpy })
             .compileComponents();
