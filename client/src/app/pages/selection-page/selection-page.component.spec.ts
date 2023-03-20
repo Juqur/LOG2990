@@ -12,6 +12,8 @@ import { SelectionPageComponent } from './selection-page.component';
 describe('SelectionPageComponent', () => {
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
+    let ngOnInitSpy: jasmine.Spy;
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [SelectionPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
@@ -23,6 +25,7 @@ describe('SelectionPageComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(SelectionPageComponent);
         component = fixture.componentInstance;
+        ngOnInitSpy = spyOn(component, 'ngOnInit');
         fixture.detectChanges();
     });
 
@@ -31,6 +34,7 @@ describe('SelectionPageComponent', () => {
     });
 
     it('should setup socket', () => {
+        ngOnInitSpy.and.callThrough();
         const setupSocketSpy = spyOn(component['selectionPageService'], 'setupSocket');
         component.ngOnInit();
         expect(setupSocketSpy).toHaveBeenCalled();
