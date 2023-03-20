@@ -210,7 +210,6 @@ export class GameService {
                 return true;
             }
         }
-        this.removeLevelFromDeletionQueue(levelId);
         return false;
     }
 
@@ -229,7 +228,16 @@ export class GameService {
         const index = this.levelDeletionQueue.indexOf(levelId);
         if (index >= 0) {
             this.levelDeletionQueue.splice(index, 1);
+            this.imageService.deleteLevelData(levelId);
         }
+    }
+
+    /**
+     * This method deletes the level from the server.
+     *
+     * @param levelId The id of the level.
+     */
+    deleteLevel(levelId: number): void {
         this.imageService.deleteLevelData(levelId);
     }
 

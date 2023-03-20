@@ -164,6 +164,8 @@ export class GameGateway {
         }
         if (this.gameService.verifyIfLevelIsBeingPlayed(levelId)) {
             this.gameService.addLevelToDeletionQueue(levelId);
+        } else {
+            this.gameService.deleteLevel(levelId);
         }
     }
 
