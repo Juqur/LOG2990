@@ -33,7 +33,6 @@ describe('GameService', () => {
     describe('getGameState', () => {
         it('should return the correct data', () => {
             const expectedGameState = { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false };
-            service['playerGameMap'] = new Map<string, GameState>([['socket1', expectedGameState]]);
             service['playerGameMap'].set('socket', expectedGameState);
             expect(service.getGameState('socket')).toEqual(expectedGameState);
         });
