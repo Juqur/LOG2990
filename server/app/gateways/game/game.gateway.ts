@@ -91,7 +91,7 @@ export class GameGateway {
 
     /**
      * This method is called when a player accepts a game invite.
-     * It connects the two rooms and sends the information both players needs.
+     * It connects the two rooms and sends the level id, and both players names to each player.
      * It starts the timer and updates the selection page.
      *
      * @param socket The socket of the player.
@@ -119,7 +119,7 @@ export class GameGateway {
     /**
      * This method is called when a player cancels a game while waiting for a second player.
      * It updates the selection page join button
-     * It deletes the player from the game
+     * It removes the player from the game
      *
      * @param socket The socket of the player.
      */
@@ -132,7 +132,7 @@ export class GameGateway {
     /**
      * This method is called when a player rejects a game.
      * It updates the selection page join button
-     * It deletes the player and the other player from the game
+     * It removes the player and the other player from the game
      * It emits a event to the other player to tell them that the game was rejected
      *
      * @param socket the socket of the player
