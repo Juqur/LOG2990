@@ -27,15 +27,15 @@ export class GamePageService {
     private tempDiffPlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData = {
         textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu de sélection',
+        closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
     private loseDialogData: DialogData = {
         textToSend: 'Vous avez perdu!',
-        closeButtonMessage: 'Retour au menu de sélection',
+        closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
-    private closePath: string = '/selection';
+    private closePath: string = '/home';
 
     // eslint-disable-next-line max-params
     constructor(
@@ -77,7 +77,7 @@ export class GamePageService {
     verifyClick(event: MouseEvent): number {
         const invalid = -1;
         const mousePosition = this.mouseService.getMousePosition(event);
-        this.mouseService.setClickState(false);
+        this.mouseService.canClick = false;
         return mousePosition || invalid;
     }
 
@@ -192,12 +192,13 @@ export class GamePageService {
      * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
     private resetCanvas(): void {
+        const delay = 1000; // ms
         this.diffPlayArea
-            .timeout(Constants.millisecondsInOneSecond)
+            .timeout(delay)
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                this.mouseService.setClickState(true);
+                this.mouseService.canClick = true;
             })
             .then(() => {
                 setTimeout(() => {
@@ -265,14 +266,15 @@ export class GamePageService {
      * Performs a failed sound and prompts an error in the original canvas.
      */
     private handleAreaNotFoundInOriginal(): void {
+        const delay = 1000;
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+        this.diffPlayArea.timeout(delay).then(() => {
             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-            this.mouseService.setClickState(true);
+            this.mouseService.canClick = true;
         });
     }
 }

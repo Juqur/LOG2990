@@ -52,7 +52,7 @@ export class CardComponent {
      * @returns The path difficulty image.
      */
     displayDifficultyIcon(): string {
-        return this.level.isEasy ? '../../../assets/images/easy.png' : '../../../assets/images/hard.png';
+        return this.level.isEasy ? 'assets/images/easy.png' : 'assets/images/hard.png';
     }
 
     /**

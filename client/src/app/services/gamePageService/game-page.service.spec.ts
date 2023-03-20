@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -7,7 +7,6 @@ import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
-import { Constants } from '@common/constants';
 import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
 import { GamePageService } from './game-page.service';
@@ -30,7 +29,7 @@ describe('GamePageService', () => {
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getCanClick', 'getX', 'getY', 'setClickState']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
@@ -43,7 +42,7 @@ describe('GamePageService', () => {
         playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
 
         TestBed.configureTestingModule({
-            imports: [HttpClientModule],
+            imports: [HttpClientTestingModule],
             providers: [
                 { provide: SocketHandler, useValue: socketHandlerSpy },
                 { provide: MouseService, useValue: mouseServiceSpy },
@@ -214,9 +213,10 @@ describe('GamePageService', () => {
     });
 
     describe('resetCanvas', () => {
-        it('should refresh the area and copy a part of the original canvas', fakeAsync(() => {
+        it('should call drawPlayArea twice', fakeAsync(() => {
+            const delay = 1000;
             service['resetCanvas']();
-            tick(Constants.millisecondsInOneSecond);
+            tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));
     });
