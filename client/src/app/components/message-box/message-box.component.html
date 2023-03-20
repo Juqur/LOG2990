@@ -10,6 +10,9 @@
         id="message-input"
         class="message-input"
         placeholder="Type message..."
+        rows="2"
+        cols="30"
+        maxlength="200"
         #messageInput
         (keydown)="onKeyDown($event, messageInput)"
     ></textarea>
