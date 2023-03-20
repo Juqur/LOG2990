@@ -159,10 +159,10 @@ export class MouseService {
      * @param event the mouse event
      * @returns an empty array when promise is resolved.
      */
-    async mouseDrag(event: MouseEvent): Promise<number[]> {
+    async mouseDrag(event: MouseEvent): Promise<void> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
         }
-        return Promise.resolve([]);
+        return Promise.resolve();
     }
 }
