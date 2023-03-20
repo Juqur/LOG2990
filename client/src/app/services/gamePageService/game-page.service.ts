@@ -265,12 +265,13 @@ export class GamePageService {
      * Performs a failed sound and prompts an error in the original canvas.
      */
     private handleAreaNotFoundInOriginal(): void {
+        const delay = 1000;
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.diffPlayArea.timeout(Constants.millisecondsInOneSecond).then(() => {
+        this.diffPlayArea.timeout(delay).then(() => {
             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
             this.mouseService.setClickState(true);
         });
