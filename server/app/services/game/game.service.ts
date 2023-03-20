@@ -109,11 +109,11 @@ export class GameService {
         if (gameState.otherSocketId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            this.removeLevelFromDeletionQueue(gameState.levelId);
+            if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
         } else if (gameState.foundDifferences.length === totalDifferences) {
             this.deleteUserFromGame(socket);
-            this.removeLevelFromDeletionQueue(gameState.levelId);
+            if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
         }
         return false;
