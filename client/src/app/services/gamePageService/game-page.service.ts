@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 /**
  * This service contains all the logic for the game page.
  *
- * @author Junaid Qureshi
+ * @author Junaid Qureshi & Pierre Tran
  * @class GamePageService
  */
 @Injectable({
