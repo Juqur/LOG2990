@@ -169,12 +169,12 @@ describe('GamePageService', () => {
         expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
     });
 
-    it('handleAreaFoundInDiff should correctly set the missing attribute', () => {
+    it('handleAreaFoundInDiff should correctly set the areaNotFound attribute', () => {
         const result = [1, 2, 3];
         spyOn(AudioService, 'quickPlay');
-        service['missing'] = [1, 2, 3];
+        service['areaNotFound'] = [1, 2, 3];
         service['handleAreaFoundInDiff'](result, true);
-        expect(service['missing']).toEqual([]);
+        expect(service['areaNotFound']).toEqual([]);
         service['imagesData'] = [];
     });
 
@@ -188,12 +188,12 @@ describe('GamePageService', () => {
         expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
     });
 
-    it('handleAreaFoundInOriginal should correctly set the missing attribute', () => {
+    it('handleAreaFoundInOriginal should correctly set the areaNotFound attribute', () => {
         const result = [1, 2, 3];
         spyOn(AudioService, 'quickPlay');
-        service['missing'] = [1, 2, 3];
+        service['areaNotFound'] = [1, 2, 3];
         service['handleAreaFoundInOriginal'](result, true);
-        expect(service['missing']).toEqual([]);
+        expect(service['areaNotFound']).toEqual([]);
         service['imagesData'] = [];
     });
 
@@ -236,12 +236,12 @@ describe('GamePageService', () => {
         tick(Constants.millisecondsQuarterOfSecond);
         expect(spy).toHaveBeenCalledTimes(1);
         expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
-        expect(service['missing']).toEqual([3]);
+        expect(service['areaNotFound']).toEqual([3]);
         clearInterval(service['flashInterval']);
     }));
 
     it('stopCheatMode should clear the flash interval', fakeAsync(() => {
-        service['missing'] = [1, 2, 3];
+        service['areaNotFound'] = [1, 2, 3];
         service['flashInterval'] = setInterval(() => {
             // do nothing
         }, Constants.millisecondsInOneSecond);
@@ -249,6 +249,6 @@ describe('GamePageService', () => {
         tick();
         service.stopCheatMode();
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(service['missing']).toEqual([]);
+        expect(service['areaNotFound']).toEqual([]);
     }));
 });

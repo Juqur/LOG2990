@@ -38,7 +38,7 @@ export class GamePageService {
     private closePath: string = '/selection';
     private isInCheatMode: boolean = false;
     private flashInterval: ReturnType<typeof setInterval>;
-    private missing: number[];
+    private areaNotFound: number[];
 
     // eslint-disable-next-line max-params
     constructor(
@@ -160,12 +160,12 @@ export class GamePageService {
      * @param differences the differences to have flash
      */
     startCheatMode(differences: number[]) {
-        this.missing = differences.filter((item) => {
+        this.areaNotFound = differences.filter((item) => {
             return !this.imagesData.includes(item);
         });
         this.flashInterval = setInterval(() => {
-            this.diffPlayArea.flashArea(this.missing);
-            this.originalPlayArea.flashArea(this.missing);
+            this.diffPlayArea.flashArea(this.areaNotFound);
+            this.originalPlayArea.flashArea(this.areaNotFound);
             this.resetCanvas();
         }, Constants.millisecondsQuarterOfSecond);
     }
@@ -175,7 +175,7 @@ export class GamePageService {
      */
     stopCheatMode() {
         clearInterval(this.flashInterval);
-        this.missing = [];
+        this.areaNotFound = [];
     }
 
     /**
@@ -259,7 +259,7 @@ export class GamePageService {
      */
     private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
         if (isInCheatMode) {
-            this.missing = this.missing.filter((item) => {
+            this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
             });
         }
@@ -291,7 +291,7 @@ export class GamePageService {
      */
     private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
         if (isInCheatMode) {
-            this.missing = this.missing.filter((item) => {
+            this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
             });
         }
