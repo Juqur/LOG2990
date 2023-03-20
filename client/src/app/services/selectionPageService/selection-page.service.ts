@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { LevelService } from '@app/services/levelService/level.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 
 export interface SelectionData {
     levelId: number;
@@ -106,6 +106,7 @@ export class SelectionPageService implements OnDestroy {
                 },
             },
             closeButtonMessage: 'Lancer la partie',
+            mustProcess: false,
         };
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
@@ -127,6 +128,7 @@ export class SelectionPageService implements OnDestroy {
         this.dialog = {
             textToSend: "En attente d'un autre joueur",
             closeButtonMessage: 'Annuler',
+            mustProcess: false,
         };
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
@@ -144,7 +146,7 @@ export class SelectionPageService implements OnDestroy {
      * @param levelService The level service used to update the level cards.
      */
     private updateSelection(data: SelectionData, levelService: LevelService): void {
-        levelService.levelsToShow.forEach((level) => {
+        levelService.allLevels.forEach((level) => {
             if (level.id === data.levelId) {
                 level.canJoin = data.canJoin;
             }
@@ -159,6 +161,7 @@ export class SelectionPageService implements OnDestroy {
         this.dialog = {
             textToSend: 'Le nom choisi est trop court, veuillez en choisir un autre',
             closeButtonMessage: 'OK',
+            mustProcess: false,
         };
         this.popUpService.openDialog(this.dialog);
     }
@@ -173,6 +176,7 @@ export class SelectionPageService implements OnDestroy {
         this.dialog = {
             textToSend: "Partie trouvée ! En attente de l'approbation de l'autre joueur.",
             closeButtonMessage: 'Annuler',
+            mustProcess: false,
         };
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
@@ -195,6 +199,7 @@ export class SelectionPageService implements OnDestroy {
             textToSend: 'Voulez-vous autoriser ' + name + ' à participer à votre jeu ?',
             closeButtonMessage: 'Annuler',
             isConfirmation: true,
+            mustProcess: false,
         };
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
@@ -230,6 +235,7 @@ export class SelectionPageService implements OnDestroy {
         this.dialog = {
             textToSend: "Le niveau n'existe plus, veuillez en choisir un autre",
             closeButtonMessage: 'OK',
+            mustProcess: false,
         };
         this.popUpService.openDialog(this.dialog);
     }

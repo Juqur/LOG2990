@@ -16,7 +16,7 @@ import { Constants } from '@common/constants';
 })
 export class CarouselComponent {
     @Input() level: Level = Constants.DEFAULT_LEVEL;
-    selectedButton: string = 'solo';
+    isSelectedButtonSolo: boolean = true;
 
     /**
      * Formats the time to a MM:SS format.
@@ -34,11 +34,11 @@ export class CarouselComponent {
     }
 
     /**
-     * Changes the button from solo to multiplayer.
+     * Changes the button style from solo to multi or vice versa.
      *
      * @param The button that is active.
      */
-    changeButtonStyle(button: string): void {
-        this.selectedButton = button === 'solo' ? 'solo' : 'multi';
+    changeButtonStyle(): void {
+        this.isSelectedButtonSolo = !this.isSelectedButtonSolo;
     }
 }

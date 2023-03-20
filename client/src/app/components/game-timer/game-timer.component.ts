@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
-import { SocketHandler } from 'src/app/services/socket-handler.service';
 
 /**
- * This component ie visual representation of the timer on the screen.
+ * This visual representation of the timer on the screen.
  *
  * @author Charles Degrandpré & Junaid Qureshi
  * @class GameTimerComponent
@@ -19,6 +19,18 @@ export class GameTimerComponent implements OnInit, OnDestroy {
     constructor(private socketHandler: SocketHandler) {}
 
     /**
+     * This method verifies if we aren't connected to the time gateway and connects us to it
+     * if that was the case. We then send the corresponding soloClassic event and prepare to
+     * listen on any 'timer' event for which we want to update the timer value.
+     */
+    ngOnInit(): void {
+        this.updateTimer(0);
+        this.socketHandler.on('game', 'sendTime', (data: number) => {
+            this.updateTimer(data);
+        });
+    }
+
+    /**
      * Sets the timer to the given value.
      * Formats the time into a MM:SS format.
      *
@@ -31,18 +43,6 @@ export class GameTimerComponent implements OnInit, OnDestroy {
         const minutesString: string = minutes < Constants.PADDING_NUMBER ? '0' + minutes : minutes.toString();
         const secondsString: string = seconds < Constants.PADDING_NUMBER ? '0' + seconds : seconds.toString();
         this.gameTimeFormatted = 'Time: ' + minutesString + ':' + secondsString;
-    }
-
-    /**
-     * This method verifies if we aren't connected to the time gateway and connects us to it
-     * if that was the case. We then send the corresponding soloClassic event and prepare to
-     * listen on any 'timer' event for which we want to update the timer value.
-     */
-    ngOnInit(): void {
-        this.updateTimer(0);
-        this.socketHandler.on('game', 'sendTime', (data: number) => {
-            this.updateTimer(data);
-        });
     }
 
     /**

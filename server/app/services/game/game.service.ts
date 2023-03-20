@@ -1,13 +1,7 @@
 import { ImageService } from '@app/services/image/image.service';
+import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-
-export interface GameData {
-    differencePixels: number[];
-    totalDifferences: number;
-    amountOfDifferencesFound: number;
-    amountOfDifferencesFoundSecondPlayer?: number;
-}
 
 export interface GameState {
     levelId: number;
@@ -212,7 +206,6 @@ export class GameService {
                 return true;
             }
         }
-        this.removeLevelFromDeletionQueue(levelId);
         return false;
     }
 
@@ -264,6 +257,15 @@ export class GameService {
         const gameState = this.getGameState(socketId);
         gameState.isInCheatMode = false;
         this.playerGameMap.set(socketId, gameState);
+    }
+
+    /**
+     * This method deletes the level from the server.
+     *
+     * @param levelId The id of the level.
+     */
+    deleteLevel(levelId: number): void {
+        this.imageService.deleteLevelData(levelId);
     }
 
     /**

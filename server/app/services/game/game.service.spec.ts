@@ -197,13 +197,9 @@ describe('GameService', () => {
 
         const mockedSocket = { id: 'socket1', join: jest.fn() } as unknown as Socket;
         const mockedOtherSocket = { id: 'socket2', join: jest.fn() } as unknown as Socket;
-        // let joinSpy: jest.SpyInstance;
-        // let joinOtherSpy: jest.SpyInstance;
         let bindPlayersSpy: jest.SpyInstance;
 
         beforeEach(() => {
-            // joinSpy = jest.spyOn(mockedSocket, 'join').mockImplementation();
-            // joinOtherSpy = jest.spyOn(mockedOtherSocket, 'join').mockImplementation();
             bindPlayersSpy = jest.spyOn(service, 'bindPlayers').mockImplementation();
             service['playerGameMap'].set('socket1', mockedGameState);
             service['playerGameMap'].set('socket2', mockedOtherGameState);
@@ -260,20 +256,6 @@ describe('GameService', () => {
     });
 
     describe('verifyIfLevelIsBeingPlayed', () => {
-        let removeLevelQueueSpy: jest.SpyInstance;
-
-        beforeEach(() => {
-            removeLevelQueueSpy = jest.spyOn(service, 'removeLevelFromDeletionQueue' as never).mockImplementation();
-        });
-
-        it('should call removeLevelFromDeletionQueue if the level is not found among the played games', () => {
-            service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true, isInCheatMode: false }],
-            ]);
-            service.verifyIfLevelIsBeingPlayed(0);
-            expect(removeLevelQueueSpy).toHaveBeenCalledWith(0);
-        });
-
         it('should return true if the level is being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
                 ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: true, isGameFound: true, isInCheatMode: false }],
@@ -367,6 +349,14 @@ describe('GameService', () => {
             });
             service.stopCheatMode('socket1');
             expect(service['playerGameMap'].get('socket1').isInCheatMode).toEqual(false);
+        });
+    });
+
+    describe('deleteLevel', () => {
+        it('should call deleteLevelData', () => {
+            const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
+            service.deleteLevel(0);
+            expect(deleteLevelDataSpy).toHaveBeenCalled();
         });
     });
 });

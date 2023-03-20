@@ -56,6 +56,8 @@ export class GameGateway {
             if (secondPlayerId) {
                 this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.Defeat);
                 this.timerService.stopTimer(secondPlayerId);
+                const otherSocket = this.server.sockets.sockets.get(secondPlayerId);
+                this.gameService.deleteUserFromGame(otherSocket);
             }
         }
     }
@@ -162,6 +164,8 @@ export class GameGateway {
         }
         if (this.gameService.verifyIfLevelIsBeingPlayed(levelId)) {
             this.gameService.addLevelToDeletionQueue(levelId);
+        } else {
+            this.gameService.deleteLevel(levelId);
         }
     }
 
@@ -219,6 +223,7 @@ export class GameGateway {
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 otherSocket.emit(GameEvents.Victory);
+                this.gameService.deleteUserFromGame(otherSocket);
             }
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);

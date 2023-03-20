@@ -1,17 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-//  TODO FIX THE LINT ISSUE, I CURRENTLY DO NOT KNOW HOW
 import { HttpClientModule } from '@angular/common/http';
 import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { GameData } from '@app/pages/game-page/game-page.component';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
-import { SocketHandler } from '@app/services/socket-handler.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
+import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
 import { GamePageService } from './game-page.service';
 
@@ -91,8 +89,9 @@ describe('GamePageService', () => {
     });
 
     it('should return -1 if it is not valid', () => {
+        const expected = -1;
         mouseServiceSpy.getMousePosition.and.returnValue(null);
-        expect(service.verifyClick(new MouseEvent('click'))).toEqual(Constants.minusOne);
+        expect(service.verifyClick(new MouseEvent('click'))).toEqual(expected);
     });
 
     it('should reset the audio service', () => {
@@ -125,28 +124,28 @@ describe('GamePageService', () => {
     });
 
     it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
-        const spy = spyOn<any>(service, 'handleAreaFoundInDiff');
+        const spy = spyOn(service, 'handleAreaFoundInDiff' as never);
         spyOn(service, 'validateResponse').and.returnValue(true);
         service.handleResponse(true, gameData, false);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaNotFoundInDiff if the area clicked was the difference canvas and a difference was not found', () => {
-        const spy = spyOn<any>(service, 'handleAreaNotFoundInDiff');
+        const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
         spyOn(service, 'validateResponse').and.returnValue(false);
         service.handleResponse(false, gameData, false);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaFoundInOriginal if the area clicked was the original canvas and a difference was found', () => {
-        const spy = spyOn<any>(service, 'handleAreaFoundInOriginal');
+        const spy = spyOn(service, 'handleAreaFoundInOriginal' as never);
         spyOn(service, 'validateResponse').and.returnValue(true);
         service.handleResponse(false, gameData, true);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call handleAreaNotFoundInOriginal if the area clicked was the original canvas and a difference was not found', () => {
-        const spy = spyOn<any>(service, 'handleAreaNotFoundInOriginal');
+        const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
         spyOn(service, 'validateResponse').and.returnValue(false);
         service.handleResponse(false, gameData, true);
         expect(spy).toHaveBeenCalled();
@@ -155,7 +154,7 @@ describe('GamePageService', () => {
     it('should return undefined when context is undefined when copying', () => {
         const area = [0];
         spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(null);
-        spyOn<any>(service, 'pick').and.returnValue([1, 2, 3]);
+        spyOn(service, 'pick' as never);
         const returnValue = service['copyArea'](area);
         expect(returnValue).toBeUndefined();
     });
@@ -200,7 +199,7 @@ describe('GamePageService', () => {
 
     it('handleAreaNotFoundInOriginal should call multiple functions', () => {
         const audioSpy = spyOn(AudioService, 'quickPlay');
-        spyOn<any>(service, 'pick').and.returnValue([1, 2, 3]);
+        spyOn(service, 'pick' as never);
         service['handleAreaNotFoundInOriginal']();
         expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
     });
@@ -224,7 +223,7 @@ describe('GamePageService', () => {
 
     it('should correctly set the original images pixels onto the difference image', () => {
         const area = [0];
-        const pickSpy = spyOn<any>(service, 'pick').and.returnValue([1, 2, 3]);
+        const pickSpy = spyOn(service, 'pick' as never);
         service['copyArea'](area);
         expect(pickSpy).toHaveBeenCalledTimes(1);
     });
@@ -232,7 +231,7 @@ describe('GamePageService', () => {
     it('startCheatMode should make the appropriate function calls ', fakeAsync(() => {
         const data = [1, 2, 3];
         service['imagesData'] = [1, 2];
-        const spy = spyOn<any>(service, 'resetCanvas');
+        const spy = spyOn(service, 'resetCanvas' as never);
         service.startCheatMode(data);
         tick(Constants.millisecondsQuarterOfSecond);
         expect(spy).toHaveBeenCalledTimes(1);
