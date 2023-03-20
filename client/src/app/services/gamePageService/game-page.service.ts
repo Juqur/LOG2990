@@ -47,7 +47,7 @@ export class GamePageService {
     ) {}
 
     /**
-     * This method validates validates the click of a plyer after it has been checked by the server.
+     * Ensures the difference array is valid and not empty.
      *
      * @param differenceArray The array of different pixels.
      * @returns The validation of the click.
@@ -57,7 +57,7 @@ export class GamePageService {
     }
 
     /**
-     * This methods sets and updates the play areas of the game page.
+     * This method sets and updates the play areas of the game page.
      *
      * @param originalPlayArea The reference to the original play area.
      * @param diffPlayArea The reference to the diff play area.
