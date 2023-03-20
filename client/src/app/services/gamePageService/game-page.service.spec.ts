@@ -74,7 +74,7 @@ describe('GamePageService', () => {
     });
 
     describe('setPlayArea', () => {
-        it('should set both play areas', () => {
+        it('should set all areas', () => {
             const playArea = playAreaComponentSpy;
             service.setPlayArea(playArea, playArea, playArea);
             expect(service['originalPlayArea']).toEqual(playArea);
