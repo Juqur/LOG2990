@@ -8,7 +8,7 @@ import { GameEvents } from './game.gateway.events';
 /**
  * This gateway is used to handle to all socket events.
  *
- * @author Junaid Qureshi
+ * @author Junaid Qureshi & Pierre Tran
  * @class GameGateway
  */
 @WebSocketGateway({ cors: true })
@@ -22,8 +22,8 @@ export class GameGateway {
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
      * It also sets the player's game data and starts the timer.
      *
-     * @param socket the socket of the player
-     * @param data the data of the player, including the levelId and the playerName
+     * @param socket The socket of the player.
+     * @param data The data of the player, including the levelId and the playerName.
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
