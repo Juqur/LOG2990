@@ -26,8 +26,8 @@ export interface StartGameData {
     providedIn: 'root',
 })
 export class SelectionPageService implements OnDestroy {
-    waitingForSecondPlayer: boolean = true;
-    waitingForAcceptation: boolean = true;
+    private waitingForOtherPlayer: boolean = true;
+    private waitingForAcceptation: boolean = true;
     private dialog: DialogData;
 
     constructor(private socketHandler: SocketHandler, private router: Router, private popUpService: PopUpService) {}
@@ -92,7 +92,7 @@ export class SelectionPageService implements OnDestroy {
      */
     startGameDialog(levelId: number): void {
         this.waitingForAcceptation = true;
-        this.waitingForSecondPlayer = true;
+        this.waitingForOtherPlayer = true;
         this.dialog = {
             textToSend: 'Veuillez entrer votre nom',
             inputData: {
@@ -109,7 +109,7 @@ export class SelectionPageService implements OnDestroy {
         };
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-            if (result && this.waitingForSecondPlayer) {
+            if (result && this.waitingForOtherPlayer) {
                 this.waitForMatch(levelId, result);
             }
         });
@@ -131,7 +131,7 @@ export class SelectionPageService implements OnDestroy {
         };
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
-            if (this.waitingForSecondPlayer) {
+            if (this.waitingForOtherPlayer) {
                 this.socketHandler.send('game', 'onGameCancelledWhileWaitingForSecondPlayer', {});
             }
         });
@@ -170,7 +170,7 @@ export class SelectionPageService implements OnDestroy {
      * It opens a dialog to inform the user that he is waiting for the other player to accept.
      */
     private openToBeAcceptedDialog(): void {
-        this.waitingForSecondPlayer = false;
+        this.waitingForOtherPlayer = false;
         this.popUpService.dialogRef.close();
         this.dialog = {
             textToSend: "Partie trouvée ! En attente de l'approbation de l'autre joueur.",
@@ -192,7 +192,7 @@ export class SelectionPageService implements OnDestroy {
      * @param name The name of the player that wants to join the game
      */
     private openPlayerSelectionDialog(name: string): void {
-        this.waitingForSecondPlayer = false;
+        this.waitingForOtherPlayer = false;
         this.popUpService.dialogRef.close();
         this.dialog = {
             textToSend: 'Voulez-vous autoriser ' + name + ' à participer à votre jeu ?',
@@ -229,7 +229,7 @@ export class SelectionPageService implements OnDestroy {
      */
     private closeDialogOnDeletedLevel(): void {
         this.waitingForAcceptation = false;
-        this.waitingForSecondPlayer = false;
+        this.waitingForOtherPlayer = false;
         this.popUpService.dialogRef.close();
         this.dialog = {
             textToSend: "Le niveau n'existe plus, veuillez en choisir un autre",
