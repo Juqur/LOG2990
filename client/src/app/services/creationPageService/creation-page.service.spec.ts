@@ -27,7 +27,6 @@ describe('CreationPageService', () => {
     let drawServiceDefaultSpy: SpyObj<DrawService>;
     let drawServiceDiffSpy: SpyObj<DrawService>;
 
-
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
@@ -35,8 +34,8 @@ describe('CreationPageService', () => {
         popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
         popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
-        drawServiceDefaultSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush','eraseBrush']);
-        drawServiceDiffSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush','eraseBrush']);
+        drawServiceDefaultSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
+        drawServiceDiffSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
     });
 
     beforeEach(() => {
@@ -227,7 +226,7 @@ describe('CreationPageService', () => {
 
     it('brushSlider change should correctly update the value of both draw services', () => {
         const mockEvent = { value: Constants.thirty };
-        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'setBrushSize');
+        const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'setBrushSize');
         const diffDrawSpy = spyOn(drawServiceDiffSpy, 'setBrushSize');
         service.brushSliderChange(mockEvent);
         // expect(drawServiceDefaultSpy.setBrushSize).toHaveBeenCalledWith(Constants.thirty);
@@ -269,7 +268,7 @@ describe('CreationPageService', () => {
         service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
-    }); 
+    });
 
     it('detectDifference correctly set the number of differences and isSaveable', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
@@ -393,7 +392,7 @@ describe('CreationPageService', () => {
     it('paintBrushMode should should call the correct draw functions', () => {
         const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'paintBrush');
+        const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'paintBrush');
         const diffDrawSpy = spyOn(drawServiceDiffSpy, 'paintBrush');
         service.paintBrushMode(defaultCanvasCtx, diffCanvasCtx);
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
@@ -405,7 +404,7 @@ describe('CreationPageService', () => {
     it('eraseBrushMode should call the correct draw functions', () => {
         const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'eraseBrush');
+        const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'eraseBrush');
         const diffDrawSpy = spyOn(drawServiceDiffSpy, 'eraseBrush');
         service.eraseBrushMode(defaultCanvasCtx, diffCanvasCtx);
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
@@ -420,7 +419,7 @@ describe('CreationPageService', () => {
     });
 
     it('colorPickerMode should call the correct draw functions', () => {
-        const defaultDrawSpy =spyOn(drawServiceDefaultSpy, 'setPaintColor');
+        const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'setPaintColor');
         const diffDrawSpy = spyOn(drawServiceDiffSpy, 'setPaintColor');
         service.colorPickerMode();
         expect(defaultDrawSpy).toHaveBeenCalledTimes(1);
@@ -569,5 +568,29 @@ describe('CreationPageService', () => {
         imageSpy.onload();
         expect(service['canvasShare'].diffCanvas.width).toEqual(Constants.DEFAULT_WIDTH);
         expect(service['canvasShare'].diffCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
+    }));
+
+    it('get radius should return the correct radius', fakeAsync(() => {
+        service['creationSpecs'].radius = 3;
+        const result = service.radius;
+        expect(result).toEqual(3);
+    }));
+
+    it('isSaveable should return the correct value', fakeAsync(() => {
+        service['isSaveable'] = true;
+        const result = service.saveable;
+        expect(result).toEqual(true);
+    }));
+
+    it('get nbDifferences should return the correct value', fakeAsync(() => {
+        service['creationSpecs'].nbDifferences = 3;
+        const result = service.nbDifferences;
+        expect(result).toEqual(3);
+    }));
+
+    it('get differenceMsg should return the correct value', fakeAsync(() => {
+        service['differenceAmountMsg'] = '3 differences';
+        const result = service.differenceMsg;
+        expect(result).toEqual('3 differences');
     }));
 });
