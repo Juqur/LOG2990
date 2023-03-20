@@ -77,7 +77,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     /**
      * This method is called when the component is destroyed.
      * It removes the listeners from the socket.
-     *
      */
     ngOnDestroy(): void {
         this.gamePageService.resetAudio();
@@ -92,7 +91,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It also handles the response from the server.
      * It checks if the difference is in the original image or in the diff image, and if the game is finished.
      */
-    handleSocket() {
+    handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
             if (gameData.amountOfDifferencesFoundSecondPlayer) {
@@ -115,12 +114,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * This method handles the case where the user clicks on the original image
-     * It will send the click to the server
+     * This method handles the case where the user clicks on the original image,
+     * It will send the click to the server,
      *
-     * @param event The mouse event
+     * @param event The mouse event,
      */
-    clickedOnOriginal(event: MouseEvent) {
+    clickedOnOriginal(event: MouseEvent): void {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
@@ -129,10 +128,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * This method handles the case where the user clicks on the difference image
-     * It will send the click to the server
+     * This method handles the case where the user clicks on the difference image,
+     * It will send the click to the server,
      *
-     * @param event The mouse event
+     * @param event The mouse event,
      */
     clickedOnDiff(event: MouseEvent): void {
         const mousePosition = this.gamePageService.verifyClick(event);
