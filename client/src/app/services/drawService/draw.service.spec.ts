@@ -57,7 +57,6 @@ describe('DrawService', () => {
         service.eraseBrush();
         expect(service.context.lineCap).toEqual('square');
         expect(service.context.globalCompositeOperation).toEqual('destination-out');
-        // expect(service.context.lineWidth).toEqual(service.brushSize);
     });
 
     it('draw should call the correct method when cursor in the canvas', () => {
@@ -77,7 +76,7 @@ describe('DrawService', () => {
         const moveToSpy = spyOn(service.context, 'moveTo');
         const lineToSpy = spyOn(service.context, 'lineTo');
         const strokeSpy = spyOn(service.context, 'stroke');
-        service.draw({ x: 1, y: 1 } as Vec2, { x: -1, y: -1 } as Vec2);
+        service.draw({ x: 1, y: 1 } as Vec2);
         expect(beginPathSpy).toHaveBeenCalled();
         expect(moveToSpy).toHaveBeenCalled();
         expect(lineToSpy).toHaveBeenCalled();

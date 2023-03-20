@@ -9,6 +9,7 @@ describe('UndoRedoService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(UndoRedoService);
+        UndoRedoService.resetAllStacks();
     });
 
     it('should be created', () => {
@@ -24,19 +25,16 @@ describe('UndoRedoService', () => {
         expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
     });
 
-    // it('addToStack should draw image', () => {
-    //     // const defaultCanvas = document.createElement('canvas');
-    //     // const defaultCanvasCtx = defaultCanvas.getContext('2d');
-    //     // const diffCanvas = document.createElement('canvas');
-    //     // const diffCanvasCtx = diffCanvas.getContext('2d');
-    //     const defaultCanvasCtxDrawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-    //     const diffCanvasCtxDrawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+    it('addToStack should draw image', () => {
+        spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
 
-    //     spyOn(UndoRedoService, 'addToStack').and.callThrough();
+        const defaultCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
-    //     expect(defaultCanvasCtxDrawImageSpy).toHaveBeenCalledTimes(1);
-    //     expect(diffCanvasCtxDrawImageSpy).toHaveBeenCalledTimes(1);
-    // });
+        UndoRedoService.addToStack(defaultCtx, diffCanvas);
+
+        expect(CanvasRenderingContext2D.prototype.drawImage).toHaveBeenCalledTimes(2);
+    });
 
     it('should undo', () => {
         const defaultCanvas = document.createElement('canvas');
