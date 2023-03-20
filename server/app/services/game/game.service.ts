@@ -64,6 +64,8 @@ export class GameService {
 
     /**
      * This method gets a list of levels currently joinable.
+     *
+     * @return The list of levels that are currently joinable.
      */
     getJoinableLevels(): number[] {
         const listOfLevels: number[] = [];
@@ -206,6 +208,8 @@ export class GameService {
 
     /**
      * This method adds the level id to the levelDeletionQueue.
+     *
+     * @param levelId The id of the level.
      */
     addLevelToDeletionQueue(levelId: number): void {
         this.levelDeletionQueue.push(levelId);
@@ -214,6 +218,8 @@ export class GameService {
     /**
      * This method removes the level id from the levelDeletionQueue if it is found in it.
      * It also deletes the level from the server.
+     *
+     * @param levelId The id of the level.
      */
     removeLevelFromDeletionQueue(levelId: number): void {
         const index = this.levelDeletionQueue.indexOf(levelId);
