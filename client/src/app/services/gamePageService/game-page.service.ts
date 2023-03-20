@@ -223,9 +223,9 @@ export class GamePageService {
     }
 
     /**
-     * Will be called when the user finds a difference in the difference canvas.
+     * Performs a success sound and flashes the area of the difference in the difference canvas.
      *
-     * @param result The current area found.
+     * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInDiff(result: number[]): void {
         AudioService.quickPlay('./assets/audio/success.mp3');
@@ -236,7 +236,7 @@ export class GamePageService {
     }
 
     /**
-     * Will be called when the user does not find a difference in the difference canvas.
+     * Performs a failed sound and prompts an error in the difference canvas.
      */
     private handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
@@ -248,9 +248,9 @@ export class GamePageService {
     }
 
     /**
-     * Will be called when the user finds a difference in the original canvas.
+     * Performs a sound and flashes the area of the difference in the original canvas.
      *
-     * @param result The current area found.
+     * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInOriginal(result: number[]): void {
         AudioService.quickPlay('./assets/audio/success.mp3');
@@ -261,7 +261,7 @@ export class GamePageService {
     }
 
     /**
-     * Will be called when the user does not find a difference in the original canvas.
+     * Performs a failed sound and prompts an error in the original canvas.
      */
     private handleAreaNotFoundInOriginal(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
