@@ -47,12 +47,11 @@ describe('UndoRedoService', () => {
     });
 
     it('should not undo', () => {
-        UndoRedoService.undoPointer = Constants.EMPTYSTACK;
+        UndoRedoService.undoPointer = Constants.EMPTY_STACK;
         const action = UndoRedoService.undo();
         expect(action).toBeUndefined();
     });
 
-    // CE TEST NE MARCHE PAS 1 FOIS SUR 4 (POURQUOI?)
     it('should redo', () => {
         const defaultCanvas = document.createElement('canvas');
         const defaultCanvasCtx = defaultCanvas.getContext('2d');
@@ -65,7 +64,7 @@ describe('UndoRedoService', () => {
     });
 
     it('should not redo', () => {
-        UndoRedoService.redoPointer = Constants.EMPTYSTACK;
+        UndoRedoService.redoPointer = Constants.EMPTY_STACK;
         const action = UndoRedoService.redo();
         expect(action).toBeUndefined();
     });
@@ -74,14 +73,14 @@ describe('UndoRedoService', () => {
         UndoRedoService.resetAllStacks();
         expect(UndoRedoService.canvasStack.length).toEqual(0);
         expect(UndoRedoService.redoStack.length).toEqual(0);
-        expect(UndoRedoService.undoPointer).toEqual(Constants.EMPTYSTACK);
-        expect(UndoRedoService.redoPointer).toEqual(Constants.EMPTYSTACK);
+        expect(UndoRedoService.undoPointer).toEqual(Constants.EMPTY_STACK);
+        expect(UndoRedoService.redoPointer).toEqual(Constants.EMPTY_STACK);
     });
 
     it('should clear undo stack', () => {
         UndoRedoService.resetUndoStack();
         expect(UndoRedoService.canvasStack.length).toEqual(0);
-        expect(UndoRedoService.undoPointer).toEqual(Constants.EMPTYSTACK);
+        expect(UndoRedoService.undoPointer).toEqual(Constants.EMPTY_STACK);
     });
 
     it('should call drawImage with the correct arguments', () => {
@@ -125,10 +124,10 @@ describe('UndoRedoService', () => {
     it('should clear redo stack', () => {
         UndoRedoService.resetRedoStack();
         expect(UndoRedoService.redoStack.length).toEqual(0);
-        expect(UndoRedoService.redoPointer).toEqual(Constants.EMPTYSTACK);
+        expect(UndoRedoService.redoPointer).toEqual(Constants.EMPTY_STACK);
     });
 
-    it('isEmptyStack should return true', () => {
+    it('isEMPTY_STACK should return true', () => {
         UndoRedoService.resetAllStacks();
         expect(UndoRedoService.isRedoStackEmpty()).toBeTrue();
         expect(UndoRedoService.isUndoStackEmpty()).toBeTrue();

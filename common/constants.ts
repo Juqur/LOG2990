@@ -64,19 +64,20 @@ export namespace Constants {
     export const BMP_BPP = 24;
     export const BLACK = '#000000';
     export const MAX_GAME_NAME_LENGTH = 10;
+    export const AREA_TO_DUPLICATE = 15;
 
     // Game constants
     export const INIT_COUNTDOWN_TIME = 30;
     export const INIT_HINTS_NB = 3;
     export const HINT_PENALTY = 5;
     export const COUNTDOWN_TIME_WIN = 5;
-    export const DEFAULTTESTNUMBER = 7;
+    export const DEFAULT_TEST_NUMBER = 7;
 
     // Card Component
     export const MAX_NAME_LENGTH = 300;
 
     // Undo/Redo Service
-    export const EMPTYSTACK = -1;
+    export const EMPTY_STACK = -1;
     export const DEFAULT_LEVEL = {
         id: 0,
         name: 'no name',

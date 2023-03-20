@@ -198,7 +198,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.mouseService.mouseDrag(event);
         const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
         if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
-            this.canvasRelease(event);
+            this.canvasRelease();
         } else {
             this.drawService.context = this.fgCanvas.nativeElement.getContext('2d', {
                 willReadFrequently: true,
@@ -219,7 +219,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.mouseService.mouseDrag(event);
         const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
         if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
-            this.canvasRelease(event);
+            this.canvasRelease();
         } else {
             this.drawService.context = this.tempCanvas.getContext('2d', {
                 willReadFrequently: true,
@@ -250,7 +250,7 @@ export class PaintAreaComponent implements AfterViewInit {
      *
      * @param event the mouse event
      */
-    canvasRelease(event: MouseEvent) {
+    canvasRelease() {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {

@@ -7,8 +7,8 @@ import { Constants } from '@common/constants';
 export class UndoRedoService {
     static canvasStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
     static redoStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
-    static undoPointer: number = Constants.EMPTYSTACK;
-    static redoPointer: number = Constants.EMPTYSTACK;
+    static undoPointer: number = Constants.EMPTY_STACK;
+    static redoPointer: number = Constants.EMPTY_STACK;
 
     /**
      * After the user has drawn on the canvas, we add the canvas to the stack.
@@ -74,7 +74,7 @@ export class UndoRedoService {
      */
     static resetRedoStack(): void {
         this.redoStack = [];
-        this.redoPointer = Constants.EMPTYSTACK;
+        this.redoPointer = Constants.EMPTY_STACK;
     }
 
     /**
@@ -82,7 +82,7 @@ export class UndoRedoService {
      */
     static resetUndoStack(): void {
         this.canvasStack = [];
-        this.undoPointer = Constants.EMPTYSTACK;
+        this.undoPointer = Constants.EMPTY_STACK;
     }
 
     /**
@@ -108,6 +108,6 @@ export class UndoRedoService {
      * @returns true if the undo stack is empty, false otherwise
      */
     static isUndoStackEmpty(): boolean {
-        return this.undoPointer === Constants.EMPTYSTACK;
+        return this.undoPointer === Constants.EMPTY_STACK;
     }
 }

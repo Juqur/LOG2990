@@ -10,11 +10,11 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector.service';
+import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
-import { DrawService } from '../drawService/draw.service';
 import { CreationPageService } from './creation-page.service';
 import SpyObj = jasmine.SpyObj;
 
@@ -335,8 +335,6 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call openDialog if the game is saveable', () => {
-        // service['creationSpecs'].defaultBgCanvasCtx = document.createElement('canvas').getContext('2d');
-        // service['creationSpecs'].diffBgCanvasCtx = document.createElement('canvas').getContext('2d');
         spyOn<any>(service, 'errorDialog');
 
         const mockLevelDifference = new LevelDifferences();

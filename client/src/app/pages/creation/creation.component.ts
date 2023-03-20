@@ -13,7 +13,7 @@ import { Constants } from '@common/constants';
 /**
  * This component represents the creation, the page where we can create new levels/games.
  *
- * @author Simon Gagné
+ * @author Simon Gagné & Galen Hu
  * @class CreationComponent
  */
 export class CreationComponent implements OnDestroy {
@@ -99,48 +99,58 @@ export class CreationComponent implements OnDestroy {
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
 
-        this.defaultPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        this.diffPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
-        this.defaultPaintArea.getPaintCanvas().getContext('2d')?.drawImage(canvas.defaultCanvas, 0, 0);
-        this.diffPaintArea.getPaintCanvas().getContext('2d')?.drawImage(canvas.diffCanvas, 0, 0);
+        defaultCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        diffCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+
+        defaultCtx.drawImage(canvas.defaultCanvas, 0, 0);
+        diffCtx.drawImage(canvas.diffCanvas, 0, 0);
     }
 
     swapCanvas(): void {
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
         const tempCanvas = defaultCanvas.cloneNode() as HTMLCanvasElement;
-        tempCanvas.getContext('2d')?.drawImage(defaultCanvas, 0, 0);
-        defaultCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        defaultCanvas.getContext('2d')?.drawImage(diffCanvas, 0, 0);
-        diffCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        diffCanvas.getContext('2d')?.drawImage(tempCanvas, 0, 0);
+        const tempCanvasContext = tempCanvas.getContext('2d') as CanvasRenderingContext2D;
+        const defaultCanvasContext = defaultCanvas.getContext('2d') as CanvasRenderingContext2D;
+        const diffCanvasContext = diffCanvas.getContext('2d') as CanvasRenderingContext2D;
+        tempCanvasContext.drawImage(defaultCanvas, 0, 0);
+        defaultCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        defaultCanvasContext.drawImage(diffCanvas, 0, 0);
+        diffCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        diffCanvasContext.drawImage(tempCanvas, 0, 0);
         this.addToUndoRedoStack();
     }
 
     clearDefaultCanvas(): void {
-        this.defaultPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        const defaultPaintAreaContext = this.defaultPaintArea.getPaintCanvas().getContext('2d') as CanvasRenderingContext2D;
+        defaultPaintAreaContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         this.addToUndoRedoStack();
     }
 
     clearDiffCanvas(): void {
-        this.diffPaintArea.getPaintCanvas().getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        const diffPaintAreaContext = this.diffPaintArea.getPaintCanvas().getContext('2d') as CanvasRenderingContext2D;
+        diffPaintAreaContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         this.addToUndoRedoStack();
     }
 
     duplicateDefaultCanvas(): void {
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
-        diffCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        diffCanvas.getContext('2d')?.drawImage(defaultCanvas, 0, 0);
+        const diffCanvasContext = diffCanvas.getContext('2d') as CanvasRenderingContext2D;
+        diffCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        diffCanvasContext.drawImage(defaultCanvas, 0, 0);
         this.addToUndoRedoStack();
     }
 
     duplicateDiffCanvas(): void {
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
         const diffCanvas = this.diffPaintArea.getPaintCanvas();
-        defaultCanvas.getContext('2d')?.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        defaultCanvas.getContext('2d')?.drawImage(diffCanvas, 0, 0);
+        const defaultCanvasContext = defaultCanvas.getContext('2d') as CanvasRenderingContext2D;
+        defaultCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        defaultCanvasContext.drawImage(diffCanvas, 0, 0);
         this.addToUndoRedoStack();
     }
 }

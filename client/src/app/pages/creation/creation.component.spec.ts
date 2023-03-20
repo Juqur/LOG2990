@@ -100,7 +100,7 @@ describe('CreationComponent', () => {
         expect(defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),
         );
-        diffCtx.fillText('test2', 15, 15);
+        diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.clearDiffCanvas();
         expect(diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),
@@ -112,7 +112,7 @@ describe('CreationComponent', () => {
         const defaultCtx = component.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = component.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCtx.fillText('test', Constants.ten, Constants.ten);
-        diffCtx.fillText('test2', 15, 15);
+        diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.duplicateDefaultCanvas();
         expect(diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),
@@ -124,10 +124,61 @@ describe('CreationComponent', () => {
         const defaultCtx = component.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = component.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCtx.fillText('test', Constants.ten, Constants.ten);
-        diffCtx.fillText('test2', 15, 15);
+        diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.duplicateDiffCanvas();
         expect(defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),
         );
+    });
+
+    it('addToUndoRedoStack should call resetRedoStack and addToStack', () => {
+        const resetRedoStackSpy = spyOn(UndoRedoService, 'resetRedoStack');
+        const addToStackSpy = spyOn(UndoRedoService, 'addToStack');
+        component.addToUndoRedoStack();
+        expect(resetRedoStackSpy).toHaveBeenCalledTimes(1);
+        expect(addToStackSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('applyChanges should return undefined if canvas is undefined', () => {
+        const defaultCanvas = document.createElement('canvas');
+        const diffCanvas = document.createElement('canvas');
+        const canvas = { defaultCanvas, diffCanvas };
+        expect(component.applyChanges(canvas)).toBeUndefined();
+    });
+
+    it('applyChanges should call clearRect and drawImage', () => {
+        const defaultCanvas = document.createElement('canvas');
+        const diffCanvas = document.createElement('canvas');
+        const defaultCtx = component.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const canvas = { defaultCanvas, diffCanvas };
+
+        spyOn(defaultCtx, 'clearRect');
+        spyOn(diffCtx, 'clearRect');
+        spyOn(defaultCtx, 'drawImage');
+        spyOn(diffCtx, 'drawImage');
+
+        component.applyChanges(canvas);
+        expect(defaultCtx.clearRect).toHaveBeenCalledTimes(1);
+        expect(diffCtx.clearRect).toHaveBeenCalledTimes(1);
+        expect(defaultCtx.drawImage).toHaveBeenCalledTimes(1);
+        expect(diffCtx.drawImage).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not perform changes when canvas is undefined', () => {
+        const defaultCtx = component.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+
+        spyOn(defaultCtx, 'clearRect');
+        spyOn(diffCtx, 'clearRect');
+        spyOn(defaultCtx, 'drawImage');
+        spyOn(diffCtx, 'drawImage');
+
+        component.applyChanges(undefined);
+
+        expect(defaultCtx.clearRect).not.toHaveBeenCalledWith(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        expect(diffCtx.clearRect).not.toHaveBeenCalledWith(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        expect(defaultCtx.drawImage).not.toHaveBeenCalled();
+        expect(diffCtx.drawImage).not.toHaveBeenCalled();
     });
 });

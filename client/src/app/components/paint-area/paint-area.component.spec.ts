@@ -1,10 +1,10 @@
+/* eslint-disable max-lines */
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
-// import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
@@ -260,7 +260,6 @@ describe('PaintAreaComponent', () => {
         expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
     });
 
-
     it('canvasRectangularDrag should draw a square in the right quadrand', () => {
         let mouseEvent = {
             offsetX: 100,
@@ -331,24 +330,14 @@ describe('PaintAreaComponent', () => {
     });
 
     it('canvasRelease should set isDragging to false', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
-        component.canvasRelease(mouseEvent);
+        component.canvasRelease();
         expect(component.isDragging).toBe(false);
     });
 
     it('canvasRelease should remove the temp canvas', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
         mouseServiceSpy.isRectangleMode = true;
         component.createTempCanvas();
-        component.canvasRelease(mouseEvent);
+        component.canvasRelease();
         const tempCanvasElement = document.body.querySelector('.draw');
         expect(tempCanvasElement).toBeNull();
     });
