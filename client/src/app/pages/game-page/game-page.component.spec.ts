@@ -48,8 +48,8 @@ describe('GamePageComponent', () => {
         activatedRoute.snapshot.queryParams = { playerName: 'Alice', opponent: 'Bob' };
     });
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
             declarations: [
                 GamePageComponent,
                 PlayAreaComponent,

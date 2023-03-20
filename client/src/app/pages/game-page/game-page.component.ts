@@ -138,7 +138,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Get the game level from the server when the game is loaded.
+     * Settings the game parameters.
+     * It sets the level id and the player names.
      */
     private settingGameParameters(): void {
         this.levelId = this.route.snapshot.params.id;
