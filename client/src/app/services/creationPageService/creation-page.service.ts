@@ -219,6 +219,7 @@ export class CreationPageService {
                   ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
             imgSrc: this.creationSpecs.differences.canvas.canvas.toDataURL(),
             closeButtonMessage: 'Fermer',
+            mustProcess: false,
         });
         if (this.isSaveable) {
             this.toImgFile(defaultMergedCtx).then((res) => {
@@ -243,6 +244,7 @@ export class CreationPageService {
                     submitFunction: this.submitFunction,
                 },
                 closeButtonMessage: 'Sauvegarder',
+                mustProcess: true,
             });
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 if (this.creationSpecs.differences) {
@@ -262,6 +264,7 @@ export class CreationPageService {
                                 const dialogData: DialogData = {
                                     textToSend: data.body,
                                     closeButtonMessage: 'Fermer',
+                                    mustProcess: false,
                                 };
                                 this.popUpService.openDialog(dialogData, '/config');
                             }
@@ -434,6 +437,7 @@ export class CreationPageService {
         this.popUpService.openDialog({
             textToSend: msg,
             closeButtonMessage: 'Fermer',
+            mustProcess: false,
         });
     }
 }
