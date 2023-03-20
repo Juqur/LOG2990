@@ -61,8 +61,9 @@ export class MessageBoxComponent implements OnInit {
      * @param messageInput the HTML input containing the message.
      */
     sendMessage(messageInput: HTMLTextAreaElement): void {
-        const text: string = messageInput.value;
-        this.socketHandler.send('game', 'onMessageReception', this.createMessage(text));
+        if (messageInput.value !== '') {
+            this.socketHandler.send('game', 'onMessageReception', this.createMessage(messageInput.value));
+        }
         messageInput.value = '';
     }
 
