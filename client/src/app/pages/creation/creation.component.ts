@@ -13,7 +13,7 @@ import { Constants } from '@common/constants';
 /**
  * This component represents the creation, the page where we can create new levels/games.
  *
- * @author Simon Gagné
+ * @author Simon Gagné & Galen Hu
  * @class CreationComponent
  */
 export class CreationComponent implements OnDestroy {

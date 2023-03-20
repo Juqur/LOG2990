@@ -88,7 +88,7 @@ describe('MouseService', () => {
         const event = new MouseEvent('mousedown', {
             button: MouseButton.Left,
             offsetX: 100,
-            offsetY: 200
+            offsetY: 200,
         } as MouseEvent);
         await service.mouseDrag(event);
         const x = service.getX();

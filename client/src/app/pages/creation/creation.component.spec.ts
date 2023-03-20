@@ -100,7 +100,7 @@ describe('CreationComponent', () => {
         expect(defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),
         );
-        diffCtx.fillText('test2', 15, 15);
+        diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.clearDiffCanvas();
         expect(diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),
@@ -112,7 +112,7 @@ describe('CreationComponent', () => {
         const defaultCtx = component.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = component.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCtx.fillText('test', Constants.ten, Constants.ten);
-        diffCtx.fillText('test2', 15, 15);
+        diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.duplicateDefaultCanvas();
         expect(diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),
@@ -124,7 +124,7 @@ describe('CreationComponent', () => {
         const defaultCtx = component.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = component.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCtx.fillText('test', Constants.ten, Constants.ten);
-        diffCtx.fillText('test2', 15, 15);
+        diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.duplicateDiffCanvas();
         expect(defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
             diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT),

@@ -74,7 +74,7 @@ export class UndoRedoService {
      */
     static resetRedoStack(): void {
         this.redoStack = [];
-        this.redoPointer = Constants.EMPTYSTACK;
+        this.redoPointer = Constants.EMPTY_STACK;
     }
 
     /**
@@ -82,7 +82,7 @@ export class UndoRedoService {
      */
     static resetUndoStack(): void {
         this.canvasStack = [];
-        this.undoPointer = Constants.EMPTYSTACK;
+        this.undoPointer = Constants.EMPTY_STACK;
     }
 
     /**
@@ -108,6 +108,6 @@ export class UndoRedoService {
      * @returns true if the undo stack is empty, false otherwise
      */
     static isUndoStackEmpty(): boolean {
-        return this.undoPointer === Constants.EMPTYSTACK;
+        return this.undoPointer === Constants.EMPTY_STACK;
     }
 }
