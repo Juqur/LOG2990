@@ -31,7 +31,7 @@ export class PaintAreaComponent implements AfterViewInit {
     private tempCanvas: HTMLCanvasElement;
 
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
-    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
+    constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) { }
 
     /**
      * Getter for the canvas width
@@ -158,10 +158,18 @@ export class PaintAreaComponent implements AfterViewInit {
 
     /**
      * Detects the mouse click on the canvas, and calls the appropriate function for drawing.
+     * If a temporary canvas exists, it is removed and drawn on the foreground canvas.
      *
      * @param event the mouse event
      */
     canvasClick(event: MouseEvent) {
+        const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id);
+        const siblingDrawElements = currentCanvas?.parentElement?.querySelectorAll('.draw');
+        siblingDrawElements?.forEach((element) => {
+            const siblingCanvas = element as HTMLCanvasElement;
+            this.fgCanvas.nativeElement.getContext('2d')?.drawImage(siblingCanvas, 0, 0);
+            element.remove();
+        });
         this.isDragging = true;
         this.mouseService.mouseDrag(event);
         this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;

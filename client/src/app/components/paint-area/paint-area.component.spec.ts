@@ -127,6 +127,22 @@ describe('PaintAreaComponent', () => {
         expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
     });
 
+    it('canvasClick should draw any extra tempCanvas', () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+        mouseServiceSpy.isRectangleMode = true;
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.classList.add('draw');
+        const currentCanvas = document.body.querySelector('#' + component.fgCanvas.nativeElement.id);
+        currentCanvas?.parentNode?.insertBefore(tempCanvas, currentCanvas);
+        component.canvasClick(mouseEvent);
+        expect(drawImageSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('canvasDrag should call the appropriate drawing function if in rectangle mode', () => {
         const mouseEvent = {
             offsetX: 100,
