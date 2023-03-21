@@ -40,6 +40,7 @@ describe('GamePageComponent', () => {
             'handleDefeat',
             'startCheatMode',
             'stopCheatMode',
+            'preventJoining',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
@@ -88,19 +89,25 @@ describe('GamePageComponent', () => {
             handleSocketSpy = spyOn(component, 'handleSocket');
         });
 
+        it('should call preventJoining if socket is not alive', () => {
+            socketHandlerSpy.isSocketAlive.and.returnValue(false);
+            component.ngOnInit();
+            expect(gamePageServiceSpy.preventJoining).toHaveBeenCalledTimes(1);
+        });
+
         it('should call resetImagesData', () => {
             component.ngOnInit();
-            expect(gamePageServiceSpy.resetImagesData).toHaveBeenCalled();
+            expect(gamePageServiceSpy.resetImagesData).toHaveBeenCalledTimes(1);
         });
 
         it('should call settingGameParameters', () => {
             component.ngOnInit();
-            expect(settingGameParametersSpy).toHaveBeenCalled();
+            expect(settingGameParametersSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call handleSocket', () => {
             component.ngOnInit();
-            expect(handleSocketSpy).toHaveBeenCalled();
+            expect(handleSocketSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -265,8 +272,8 @@ describe('GamePageComponent', () => {
             const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
             const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
             component['settingGameParameters']();
-            expect(settingGameLevelSpy).toHaveBeenCalled();
-            expect(settingGameImageSpy).toHaveBeenCalled();
+            expect(settingGameLevelSpy).toHaveBeenCalledTimes(1);
+            expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
         });
     });
 

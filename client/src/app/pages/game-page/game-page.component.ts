@@ -81,6 +81,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It also connects to the the game socket and handles the response.
      */
     ngOnInit(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.gamePageService.preventJoining();
+        }
+
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
         this.handleSocket();

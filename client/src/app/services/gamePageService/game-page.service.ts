@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Vec2 } from '@app/interfaces/vec2';
 import { AudioService } from '@app/services/audioService/audio.service';
@@ -47,6 +48,7 @@ export class GamePageService {
 
     // eslint-disable-next-line max-params
     constructor(
+        private router: Router,
         private mouseService: MouseService,
         private popUpService: PopUpService,
         private audioService: AudioService,
@@ -175,7 +177,7 @@ export class GamePageService {
      *
      * @param differences the differences to have flash
      */
-    startCheatMode(differences: number[]) {
+    startCheatMode(differences: number[]): void {
         this.areaNotFound = differences.filter((item) => {
             return !this.imagesData.includes(item);
         });
@@ -189,9 +191,17 @@ export class GamePageService {
     /**
      * Method that stops the cheat mode.
      */
-    stopCheatMode() {
+    stopCheatMode(): void {
         clearInterval(this.flashInterval);
         this.areaNotFound = [];
+    }
+
+    /**
+     * Prevents the player from joining the game if a page refreshes or tries to join again.
+     * Redirects to the main menu.
+     */
+    preventJoining(): void {
+        this.router.navigate(['/home']);
     }
 
     /**
