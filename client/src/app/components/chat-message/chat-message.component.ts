@@ -36,7 +36,6 @@ export class ChatMessageComponent implements OnInit {
      *
      * @param message The message to be displayed
      */
-
     @Input()
     set message(message: ChatMessage) {
         this.chatMessage = message;
