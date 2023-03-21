@@ -60,7 +60,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     @HostListener('document:keydown', ['$event'])
     handleKeyDownEvent(event: KeyboardEvent) {
-        if (event.key === 't') {
+        if (event.key === 't' && document.activeElement?.tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
