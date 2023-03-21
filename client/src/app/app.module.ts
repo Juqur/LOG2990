@@ -17,6 +17,7 @@ import { ChatMessageComponent } from './components/chat-message/chat-message.com
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { MessageBoxComponent } from './components/message-box/message-box.component';
+import { PaintAreaComponent } from './components/paint-area/paint-area.component';
 import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.component';
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
@@ -34,6 +35,7 @@ import { CreationComponent } from './pages/creation/creation.component';
         GamePageComponent,
         MainPageComponent,
         PlayAreaComponent,
+        PaintAreaComponent,
         SelectionPageComponent,
         CardComponent,
         GameTimerComponent,

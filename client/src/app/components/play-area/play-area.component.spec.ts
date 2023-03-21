@@ -54,14 +54,18 @@ describe('PlayAreaComponent', () => {
         expect(canvas).toEqual(component.canvas);
     });
 
-    it('getCanvas should return the canvas element', () => {
-        const canvas = component.getCanvas();
-        expect(canvas).toEqual(component.canvas);
-    });
-
     it('drawPlayArea should call context.drawImage', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
         component.drawPlayArea(environment.serverUrl + 'original/1.bmp');
+        component.currentImage.dispatchEvent(new Event('load'));
+
+        expect(drawImageSpy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('drawPlayArea should call the diff canvas when isDiff is true', fakeAsync(() => {
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        component.isDiff = true;
+        component.drawPlayArea(environment.serverUrl + 'originals/1.bmp');
         component.currentImage.dispatchEvent(new Event('load'));
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);

@@ -51,4 +51,17 @@ describe('MouseService', () => {
         service['mousePosition'] = { x: 1, y: expectedValue };
         expect(service.getY()).toEqual(expectedValue);
     });
+
+    it('should update mousePosition when left mouse button is pressed', async () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+        await service.mouseDrag(mouseEvent);
+        const x = service.getX();
+        const y = service.getY();
+        expect(x).toEqual(mouseEvent.offsetX);
+        expect(y).toEqual(mouseEvent.offsetY);
+    });
 });
