@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
@@ -39,6 +39,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     originalImageSrc: string = '';
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
+    isInCheatMode: boolean = false;
 
     private levelId: number;
     private clickedOriginalImage: boolean = true;
@@ -50,6 +51,28 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private gamePageService: GamePageService,
         private communicationService: CommunicationService,
     ) {}
+
+    /**
+     * Listener for the key press event. It is called when ever we press on a key inside the game page.
+     * In this specific case, we check if the key 't' was pressed and if to we toggle on and off the cheat mode.
+     *
+     * @param event the key up event.
+     */
+    @HostListener('document:keydown', ['$event'])
+    handleKeyDownEvent(event: KeyboardEvent) {
+        if (event.key === 't') {
+            if (!this.isInCheatMode) {
+                this.socketHandler.send('game', 'onStartCheatMode');
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.setImages(this.levelId);
+                this.isInCheatMode = !this.isInCheatMode;
+                return;
+            }
+            this.isInCheatMode = !this.isInCheatMode;
+            this.socketHandler.send('game', 'onStopCheatMode');
+            this.gamePageService.stopCheatMode();
+        }
+    }
 
     /**
      * This method is called when the component is initialized.
@@ -72,6 +95,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.removeListener('game', 'processedClick');
         this.socketHandler.removeListener('game', 'victory');
         this.socketHandler.removeListener('game', 'defeat');
+        this.socketHandler.removeListener('game', 'startCheatMode');
+        this.gamePageService.stopCheatMode();
     }
 
     /**
@@ -79,6 +104,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * It connects to the game socket and sends the level id to the server.
      * It also handles the response from the server.
      * It checks if the difference is in the original image or in the diff image, and if the game is finished.
+     * It checks if we have entered the cheat mode.
      */
     handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
@@ -88,11 +114,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-
-            const response = this.gamePageService.validateResponse(gameData.differencePixels);
+            this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-            this.gamePageService.handleResponse(response, gameData, this.clickedOriginalImage);
+            this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
         });
         this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
@@ -102,6 +127,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
+        });
+        this.socketHandler.on('game', 'startCheatMode', (data) => {
+            const differences = data as number[];
+            this.gamePageService.startCheatMode(differences);
         });
     }
 

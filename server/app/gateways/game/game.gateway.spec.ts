@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
@@ -30,6 +31,7 @@ describe('GameGateway', () => {
             playerName: 'Alice',
             isInGame: false,
             isGameFound: false,
+            isInCheatMode: false,
         };
         timerService = createStubInstance<TimerService>(TimerService);
         gameService = createStubInstance<GameService>(GameService);
@@ -57,7 +59,6 @@ describe('GameGateway', () => {
         Object.defineProperty(socketNameSpace, 'sockets', { value: socketMaps });
         server.sockets.sockets.get = jest.fn().mockReturnValue(socketSecondPlayer);
         gateway['server'] = server;
-
         jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
     });
 
@@ -185,6 +186,7 @@ describe('GameGateway', () => {
                 playerName: 'Bob',
                 isGameFound: true,
                 isInGame: true,
+                isInCheatMode: false,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             const emitSpy = jest.spyOn(socket, 'emit');
@@ -203,6 +205,7 @@ describe('GameGateway', () => {
                 playerName: 'Bob',
                 isGameFound: true,
                 isInGame: true,
+                isInCheatMode: false,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             const emitSpy = jest.spyOn(socketSecondPlayer, 'emit');
@@ -295,6 +298,22 @@ describe('GameGateway', () => {
             const handlePlayerLeavingGameSpy = jest.spyOn(gateway, 'handlePlayerLeavingGame' as never);
             gateway.onAbandonGame(socket);
             expect(handlePlayerLeavingGameSpy).toBeCalledWith(socket);
+        });
+    });
+
+    describe('onStartCheatMode', () => {
+        it('should call startCheatMode', () => {
+            const startCheatModeSpy = jest.spyOn(gameService, 'startCheatMode' as never).mockImplementation();
+            gateway.onStartCheatMode(socket);
+            expect(startCheatModeSpy).toBeCalledWith(socket.id);
+        });
+    });
+
+    describe('onStopCheatMode', () => {
+        it('should call stopCheatMode', () => {
+            const stopCheatModeSpy = jest.spyOn(gameService, 'stopCheatMode' as never).mockImplementation();
+            gateway.onStopCheatMode(socket);
+            expect(stopCheatModeSpy).toBeCalledWith(socket.id);
         });
     });
 

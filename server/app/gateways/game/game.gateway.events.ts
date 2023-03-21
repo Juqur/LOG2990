@@ -9,6 +9,8 @@ export enum GameEvents {
     OnGameAccepted = 'onGameAccepted',
     OnGameRejected = 'onGameRejected',
     OnCancelledWhileWaiting = 'onCancelledWhileWaiting',
+    OnStartCheatMode = 'onStartCheatMode',
+    OnStopCheatMode = 'onStopCheatMode',
     OnAbandonGame = 'onAbandonGame',
     OnMessageReception = 'onMessageReception',
 
@@ -21,6 +23,7 @@ export enum GameEvents {
     StartClassicMultiplayerGame = 'startClassicMultiplayerGame',
     ShutDownGame = 'shutDownGame',
     DeleteLevel = 'deleteLevel',
+    StartCheatMode = 'startCheatMode',
     SendTime = 'sendTime',
     Defeat = 'defeat',
     OpponentAbandoned = 'opponentAbandoned',
