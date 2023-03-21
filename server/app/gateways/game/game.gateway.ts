@@ -126,8 +126,8 @@ export class GameGateway {
 
     /**
      * This method is called when a player cancels a game while waiting for a second player.
-     * It updates the selection page join button
-     * It removes the player from the game
+     * It updates the selection page join button.
+     * It removes the player from the game.
      *
      * @param socket The socket of the player.
      */
@@ -139,9 +139,9 @@ export class GameGateway {
 
     /**
      * This method is called when a player rejects a game.
-     * It updates the selection page join button
-     * It removes the player and the other player from the game
-     * It emits a event to the other player to tell them that the game was rejected
+     * It updates the selection page join button.
+     * It removes the player and the other player from the game.
+     * It emits a event to the other player to tell them that the game was rejected.
      *
      * @param socket The socket of the player.
      */
@@ -180,8 +180,8 @@ export class GameGateway {
     /**
      * This method is called when a player sends a message.
      *
-     * @param socket the socket of the player who sent the message
-     * @param message the message to be sent
+     * @param socket The socket of the player who sent the message.
+     * @param message The message to be sent.
      */
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
