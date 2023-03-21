@@ -301,7 +301,7 @@ describe('CreationPageService', () => {
     it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        spyOn<any>(service, 'errorDialog');
+        spyOn(service, 'errorDialog' as never);
 
         const mockLevelDifference = new LevelDifferences();
         mockLevelDifference.clusters = [[1, 1, 1]];
@@ -326,7 +326,7 @@ describe('CreationPageService', () => {
     it('detectDifference should call openDialog if the game is not saveable', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        spyOn<any>(service, 'errorDialog');
+        spyOn(service, 'errorDialog' as never);
 
         const mockLevelDifference = new LevelDifferences();
         mockLevelDifference.clusters = [[1]];
