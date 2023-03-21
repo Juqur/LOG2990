@@ -9,7 +9,7 @@ import { Socket } from 'socket.io';
  * This service is used to send messages to the players.
  * It is used to send system messages and messages from the players.
  *
- * @author Louis-Félix St-Amour
+ * @author Louis Félix St-Amour
  * @class ChatService
  */
 @Injectable()
