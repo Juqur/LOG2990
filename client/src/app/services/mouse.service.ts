@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
 import { Vec2 } from '@app/interfaces/vec2';
 import { MouseButton } from '@common/constants';
-import { AudioService } from './audioService/audio.service';
 import { DialogData, PopUpService } from './popUpService/pop-up.service';
 
 @Injectable({
@@ -19,14 +17,7 @@ export class MouseService {
     isRectangleMode: boolean = true;
     mouseDrawColor: string = 'black';
     private mousePosition: Vec2 = { x: 0, y: 0 };
-    private endGameAudio = new AudioService();
-    constructor(public popUpService: PopUpService, router: Router) {
-        router.events.forEach((event) => {
-            if (event instanceof NavigationStart) {
-                this.endGameAudio.reset();
-            }
-        });
-    }
+    constructor(public popUpService: PopUpService) {}
 
     /**
      * Returns the x coordinate of the last loaded click.
