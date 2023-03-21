@@ -205,7 +205,7 @@ export class PaintAreaComponent implements AfterViewInit {
     canvasPaint(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
         const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
+        if (accCoords.x < 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height) {
             this.canvasRelease();
         } else {
             this.drawService.context = this.fgCanvas.nativeElement.getContext('2d', {
@@ -255,9 +255,11 @@ export class PaintAreaComponent implements AfterViewInit {
     /**
      * Detects the mouse release on the canvas.
      * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
+     * It is also called when the mouse leaves the component.
      *
      * @param event The mouse event.
      */
+    @HostListener('mouseleave')
     canvasRelease(): void {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
