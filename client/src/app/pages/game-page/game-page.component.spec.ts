@@ -37,6 +37,8 @@ describe('GamePageComponent', () => {
             'resetImagesData',
             'handleVictory',
             'handleDefeat',
+            'startCheatMode',
+            'stopCheatMode',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
@@ -177,6 +179,16 @@ describe('GamePageComponent', () => {
             component.handleSocket();
             expect(gamePageServiceSpy.handleDefeat).toHaveBeenCalledTimes(1);
         });
+
+        it('should handle cheat mode if server sends startCheatMode request', () => {
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'startCheatMode') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.startCheatMode).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe('abandonGame', () => {
@@ -271,6 +283,29 @@ describe('GamePageComponent', () => {
             component['settingGameImage']();
             expect(component['originalImageSrc']).toBe('http://localhost:3000/original/1.bmp');
             expect(component['diffImageSrc']).toBe('http://localhost:3000/modified/1.bmp');
+        });
+    });
+
+    it('should emit a socket event when abandoning the game', () => {
+        component.abandonGame();
+        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+    });
+
+    describe('handleKeyDownEvent', () => {
+        it('should make appropriate calls to functions if we are not in cheat mode', () => {
+            component.isInCheatMode = false;
+            component.handleKeyDownEvent(new KeyboardEvent('keydown', { key: 't' }));
+            expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStartCheatMode');
+            expect(gamePageServiceSpy.setPlayArea).toHaveBeenCalledTimes(1);
+            expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
+            expect(component.isInCheatMode).toBeTrue();
+        });
+
+        it('should make appropriate calls to functions if we are in cheat mode', () => {
+            component.isInCheatMode = true;
+            component.handleKeyDownEvent(new KeyboardEvent('keydown', { key: 't' }));
+            expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStopCheatMode');
+            expect(gamePageServiceSpy.stopCheatMode).toHaveBeenCalledTimes(1);
         });
     });
 });

@@ -35,6 +35,9 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
+    private isInCheatMode: boolean = false;
+    private flashInterval: ReturnType<typeof setInterval>;
+    private areaNotFound: number[];
     private closePath: string = '/home';
 
     // eslint-disable-next-line max-params
@@ -112,16 +115,17 @@ export class GamePageService {
      * @param gameData The game data.
      * @param clickedOriginalImage Boolean that represents if the player clicked on the original image or the difference image.
      */
-    handleResponse(response: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
-        if (!clickedOriginalImage) {
-            if (response) {
-                this.handleAreaFoundInDiff(gameData.differencePixels);
+    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
+        const response = this.validateResponse(gameData.differencePixels);
+        if (response) {
+            if (!clickedOriginalImage) {
+                this.handleAreaFoundInDiff(gameData.differencePixels, isInCheatMode);
             } else {
-                this.handleAreaNotFoundInDiff();
+                this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode);
             }
         } else {
-            if (response) {
-                this.handleAreaFoundInOriginal(gameData.differencePixels);
+            if (!clickedOriginalImage) {
+                this.handleAreaNotFoundInDiff();
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
@@ -151,6 +155,31 @@ export class GamePageService {
     }
 
     /**
+     * Method that initiates the cheat mode
+     *
+     * @param differences the differences to have flash
+     */
+    startCheatMode(differences: number[]) {
+        this.areaNotFound = differences.filter((item) => {
+            return !this.imagesData.includes(item);
+        });
+        this.flashInterval = setInterval(() => {
+            this.diffPlayArea.flashArea(this.areaNotFound);
+            this.originalPlayArea.flashArea(this.areaNotFound);
+            this.resetCanvas();
+        }, Constants.millisecondsQuarterOfSecond);
+    }
+
+    /**
+     * Method that stops the cheat mode.
+     */
+    stopCheatMode() {
+        clearInterval(this.flashInterval);
+        this.areaNotFound = [];
+    }
+
+    /**
+     * The equivalent of eyedropper tool.
      * This method finds the rgba value of a pixel on the original image.
      *
      * @param x The x coordinate of the pixel.
@@ -229,12 +258,19 @@ export class GamePageService {
      *
      * @param result The array of pixels that represents the area found as a difference.
      */
-    private handleAreaFoundInDiff(result: number[]): void {
+    private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
+        if (isInCheatMode) {
+            this.areaNotFound = this.areaNotFound.filter((item) => {
+                return !result.includes(item);
+            });
+        }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.diffPlayArea.flashArea(result);
-        this.originalPlayArea.flashArea(result);
-        this.resetCanvas();
+        if (!this.isInCheatMode) {
+            this.diffPlayArea.flashArea(result);
+            this.originalPlayArea.flashArea(result);
+            this.resetCanvas();
+        }
     }
 
     /**
@@ -254,7 +290,12 @@ export class GamePageService {
      *
      * @param result The array of pixels that represents the area found as a difference.
      */
-    private handleAreaFoundInOriginal(result: number[]): void {
+    private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
+        if (isInCheatMode) {
+            this.areaNotFound = this.areaNotFound.filter((item) => {
+                return !result.includes(item);
+            });
+        }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);

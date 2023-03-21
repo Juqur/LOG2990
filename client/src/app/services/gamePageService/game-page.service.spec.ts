@@ -1,15 +1,17 @@
+/* eslint-disable max-lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { DrawService } from '@app/services/drawService/draw.service';
+import { GamePageService } from '@app/services/gamePageService/game-page.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { Constants } from '@common/constants';
 import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
-import { GamePageService } from './game-page.service';
 
 describe('GamePageService', () => {
     let service: GamePageService;
@@ -180,7 +182,8 @@ describe('GamePageService', () => {
     describe('handleResponse', () => {
         it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
             const spy = spyOn(service, 'handleAreaFoundInDiff' as never);
-            service.handleResponse(true, gameData, false);
+            spyOn(service, 'validateResponse').and.returnValue(true);
+            service.handleResponse(false, gameData, false);
             expect(spy).toHaveBeenCalled();
         });
 
@@ -192,7 +195,8 @@ describe('GamePageService', () => {
 
         it('should call handleAreaFoundInOriginal if the area clicked was the original canvas and a difference was found', () => {
             const spy = spyOn(service, 'handleAreaFoundInOriginal' as never);
-            service.handleResponse(true, gameData, true);
+            spyOn(service, 'validateResponse').and.returnValue(true);
+            service.handleResponse(false, gameData, true);
             expect(spy).toHaveBeenCalled();
         });
 
@@ -232,22 +236,29 @@ describe('GamePageService', () => {
 
         it('should push the difference array correctly in imagesData', () => {
             const expectedArray = [0, 1, 2];
-            service['handleAreaFoundInDiff'](expectedArray);
+            service['handleAreaFoundInDiff'](expectedArray, false);
             expect(service['imagesData']).toEqual(expectedArray);
         });
 
+        it('should correctly filter areaNotFOund in handleAreaFoundInDiff', () => {
+            service['areaNotFound'] = [0, 1, 2, 3];
+            const expectedArray = [0, 1, 2];
+            service['handleAreaFoundInDiff'](expectedArray, true);
+            expect(service['areaNotFound']).toEqual([3]);
+        });
+
         it('should call quickPlay', () => {
-            service['handleAreaFoundInDiff']([]);
+            service['handleAreaFoundInDiff']([], false);
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         });
 
         it('should call flashArea', () => {
-            service['handleAreaFoundInDiff']([]);
+            service['handleAreaFoundInDiff']([], false);
             expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
         });
 
         it('should call reset canvas', () => {
-            service['handleAreaFoundInDiff']([]);
+            service['handleAreaFoundInDiff']([], false);
             expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
     });
@@ -290,22 +301,29 @@ describe('GamePageService', () => {
 
         it('should push the difference array correctly in imagesData', () => {
             const expectedArray = [0, 1, 2];
-            service['handleAreaFoundInOriginal'](expectedArray);
+            service['handleAreaFoundInOriginal'](expectedArray, false);
             expect(service['imagesData']).toEqual(expectedArray);
         });
 
+        it('should correctly filter areaNotFound in handleAreaFoundInOriginal', () => {
+            const expectedArray = [0, 1, 2];
+            service['areaNotFound'] = [0, 1, 2, 3];
+            service['handleAreaFoundInOriginal'](expectedArray, true);
+            expect(service['areaNotFound']).toEqual([3]);
+        });
+
         it('should call quickPlay', () => {
-            service['handleAreaFoundInOriginal']([]);
+            service['handleAreaFoundInOriginal']([], false);
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         });
 
         it('should call flashArea', () => {
-            service['handleAreaFoundInOriginal']([]);
+            service['handleAreaFoundInOriginal']([], false);
             expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
         });
 
         it('should call reset canvas', () => {
-            service['handleAreaFoundInOriginal']([]);
+            service['handleAreaFoundInOriginal']([], false);
             expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
     });
@@ -329,4 +347,28 @@ describe('GamePageService', () => {
             expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
         });
     });
+
+    it('startCheatMode should make the appropriate function calls ', fakeAsync(() => {
+        const data = [1, 2, 3];
+        service['imagesData'] = [1, 2];
+        const spy = spyOn(service, 'resetCanvas' as never);
+        service.startCheatMode(data);
+        tick(Constants.millisecondsQuarterOfSecond);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
+        expect(service['areaNotFound']).toEqual([3]);
+        clearInterval(service['flashInterval']);
+    }));
+
+    it('stopCheatMode should clear the flash interval', fakeAsync(() => {
+        service['areaNotFound'] = [1, 2, 3];
+        service['flashInterval'] = setInterval(() => {
+            // do nothing
+        }, Constants.millisecondsInOneSecond);
+        const spy = spyOn(window, 'clearInterval').and.callThrough();
+        tick();
+        service.stopCheatMode();
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(service['areaNotFound']).toEqual([]);
+    }));
 });
