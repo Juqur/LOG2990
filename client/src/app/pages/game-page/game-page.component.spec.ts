@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';

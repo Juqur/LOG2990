@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
