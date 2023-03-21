@@ -8,7 +8,7 @@ import { CommunicationService } from '@app/services/communicationService/communi
 import { DrawService } from '@app/services/drawService/draw.service';
 // import { MouseService } from '@app/services/mouse.service';
 import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
-import { MouseService } from '@app/services/mouseService/mouse.service';
+import { MouseService } from '@app/services/mouse.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 
