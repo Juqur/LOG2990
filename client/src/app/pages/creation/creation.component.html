@@ -10,7 +10,7 @@
                     [max]="70"
                     tickInterval="1"
                     [(ngModel)]="brushSliderValue"
-                    (change)="this.creationService.brushSliderChange($event)"
+                    (change)="this.setBrushSize($event)"
                 ></mat-slider>
                 <button class="button-settings" color="orange" (click)="this.creationService.rectangleMode()" title="Rectangle">
                     <mat-icon>rectangle</mat-icon>

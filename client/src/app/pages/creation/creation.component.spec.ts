@@ -2,7 +2,7 @@
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatSliderModule } from '@angular/material/slider';
+import { MatSliderChange, MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
@@ -18,7 +18,15 @@ describe('CreationComponent', () => {
     let fixture: ComponentFixture<CreationComponent>;
 
     beforeEach(() => {
-        creationPageServiceSpy = jasmine.createSpyObj('CreationPageService', ['paintBrushMode', 'eraseBrushMode', 'detectDifference', 'saveFalse']);
+        creationPageServiceSpy = jasmine.createSpyObj('CreationPageService', [
+            'paintBrushMode',
+            'eraseBrushMode',
+            'detectDifference',
+            'saveFalse',
+            'saveTrue',
+            'brushSliderChange',
+            'setBrushSize',
+        ]);
     });
 
     beforeEach(async () => {
@@ -182,5 +190,13 @@ describe('CreationComponent', () => {
         expect(diffCtx.clearRect).not.toHaveBeenCalledWith(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         expect(defaultCtx.drawImage).not.toHaveBeenCalled();
         expect(diffCtx.drawImage).not.toHaveBeenCalled();
+    });
+
+    it('setBrushSize should set the brush size', () => {
+        const defaultCtx = component.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const matSlider = { value: 1 } as MatSliderChange;
+        component.setBrushSize(matSlider);
+        expect(creationPageServiceSpy.brushSliderChange).toHaveBeenCalledWith(matSlider, defaultCtx, diffCtx);
     });
 });

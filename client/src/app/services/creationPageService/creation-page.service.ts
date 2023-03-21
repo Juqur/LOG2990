@@ -192,9 +192,9 @@ export class CreationPageService {
      * @param value the index of the new slider value
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    brushSliderChange(event: any): void {
-        this.drawServiceDefault.contextToUse = this.canvasShare.defaultCanvas.getContext('2d') as CanvasRenderingContext2D;
-        this.drawServiceDiff.contextToUse = this.canvasShare.diffCanvas.getContext('2d') as CanvasRenderingContext2D;
+    brushSliderChange(event: any, defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
+        this.drawServiceDefault.context = defaultCtx;
+        this.drawServiceDiff.context = diffCtx;
         this.drawServiceDefault.setBrushSize(event.value);
         this.drawServiceDiff.setBrushSize(event.value);
     }

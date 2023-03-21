@@ -234,7 +234,9 @@ describe('CreationPageService', () => {
         const mockEvent = { value: Constants.thirty };
         const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'setBrushSize');
         const diffDrawSpy = spyOn(drawServiceDiffSpy, 'setBrushSize');
-        service.brushSliderChange(mockEvent);
+        const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        service.brushSliderChange(mockEvent, defaultCanvasCtx, diffCanvasCtx);
         // expect(drawServiceDefaultSpy.setBrushSize).toHaveBeenCalledWith(Constants.thirty);
         // expect(drawServiceDiffSpy.setBrushSize).toHaveBeenCalledWith(Constants.thirty);
         expect(defaultDrawSpy).toHaveBeenCalledOnceWith(Constants.thirty);
