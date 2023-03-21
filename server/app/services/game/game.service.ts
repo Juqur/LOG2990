@@ -169,8 +169,6 @@ export class GameService {
     connectRooms(socket: Socket, otherSocket: Socket): void {
         this.playerGameMap.get(socket.id).isInGame = true;
         this.playerGameMap.get(otherSocket.id).isInGame = true;
-        socket.join(otherSocket.id);
-        otherSocket.join(socket.id);
         this.bindPlayers(socket.id, otherSocket.id);
     }
 
