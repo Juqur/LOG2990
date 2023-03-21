@@ -44,7 +44,7 @@ describe('ChatMessageComponent', () => {
     });
 
     it('A message should have the class player1 if the message has an id of 1', () => {
-        spyOn(component, 'formatNameLength');
+        spyOn(component, 'formatNameLength' as never);
 
         component.ngOnInit();
 
@@ -61,7 +61,7 @@ describe('ChatMessageComponent', () => {
             text: 'Hello world',
         };
         fixture.detectChanges();
-        spyOn(component, 'formatNameLength');
+        spyOn(component, 'formatNameLength' as never);
 
         component.ngOnInit();
 
