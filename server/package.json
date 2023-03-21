@@ -11,7 +11,7 @@
         "start:debug": "rimraf out && nest start --debug --watch",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
         "lint:fix": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish --fix",
-        "test": "jest",
+        "test": "jest --detectOpenHandles",
         "test:watch": "jest --watch",
         "coverage": "jest --coverage",
         "coverage:watch": "jest --coverage --watch",

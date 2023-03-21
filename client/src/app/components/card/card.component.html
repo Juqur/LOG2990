@@ -15,7 +15,8 @@
         <div class="card-action">
             <div class="action-button-container" *ngIf="isSelectionPage">
                 <button (click)="playSolo()" mat-raised-button class="action-button">Jouer</button>
-                <button mat-raised-button class="action-button">Créer</button>
+                <button (click)="playMultiplayer()" mat-raised-button class="action-button">{{ level.canJoin ? 'Joindre'
+                    : 'Créer' }}</button>
             </div>
             <div class="action-button-container" *ngIf="!isSelectionPage">
                 <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>

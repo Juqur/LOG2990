@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketTestHelper } from '@app/classes/socket-test-helper';
+import { Constants } from '@common/constants';
 import { Socket } from 'socket.io-client';
 import { SocketHandler } from './socket-handler.service';
 
@@ -117,5 +118,35 @@ describe('SocketClientService', () => {
         service.send(socketGateway1, event);
         service.send(socketGateway1, event, data);
         expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should remove listener if listener exists', () => {
+        spyOn(service['socketListenersList'], 'indexOf').and.returnValue(0);
+        spyOn(service, 'getSocket').and.returnValue(socketTest);
+        const spySplice = spyOn(service['socketListenersList'], 'splice');
+        socketTest.off = jasmine.createSpy('off');
+        service.removeListener('game', 'placeholder');
+        expect(spySplice).toHaveBeenCalled();
+        expect(socketTest.off).toHaveBeenCalled();
+    });
+
+    it('should do nothing if listener does not exists', () => {
+        spyOn(service['socketListenersList'], 'indexOf').and.returnValue(Constants.minusOne);
+        spyOn(service, 'getSocket').and.returnValue(socketTest);
+        const spySplice = spyOn(service['socketListenersList'], 'splice');
+        socketTest.off = jasmine.createSpy('off');
+        service.removeListener('game', 'placeholder');
+        expect(spySplice).not.toHaveBeenCalled();
+        expect(socketTest.off).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if socket is undefined', () => {
+        spyOn(service['socketListenersList'], 'indexOf').and.returnValue(0);
+        spyOn(service, 'getSocket').and.returnValue(undefined);
+        const spySplice = spyOn(service['socketListenersList'], 'splice');
+        socketTest.off = jasmine.createSpy('off');
+        service.removeListener('game', 'placeholder');
+        expect(spySplice).toHaveBeenCalled();
+        expect(socketTest.off).not.toHaveBeenCalled();
     });
 });

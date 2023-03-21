@@ -14,7 +14,6 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { ChatMessageComponent } from './components/chat-message/chat-message.component';
-import { CounterComponent } from './components/counter/counter.component';
 import { GameChatComponent } from './components/game-chat/game-chat.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { MessageBoxComponent } from './components/message-box/message-box.component';
@@ -45,7 +44,6 @@ import { CreationComponent } from './pages/creation/creation.component';
         ConfigurationPageComponent,
         CreationComponent,
         ScaleContainerComponent,
-        CounterComponent,
         PopUpDialogComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, MatSliderModule, FormsModule, HttpClientModule],

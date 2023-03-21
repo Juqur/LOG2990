@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { LevelDifferences } from '@app/classes/difference';
+import { LevelFormData } from '@app/classes/level-form-data';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { DifferenceDetectorService } from '@app/services/difference-detector.service';
+import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
 import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
-import { LevelFormData } from '@common/levelFormData';
 
 @Injectable({
     providedIn: 'root',

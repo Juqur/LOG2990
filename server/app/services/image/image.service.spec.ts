@@ -133,20 +133,21 @@ describe('ImageService', () => {
 
     describe('findDifference', () => {
         it('should return the correct array that contains the selected index', async () => {
+            const expected = { differencePixels: TestConstants.CLUSTERS_TEST1[0], totalDifferences: TestConstants.CLUSTERS_TEST1.length };
             const foundDifferences = [];
             jest.spyOn(service, 'getAllDifferences').mockResolvedValue(TestConstants.CLUSTERS_TEST1);
             jest.spyOn(service, 'getIndex').mockReturnValue(0);
             const result = await service.findDifference('', foundDifferences, 0);
-            expect(result).toStrictEqual(TestConstants.CLUSTERS_TEST1[0]);
+            expect(result).toStrictEqual(expected);
         });
 
         it('should return an empty array if the index is undefined', async () => {
+            const expected = { differencePixels: [], totalDifferences: TestConstants.CLUSTERS_TEST1.length };
             jest.spyOn(service, 'getAllDifferences').mockResolvedValue(TestConstants.CLUSTERS_TEST1);
             jest.spyOn(service, 'getIndex').mockReturnValue(undefined);
-
             const position = undefined;
             const result = await service.findDifference('', [], position);
-            expect(result).toStrictEqual([]);
+            expect(result).toStrictEqual(expected);
         });
     });
 

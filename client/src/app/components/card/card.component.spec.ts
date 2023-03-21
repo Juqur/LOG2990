@@ -37,12 +37,12 @@ describe('CardComponent', () => {
 
     it('should display the easy difficulty icon', () => {
         component.level.isEasy = true;
-        expect(component.displayDifficultyIcon()).toEqual('../../../assets/images/easy.png');
+        expect(component.displayDifficultyIcon()).toEqual('assets/images/easy.png');
     });
 
     it('should display the hard difficulty icon', () => {
         component.level.isEasy = false;
-        expect(component.displayDifficultyIcon()).toEqual('../../../assets/images/hard.png');
+        expect(component.displayDifficultyIcon()).toEqual('assets/images/hard.png');
     });
 
     it('PlaySolo should ask for playerName', () => {
@@ -56,6 +56,14 @@ describe('CardComponent', () => {
         component.level.id = 1;
         component.playSolo();
         expect(popUpService.openDialog).toHaveBeenCalled();
+    });
+
+    describe('playMultiplayer', () => {
+        it('should call emit for startGameDialogEvent', () => {
+            const spy = spyOn(component.startGameDialogEvent, 'emit');
+            component.playMultiplayer();
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
     });
 
     it('should provide a method to check if the name is valid and should at least invalidate very long names', () => {
