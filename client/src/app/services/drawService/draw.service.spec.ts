@@ -94,4 +94,12 @@ describe('DrawService', () => {
         expect(fillSpy).toHaveBeenCalledTimes(1);
         expect(strokeSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('contextToUse should set the context to the correct value', () => {
+        const context = CanvasTestHelper.createCanvas(Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT).getContext('2d', {
+            willReadFrequently: true,
+        }) as CanvasRenderingContext2D;
+        service.contextToUse = context;
+        expect(service.context).toEqual(context);
+    });
 });

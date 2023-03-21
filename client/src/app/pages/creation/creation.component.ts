@@ -24,6 +24,12 @@ export class CreationComponent implements OnDestroy {
 
     constructor(public creationService: CreationPageService) {}
 
+    /**
+     * when the user press ctrl z it calls the handleUndo method
+     * when the user press ctrl shift z it calls the handleRedo method
+     *
+     * @param $event The event that is triggered when the user press a key
+     */
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent) {
         if ($event.ctrlKey && $event.shiftKey && ($event.key === 'Z' || $event.key === 'z')) {
@@ -33,6 +39,10 @@ export class CreationComponent implements OnDestroy {
         }
     }
 
+    /**
+     * After leaving the page, this method is called
+     * it resets the undo/redo stack
+     */
     ngOnDestroy(): void {
         UndoRedoService.resetAllStacks();
     }
@@ -111,6 +121,9 @@ export class CreationComponent implements OnDestroy {
         diffCtx.drawImage(canvas.diffCanvas, 0, 0);
     }
 
+    /**
+     * When the user press on the Interchanger button, this method is called
+     */
     swapCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
@@ -127,18 +140,27 @@ export class CreationComponent implements OnDestroy {
         this.addToUndoRedoStack();
     }
 
+    /**
+     * Clear the foreground of the default canvas
+     */
     clearDefaultCanvas(): void {
         const defaultPaintAreaContext = this.defaultPaintArea.getPaintCanvas().getContext('2d') as CanvasRenderingContext2D;
         defaultPaintAreaContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         this.addToUndoRedoStack();
     }
 
+    /**
+     * Clear the foreground of the diff canvas
+     */
     clearDiffCanvas(): void {
         const diffPaintAreaContext = this.diffPaintArea.getPaintCanvas().getContext('2d') as CanvasRenderingContext2D;
         diffPaintAreaContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         this.addToUndoRedoStack();
     }
 
+    /**
+     * copy the foreground of the default canvas to the diff canvas
+     */
     duplicateDefaultCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();
@@ -149,6 +171,9 @@ export class CreationComponent implements OnDestroy {
         this.addToUndoRedoStack();
     }
 
+    /**
+     * copy the foreground of the diff canvas to the default canvas
+     */
     duplicateDiffCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.getPaintCanvas();

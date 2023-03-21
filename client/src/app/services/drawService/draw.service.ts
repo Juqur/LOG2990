@@ -30,6 +30,18 @@ export class DrawService {
         return this.context.canvas.height;
     }
 
+    /**
+     * Setter for the context
+     */
+    set contextToUse(context: CanvasRenderingContext2D) {
+        this.context = context;
+    }
+
+    /**
+     * Set the color of the brush
+     *
+     * @param color The color of the brush
+     */
     setPaintColor(color: string): void {
         this.paintColor = color;
         this.context.strokeStyle = color;
