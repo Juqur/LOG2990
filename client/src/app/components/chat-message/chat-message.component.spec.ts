@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SenderType } from '@common/chat-messages';
 import { ChatMessageComponent } from './chat-message.component';
 
 describe('ChatMessageComponent', () => {
@@ -12,7 +13,7 @@ describe('ChatMessageComponent', () => {
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
         component['chatMessage'] = {
-            senderId: '1',
+            senderId: SenderType.Player,
             sender: 'I am a super long name',
             text: 'Hello world',
         };
@@ -67,5 +68,17 @@ describe('ChatMessageComponent', () => {
 
         expect(document.getElementById('message-outer-box')).toBeTruthy();
         expect(document.getElementById('sender')?.classList).toContain('player2');
+    });
+
+    it('should set chatMessage property when message input is set', () => {
+        const message = {
+            senderId: SenderType.Player,
+            sender: 'I am a super long name',
+            text: 'Hello world',
+        };
+        component.ngOnInit();
+
+        component.message = message;
+        expect(component.message).toEqual(message);
     });
 });
