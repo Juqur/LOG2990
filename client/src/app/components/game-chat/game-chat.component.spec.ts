@@ -58,6 +58,7 @@ describe('GameChatComponent', () => {
         component['socketHandler'] = mockSocketHandler;
         component['listenForMessages']();
         expect(mockSocketHandler.isSocketAlive).toHaveBeenCalled();
+        expect(mockSocketHandler.isSocketAlive).toBeTruthy();
         expect(mockSocketHandler.connect).toHaveBeenCalled();
         expect(mockSocketHandler.send).toHaveBeenCalled();
         expect(mockSocketHandler.on).toHaveBeenCalled();

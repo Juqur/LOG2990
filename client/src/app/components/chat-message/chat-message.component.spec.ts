@@ -13,8 +13,8 @@ describe('ChatMessageComponent', () => {
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
         component['chatMessage'] = {
-            senderId: SenderType.Player,
             sender: 'I am a super long name',
+            senderId: SenderType.Player,
             text: 'Hello world',
         };
         fixture.detectChanges();
@@ -44,21 +44,21 @@ describe('ChatMessageComponent', () => {
         expect(component['displayName']).toEqual('I am a s...');
     });
 
-    it('A message should have the class player1 if the message has an id of 1', () => {
+    it('A message should have the class player if the message has an id = to SenderType.Player', () => {
         spyOn(component, 'formatNameLength' as never);
 
         component.ngOnInit();
 
         expect(document.getElementById('message-outer-box')).toBeTruthy();
-        expect(document.getElementById('sender')?.classList).toContain('player1');
+        expect(document.getElementById('sender')?.classList).toContain('player');
     });
 
-    it('A message should have the class player2 if the message has an id of 2', () => {
+    it('A message should have the class opponent if the message has an id = SenderType.Opponent', () => {
         fixture = TestBed.createComponent(ChatMessageComponent);
         component = fixture.componentInstance;
         component['chatMessage'] = {
-            senderId: '2',
             sender: 'I am a super long name',
+            senderId: SenderType.Opponent,
             text: 'Hello world',
         };
         fixture.detectChanges();
@@ -67,14 +67,31 @@ describe('ChatMessageComponent', () => {
         component.ngOnInit();
 
         expect(document.getElementById('message-outer-box')).toBeTruthy();
-        expect(document.getElementById('sender')?.classList).toContain('player2');
+        expect(document.getElementById('sender')?.classList).toContain('opponent');
+    });
+
+    it('A message should have the class system if the message has an id = SenderType.System', () => {
+        fixture = TestBed.createComponent(ChatMessageComponent);
+        component = fixture.componentInstance;
+        component['chatMessage'] = {
+            sender: 'I am a super long name',
+            senderId: SenderType.System,
+            text: 'Hello world',
+        };
+        fixture.detectChanges();
+        spyOn(component, 'formatNameLength' as never);
+
+        component.ngOnInit();
+
+        expect(document.getElementById('message-outer-box')).toBeTruthy();
+        expect(document.getElementById('sender')?.classList).toContain('system');
     });
 
     it('should set chatMessage property when message input is set', () => {
         const message = {
-            senderId: SenderType.Player,
-            sender: 'I am a super long name',
-            text: 'Hello world',
+            senderId: SenderType.Opponent,
+            sender: 'angryOpponent23',
+            text: 'Hell yeah i am gonna win',
         };
         component.ngOnInit();
 
