@@ -47,6 +47,7 @@ export class CreationComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.creationService.resetDefaultBackground();
         this.creationService.resetDiffBackground();
+        this.setPaintBrushMode();
     }
 
     /**

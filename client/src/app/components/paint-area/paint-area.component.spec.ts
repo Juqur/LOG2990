@@ -117,7 +117,7 @@ describe('PaintAreaComponent', () => {
         expect(tempCanvas.style.position).toBe('absolute');
         expect(tempCanvas.style.top).toBe(component.fgCanvas.nativeElement.offsetTop + 'px');
         expect(tempCanvas.style.left).toBe(component.fgCanvas.nativeElement.offsetLeft + 'px');
-        expect(tempCanvas.previousElementSibling).toBe(component.bgCanvas.nativeElement);
+        expect(tempCanvas.previousElementSibling).toBe(component.fgCanvas.nativeElement);
     });
 
     it('canvasClick should set isDragging to true and call appropriate functions if in in rectangle mode', () => {
