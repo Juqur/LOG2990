@@ -5,6 +5,13 @@ import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 
+/**
+ * This service is used to send messages to the players.
+ * It is used to send system messages and messages from the players.
+ *
+ * @author Louis-Félix St-Amour
+ * @class ChatService
+ */
 @Injectable()
 export class ChatService {
     /**
@@ -17,12 +24,12 @@ export class ChatService {
      * @param gameService The game service.
      */
     sendSystemMessage(socket: Socket, dataToSend: GameData, gameService: GameService): void {
-        const secondPlayerId = gameService.getGameState(socket.id).otherSocketId;
+        const otherSocketId = gameService.getGameState(socket.id).otherSocketId;
         const message: string = dataToSend.differencePixels.length === 0 ? 'Erreur' : 'Différence trouvée';
         const playerName: string = gameService.getGameState(socket.id).otherSocketId ? ' par ' + gameService.getGameState(socket.id).playerName : '';
         socket.emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
         if (gameService.getGameState(socket.id).otherSocketId) {
-            socket.to(secondPlayerId).emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
+            socket.to(otherSocketId).emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
         }
     }
 
@@ -39,8 +46,8 @@ export class ChatService {
         socket.emit(GameEvents.MessageSent, message);
 
         message.senderId = SenderType.Opponent;
-        const secondPlayerId = gameService.getGameState(socket.id).otherSocketId;
-        socket.to(secondPlayerId).emit(GameEvents.MessageSent, message);
+        const otherSocketId = gameService.getGameState(socket.id).otherSocketId;
+        socket.to(otherSocketId).emit(GameEvents.MessageSent, message);
     }
 
     /**
@@ -53,16 +60,16 @@ export class ChatService {
      * @param gameService The game service of game.gateway.ts.
      */
     abandonMessage(socket: Socket, gameService: GameService): void {
-        const secondPlayerId = gameService.getGameState(socket.id).otherSocketId;
+        const otherSocketId = gameService.getGameState(socket.id).otherSocketId;
         const playerName: string = gameService.getGameState(socket.id).playerName;
-        socket.to(secondPlayerId).emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
+        socket.to(otherSocketId).emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
     }
 
     /**
      * This method creates a ChatMessage object with
      * the sender set to 'Système' and the senderId set to SenderType.System.
      *
-     * @param message the message to send.
+     * @param message The message to send.
      */
     private getSystemChatMessage(message: string): ChatMessage {
         return {
