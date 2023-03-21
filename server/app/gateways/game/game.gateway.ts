@@ -50,11 +50,10 @@ export class GameGateway {
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const otherSocketId = this.gameService.getGameState(socket.id).otherSocketId;
         const gameState = this.gameService.getGameState(socket.id);
-
         this.chatService.sendSystemMessage(socket, dataToSend, gameState);
 
         if (otherSocketId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
+            dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
             socket.to(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
         }
 

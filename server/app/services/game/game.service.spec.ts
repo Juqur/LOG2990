@@ -36,6 +36,7 @@ describe('GameService', () => {
             const expectedGameState = {
                 levelId: 0,
                 foundDifferences: [],
+                amountOfDifferencesFound: 0,
                 playerName: 'player1',
                 isInGame: false,
                 isGameFound: false,
@@ -89,11 +90,36 @@ describe('GameService', () => {
     describe('getImageInfoOnClick', () => {
         it('should return the correct data', async () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket', { levelId: 0, foundDifferences: [0], playerName: 'player', isInGame: false } as unknown as GameState],
+                [
+                    'socket',
+                    { levelId: 0, foundDifferences: [0], amountOfDifferencesFound: 0, playerName: 'player', isInGame: false } as unknown as GameState,
+                ],
             ]);
             imageService.findDifference.resolves({ differencePixels: [1], totalDifferences: 7 });
             const result = await service.getImageInfoOnClick('socket', 1);
             expect(result).toEqual({ differencePixels: [1], totalDifferences: 7, amountOfDifferencesFound: 1 });
+        });
+        it('should share found differences with other player', async () => {
+            service['playerGameMap'] = new Map<string, GameState>([
+                [
+                    'socket',
+                    {
+                        levelId: 0,
+                        foundDifferences: [0, 1, 2],
+                        amountOfDifferencesFound: 3,
+                        playerName: 'player',
+                        isInGame: false,
+                        otherSocketId: 'socket2',
+                    } as unknown as GameState,
+                ],
+                [
+                    'socket2',
+                    { levelId: 0, foundDifferences: [0], amountOfDifferencesFound: 0, playerName: 'player', isInGame: false } as unknown as GameState,
+                ],
+            ]);
+            imageService.findDifference.resolves({ differencePixels: [1], totalDifferences: 7 });
+            await service.getImageInfoOnClick('socket', 1);
+            expect(service['playerGameMap'].get('socket2').foundDifferences).toEqual([0, 1, 2]);
         });
     });
 
@@ -109,43 +135,55 @@ describe('GameService', () => {
         });
 
         it('should call deleteUserFromGame twice if the user wins in multiplayer', () => {
-            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2], otherSocketId: 'socket2' } as unknown as GameState);
+            service['playerGameMap'].set('socket1', {
+                foundDifferences: [0, 1, 2],
+                amountOfDifferencesFound: 3,
+                otherSocketId: 'socket2',
+            } as unknown as GameState);
             service.verifyWinCondition(mockedSocket, mockedServer, 3);
             expect(spyDeleteUser).toHaveBeenCalledTimes(2);
         });
 
         it('should call removeLevelFromDeletionQueue once if the user wins in multiplayer', () => {
-            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2], otherSocketId: 'socket2' } as unknown as GameState);
+            service['playerGameMap'].set('socket1', {
+                foundDifferences: [0, 1, 2],
+                amountOfDifferencesFound: 3,
+                otherSocketId: 'socket2',
+            } as unknown as GameState);
             service.verifyWinCondition(mockedSocket, mockedServer, 3);
             expect(spyRemoveLevel).toHaveBeenCalledTimes(1);
         });
 
         it('should return true if the user wins in multiplayer', () => {
-            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2], otherSocketId: 'socket2' } as unknown as GameState);
+            service['playerGameMap'].set('socket1', {
+                foundDifferences: [0, 1, 2],
+                amountOfDifferencesFound: 3,
+                otherSocketId: 'socket2',
+            } as unknown as GameState);
             const result = service.verifyWinCondition(mockedSocket, mockedServer, 3);
             expect(result).toBeTruthy();
         });
 
         it('should call deleteUserFromGame once if the user wins in single player', () => {
-            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2] } as unknown as GameState);
+            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2], amountOfDifferencesFound: 3 } as unknown as GameState);
             service.verifyWinCondition(mockedSocket, mockedServer, 3);
             expect(spyDeleteUser).toHaveBeenCalledTimes(1);
         });
 
         it('should call removeLevelFromDeletionQueue once if the user wins in single player', () => {
-            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2] } as unknown as GameState);
+            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2], amountOfDifferencesFound: 3 } as unknown as GameState);
             service.verifyWinCondition(mockedSocket, mockedServer, 3);
             expect(spyRemoveLevel).toHaveBeenCalledTimes(1);
         });
 
         it('should return true if the user wins in single player', () => {
-            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2] } as unknown as GameState);
+            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2], amountOfDifferencesFound: 3 } as unknown as GameState);
             const result = service.verifyWinCondition(mockedSocket, mockedServer, 3);
             expect(result).toBeTruthy();
         });
 
         it('should return false if the win condition is not met', () => {
-            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2] } as unknown as GameState);
+            service['playerGameMap'].set('socket1', { foundDifferences: [0, 1, 2], amountOfDifferencesFound: 3 } as unknown as GameState);
             const result = service.verifyWinCondition(mockedSocket, mockedServer, 1);
             expect(result).toBe(false);
         });
@@ -157,6 +195,7 @@ describe('GameService', () => {
             expect(service['playerGameMap'].get('socket')).toStrictEqual({
                 levelId: 1,
                 foundDifferences: [],
+                amountOfDifferencesFound: 0,
                 playerName: 'player',
                 isInGame: true,
                 isGameFound: true,
@@ -169,6 +208,7 @@ describe('GameService', () => {
             expect(service['playerGameMap'].get('socket')).toStrictEqual({
                 levelId: 1,
                 foundDifferences: [],
+                amountOfDifferencesFound: 0,
                 playerName: 'player',
                 isInGame: false,
                 isGameFound: false,
@@ -258,7 +298,18 @@ describe('GameService', () => {
     describe('verifyIfLevelIsBeingPlayed', () => {
         it('should return true if the level is being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: true, isGameFound: true, isInCheatMode: false }],
+                [
+                    'socket1',
+                    {
+                        levelId: 0,
+                        foundDifferences: [],
+                        amountOfDifferencesFound: 0,
+                        playerName: 'player1',
+                        isInGame: true,
+                        isGameFound: true,
+                        isInCheatMode: false,
+                    },
+                ],
             ]);
             const result = service.verifyIfLevelIsBeingPlayed(0);
             expect(result).toBeTruthy();
@@ -266,7 +317,18 @@ describe('GameService', () => {
 
         it('should return false if the level is not being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true, isInCheatMode: false }],
+                [
+                    'socket1',
+                    {
+                        levelId: 0,
+                        foundDifferences: [],
+                        amountOfDifferencesFound: 0,
+                        playerName: 'player1',
+                        isInGame: false,
+                        isGameFound: true,
+                        isInCheatMode: false,
+                    },
+                ],
             ]);
             const result = service.verifyIfLevelIsBeingPlayed(0);
             expect(result).toBeFalsy();
@@ -305,8 +367,30 @@ describe('GameService', () => {
     describe('bindPlayers', () => {
         it('should update both sockets correctly', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false, isInCheatMode: false }],
-                ['socket2', { levelId: 0, foundDifferences: [], playerName: 'player2', isInGame: false, isGameFound: false, isInCheatMode: false }],
+                [
+                    'socket1',
+                    {
+                        levelId: 0,
+                        foundDifferences: [],
+                        amountOfDifferencesFound: 0,
+                        playerName: 'player1',
+                        isInGame: false,
+                        isGameFound: false,
+                        isInCheatMode: false,
+                    },
+                ],
+                [
+                    'socket2',
+                    {
+                        levelId: 0,
+                        foundDifferences: [],
+                        amountOfDifferencesFound: 0,
+                        playerName: 'player2',
+                        isInGame: false,
+                        isGameFound: false,
+                        isInCheatMode: false,
+                    },
+                ],
             ]);
             service.bindPlayers('socket1', 'socket2');
             expect(service['playerGameMap'].get('socket1').isGameFound).toBeTruthy();
@@ -321,6 +405,7 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
+                amountOfDifferencesFound: 0,
                 playerName: 'player1',
                 isInGame: false,
                 isGameFound: false,
@@ -337,11 +422,23 @@ describe('GameService', () => {
     describe('stopCheatMode', () => {
         it('should set isInCheatMode to false', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false, isInCheatMode: true }],
+                [
+                    'socket1',
+                    {
+                        levelId: 0,
+                        foundDifferences: [],
+                        amountOfDifferencesFound: 0,
+                        playerName: 'player1',
+                        isInGame: false,
+                        isGameFound: false,
+                        isInCheatMode: true,
+                    },
+                ],
             ]);
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
+                amountOfDifferencesFound: 0,
                 playerName: 'player1',
                 isInGame: false,
                 isGameFound: false,

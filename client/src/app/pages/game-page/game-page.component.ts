@@ -109,12 +109,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
     handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
-            if (gameData.amountOfDifferencesFoundSecondPlayer) {
+            if (gameData.amountOfDifferencesFoundSecondPlayer !== undefined) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
