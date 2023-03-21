@@ -58,7 +58,7 @@ export class PaintAreaComponent implements AfterViewInit {
     /**
      * This method listens for a shift key press and forces the user to draw a square.
      *
-     * @param event the keyboardEvent to process.
+     * @param event The keyboardEvent to process.
      */
     @HostListener('window:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent): void {
@@ -96,9 +96,9 @@ export class PaintAreaComponent implements AfterViewInit {
      * It is also used to reload the image and erase any text or modifications we may
      * have added to it.
      *
-     * @param image the image source
+     * @param imageSource The imageSource to load on the canvas.
      */
-    loadBackground(image: string) {
+    loadBackground(imageSource: string): void {
         if (this.bgCanvas) {
             this.bgCanvas.nativeElement.id = this.isDiff ? 'diffImgCanvas' : 'defaultImgCanvas';
             const context = this.bgCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -109,7 +109,7 @@ export class PaintAreaComponent implements AfterViewInit {
             }
             this.currentImage = new Image();
             this.currentImage.crossOrigin = 'anonymous';
-            this.currentImage.src = image;
+            this.currentImage.src = imageSource;
             this.currentImage.onload = () => {
                 context.drawImage(this.currentImage, 0, 0, this.width, this.height);
             };
