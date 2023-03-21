@@ -31,6 +31,12 @@ export class ChatMessageComponent implements OnInit {
         return this.chatMessage;
     }
 
+    /**
+     * Setter for the textMessage attribute
+     *
+     * @param message The message to be displayed
+     */
+
     @Input()
     set message(message: ChatMessage) {
         this.chatMessage = message;
