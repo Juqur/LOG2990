@@ -190,12 +190,10 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event the mouse event
      */
     canvasDrag(event: MouseEvent): void {
-        if (this.mouseService) {
-            if (this.isDragging) {
-                if (this.mouseService.isRectangleMode) {
-                    this.canvasRectangularDrag(event);
-                } else this.canvasPaint(event);
-            }
+        if (this.mouseService && this.isDragging) {
+            if (this.mouseService.isRectangleMode) {
+                this.canvasRectangularDrag(event);
+            } else this.canvasPaint(event);
         }
     }
 
