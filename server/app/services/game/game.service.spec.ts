@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -32,7 +33,15 @@ describe('GameService', () => {
 
     describe('getGameState', () => {
         it('should return the correct data', () => {
-            const expectedGameState = { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false };
+            const expectedGameState = {
+                levelId: 0,
+                foundDifferences: [],
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+            };
+            service['playerGameMap'] = new Map<string, GameState>([['socket1', expectedGameState]]);
             service['playerGameMap'].set('socket', expectedGameState);
             expect(service.getGameState('socket')).toEqual(expectedGameState);
         });
@@ -151,6 +160,7 @@ describe('GameService', () => {
                 playerName: 'player',
                 isInGame: true,
                 isGameFound: true,
+                isInCheatMode: false,
             });
         });
 
@@ -162,6 +172,7 @@ describe('GameService', () => {
                 playerName: 'player',
                 isInGame: false,
                 isGameFound: false,
+                isInCheatMode: false,
             });
         });
     });
@@ -247,7 +258,7 @@ describe('GameService', () => {
     describe('verifyIfLevelIsBeingPlayed', () => {
         it('should return true if the level is being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: true, isGameFound: true }],
+                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: true, isGameFound: true, isInCheatMode: false }],
             ]);
             const result = service.verifyIfLevelIsBeingPlayed(0);
             expect(result).toBeTruthy();
@@ -255,7 +266,7 @@ describe('GameService', () => {
 
         it('should return false if the level is not being played', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true }],
+                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: true, isInCheatMode: false }],
             ]);
             const result = service.verifyIfLevelIsBeingPlayed(0);
             expect(result).toBeFalsy();
@@ -294,14 +305,50 @@ describe('GameService', () => {
     describe('bindPlayers', () => {
         it('should update both sockets correctly', () => {
             service['playerGameMap'] = new Map<string, GameState>([
-                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false }],
-                ['socket2', { levelId: 0, foundDifferences: [], playerName: 'player2', isInGame: false, isGameFound: false }],
+                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false, isInCheatMode: false }],
+                ['socket2', { levelId: 0, foundDifferences: [], playerName: 'player2', isInGame: false, isGameFound: false, isInCheatMode: false }],
             ]);
             service.bindPlayers('socket1', 'socket2');
             expect(service['playerGameMap'].get('socket1').isGameFound).toBeTruthy();
             expect(service['playerGameMap'].get('socket1').otherSocketId).toBe('socket2');
             expect(service['playerGameMap'].get('socket2').isGameFound).toBeTruthy();
             expect(service['playerGameMap'].get('socket2').otherSocketId).toBe('socket1');
+        });
+    });
+
+    describe('startCheatMode', () => {
+        it('should return all the differences as a single array', () => {
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+            });
+            const spy = jest.spyOn(service['imageService'], 'getAllDifferences');
+            spy.mockImplementation().mockReturnValue(Promise.resolve([[1], [2], [3]]));
+            const result = service.startCheatMode('socket1');
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(result).toStrictEqual(Promise.resolve([1, 2, 3]));
+        });
+    });
+
+    describe('stopCheatMode', () => {
+        it('should set isInCheatMode to false', () => {
+            service['playerGameMap'] = new Map<string, GameState>([
+                ['socket1', { levelId: 0, foundDifferences: [], playerName: 'player1', isInGame: false, isGameFound: false, isInCheatMode: true }],
+            ]);
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: true,
+            });
+            service.stopCheatMode('socket1');
+            expect(service['playerGameMap'].get('socket1').isInCheatMode).toEqual(false);
         });
     });
 
