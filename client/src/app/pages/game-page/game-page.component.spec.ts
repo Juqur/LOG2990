@@ -318,5 +318,28 @@ describe('GamePageComponent', () => {
             expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStopCheatMode');
             expect(gamePageServiceSpy.stopCheatMode).toHaveBeenCalledTimes(1);
         });
+
+        it('should not start cheat mode when a key other than "t" is pressed', () => {
+            component.isInCheatMode = false;
+            component.handleKeyDownEvent(new KeyboardEvent('keydown', { key: 'a' }));
+            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();
+            expect(component.isInCheatMode).toBeFalsy();
+        });
+
+        it('should not start cheat mode when "t" is pressed and a textarea element is selected', () => {
+            const messageInput = fixture.nativeElement.querySelector('#message-input');
+            messageInput.dispatchEvent(new Event('click'));
+
+            // I am unable to select the textarea element in the test currently
+
+            const keyboardEvent = new KeyboardEvent('keydown', { key: 't' });
+            component.handleKeyDownEvent(keyboardEvent);
+            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();
+            expect(component.isInCheatMode).toBeFalsy();
+        });
     });
 });
