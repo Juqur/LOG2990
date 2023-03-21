@@ -1,10 +1,15 @@
 import { Message } from '@app/model/schema/message.schema';
 import { GameService } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Level } from 'assets/data/level';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
+
+enum HttpCodes {
+    OK = 200,
+    CREATED = 201,
+}
 
 /**
  * This controller provides the server API requests for the image data.
@@ -19,13 +24,14 @@ export class ImageController {
     /**
      * Gets all the level information.
      * This method also checks if the level is currently in the deletion queue and removes it from the list.
-     * It also checks if the level is currently in the queue and sets the canJoin property to true.
+     * It also checks if the level is currently joinable and sets the canJoin property to true.
      *
      * @returns The array of levels data stored in the server.
      */
     @Get('/allLevels')
+    @HttpCode(HttpCodes.OK)
     @ApiOkResponse({
-        description: 'Returns the card data',
+        description: 'Returns data for all levels',
     })
     async getLevels(): Promise<Level[]> {
         const levels = await this.imageService.getLevels();
@@ -58,22 +64,9 @@ export class ImageController {
         description: 'Returns data for a level',
     })
     @Get('/:id')
+    @HttpCode(HttpCodes.OK)
     async getLevel(@Param('id') id: string): Promise<Level> {
         return await this.imageService.getLevel(parseInt(id, 10));
-    }
-
-    /**
-     * Gets the amount of differences between the two images.
-     *
-     * @param formData The data of the level.
-     * @returns The number of differences between the two images.
-     */
-    @Get('/differenceCount')
-    @ApiOkResponse({
-        description: 'Returns the number of differences between the two images',
-    })
-    async differenceCount(@Param('differenceFile') differenceFile: string): Promise<number> {
-        return await this.imageService.differencesCount(differenceFile);
     }
 
     /**
@@ -86,6 +79,7 @@ export class ImageController {
         description: 'Writes the level data onto a json file for the game information and the images into the assets folder.',
     })
     @Post('/postLevel')
+    @HttpCode(HttpCodes.CREATED)
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {
         return await this.imageService.writeLevelData(formData);

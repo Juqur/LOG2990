@@ -13,11 +13,6 @@ export interface GameState {
     isInCheatMode: boolean;
 }
 
-export enum VictoryType {
-    SoloClassic = 'SoloClassic',
-    MultiplayerClassic = 'MultiplayerClassic',
-}
-
 /**
  * This service is used to handle the game logic.
  *
@@ -70,6 +65,8 @@ export class GameService {
 
     /**
      * This method gets a list of levels currently joinable.
+     *
+     * @return The list of levels that are currently joinable.
      */
     getJoinableLevels(): number[] {
         const listOfLevels: number[] = [];
@@ -90,7 +87,7 @@ export class GameService {
      * @returns A GameState object containing the game data.
      */
     async getImageInfoOnClick(socketId: string, position: number): Promise<GameData> {
-        const gameState = this.getGameState(socketId);
+        const gameState = this.playerGameMap.get(socketId);
         const id: string = gameState.levelId as unknown as string;
         const response = await this.imageService.findDifference(id, gameState.foundDifferences, position);
         return {
@@ -115,11 +112,11 @@ export class GameService {
         if (gameState.otherSocketId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            this.removeLevelFromDeletionQueue(gameState.levelId);
+            if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
         } else if (gameState.foundDifferences.length === totalDifferences) {
             this.deleteUserFromGame(socket);
-            this.removeLevelFromDeletionQueue(gameState.levelId);
+            if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
         }
         return false;
@@ -174,6 +171,8 @@ export class GameService {
     connectRooms(socket: Socket, otherSocket: Socket): void {
         this.playerGameMap.get(socket.id).isInGame = true;
         this.playerGameMap.get(otherSocket.id).isInGame = true;
+        socket.join(otherSocket.id);
+        otherSocket.join(socket.id);
         this.bindPlayers(socket.id, otherSocket.id);
     }
 
@@ -185,7 +184,7 @@ export class GameService {
      */
     deleteUserFromGame(socket: Socket): void {
         if (this.playerGameMap.get(socket.id)) {
-            const otherSocketId = this.getGameState(socket.id).otherSocketId;
+            const otherSocketId = this.playerGameMap.get(socket.id).otherSocketId;
             if (otherSocketId) {
                 socket.leave(otherSocketId);
             }
@@ -211,6 +210,8 @@ export class GameService {
 
     /**
      * This method adds the level id to the levelDeletionQueue.
+     *
+     * @param levelId The id of the level.
      */
     addLevelToDeletionQueue(levelId: number): void {
         this.levelDeletionQueue.push(levelId);
@@ -219,6 +220,8 @@ export class GameService {
     /**
      * This method removes the level id from the levelDeletionQueue if it is found in it.
      * It also deletes the level from the server.
+     *
+     * @param levelId The id of the level.
      */
     removeLevelFromDeletionQueue(levelId: number): void {
         const index = this.levelDeletionQueue.indexOf(levelId);
@@ -276,12 +279,12 @@ export class GameService {
      * @param otherSocketId The socket id of the other player.
      */
     bindPlayers(socketId: string, otherSocketId: string): void {
-        const gameState = this.getGameState(socketId);
+        const gameState = this.playerGameMap.get(socketId);
         gameState.isGameFound = true;
         gameState.otherSocketId = otherSocketId;
         this.playerGameMap.set(socketId, gameState);
 
-        const otherGameState = this.getGameState(otherSocketId);
+        const otherGameState = this.playerGameMap.get(otherSocketId);
         otherGameState.isGameFound = true;
         otherGameState.otherSocketId = socketId;
         this.playerGameMap.set(otherSocketId, otherGameState);

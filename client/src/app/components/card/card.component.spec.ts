@@ -37,12 +37,12 @@ describe('CardComponent', () => {
 
     it('should display the easy difficulty icon', () => {
         component.level.isEasy = true;
-        expect(component.displayDifficultyIcon()).toEqual('../../../assets/images/easy.png');
+        expect(component.displayDifficultyIcon()).toEqual('assets/images/easy.png');
     });
 
     it('should display the hard difficulty icon', () => {
         component.level.isEasy = false;
-        expect(component.displayDifficultyIcon()).toEqual('../../../assets/images/hard.png');
+        expect(component.displayDifficultyIcon()).toEqual('assets/images/hard.png');
     });
 
     it('PlaySolo should ask for playerName', () => {
