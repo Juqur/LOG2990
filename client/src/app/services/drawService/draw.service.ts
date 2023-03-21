@@ -107,7 +107,7 @@ export class DrawService {
     }
 
     /**
-     * DrawRect draws a rectangle on the canvas.
+     * This function is called when the user is on rectangle tool and draws a rectangle.
      *
      * @param coord Starting coordinate of the rectangle
      * @param width The width of the rectangle
