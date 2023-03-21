@@ -63,10 +63,10 @@ describe('DrawService', () => {
         const lineToSpy = spyOn(service.context, 'lineTo');
         const strokeSpy = spyOn(service.context, 'stroke');
         service.draw({ x: 1, y: 1 } as Vec2, { x: 2, y: 2 } as Vec2);
-        expect(beginPathSpy).toHaveBeenCalled();
-        expect(moveToSpy).toHaveBeenCalled();
-        expect(lineToSpy).toHaveBeenCalled();
-        expect(strokeSpy).toHaveBeenCalled();
+        expect(beginPathSpy).toHaveBeenCalledTimes(1);
+        expect(moveToSpy).toHaveBeenCalledTimes(1);
+        expect(lineToSpy).toHaveBeenCalledTimes(1);
+        expect(strokeSpy).toHaveBeenCalledTimes(1);
     });
 
     it('draw should not call the correct method when cursor not in the canvas', () => {
@@ -75,10 +75,10 @@ describe('DrawService', () => {
         const lineToSpy = spyOn(service.context, 'lineTo');
         const strokeSpy = spyOn(service.context, 'stroke');
         service.draw({ x: 1, y: 1 } as Vec2);
-        expect(beginPathSpy).toHaveBeenCalled();
-        expect(moveToSpy).toHaveBeenCalled();
-        expect(lineToSpy).toHaveBeenCalled();
-        expect(strokeSpy).toHaveBeenCalled();
+        expect(beginPathSpy).toHaveBeenCalledTimes(1);
+        expect(moveToSpy).toHaveBeenCalledTimes(1);
+        expect(lineToSpy).toHaveBeenCalledTimes(1);
+        expect(strokeSpy).toHaveBeenCalledTimes(1);
     });
 
     it('drawRect should call the correct method', () => {
