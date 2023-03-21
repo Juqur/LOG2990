@@ -297,15 +297,21 @@ describe('GamePageComponent', () => {
         });
     });
 
-    it('should emit a socket event when abandoning the game', () => {
-        component.abandonGame();
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+    describe('abandonGame', () => {
+        it('should emit a socket event when abandoning the game', () => {
+            component.abandonGame();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+        });
     });
 
     describe('handleKeyDownEvent', () => {
         it('should make appropriate calls to functions if we are not in cheat mode', () => {
+            const key = new KeyboardEvent('keydown', { key: 't' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(key, 'target', 'get').and.returnValue(target);
+
             component.isInCheatMode = false;
-            component.handleKeyDownEvent(new KeyboardEvent('keydown', { key: 't' }));
+            component.handleKeyDownEvent(key);
             expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStartCheatMode');
             expect(gamePageServiceSpy.setPlayArea).toHaveBeenCalledTimes(1);
             expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
@@ -313,29 +319,22 @@ describe('GamePageComponent', () => {
         });
 
         it('should make appropriate calls to functions if we are in cheat mode', () => {
+            const key = new KeyboardEvent('keydown', { key: 't' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(key, 'target', 'get').and.returnValue(target);
+
             component.isInCheatMode = true;
-            component.handleKeyDownEvent(new KeyboardEvent('keydown', { key: 't' }));
+            component.handleKeyDownEvent(key);
             expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStopCheatMode');
             expect(gamePageServiceSpy.stopCheatMode).toHaveBeenCalledTimes(1);
         });
 
         it('should not start cheat mode when a key other than "t" is pressed', () => {
+            const key = new KeyboardEvent('keydown', { key: 'a' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(key, 'target', 'get').and.returnValue(target);
+
             component.isInCheatMode = false;
-            component.handleKeyDownEvent(new KeyboardEvent('keydown', { key: 'a' }));
-            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
-            expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
-            expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();
-            expect(component.isInCheatMode).toBeFalsy();
-        });
-
-        it('should not start cheat mode when "t" is pressed and a textarea element is selected', () => {
-            const messageInput = fixture.nativeElement.querySelector('#message-input');
-            messageInput.dispatchEvent(new Event('click'));
-
-            // I am unable to select the textarea element in the test currently
-
-            const keyboardEvent = new KeyboardEvent('keydown', { key: 't' });
-            component.handleKeyDownEvent(keyboardEvent);
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
             expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
             expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();

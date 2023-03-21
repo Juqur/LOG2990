@@ -56,11 +56,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * Listener for the key press event. It is called when ever we press on a key inside the game page.
      * In this specific case, we check if the key 't' was pressed and if to we toggle on and off the cheat mode.
      *
-     * @param event the key up event.
+     * @param event The key up event.
      */
     @HostListener('document:keydown', ['$event'])
-    handleKeyDownEvent(event: KeyboardEvent) {
-        if (event.key === 't' && document.activeElement?.tagName !== 'TEXTAREA') {
+    handleKeyDownEvent(event: KeyboardEvent): void {
+        if (event.key === 't' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
@@ -138,7 +138,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * This method handles the case where the user clicks on the original image.
      * It will send the click to the server.
      *
-     * @param event The mouse event,
+     * @param event The mouse event.
      */
     clickedOnOriginal(event: MouseEvent): void {
         const mousePosition = this.gamePageService.verifyClick(event);
@@ -152,7 +152,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * This method handles the case where the user clicks on the difference image.
      * It will send the click to the server.
      *
-     * @param event The mouse event,
+     * @param event The mouse event.
      */
     clickedOnDiff(event: MouseEvent): void {
         const mousePosition = this.gamePageService.verifyClick(event);
