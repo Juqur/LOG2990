@@ -1,3 +1,4 @@
+import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
 import { TimerService } from '@app/services/timer/timer.service';
@@ -40,6 +41,7 @@ describe('GameGateway', () => {
             providers: [
                 GameGateway,
                 ImageService,
+                ChatService,
                 { provide: GameService, useValue: gameService },
                 { provide: TimerService, useValue: timerService },
                 { provide: Socket, useValue: socket },
