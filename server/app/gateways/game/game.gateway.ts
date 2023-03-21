@@ -48,23 +48,23 @@ export class GameGateway {
     async onClick(socket: Socket, position: number): Promise<void> {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.ProcessedClick, dataToSend);
-        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
+        const otherSocketId = this.gameService.getGameState(socket.id).otherSocketId;
 
         this.chatService.sendSystemMessage(socket, dataToSend, this.gameService);
 
-        if (secondPlayerId) {
+        if (otherSocketId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
-            socket.to(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
+            socket.to(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
         }
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
-            if (secondPlayerId) {
-                this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.Defeat);
-                this.timerService.stopTimer(secondPlayerId);
-                const otherSocket = this.server.sockets.sockets.get(secondPlayerId);
+            if (otherSocketId) {
+                this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.Defeat);
+                this.timerService.stopTimer(otherSocketId);
+                const otherSocket = this.server.sockets.sockets.get(otherSocketId);
                 this.gameService.deleteUserFromGame(otherSocket);
             }
         }
