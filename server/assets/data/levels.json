@@ -41,7 +41,7 @@
     },
     {
         "id": 5,
-        "name": "GreatMovi",
+        "name": "GreatMovie",
         "playerSolo": ["Bot1", "Bot2", "Bot3"],
         "timeSolo": [60, 65, 70],
         "playerMulti": ["Bot1", "Bot2", "Bot3"],

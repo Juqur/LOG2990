@@ -2,11 +2,48 @@
     <div class="container">
         <section id="top-area">
             <button mat-button routerLink="/config"><span>Retour</span></button>
+            <div id="draw-tools-container">
+                <label class="info-txt" for="values">Epaisseur:</label>
+                <mat-slider
+                    id="thicknessSlider"
+                    [min]="1"
+                    [max]="70"
+                    tickInterval="1"
+                    [(ngModel)]="brushSliderValue"
+                    (change)="this.setBrushSize($event)"
+                ></mat-slider>
+                <button class="button-settings" color="orange" (click)="this.creationService.rectangleMode()" title="Rectangle">
+                    <mat-icon>rectangle</mat-icon>
+                </button>
+                <button class="button-settings" color="orange" (click)="this.setPaintBrushMode()">
+                    <mat-icon>mode_edit</mat-icon>
+                </button>
+                <button class="button-reset" color="orange" (click)="this.setEraseBrushMode()" title="Efface">
+                    <img src="assets/images/eraser.png" alt="efface" class="button-icon" />
+                </button>
+                <label for="colorPicker"></label>
+                <input
+                    type="color"
+                    id="colorPicker"
+                    name="colorPicker"
+                    (input)="this.creationService.colorPickerMode()"
+                    title="Selecteur de couleur"
+                    [(ngModel)]="this.creationService.color"
+                />
+            </div>
         </section>
         <section id="creation-area-container">
             <div class="img-zone-container">
-                <p class="info-txt">Image originale</p>
-                <app-play-area [isDiff]="false"></app-play-area>
+                <div class="zone-button-container">
+                    <p class="info-txt">Image originale</p>
+                </div>
+                <div class="display-row">
+                    <div class="display-column canvas-action">
+                        <button class="button-reset" title="Réinitialiser Avant Plan" (click)="clearDefaultCanvas()">Réinitialiser Avant Plan</button>
+                        <button class="button-reset" title="Dupliquer" (click)="duplicateDefaultCanvas()">Dupliquer</button>
+                    </div>
+                    <app-paint-area #defaultArea [isDiff]="false" (mouseup)="this.addToUndoRedoStack()"></app-paint-area>
+                </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
                         Téléverser Image Originale
@@ -20,30 +57,44 @@
                         (change)="this.creationService.defaultImageSelector($event)"
                         (click)="this.creationService.cleanSrc($event)"
                     />
-                    <button class="button-reset" color="orange" (click)="this.creationService.resetDefault()">
-                        Réinitialiser La Zone
+                    <button class="button-reset" color="orange" (click)="this.creationService.resetDefaultBackground()">
+                        Réinitialiser Arrière-plan
                         <mat-icon>restart_alt</mat-icon>
                     </button>
                 </div>
             </div>
             <div id="between-images">
-                <label for="both" class="button-settings">
-                    Téléverser Image Commune
-                    <mat-icon>add_a_photo</mat-icon>
-                </label>
-                <input
-                    type="file"
-                    name="both images"
-                    id="both"
-                    accept=".bmp"
-                    (change)="this.creationService.bothImagesSelector($event)"
-                    (click)="this.creationService.cleanSrc($event)"
-                />
+                <div id="upload-both">
+                    <label for="both" class="button-settings">
+                        Téléverser Image Commune
+                        <mat-icon>add_a_photo</mat-icon>
+                    </label>
+                    <input
+                        type="file"
+                        name="both images"
+                        id="both"
+                        accept=".bmp"
+                        (change)="this.creationService.bothImagesSelector($event)"
+                        (click)="this.creationService.cleanSrc($event)"
+                    />
+                </div>
+                <button class="button-settings" color="orange" (click)="swapCanvas()">
+                    INTERVERTIR AVANT-PLANS
+                    <mat-icon>swap_horiz</mat-icon>
+                </button>
                 <p>Les images doivent être en format BMP 24-bit et de taille 640x480</p>
             </div>
             <div class="img-zone-container">
-                <p class="info-txt">Image modifiée</p>
-                <app-play-area [isDiff]="true"></app-play-area>
+                <div class="zone-button-container">
+                    <p class="info-txt">Image modifiée</p>
+                </div>
+                <div class="display-row">
+                    <div class="display-column canvas-action">
+                        <button class="button-reset" title="Réinitialiser Avant Plan" (click)="clearDiffCanvas()">Réinitialiser Avant Plan</button>
+                        <button class="button-reset" title="Dupliquer" (click)="duplicateDiffCanvas()">Dupliquer</button>
+                    </div>
+                    <app-paint-area #diffArea [isDiff]="true" (mouseup)="this.addToUndoRedoStack()"></app-paint-area>
+                </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
                         Téléverser Image Modifiée
@@ -57,8 +108,8 @@
                         (change)="this.creationService.diffImageSelector($event)"
                         (click)="this.creationService.cleanSrc($event)"
                     />
-                    <button class="button-reset" color="orange" (click)="this.creationService.resetDiff()">
-                        Réinitialiser La Zone
+                    <button class="button-reset" color="orange" (click)="this.creationService.resetDiffBackground()">
+                        Réinitialiser Arrière-plan
                         <mat-icon>restart_alt</mat-icon>
                     </button>
                 </div>
@@ -72,12 +123,12 @@
                     [min]="0"
                     [max]="3"
                     tickInterval="1"
-                    [(ngModel)]="sliderValue"
-                    (change)="this.creationService.sliderChange(sliderValue)"
+                    [(ngModel)]="diffSliderValue"
+                    (change)="this.creationService.diffSliderChange(diffSliderValue)"
                 ></mat-slider>
             </div>
             <div class="zone-button-container">
-                <button class="button-reset" color="orange" (click)="this.creationService.detectDifference()">
+                <button class="button-reset" color="orange" (click)="this.findDifference()">
                     Valider les différences
                     <mat-icon>image_search</mat-icon>
                 </button>
@@ -102,6 +153,14 @@
                     <span class="error">{{ creationService.differenceMsg }}</span>
                     <p id="diff-nb-note">Le nombres de différences doit se situer entre 3 et 9.</p>
                 </div>
+            </div>
+            <div class="zone-button-container">
+                <button class="button-reset" color="orange" (click)="this.handleUndo()">
+                    <mat-icon>undo</mat-icon>
+                </button>
+                <button class="button-reset" color="orange" (click)="this.handleRedo()">
+                    <mat-icon>redo</mat-icon>
+                </button>
             </div>
         </section>
     </div>
