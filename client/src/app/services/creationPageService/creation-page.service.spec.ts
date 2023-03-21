@@ -11,7 +11,7 @@ import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouse.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';

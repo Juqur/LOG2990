@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } 
 import { Vec2 } from '@app/interfaces/vec2';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouse.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 

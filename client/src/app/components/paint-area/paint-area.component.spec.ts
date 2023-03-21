@@ -3,7 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouse.service';
+import { MouseService } from '@app/services/mouseService/mouse.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;

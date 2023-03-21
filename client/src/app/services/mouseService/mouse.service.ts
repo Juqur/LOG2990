@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
+import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants, MouseButton } from '@common/constants';
 
 /**
@@ -12,8 +13,18 @@ import { Constants, MouseButton } from '@common/constants';
     providedIn: 'root',
 })
 export class MouseService {
+    winGameDialogData: DialogData = {
+        textToSend: 'Vous avez gagné!',
+        closeButtonMessage: 'Retour au menu de sélection',
+        mustProcess: true,
+    };
+    closePath: string = '/selection';
     canClick: boolean = true;
+    isRectangleMode: boolean = true;
+    mouseDrawColor: string = 'black';
     private mousePosition: Vec2 = { x: 0, y: 0 };
+
+    constructor(public popUpService: PopUpService) {}
 
     /**
      * Takes the mouse event to calculate the position of the mouse
@@ -46,5 +57,18 @@ export class MouseService {
      */
     getY(): number {
         return this.mousePosition.y;
+    }
+
+    /**
+     * Returns the mouse position.
+     *
+     * @param event the mouse event
+     * @returns an empty array when promise is resolved.
+     */
+    async mouseDrag(event: MouseEvent): Promise<void> {
+        if (event.button === MouseButton.Left) {
+            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+        }
+        return Promise.resolve();
     }
 }
