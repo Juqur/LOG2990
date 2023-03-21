@@ -49,8 +49,6 @@ describe('DrawService', () => {
         service.paintBrush();
         expect(service.context.lineCap).toEqual('round');
         expect(service.context.globalCompositeOperation).toEqual('source-over');
-        // expect(service.context.strokeStyle).toEqual(service.paintColor);
-        // expect(service.context.lineWidth).toEqual(service.brushSize);
     });
 
     it('eraseBrush should set attributes for an eraser', () => {
