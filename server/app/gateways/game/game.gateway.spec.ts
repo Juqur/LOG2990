@@ -302,11 +302,24 @@ describe('GameGateway', () => {
     });
 
     describe('onMessageReception', () => {
+        let getGameStateSpy: jest.SpyInstance;
+        let sendToBothPlayersSpy: jest.SpyInstance;
+
+        beforeEach(() => {
+            getGameStateSpy = jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
+            sendToBothPlayersSpy = jest.spyOn(chatService, 'sendToBothPlayers');
+        });
+
+        it('should call getGameState', () => {
+            const message = {} as unknown as ChatMessage;
+            gateway.onMessageReception(socket, message);
+            expect(getGameStateSpy).toBeCalledWith(socket.id);
+        });
+
         it('should call sendToBothPlayers', () => {
             const message = {} as unknown as ChatMessage;
-            const sendToBothPlayersSpy = jest.spyOn(chatService, 'sendToBothPlayers');
             gateway.onMessageReception(socket, message);
-            expect(sendToBothPlayersSpy).toBeCalledWith(socket, message, gameService);
+            expect(sendToBothPlayersSpy).toBeCalledWith(socket, message, gameState);
         });
     });
 
@@ -371,7 +384,7 @@ describe('GameGateway', () => {
         it('should call abandonMessage if the other socket id is defined', () => {
             gameState.otherSocketId = '1';
             gateway['handlePlayerLeavingGame'](socket);
-            expect(abandonMessageSpy).toBeCalledWith(socket, gameService);
+            expect(abandonMessageSpy).toBeCalledWith(socket, gameState);
         });
 
         it('should emit an abandon event', () => {

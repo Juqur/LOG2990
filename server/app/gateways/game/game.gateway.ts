@@ -49,8 +49,9 @@ export class GameGateway {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const otherSocketId = this.gameService.getGameState(socket.id).otherSocketId;
+        const gameState = this.gameService.getGameState(socket.id);
 
-        this.chatService.sendSystemMessage(socket, dataToSend, this.gameService);
+        this.chatService.sendSystemMessage(socket, dataToSend, gameState);
 
         if (otherSocketId) {
             dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
@@ -185,7 +186,8 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
-        this.chatService.sendToBothPlayers(socket, message, this.gameService);
+        const gameState = this.gameService.getGameState(socket.id);
+        this.chatService.sendToBothPlayers(socket, message, gameState);
     }
 
     /**
@@ -243,7 +245,7 @@ export class GameGateway {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
-                this.chatService.abandonMessage(socket, this.gameService);
+                this.chatService.abandonMessage(socket, gameState);
                 otherSocket.emit(GameEvents.OpponentAbandoned);
                 this.gameService.deleteUserFromGame(otherSocket);
             }
