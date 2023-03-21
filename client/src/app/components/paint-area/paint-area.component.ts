@@ -226,8 +226,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
         const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id) as HTMLCanvasElement;
-        const parentElement = currentCanvas.parentElement as HTMLElement;
-        parentElement.insertBefore(this.tempCanvas, currentCanvas);
+        currentCanvas.after(this.tempCanvas);
         this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.canvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
