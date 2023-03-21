@@ -3,7 +3,7 @@ import { LevelDifferences } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 
-import { DifferenceDetectorService } from './difference-detector.service';
+import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
 
 import SpyObj = jasmine.SpyObj;
 
@@ -78,6 +78,7 @@ describe('DifferenceDetectorService', () => {
 
         it('should expect undefined if any of the canvas is invalid', () => {
             serviceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences', 'isImageValid']);
+            serviceSpy.detectDifferences.and.callFake(DifferenceDetectorService.prototype.detectDifferences);
             serviceSpy['isImageValid'] = () => false;
 
             const canvas: CanvasRenderingContext2D = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;

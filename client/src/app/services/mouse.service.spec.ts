@@ -2,10 +2,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { MouseService } from '@app/services/mouse.service';
 import { Constants, MouseButton } from '@common/constants';
-// import { of } from 'rxjs';
-
-import { MouseService } from './mouse.service';
 
 describe('MouseService', () => {
     let service: MouseService;

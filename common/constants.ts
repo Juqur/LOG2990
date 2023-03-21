@@ -14,7 +14,7 @@ export namespace Constants {
     export const thousand: number = 1000;
 
     // Global time constants
-    export const secondsPerMinute: number = 60;
+    export const SECONDS_PER_MINUTE: number = 60;
 
     // Page display
     export const levelsPerPage: number = 4;
@@ -33,6 +33,7 @@ export namespace Constants {
     export const twoMinutesTimer: number = 120;
     export const tenMinutesTimer: number = 600;
     export const eightMinutesWait: number = 480000;
+    export const PADDING_NUMBER: number = 10;
 
     // Chat message
     export const maxNameLength: number = 11;
@@ -79,6 +80,7 @@ export namespace Constants {
 
     // Undo/Redo Service
     export const EMPTY_STACK = -1;
+    export const TIMED_GAME_MODE_LENGTH = 120;
     export const DEFAULT_LEVEL = {
         id: 0,
         name: 'no name',

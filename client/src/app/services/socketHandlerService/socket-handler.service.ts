@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment';
 })
 export class SocketHandler {
     private sockets: Map<string, Socket> = new Map<string, Socket>();
+    private socketListenersList: string[] = [];
 
     /**
      * Gets the socket of its kind, according to the given gateway.
@@ -44,7 +45,7 @@ export class SocketHandler {
      * @param type The gateway to connect to.
      */
     connect(type: string): void {
-        this.sockets.set(type, io(environment.serverUrl + type, { transports: ['websocket'], upgrade: false }));
+        this.sockets.set(type, io(environment.serverUrl, { transports: ['websocket'], upgrade: false }));
     }
 
     /**
@@ -65,14 +66,31 @@ export class SocketHandler {
 
     /**
      * Associates a given event with an action and a gateway and executes said action on even for the
-     * given gateway.
+     * given gateway. If the event already exists, it will not be added again.
      *
      * @param type The gateway on which this should all be performed.
      * @param event The event to process
      * @param action The action to perform on that event
      */
     on<T>(gateway: string, event: string, action: (data: T) => void): void {
-        this.getSocket(gateway)?.on(event, action);
+        if (!this.socketListenersList.find((listener) => listener === event)) {
+            this.getSocket(gateway)?.on(event, action);
+            this.socketListenersList.push(event);
+        }
+    }
+
+    /**
+     * Removes the event listener for a given event and gateway.
+     *
+     * @param type The gateway on which to remove the event listener.
+     * @param event The event to remove the listener for.
+     */
+    removeListener(gateway: string, event: string): void {
+        const index = this.socketListenersList.indexOf(event);
+        if (index >= 0) {
+            this.socketListenersList.splice(index, 1);
+            this.getSocket(gateway)?.off(event);
+        }
     }
 
     /**

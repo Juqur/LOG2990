@@ -1,9 +1,9 @@
 import { Message } from '@app/model/schema/message.schema';
-import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
+import { DEFAULT_TIME_VALUES } from './image.service.constants';
 
 /**
  * This service is used to get the amount of differences left between the two images.
@@ -15,8 +15,8 @@ import { promises as fsp } from 'fs';
 @Injectable()
 export class ImageService {
     readonly pathDifference: string = '../server/assets/images/differences/';
-    readonly pathModified: string = '../server/assets/images/modifiees/';
-    readonly pathOriginal: string = '../server/assets/images/originals/';
+    readonly pathModified: string = '../server/assets/images/modified/';
+    readonly pathOriginal: string = '../server/assets/images/original/';
     readonly pathData: string = '../server/assets/data/';
 
     /**
@@ -107,11 +107,17 @@ export class ImageService {
      * @param position The position of the pixel clicked
      * @returns The array of pixels that are different if there is a difference
      */
-    async findDifference(fileName: string, foundDifferences: number[], position: number): Promise<number[]> {
+    async findDifference(
+        fileName: string,
+        foundDifferences: number[],
+        position: number,
+    ): Promise<{ differencePixels: number[]; totalDifferences: number }> {
         const allDifferences = await this.getAllDifferences(fileName);
         const index = this.getIndex(allDifferences, foundDifferences, position);
         const foundDifferenceArray = allDifferences[index];
-        return foundDifferenceArray !== undefined ? foundDifferenceArray : [];
+        return foundDifferenceArray !== undefined
+            ? { differencePixels: foundDifferenceArray, totalDifferences: allDifferences.length }
+            : { differencePixels: [], totalDifferences: allDifferences.length };
     }
 
     /**
@@ -129,9 +135,9 @@ export class ImageService {
                 id: newId,
                 name: levelData.name,
                 playerSolo: ['Bot1', 'Bot2', 'Bot3'],
-                timeSolo: Constants.timeSolo,
+                timeSolo: DEFAULT_TIME_VALUES,
                 playerMulti: ['Bot1', 'Bot2', 'Bot3'],
-                timeMulti: Constants.timeMulti,
+                timeMulti: DEFAULT_TIME_VALUES,
                 isEasy: levelData.isEasy === 'true',
                 nbDifferences: levelData.nbDifferences,
             };

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { Constants } from '@common/constants';
-import { take } from 'rxjs';
 
 /**
  * This service is in charge of keeping track of the levels to display and update them
@@ -19,11 +19,18 @@ export class LevelService {
     private currentShownPage: number = 0;
     private shownLevels: Level[];
 
-    constructor(private communicationService: CommunicationService) {
+    constructor(communicationService: CommunicationService, private socketHandler: SocketHandler) {
         communicationService.getLevels().subscribe((value) => {
             this.levels = value;
             this.shownLevels = this.levels.slice(0, Constants.levelsPerPage);
         });
+    }
+
+    /**
+     * Getter for the levels attribute.
+     */
+    get allLevels(): Level[] {
+        return this.levels;
     }
 
     /**
@@ -34,14 +41,14 @@ export class LevelService {
     }
 
     /**
-     * Getter for the current page number
+     * Getter for the current page number.
      */
     get currentPage(): number {
         return this.currentShownPage;
     }
 
     /**
-     * Getter for the last page number
+     * Getter for the last page number.
      */
     get lastPage(): number {
         return Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
@@ -65,38 +72,44 @@ export class LevelService {
     }
 
     /**
-     * Checks if we have reached the last page.
+     * Checks if we have reached the first page.
      *
-     * @returns a boolean indicating if we are on the last page
+     * @returns A boolean indicating it is on first page.
      */
     isBeginningOfList(): boolean {
         return this.currentPage <= 0;
     }
 
     /**
-     * Checks if we have reached the first page.
+     * Checks if we have reached the last page.
      *
-     * @returns The confirmation of the last page.
+     * @returns A boolean indicating it is on last page.
      */
     isEndOfList(): boolean {
         return this.currentPage >= this.lastPage;
     }
 
     /**
-     * Deletes the level with the given id and updates the levels to show.
+     * This method emits a socket event to the server to delete a level.
      *
      * @param levelId The id of the level to delete.
      */
     deleteLevel(levelId: number): void {
-        this.communicationService
-            .deleteLevel(levelId)
-            .pipe(take(1))
-            .subscribe((confirmation) => {
-                if (confirmation) {
-                    this.levels = this.levels.filter((level) => level.id !== levelId);
-                    this.updatePageLevels();
-                }
-            });
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.send('game', 'onDeleteLevel', levelId);
+        this.removeCard(levelId);
+    }
+
+    /**
+     * This method removes a level from the levels array.
+     *
+     * @param levelId The id of the level to remove.
+     */
+    removeCard(levelId: number): void {
+        this.levels = this.levels.filter((level) => level.id !== levelId);
+        this.updatePageLevels();
     }
 
     /**

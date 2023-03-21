@@ -1,22 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SocketHandler } from '@app/services/socket-handler.service';
-import { Constants } from '@common/constants';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { GameTimerComponent } from './game-timer.component';
 
 describe('GameTimerComponent', () => {
     let component: GameTimerComponent;
     let fixture: ComponentFixture<GameTimerComponent>;
+    const socketHandlerSpy = {
+        on: jasmine.createSpy(),
+        removeListener: jasmine.createSpy(),
+    };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GameTimerComponent],
-            providers: [SocketHandler],
-            imports: [RouterTestingModule],
+            providers: [{ provide: SocketHandler, useValue: socketHandlerSpy }],
         }).compileComponents();
-    });
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(GameTimerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -26,23 +25,60 @@ describe('GameTimerComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should set timer', () => {
-        component.setTimer(1);
-        expect(component.gameTime).toEqual(1);
+    describe('ngOnInit', () => {
+        it('should call updateTimer', () => {
+            const spy = spyOn(component, 'updateTimer');
+            component.ngOnInit();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should listen to the "sendTime" event on init', () => {
+            expect(socketHandlerSpy.on).toHaveBeenCalledWith('game', 'sendTime', jasmine.any(Function));
+        });
+
+        it('should update the timer when receiving "sendTime" event', () => {
+            const data = 0;
+            const spy = spyOn(component, 'updateTimer');
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'sendTime') {
+                    callback(data);
+                }
+            });
+            component.ngOnInit();
+            expect(spy).toHaveBeenCalledWith(data);
+        });
     });
 
-    it('should format time', () => {
-        component.formatTime();
-        expect(component.gameTimeFormatted).toEqual('Time: 00:00');
-        component.gameTime = Constants.sixty;
-        component.formatTime();
-        expect(component.gameTimeFormatted).toEqual('Time: 01:00');
+    describe('updateTimer', () => {
+        it('should format 00:00', () => {
+            const time = 0;
+            component.updateTimer(time);
+            expect(component.gameTimeFormatted).toEqual('Time: 00:00');
+        });
+
+        it('should format 00:10', () => {
+            const time = 10;
+            component.updateTimer(time);
+            expect(component.gameTimeFormatted).toEqual('Time: 00:10');
+        });
+
+        it('should format 01:00', () => {
+            const time = 60;
+            component.updateTimer(time);
+            expect(component.gameTimeFormatted).toEqual('Time: 01:00');
+        });
+
+        it('should format 10:00', () => {
+            const time = 600;
+            component.updateTimer(time);
+            expect(component.gameTimeFormatted).toEqual('Time: 10:00');
+        });
     });
 
-    it('should set timer and format time', () => {
-        component.setTimer(1);
-        expect(component.gameTime).toEqual(1);
-        component.formatTime();
-        expect(component.gameTimeFormatted).toEqual('Time: 00:01');
+    describe('ngOnDestroy', () => {
+        it('should remove the "sendTime" event listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'sendTime');
+        });
     });
 });

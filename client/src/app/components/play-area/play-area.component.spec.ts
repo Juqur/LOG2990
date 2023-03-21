@@ -2,27 +2,23 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouse.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
 describe('PlayAreaComponent', () => {
-    let mouseServiceSpy: SpyObj<MouseService>;
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
 
     beforeEach(() => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess']);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess', 'drawPlayArea']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
             imports: [HttpClientModule],
-            providers: [{ provide: MouseService, useValue: mouseServiceSpy }],
         })
             .overrideProvider(DrawService, { useValue: drawServiceSpy })
             .compileComponents();
@@ -60,7 +56,7 @@ describe('PlayAreaComponent', () => {
 
     it('drawPlayArea should call context.drawImage', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-        component.drawPlayArea(environment.serverUrl + 'originals/1.bmp');
+        component.drawPlayArea(environment.serverUrl + 'original/1.bmp');
         component.currentImage.dispatchEvent(new Event('load'));
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);

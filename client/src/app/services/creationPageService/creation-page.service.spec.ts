@@ -9,7 +9,7 @@ import { LevelDifferences } from '@app/classes/difference';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { DifferenceDetectorService } from '@app/services/difference-detector.service';
+import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
@@ -20,22 +20,28 @@ import SpyObj = jasmine.SpyObj;
 
 describe('CreationPageService', () => {
     let service: CreationPageService;
-    let mouseServiceSpy: SpyObj<MouseService>;
     let diffServiceSpy: SpyObj<DifferenceDetectorService>;
     let communicationSpy: SpyObj<CommunicationService>;
     let popUpServiceSpy: any;
     let drawServiceDefaultSpy: SpyObj<DrawService>;
     let drawServiceDiffSpy: SpyObj<DrawService>;
+    let mouseServiceSpy: SpyObj<MouseService>;
 
     beforeEach(() => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState']);
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
-        popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
+        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog', 'dialogRef']);
         popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
         drawServiceDefaultSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
         drawServiceDiffSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', [
+            'mouseHitDetect',
+            'processClick',
+            'getDifferencesArray',
+            'incrementCounter',
+            'getDifferenceCounter',
+        ]);
     });
 
     beforeEach(() => {
@@ -44,12 +50,12 @@ describe('CreationPageService', () => {
                 CanvasSharingService,
                 HttpClient,
                 HttpHandler,
-                { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: DifferenceDetectorService, useValue: diffServiceSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: CommunicationService, useValue: communicationSpy },
                 { provide: DrawService, useValue: drawServiceDefaultSpy },
                 { provide: DrawService, useValue: drawServiceDiffSpy },
+                { provide: MouseService, useValue: mouseServiceSpy },
             ],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         });

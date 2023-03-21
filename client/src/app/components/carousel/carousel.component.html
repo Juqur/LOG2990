@@ -1,7 +1,7 @@
 <div id="carouselExampleControls" class="carousel slide">
     <div class="carousel-inner" role="listbox">
         <div class="leaderboards">
-            <div class="solo-leaderboard" *ngIf="selectedButton === 'solo'">
+            <div class="solo-leaderboard" *ngIf="isSelectedButtonSolo === true">
                 <table>
                     <thead>
                         <tr>
@@ -25,7 +25,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="multi-leaderboard" *ngIf="selectedButton === 'multi'">
+            <div class="multi-leaderboard" *ngIf="isSelectedButtonSolo === false">
                 <table>
                     <thead>
                         <tr>
@@ -53,12 +53,12 @@
     </div>
 
     <div class="action">
-        <button type="button" (click)="changeButtonStyle('multi')" *ngIf="selectedButton === 'solo'" class="toggle">
+        <button type="button" (click)="changeButtonStyle()" *ngIf="isSelectedButtonSolo === true" class="toggle">
             <button type="button" class="button-leaderboard selected"></button>
             <button type="button" class="button-leaderboard"></button>
         </button>
 
-        <button type="button" (click)="changeButtonStyle('solo')" *ngIf="selectedButton === 'multi'" class="toggle">
+        <button type="button" (click)="changeButtonStyle()" *ngIf="isSelectedButtonSolo === false" class="toggle">
             <button type="button" class="button-leaderboard"></button>
             <button type="button" class="button-leaderboard selected"></button>
         </button>
