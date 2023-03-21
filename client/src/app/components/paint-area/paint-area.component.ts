@@ -49,6 +49,13 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
+     * Getter for the foreground canvas.
+     */
+    get paintCanvas(): HTMLCanvasElement {
+        return this.fgCanvas.nativeElement;
+    }
+
+    /**
      * This method listens for a shift key press and forces the user to draw a square.
      *
      * @param event the keyboardEvent to process.
@@ -71,13 +78,6 @@ export class PaintAreaComponent implements AfterViewInit {
         if (event.key === 'Shift') {
             this.isShiftPressed = false;
         }
-    }
-
-    /**
-     * Getter for the foreground canvas.
-     */
-    getPaintCanvas(): HTMLCanvasElement {
-        return this.fgCanvas.nativeElement;
     }
 
     /**

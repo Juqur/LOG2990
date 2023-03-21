@@ -62,7 +62,7 @@ describe('PaintAreaComponent', () => {
     });
 
     it('getCanvas should return the canvas element', () => {
-        const canvas = component.getPaintCanvas();
+        const canvas = component.paintCanvas;
         expect(canvas).toEqual(component.fgCanvas.nativeElement);
     });
 
