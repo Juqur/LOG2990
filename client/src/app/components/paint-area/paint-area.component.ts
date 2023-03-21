@@ -80,6 +80,16 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    @HostListener('mouseleave')
+    onMouseLeave(): void {
+        if (this.isDragging) {
+            this.isDiff ? 
+            UndoRedoService.addToStack(null, this.fgCanvas.nativeElement.getContext('2d'))
+                : UndoRedoService.addToStack(this.fgCanvas.nativeElement.getContext('2d'), null);
+            this.canvasRelease();
+        }
+    }
+
     /**
      * Detects the mouse release on the canvas.
      * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
@@ -87,7 +97,6 @@ export class PaintAreaComponent implements AfterViewInit {
      *
      * @param event The mouse event.
      */
-    @HostListener('mouseleave')
     canvasRelease(): void {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
