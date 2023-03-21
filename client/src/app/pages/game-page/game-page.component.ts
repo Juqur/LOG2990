@@ -54,7 +54,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     /**
      * This method is called when the component is initialized.
      * It sets the game level and the game image.
-     * It also handles the pausing of any audio playing if the player decidesA to leave the page.
+     * It also handles the pausing of any audio playing if the player decides to leave the page.
      * It also connects to the the game socket and handles the response.
      */
     ngOnInit(): void {
@@ -106,8 +106,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * This method handles the case where the user clicks on the original image,
-     * It will send the click to the server,
+     * This method handles the case where the user clicks on the original image.
+     * It will send the click to the server.
      *
      * @param event The mouse event,
      */
@@ -120,8 +120,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * This method handles the case where the user clicks on the difference image,
-     * It will send the click to the server,
+     * This method handles the case where the user clicks on the difference image.
+     * It will send the click to the server.
      *
      * @param event The mouse event,
      */
