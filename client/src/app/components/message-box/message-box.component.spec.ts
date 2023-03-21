@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage, SenderType } from '@common/chat-messages';
 
 import { MessageBoxComponent } from './message-box.component';
 
@@ -34,8 +34,8 @@ describe('MessageBoxComponent', () => {
     });
 
     it('createMessage should return a valid message', () => {
-        const message: ChatMessage = { senderId: '0', sender: '', text: 'someValue' }; // test is not checking for sender
-        const returnedMessage: ChatMessage = component['createMessage']('someValue'); // has to be updated when sender is added
+        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText' };
+        const returnedMessage: ChatMessage = component['createMessage']('someText');
         expect(returnedMessage).toEqual(message);
     });
 
@@ -59,7 +59,23 @@ describe('MessageBoxComponent', () => {
         messageInput.value = 'Hello, world!';
         component.sendMessage(messageInput);
 
-        expect(spySocketHandler.send).toHaveBeenCalledWith('chat', 'soloClassic', jasmine.any(Object));
+        expect(spySocketHandler.send).toHaveBeenCalledWith('game', 'onMessageReception', jasmine.any(Object));
         expect(messageInput.value).toEqual('');
+    });
+
+    it('should call sendMessage when Enter key is pressed without shift key', () => {
+        const messageInput = fixture.nativeElement.querySelector('#message-input');
+        spyOn(component, 'sendMessage');
+        const event = new KeyboardEvent('keydown', { key: 'Enter', shiftKey: false });
+        messageInput.dispatchEvent(event);
+        expect(component.sendMessage).toHaveBeenCalledWith(messageInput);
+    });
+
+    it('should not call sendMessage when Enter key is pressed with shift key', () => {
+        const messageInput = fixture.nativeElement.querySelector('#message-input');
+        spyOn(component, 'sendMessage');
+        const event = new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true });
+        messageInput.dispatchEvent(event);
+        expect(component.sendMessage).not.toHaveBeenCalled();
     });
 });

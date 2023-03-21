@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage, SenderType } from '@common/chat-messages';
 
 import SpyObj = jasmine.SpyObj;
 
@@ -41,7 +41,7 @@ describe('GameChatComponent', () => {
     });
 
     it('should add chat message in the message array', () => {
-        const message: ChatMessage = { senderId: '0', sender: 'User', text: 'Hello world' };
+        const message: ChatMessage = { sender: 'User', senderId: '0', text: 'Hello world' };
 
         component['receiveMessage'](message);
         expect(component['messages'][0]).toEqual(message);
@@ -49,18 +49,26 @@ describe('GameChatComponent', () => {
 
     it('should call receiveMessage when message is sent from the server', () => {
         const spyOnComponent = spyOn(component, 'receiveMessage' as never);
-        const message: ChatMessage = { senderId: '0', sender: 'User', text: 'Hello world' };
-        const mockSocketHandler = jasmine.createSpyObj('socketHandler', ['on', 'isSocketAlive', 'send', 'connect']);
+        const message: ChatMessage = { sender: 'Player', senderId: SenderType.Player, text: 'Hello world' };
+        const mockSocketHandler = jasmine.createSpyObj('socketHandler', ['on', 'isSocketAlive', 'connect']);
         mockSocketHandler.isSocketAlive.and.returnValue(false);
         mockSocketHandler.on.and.callFake((gateway: string, event: string, callback: (message: ChatMessage) => void) => {
             callback(message);
         });
         component['socketHandler'] = mockSocketHandler;
-        component['listenForMessages']();
+
+        component.ngOnInit();
+
+        // component['listenForMessages']();
+
         expect(mockSocketHandler.isSocketAlive).toHaveBeenCalled();
+        expect(mockSocketHandler.isSocketAlive).toBeTruthy();
         expect(mockSocketHandler.connect).toHaveBeenCalled();
-        expect(mockSocketHandler.send).toHaveBeenCalled();
         expect(mockSocketHandler.on).toHaveBeenCalled();
         expect(spyOnComponent).toHaveBeenCalled();
+
+        mockSocketHandler.on.and.callFake(() => {
+            /* nothing */
+        });
     });
 });
