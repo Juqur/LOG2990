@@ -10,7 +10,7 @@ import { GameEvents } from './game.gateway.events';
 /**
  * This gateway is used to handle to all socket events.
  *
- * @author Junaid Qureshi
+ * @author Junaid Qureshi & Pierre Tran
  * @class GameGateway
  */
 @WebSocketGateway({ cors: true })
@@ -24,8 +24,8 @@ export class GameGateway {
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
      * It also sets the player's game data and starts the timer.
      *
-     * @param socket the socket of the player
-     * @param data the data of the player, including the levelId and the playerName
+     * @param socket The socket of the player.
+     * @param data The data of the player, including the levelId and the playerName.
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
@@ -34,10 +34,12 @@ export class GameGateway {
     }
 
     /**
-     * This method is called when a player clicks on the image. It sends back the information the client needs.
+     * This method is called when a player clicks on the image. It sends back the pixels of the difference,
+     * the total amount of differences in the level, the amount of differences found, and the amount of differences found
+     * by the second player if it is a multiplayer match.
      * It also checks if the player is in a multiplayer match and sends the information to the other player.
      * It also checks if the player has won the game and sends a victory event to the client.
-     * If the match is multiplayer, it also checks if the player has won and said a defeat event to the other player.
+     * If the match is multiplayer, it also checks if the player has won and sends a defeat event to the other player.
      *
      * @param socket The socket of the player.
      * @param position The position of the pixel that was clicked.
@@ -75,11 +77,11 @@ export class GameGateway {
      * If there is no room available, it creates a new room and updates the selection page.
      *
      * @param socket The socket of the player.
-     * @param data The data of the player, including the levelId and the playerName
+     * @param data The data of the player, including the levelId and the playerName.
      */
     @SubscribeMessage(GameEvents.OnGameSelection)
     onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
-        if (data.playerName.length <= 2) {
+        if (data.playerName.length <= 1) {
             socket.emit(GameEvents.InvalidName);
             return;
         }
@@ -97,7 +99,7 @@ export class GameGateway {
 
     /**
      * This method is called when a player accepts a game invite.
-     * It connects the two rooms and sends the information both players needs.
+     * It connects the two rooms and sends the level id, and both players names to each player.
      * It starts the timer and updates the selection page.
      *
      * @param socket The socket of the player.
@@ -125,12 +127,12 @@ export class GameGateway {
     /**
      * This method is called when a player cancels a game while waiting for a second player.
      * It updates the selection page join button
-     * It deletes the player from the game
+     * It removes the player from the game
      *
      * @param socket The socket of the player.
      */
-    @SubscribeMessage(GameEvents.OnGameCancelledWhileWaitingForSecondPlayer)
-    onGameCancelledWhileWaitingForSecondPlayer(socket: Socket): void {
+    @SubscribeMessage(GameEvents.OnCancelledWhileWaiting)
+    onCancelledWhileWaiting(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).levelId, canJoin: false });
         this.gameService.deleteUserFromGame(socket);
     }
@@ -138,10 +140,10 @@ export class GameGateway {
     /**
      * This method is called when a player rejects a game.
      * It updates the selection page join button
-     * It deletes the player and the other player from the game
+     * It removes the player and the other player from the game
      * It emits a event to the other player to tell them that the game was rejected
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnGameRejected)
     onGameRejected(socket: Socket): void {
@@ -159,8 +161,8 @@ export class GameGateway {
      * It also emits a event to all players to shut down anyone trying to play the level.
      * It also removes the level from the list of levels that players can join.
      *
-     * @param socket the socket of the player.
-     * @param levelId the id of the level to be deleted.
+     * @param socket The socket of the player.
+     * @param levelId The id of the level to be deleted.
      */
     @SubscribeMessage(GameEvents.OnDeleteLevel)
     onDeleteLevel(socket: Socket, levelId: number): void {
@@ -198,8 +200,9 @@ export class GameGateway {
 
     /**
      * This method is called when a player disconnects.
+     * Handles unexpected disconnections such as page refreshes.
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player.
      */
     handleDisconnect(socket: Socket): void {
         this.handlePlayerLeavingGame(socket);
@@ -211,7 +214,7 @@ export class GameGateway {
      * It removes the level from the deletion queue if it is there.
      * If the match is multiplayer, the other player wins.
      *
-     * @param socket the socket of the player.
+     * @param socket The socket of the player.
      */
     private handlePlayerLeavingGame(socket: Socket): void {
         const gameState = this.gameService.getGameState(socket.id);

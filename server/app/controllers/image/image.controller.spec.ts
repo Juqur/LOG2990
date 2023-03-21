@@ -57,7 +57,7 @@ describe('ImageController', () => {
             jest.spyOn(gameService, 'getJoinableLevels').mockReturnValue([1]);
             imageService.getLevels = jest.fn().mockResolvedValue(levels);
             const result = await controller.getLevels();
-            expect(result[0].canJoin).toBeTruthy();
+            expect(result[0].canJoin).toEqual(true);
         });
 
         it('should remove deleted levels from the list', async () => {
@@ -65,6 +65,8 @@ describe('ImageController', () => {
             imageService.getLevels = jest.fn().mockResolvedValue(levels);
             const result = await controller.getLevels();
             expect(result).toHaveLength(2);
+            expect(result[0].id).not.toEqual(1);
+            expect(result[0].id).toEqual(2);
         });
     });
 
@@ -83,27 +85,6 @@ describe('ImageController', () => {
 
         it('should return undefined if the file cannot be found or read', async () => {
             imageService.getLevel = jest.fn().mockResolvedValue(undefined);
-            const result = await controller.getLevel(undefined);
-            expect(result).toBeUndefined();
-        });
-    });
-
-    describe('differenceCount', () => {
-        it('should call differenceCount', () => {
-            const spy = jest.spyOn(imageService, 'differencesCount').mockImplementation(jest.fn());
-            controller.differenceCount('');
-            expect(spy).toHaveBeenCalledTimes(1);
-        });
-
-        it('should return the appropriate number of differences', async () => {
-            const numDifferences = 10;
-            imageService.differencesCount = jest.fn().mockResolvedValue(numDifferences);
-            const result = await controller.differenceCount('');
-            expect(result).toStrictEqual(numDifferences);
-        });
-
-        it('should return undefined if the file cannot be found or read', async () => {
-            imageService.differencesCount = jest.fn().mockRejectedValue(undefined);
             const result = await controller.getLevel(undefined);
             expect(result).toBeUndefined();
         });

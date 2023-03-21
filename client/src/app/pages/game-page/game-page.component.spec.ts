@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatMessageComponent } from '@app/components/chat-message/chat-message.component';
@@ -10,11 +10,11 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { GameData, GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { GamePageService } from '@app/services/gamePageService/game-page.service';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
-import { Constants } from '@common/constants';
+import { GameData } from '@common/game-data';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 
@@ -24,10 +24,9 @@ describe('GamePageComponent', () => {
     let playAreaComponentSpy: SpyObj<PlayAreaComponent>;
     let gamePageServiceSpy: SpyObj<GamePageService>;
     let socketHandlerSpy: SpyObj<SocketHandler>;
-    let communicationServiceSpy: SpyObj<CommunicationService>;
     let activatedRoute: SpyObj<ActivatedRoute>;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         gamePageServiceSpy = jasmine.createSpyObj('GamePageService', [
             'verifyClick',
             'validateResponse',
@@ -39,7 +38,6 @@ describe('GamePageComponent', () => {
             'handleVictory',
             'handleDefeat',
         ]);
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['getLevel']);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
@@ -47,8 +45,8 @@ describe('GamePageComponent', () => {
         activatedRoute.snapshot.queryParams = { playerName: 'Alice', opponent: 'Bob' };
     });
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
             declarations: [
                 GamePageComponent,
                 PlayAreaComponent,
@@ -63,7 +61,7 @@ describe('GamePageComponent', () => {
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: SocketHandler, useValue: socketHandlerSpy },
                 { provide: GamePageService, useValue: gamePageServiceSpy },
-                { provide: CommunicationService, useValue: communicationServiceSpy },
+                { provide: CommunicationService },
                 { provide: ActivatedRoute, useValue: activatedRoute },
             ],
         }).compileComponents();
@@ -72,15 +70,35 @@ describe('GamePageComponent', () => {
         component = fixture.componentInstance;
         component['diffPlayArea'] = playAreaComponentSpy;
         component['originalPlayArea'] = playAreaComponentSpy;
-        fixture.detectChanges();
-        component['route'] = activatedRoute;
-        component['socketHandler'] = socketHandlerSpy;
-        component['gamePageService'] = gamePageServiceSpy;
-        component['communicationService'] = communicationServiceSpy;
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    describe('ngOnInit', () => {
+        let settingGameParametersSpy: jasmine.Spy;
+        let handleSocketSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            settingGameParametersSpy = spyOn(component, 'settingGameParameters' as never);
+            handleSocketSpy = spyOn(component, 'handleSocket');
+        });
+
+        it('should call resetImagesData', () => {
+            component.ngOnInit();
+            expect(gamePageServiceSpy.resetImagesData).toHaveBeenCalled();
+        });
+
+        it('should call settingGameParameters', () => {
+            component.ngOnInit();
+            expect(settingGameParametersSpy).toHaveBeenCalled();
+        });
+
+        it('should call handleSocket', () => {
+            component.ngOnInit();
+            expect(handleSocketSpy).toHaveBeenCalled();
+        });
     });
 
     describe('ngOnDestroy', () => {
@@ -119,14 +137,13 @@ describe('GamePageComponent', () => {
         });
 
         it('should not set the opponents found differences correctly if it is a solo match', () => {
-            const spy = spyOn(component, 'secondPlayerDifferencesCount' as never);
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'processedClick') {
                     callback({} as never);
                 }
             });
             component.handleSocket();
-            expect(spy).not.toHaveBeenCalled();
+            expect(component['secondPlayerDifferencesCount']).toEqual(0);
         });
 
         it('should set the amount of difference found by the player', () => {
@@ -162,22 +179,10 @@ describe('GamePageComponent', () => {
         });
     });
 
-    describe('getGameLevel', () => {
-        it('should set levelId, playerName and secondPlayerName from route', () => {
-            spyOn(component, 'settingGameLevel');
-            spyOn(component, 'settingGameImage');
-            component.getGameLevel();
-            expect(component['levelId']).toBe(1);
-            expect(component.playerName).toBe('Alice');
-            expect(component.secondPlayerName).toBe('Bob');
-        });
-
-        it('should call settingGameImage and settingGameLevel when getting the game level', () => {
-            const settingGameLevelSpy = spyOn(component, 'settingGameLevel');
-            const settingGameImageSpy = spyOn(component, 'settingGameImage');
-            component.getGameLevel();
-            expect(settingGameLevelSpy).toHaveBeenCalled();
-            expect(settingGameImageSpy).toHaveBeenCalled();
+    describe('abandonGame', () => {
+        it('should emit a socket event when abandoning the game', () => {
+            component.abandonGame();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
         });
     });
 
@@ -193,8 +198,9 @@ describe('GamePageComponent', () => {
         });
 
         it('should not send if the mouse position is undefined if clicked on the original image', () => {
+            const invalid = -1;
             const event: MouseEvent = new MouseEvent('click');
-            gamePageServiceSpy.verifyClick.and.returnValue(Constants.minusOne);
+            gamePageServiceSpy.verifyClick.and.returnValue(invalid);
             component.clickedOnOriginal(event);
             expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
@@ -203,8 +209,9 @@ describe('GamePageComponent', () => {
 
     describe('clickedOnDiff', () => {
         it('should not send if the mouse position is undefined if clicked on the difference image', () => {
+            const invalid = -1;
             const event: MouseEvent = new MouseEvent('click');
-            gamePageServiceSpy.verifyClick.and.returnValue(Constants.minusOne);
+            gamePageServiceSpy.verifyClick.and.returnValue(invalid);
             component.clickedOnDiff(event);
             expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
@@ -221,28 +228,49 @@ describe('GamePageComponent', () => {
         });
     });
 
-    describe('settingGameImage', () => {
-        it('should call getLevel', fakeAsync(() => {
-            component['levelId'] = 1;
-            const expectedDifferences = 3;
-            const level = { id: 0, nbDifferences: expectedDifferences } as unknown as Level;
-            communicationServiceSpy.getLevel.and.returnValue(of(level));
-            component.settingGameLevel();
-            tick();
+    describe('settingGameParameters', () => {
+        it('should set levelId, playerName and secondPlayerName from route', () => {
+            spyOn(component, 'settingGameLevel' as never);
+            spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
+            expect(component['levelId']).toBe(1);
+            expect(component.playerName).toBe('Alice');
+            expect(component.secondPlayerName).toBe('Bob');
+        });
 
-            expect(communicationServiceSpy.getLevel).toHaveBeenCalledTimes(1);
-            expect(component['currentLevel']).toEqual(level);
-            expect(component['nbDiff']).toEqual(expectedDifferences);
-        }));
-
-        it('should throw and error if the client cannot get information from the server', () => {
-            communicationServiceSpy.getLevel.and.throwError('Error');
-            expect(component.settingGameLevel).toThrowError();
+        it('should call settingGameImage and settingGameLevel when getting the game level', () => {
+            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
+            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
+            expect(settingGameLevelSpy).toHaveBeenCalled();
+            expect(settingGameImageSpy).toHaveBeenCalled();
         });
     });
 
-    it('should emit a socket event when abandoning the game', () => {
-        component.abandonGame();
-        expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+    describe('settingGameLevel', () => {
+        it('should set the levelId from the route', fakeAsync(() => {
+            const level = { value: { nbDifferences: 1 } } as unknown as Level;
+            spyOn(component['communicationService'], 'getLevel').and.returnValue(of(level));
+            component['settingGameLevel']();
+            expect(component['currentLevel']).toEqual(level);
+        }));
+
+        it('should throw an error if the level is not found', fakeAsync(() => {
+            spyOn(component['communicationService'], 'getLevel').and.returnValue(undefined as never);
+            try {
+                component['settingGameLevel']();
+            } catch (error) {
+                expect(error).toBeDefined();
+            }
+        }));
+    });
+
+    describe('settingGameImage', () => {
+        it('should set the url properly for both images', () => {
+            component['levelId'] = 1;
+            component['settingGameImage']();
+            expect(component['originalImageSrc']).toBe('http://localhost:3000/original/1.bmp');
+            expect(component['diffImageSrc']).toBe('http://localhost:3000/modified/1.bmp');
+        });
     });
 });

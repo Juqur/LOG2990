@@ -8,7 +8,7 @@ export enum GameEvents {
     OnGameSelection = 'onGameSelection',
     OnGameAccepted = 'onGameAccepted',
     OnGameRejected = 'onGameRejected',
-    OnGameCancelledWhileWaitingForSecondPlayer = 'onGameCancelledWhileWaitingForSecondPlayer',
+    OnCancelledWhileWaiting = 'onCancelledWhileWaiting',
     OnAbandonGame = 'onAbandonGame',
     OnMessageReception = 'onMessageReception',
 

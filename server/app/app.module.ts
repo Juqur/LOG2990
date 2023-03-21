@@ -1,5 +1,4 @@
 import { GameGateway } from '@app/gateways/game/game.gateway';
-// import { Course, courseSchema } from '@app/model/database/course';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 // import { MongooseModule } from '@nestjs/mongoose';

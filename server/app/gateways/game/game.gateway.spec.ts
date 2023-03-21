@@ -1,6 +1,7 @@
-import { GameData, GameService, GameState } from '@app/services/game/game.service';
+import { GameService, GameState } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
 import { TimerService } from '@app/services/timer/timer.service';
+import { GameData } from '@common/game-data';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Namespace, Server, Socket } from 'socket.io';
@@ -61,6 +62,7 @@ describe('GameGateway', () => {
     it('should be defined', () => {
         expect(gateway).toBeDefined();
     });
+
     describe('onJoinSoloClassicGame', () => {
         it('should call timer service and game service when player joins a solo game', () => {
             const timerSpy = jest.spyOn(timerService, 'startTimer');
@@ -223,16 +225,16 @@ describe('GameGateway', () => {
         });
     });
 
-    describe('onGameCancelledWhileWaitingForSecondPlayer', () => {
+    describe('onCancelledWhileWaiting', () => {
         it('should update the selection page', () => {
             const emitSpy = jest.spyOn(server, 'emit');
-            gateway.onGameCancelledWhileWaitingForSecondPlayer(socket);
+            gateway.onCancelledWhileWaiting(socket);
             expect(emitSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: false });
         });
 
         it('should delete the user from the game map', () => {
             const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
-            gateway.onGameCancelledWhileWaitingForSecondPlayer(socket);
+            gateway.onCancelledWhileWaiting(socket);
             expect(deleteUserFromGameSpy).toBeCalledWith(socket);
         });
     });
