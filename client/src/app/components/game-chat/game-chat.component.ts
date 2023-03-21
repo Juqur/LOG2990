@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
 import { ChatMessage } from '@common/chat-messages';
+import { Constants } from '@common/constants';
 
 /**
  * Is the "container" of all messages sent in the game be they player sent or system sent.
@@ -51,12 +52,16 @@ export class GameChatComponent implements OnInit, OnDestroy {
     /**
      * Method in charge of creating a new message once it has been received by the server.
      * Also auto scrolls to the last message
+     * The scroll needs a delay for the angular page to update before it
+     * can scroll to the bottom.
      *
      * @param message The message received.
      */
     private receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
-        this.scrollToBottom();
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, Constants.scrollDelay);
     }
 
     private scrollToBottom(): void {
