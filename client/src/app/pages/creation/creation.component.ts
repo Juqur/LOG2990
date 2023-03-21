@@ -9,7 +9,7 @@ import { Constants } from '@common/constants';
 @Component({
     selector: 'app-creation',
     templateUrl: './creation.component.html',
-    styleUrls: ['./creation.component.scss'],
+    styleUrls: ['./creation.component.scss', '../pages.scss'],
 })
 /**
  * This component represents the creation, the page where we can create new levels/games.
