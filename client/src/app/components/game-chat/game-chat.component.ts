@@ -1,38 +1,72 @@
-import { Component } from '@angular/core';
-import { Message, messages } from '@app/messages';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { ChatMessage } from '@common/chat-messages';
+import { Constants } from '@common/constants';
 
+/**
+ * Is the "container" of all messages sent in the game be they player sent or system sent.
+ *
+ * @author Charles Degrandpré & Louis Félix St-Amour
+ * @class GameChatComponent
+ */
 @Component({
     selector: 'app-game-chat',
     templateUrl: './game-chat.component.html',
     styleUrls: ['./game-chat.component.scss'],
 })
+export class GameChatComponent implements OnInit, OnDestroy {
+    @ViewChild('messagesContainer') messagesContainer: ElementRef<HTMLElement>;
+    @Input() isMultiplayer: boolean = true;
+    @Input() playerName: string = '';
+    private messages: ChatMessage[] = [];
 
-/**
- * Is the "container" of all messages sent in the game be they player sent or system sent.
- *
- * @author Charles Degrandpré
- * @class GameChatComponent
- */
-export class GameChatComponent {
-    private listMessages: Message[] = messages;
+    constructor(private socketHandler: SocketHandler) {}
 
     /**
-     * Getter for the list of messages
+     * Getter for the display name attribute.
      */
-    get messages(): Message[] {
-        return this.listMessages;
+    get messagesList(): ChatMessage[] {
+        return this.messages;
+    }
+
+    ngOnInit(): void {
+        this.listenForMessages();
+    }
+
+    ngOnDestroy(): void {
+        this.socketHandler.removeListener('game', 'messageSent');
+    }
+
+    /**
+     * Method to start listening for messages.
+     */
+    private listenForMessages(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.on('game', 'messageSent', (message: ChatMessage) => {
+            this.receiveMessage(message);
+        });
     }
 
     /**
      * Method in charge of creating a new message once it has been received by the server.
+     * Also auto scrolls to the last message
+     * The scroll needs a delay for the angular page to update before it
+     * can scroll to the bottom.
      *
-     * TODO
-     * Figure out the value type and information necessary to be received to perform this action.
+     * @param message The message received.
      */
-    receiveMessage() {
-        // TODO
-        // Method to catch that a message has been received, wether that message is
-        // a server wide message or not. THis should add the message to the .messages
-        // div component in the HTML.
+    private receiveMessage(message: ChatMessage): void {
+        this.messages.push(message);
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, Constants.scrollDelay);
+    }
+
+    private scrollToBottom(): void {
+        if (this.messagesContainer) {
+            this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+        }
     }
 }

@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LevelFormData } from '@app/classes/level-form-data';
 import { Level } from '@app/levels';
-import { Message } from '@common/message';
+import { HttpMessage } from '@common/http-message';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -66,7 +66,7 @@ export class CommunicationService {
      * @param level a LevelFormData attribute containing the necessary information to post a level on the server.
      * @returns a message indicating that the level was added with success to teh server.
      */
-    postLevel(level: LevelFormData): Observable<Message> {
+    postLevel(level: LevelFormData): Observable<HttpMessage> {
         const formData = new FormData();
         formData.append('imageOriginal', level.imageOriginal);
         formData.append('imageDiff', level.imageDiff);
@@ -78,8 +78,8 @@ export class CommunicationService {
         const headers = new HttpHeaders();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         return this.http
-            .post<Message>(`${this.baseUrl}api/image/postLevel`, formData, { headers })
-            .pipe(catchError(this.handleError<Message>('basicPost')));
+            .post<HttpMessage>(`${this.baseUrl}api/image/postLevel`, formData, { headers })
+            .pipe(catchError(this.handleError<HttpMessage>('basicPost')));
     }
 
     /**

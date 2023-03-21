@@ -2,6 +2,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AudioService } from '@app/services/audioService/audio.service';
 import { DrawService } from '@app/services/drawService/draw.service';
@@ -21,6 +22,7 @@ describe('GamePageService', () => {
     let audioServiceSpy: jasmine.SpyObj<AudioService>;
     let playAreaComponentSpy: jasmine.SpyObj<PlayAreaComponent>;
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     const gameData: GameData = {
         differencePixels: [],
@@ -46,6 +48,7 @@ describe('GamePageService', () => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
+                { provide: Router, useValue: routerSpy },
                 { provide: SocketHandler, useValue: socketHandlerSpy },
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
@@ -142,6 +145,28 @@ describe('GamePageService', () => {
         });
     });
 
+    describe('handleOpponentAbandon', () => {
+        it('should call create', () => {
+            service.handleOpponentAbandon();
+            expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        });
+
+        it('should call reset', () => {
+            service.handleOpponentAbandon();
+            expect(audioServiceSpy.reset).toHaveBeenCalled();
+        });
+
+        it('should call play', () => {
+            service.handleOpponentAbandon();
+            expect(audioServiceSpy.play).toHaveBeenCalled();
+        });
+
+        it('should call openDialog', () => {
+            service.handleOpponentAbandon();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['opponentAbandonedGameDialogData'], service['closePath']);
+        });
+    });
+
     describe('handleDefeat', () => {
         it('should call create', () => {
             service.handleDefeat();
@@ -161,6 +186,13 @@ describe('GamePageService', () => {
         it('should call openDialog', () => {
             service.handleDefeat();
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['loseDialogData'], service['closePath']);
+        });
+    });
+
+    describe('preventJoining', () => {
+        it('should call navigate', () => {
+            service.preventJoining();
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
         });
     });
 

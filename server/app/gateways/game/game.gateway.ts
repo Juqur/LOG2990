@@ -1,5 +1,7 @@
+import { ChatService } from '@app/services/chat/chat.service';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
+import { ChatMessage } from '@common/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -16,7 +18,7 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService) {}
+    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -46,19 +48,25 @@ export class GameGateway {
     async onClick(socket: Socket, position: number): Promise<void> {
         const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
         socket.emit(GameEvents.ProcessedClick, dataToSend);
-        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
-        if (secondPlayerId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
-            this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
+        const otherSocketId = this.gameService.getGameState(socket.id).otherSocketId;
+        const gameState = this.gameService.getGameState(socket.id);
+        this.chatService.sendSystemMessage(socket, dataToSend, gameState);
+
+        if (otherSocketId) {
+            dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
+            if (dataToSend.differencePixels.length > 0) {
+                socket.to(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
+            }
         }
+
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
-            if (secondPlayerId) {
-                this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.Defeat);
-                this.timerService.stopTimer(secondPlayerId);
-                const otherSocket = this.server.sockets.sockets.get(secondPlayerId);
+            if (otherSocketId) {
+                this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.Defeat);
+                this.timerService.stopTimer(otherSocketId);
+                const otherSocket = this.server.sockets.sockets.get(otherSocketId);
                 this.gameService.deleteUserFromGame(otherSocket);
             }
         }
@@ -120,8 +128,8 @@ export class GameGateway {
 
     /**
      * This method is called when a player cancels a game while waiting for a second player.
-     * It updates the selection page join button
-     * It removes the player from the game
+     * It updates the selection page join button.
+     * It removes the player from the game.
      *
      * @param socket The socket of the player.
      */
@@ -133,9 +141,9 @@ export class GameGateway {
 
     /**
      * This method is called when a player rejects a game.
-     * It updates the selection page join button
-     * It removes the player and the other player from the game
-     * It emits a event to the other player to tell them that the game was rejected
+     * It updates the selection page join button.
+     * It removes the player and the other player from the game.
+     * It emits a event to the other player to tell them that the game was rejected.
      *
      * @param socket The socket of the player.
      */
@@ -172,9 +180,21 @@ export class GameGateway {
     }
 
     /**
-     * This method is called when a player abandons a game.
+     * This method is called when a player sends a message.
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player who sent the message.
+     * @param message The message to be sent.
+     */
+    @SubscribeMessage(GameEvents.OnMessageReception)
+    onMessageReception(socket: Socket, message: ChatMessage): void {
+        const gameState = this.gameService.getGameState(socket.id);
+        this.chatService.sendToBothPlayers(socket, message, gameState);
+    }
+
+    /**
+     * This method is called when the player abandons the game.
+     *
+     * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnAbandonGame)
     onAbandonGame(socket: Socket): void {
@@ -184,7 +204,7 @@ export class GameGateway {
     /**
      * Method called when the player toggles on the cheat mode.
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnStartCheatMode)
     async onStartCheatMode(socket: Socket): Promise<void> {
@@ -195,7 +215,7 @@ export class GameGateway {
     /**
      * Method called when the player toggles off the cheat mode.
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnStopCheatMode)
     onStopCheatMode(socket: Socket): void {
@@ -226,7 +246,8 @@ export class GameGateway {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
-                otherSocket.emit(GameEvents.Victory);
+                this.chatService.abandonMessage(socket, gameState);
+                otherSocket.emit(GameEvents.OpponentAbandoned);
                 this.gameService.deleteUserFromGame(otherSocket);
             }
             this.gameService.deleteUserFromGame(socket);

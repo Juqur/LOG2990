@@ -1,3 +1,7 @@
+/**
+ * @author Louis Félix St-Amour
+ */
+
 export namespace Constants {
     // Global constants
     export const minusOne: number = -1;
@@ -92,6 +96,9 @@ export namespace Constants {
         isEasy: true,
         nbDifferences: 7,
     };
+
+    // Game Chat
+    export const scrollDelay = 1;
 }
 
 export enum MouseButton {

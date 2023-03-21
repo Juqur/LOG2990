@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Vec2 } from '@app/interfaces/vec2';
 import { AudioService } from '@app/services/audioService/audio.service';
@@ -30,6 +31,11 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
+    private opponentAbandonedGameDialogData: DialogData = {
+        textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
+        closeButtonMessage: 'Retour au menu principal',
+        mustProcess: false,
+    };
     private loseDialogData: DialogData = {
         textToSend: 'Vous avez perdu!',
         closeButtonMessage: 'Retour au menu principal',
@@ -42,6 +48,7 @@ export class GamePageService {
 
     // eslint-disable-next-line max-params
     constructor(
+        private router: Router,
         private mouseService: MouseService,
         private popUpService: PopUpService,
         private audioService: AudioService,
@@ -134,7 +141,7 @@ export class GamePageService {
 
     /**
      * This method is called when the player wins.
-     * It will open a dialog and play a sound.
+     * It will open a dialog and play a victory sound.
      */
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
@@ -144,8 +151,19 @@ export class GamePageService {
     }
 
     /**
-     * This method is called when the player wins.
-     * It will open a dialog and play a sound.
+     * This method is called when other player abandons.
+     * It will open a dialog and play a victory sound.
+     */
+    handleOpponentAbandon(): void {
+        this.popUpService.openDialog(this.opponentAbandonedGameDialogData, this.closePath);
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.reset();
+        this.audioService.play();
+    }
+
+    /**
+     * This method is called when the player loses.
+     * It will open a dialog and play a losing sound.
      */
     handleDefeat(): void {
         this.popUpService.openDialog(this.loseDialogData, this.closePath);
@@ -159,7 +177,7 @@ export class GamePageService {
      *
      * @param differences the differences to have flash
      */
-    startCheatMode(differences: number[]) {
+    startCheatMode(differences: number[]): void {
         this.areaNotFound = differences.filter((item) => {
             return !this.imagesData.includes(item);
         });
@@ -173,9 +191,17 @@ export class GamePageService {
     /**
      * Method that stops the cheat mode.
      */
-    stopCheatMode() {
+    stopCheatMode(): void {
         clearInterval(this.flashInterval);
         this.areaNotFound = [];
+    }
+
+    /**
+     * Prevents the player from joining the game if a page refreshes or tries to join again.
+     * Redirects to the main menu.
+     */
+    preventJoining(): void {
+        this.router.navigate(['/home']);
     }
 
     /**

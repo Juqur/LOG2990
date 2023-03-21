@@ -3,11 +3,11 @@ Inspired by https://dribbble.com/supahfunk
 -->
 <section class="avenue-messenger">
     <div class="chat">
-        <div class="messages">
-            <div *ngFor="let message of messages" class="zero-padding">
+        <div class="messages" #messagesContainer>
+            <div *ngFor="let message of messagesList" class="zero-padding">
                 <app-chat-message [message]="message"></app-chat-message>
             </div>
         </div>
-        <app-message-box class="zero-padding"></app-message-box>
+        <app-message-box *ngIf="isMultiplayer" [playerName]="playerName"></app-message-box>
     </div>
 </section>

@@ -23,8 +23,12 @@ export class TimerService {
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
             server.to(socketId).emit('sendTime', time);
+            if (otherSocketId) {
+                server.to(otherSocketId).emit('sendTime', time);
+            }
             this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
         }, Constants.millisecondsInOneSecond);
+
         this.timeIntervalMap.set(socketId, interval);
         if (otherSocketId) {
             this.timeIntervalMap.set(otherSocketId, interval);

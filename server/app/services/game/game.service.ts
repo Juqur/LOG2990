@@ -6,6 +6,7 @@ import { Server, Socket } from 'socket.io';
 export interface GameState {
     levelId: number;
     foundDifferences: number[];
+    amountOfDifferencesFound: number;
     playerName: string;
     isInGame: boolean;
     isGameFound: boolean;
@@ -90,10 +91,19 @@ export class GameService {
         const gameState = this.playerGameMap.get(socketId);
         const id: string = gameState.levelId as unknown as string;
         const response = await this.imageService.findDifference(id, gameState.foundDifferences, position);
+        if (response.differencePixels && response.differencePixels.length > 0) {
+            gameState.amountOfDifferencesFound++;
+            this.playerGameMap.set(socketId, gameState);
+            if (gameState.otherSocketId) {
+                const otherGameState = this.playerGameMap.get(gameState.otherSocketId);
+                otherGameState.foundDifferences = gameState.foundDifferences;
+                this.playerGameMap.set(gameState.otherSocketId, otherGameState);
+            }
+        }
         return {
             differencePixels: response.differencePixels,
             totalDifferences: response.totalDifferences,
-            amountOfDifferencesFound: gameState.foundDifferences.length,
+            amountOfDifferencesFound: gameState.amountOfDifferencesFound,
         };
     }
 
@@ -109,12 +119,12 @@ export class GameService {
      */
     verifyWinCondition(socket: Socket, server: Server, totalDifferences: number): boolean {
         const gameState = this.playerGameMap.get(socket.id);
-        if (gameState.otherSocketId && gameState.foundDifferences.length >= Math.ceil(totalDifferences / 2)) {
+        if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
             if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
-        } else if (gameState.foundDifferences.length === totalDifferences) {
+        } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
             if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
@@ -136,6 +146,7 @@ export class GameService {
         const playerGameState: GameState = {
             levelId: data.levelId,
             foundDifferences: [],
+            amountOfDifferencesFound: 0,
             playerName: data.playerName,
             isInGame: !isMultiplayer,
             isGameFound: !isMultiplayer,
@@ -171,8 +182,6 @@ export class GameService {
     connectRooms(socket: Socket, otherSocket: Socket): void {
         this.playerGameMap.get(socket.id).isInGame = true;
         this.playerGameMap.get(otherSocket.id).isInGame = true;
-        socket.join(otherSocket.id);
-        otherSocket.join(socket.id);
         this.bindPlayers(socket.id, otherSocket.id);
     }
 

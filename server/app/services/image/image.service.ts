@@ -127,9 +127,10 @@ export class ImageService {
      * @returns The message that the level was successfully uploaded
      */
     async writeLevelData(newLevel: unknown): Promise<Message> {
+        const levels = await this.getLevels();
         try {
             const allDifferences = await this.getLevels();
-            const newId = allDifferences.length + 1;
+            const newId = levels[levels.length - 1].id + 1;
             const levelData = newLevel as LevelData;
             const level: Level = {
                 id: newId,

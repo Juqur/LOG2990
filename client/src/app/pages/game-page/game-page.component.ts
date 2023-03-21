@@ -56,11 +56,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * Listener for the key press event. It is called when ever we press on a key inside the game page.
      * In this specific case, we check if the key 't' was pressed and if to we toggle on and off the cheat mode.
      *
-     * @param event the key up event.
+     * @param event The key up event.
      */
     @HostListener('document:keydown', ['$event'])
-    handleKeyDownEvent(event: KeyboardEvent) {
-        if (event.key === 't') {
+    handleKeyDownEvent(event: KeyboardEvent): void {
+        if (event.key === 't' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
@@ -77,10 +77,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
     /**
      * This method is called when the component is initialized.
      * It sets the game level and the game image.
-     * It also handles the pausing of any audio playing if the player decidesA to leave the page.
+     * It also handles the pausing of any audio playing if the player decides to leave the page.
      * It also connects to the the game socket and handles the response.
      */
     ngOnInit(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.gamePageService.preventJoining();
+        }
+
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
         this.handleSocket();
@@ -109,18 +113,20 @@ export class GamePageComponent implements OnInit, OnDestroy {
     handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
-            if (gameData.amountOfDifferencesFoundSecondPlayer) {
+            if (gameData.amountOfDifferencesFoundSecondPlayer !== undefined) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
         });
         this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
+        });
+        this.socketHandler.on('game', 'opponentAbandoned', () => {
+            this.gamePageService.handleOpponentAbandon();
         });
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
@@ -132,10 +138,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * This method handles the case where the user clicks on the original image,
-     * It will send the click to the server,
+     * This method handles the case where the user clicks on the original image.
+     * It will send the click to the server.
      *
-     * @param event The mouse event,
+     * @param event The mouse event.
      */
     clickedOnOriginal(event: MouseEvent): void {
         const mousePosition = this.gamePageService.verifyClick(event);
@@ -146,10 +152,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * This method handles the case where the user clicks on the difference image,
-     * It will send the click to the server,
+     * This method handles the case where the user clicks on the difference image.
+     * It will send the click to the server.
      *
-     * @param event The mouse event,
+     * @param event The mouse event.
      */
     clickedOnDiff(event: MouseEvent): void {
         const mousePosition = this.gamePageService.verifyClick(event);

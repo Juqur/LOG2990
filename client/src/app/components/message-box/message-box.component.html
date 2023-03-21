@@ -1,9 +1,19 @@
 <div class="message-box">
-    <div id="sender" class="sender">
+    <div id="sender">
         <p>[</p>
-        <p id="sender-name">{{ this.name }}</p>
+        <p id="sender-name">{{ this.playerName }}</p>
         <p>]</p>
     </div>
-    <textarea type="text" id="message-input" class="message-input" placeholder="Type message..." #messageInput></textarea>
+    <textarea
+        type="text"
+        id="message-input"
+        class="message-input"
+        placeholder="Type message..."
+        rows="2"
+        cols="30"
+        maxlength="200"
+        #messageInput
+        (keydown)="onKeyDown($event, messageInput)"
+    ></textarea>
     <mat-icon id="send-icon" (click)="sendMessage(messageInput)">send</mat-icon>
 </div>

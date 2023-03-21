@@ -1,10 +1,10 @@
 <div id="message-outer-box">
     <div id="content">
-        <div id="sender" class="sender" [ngClass]="this.message.playerId === 1 ? 'player1' : 'player2'">
+        <div id="sender" class="sender" [ngClass]="this.message.senderId">
             <p>[</p>
             <p id="sender-name">{{ name }}</p>
             <p>]</p>
         </div>
-        <p id="message-text">{{ message.text }}</p>
+        <p id="message-text" [ngClass]="this.message.senderId === 'system' ? this.message.senderId : ''">{{ message.text }}</p>
     </div>
 </div>

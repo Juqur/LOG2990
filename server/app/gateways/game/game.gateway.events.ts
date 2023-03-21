@@ -9,10 +9,12 @@ export enum GameEvents {
     OnGameAccepted = 'onGameAccepted',
     OnGameRejected = 'onGameRejected',
     OnCancelledWhileWaiting = 'onCancelledWhileWaiting',
-    OnAbandonGame = 'onAbandonGame',
     OnStartCheatMode = 'onStartCheatMode',
     OnStopCheatMode = 'onStopCheatMode',
+    OnAbandonGame = 'onAbandonGame',
+    OnMessageReception = 'onMessageReception',
 
+    MessageSent = 'messageSent',
     UpdateSelection = 'updateSelection',
     InvalidName = 'invalidName',
     ToBeAccepted = 'toBeAccepted',
@@ -24,6 +26,7 @@ export enum GameEvents {
     StartCheatMode = 'startCheatMode',
     SendTime = 'sendTime',
     Defeat = 'defeat',
+    OpponentAbandoned = 'opponentAbandoned',
     Victory = 'victory',
     ProcessedClick = 'processedClick',
 }
