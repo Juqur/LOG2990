@@ -45,9 +45,15 @@ describe('ChatService', () => {
             expect(emitSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should getSystemChatMessageSpy', () => {
+        it('should call getSystemChatMessage if a difference is found', () => {
             service.sendSystemMessage(socket, data, gameState);
-            expect(getSystemChatMessageSpy).toHaveBeenCalledTimes(1);
+            expect(getSystemChatMessageSpy).toHaveBeenCalledWith('Différence trouvée');
+        });
+
+        it('should call getSystemChatMessage if a difference is not found', () => {
+            data.differencePixels = [];
+            service.sendSystemMessage(socket, data, gameState);
+            expect(getSystemChatMessageSpy).toHaveBeenCalledWith('Erreur');
         });
 
         it('should call emit to the other socket if the other socket exists', () => {
