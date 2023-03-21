@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { CreationPageService } from '@app/services/creationPageService/creation-page.service';
@@ -17,7 +17,7 @@ import { Constants } from '@common/constants';
  * @author Simon Gagné & Galen Hu
  * @class CreationComponent
  */
-export class CreationComponent implements OnDestroy {
+export class CreationComponent implements AfterViewInit, OnDestroy {
     @ViewChild('defaultArea', { static: false }) defaultPaintArea!: PaintAreaComponent;
     @ViewChild('diffArea', { static: false }) diffPaintArea!: PaintAreaComponent;
     diffSliderValue = Constants.SLIDER_DEFAULT;
@@ -38,6 +38,15 @@ export class CreationComponent implements OnDestroy {
         } else if ($event.ctrlKey && ($event.key === 'Z' || $event.key === 'z')) {
             this.handleUndo();
         }
+    }
+
+    /**
+     * Method called after the initial rendering.
+     * It makes sur both backgrounds are empty.
+     */
+    ngAfterViewInit(): void {
+        this.creationService.resetDefaultBackground();
+        this.creationService.resetDiffBackground();
     }
 
     /**
