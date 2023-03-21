@@ -79,8 +79,7 @@ export class SelectionPageService implements OnDestroy {
             levelService.removeCard(gameId as number);
         });
         this.socketHandler.on('game', 'rejectedGame', () => {
-            this.waitingForAcceptation = false;
-            this.popUpService.dialogRef.close();
+            this.rejectedMatch();
         });
     }
 
@@ -135,6 +134,19 @@ export class SelectionPageService implements OnDestroy {
                 this.socketHandler.send('game', 'onCancelledWhileWaiting', {});
             }
         });
+    }
+
+    /**
+     * This method is called when the player rejects your game
+     */
+    private rejectedMatch(): void {
+        this.popUpService.dialogRef.close();
+        this.dialog = {
+            textToSend: 'Le joueur a refusé la partie',
+            closeButtonMessage: 'OK',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(this.dialog);
     }
 
     /**
