@@ -260,7 +260,7 @@ describe('PaintAreaComponent', () => {
         mouseServiceSpy.isRectangleMode = true;
         component.canvasClick(mouseEvent);
         mouseEvent = {
-            offsetX: 250,
+            offsetX: 150,
             offsetY: 300,
             button: 0,
         } as MouseEvent;

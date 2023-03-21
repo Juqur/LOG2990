@@ -273,7 +273,7 @@ export class PaintAreaComponent implements AfterViewInit {
                 let squareSizeY = 0;
                 const xDistance = accCoords.x - this.lastMousePosition.x;
                 const yDistance = accCoords.y - this.lastMousePosition.y;
-                if (Math.abs(xDistance) > Math.abs(yDistance)) {
+                if (Math.abs(xDistance) < Math.abs(yDistance)) {
                     squareSizeX = xDistance;
                     squareSizeY = (yDistance > 0 && xDistance > 0) || (yDistance < 0 && xDistance < 0) ? squareSizeX : -squareSizeX;
                 } else {
