@@ -35,14 +35,14 @@ export class PaintAreaComponent implements AfterViewInit {
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
 
     /**
-     * Getter for the canvas width
+     * Getter for the canvas width.
      */
     get width(): number {
         return this.canvasSize.x;
     }
 
     /**
-     * Getter for the canvas height
+     * Getter for the canvas height.
      */
     get height(): number {
         return this.canvasSize.y;
@@ -202,7 +202,7 @@ export class PaintAreaComponent implements AfterViewInit {
     /**
      * Paints the canvas in real time on mouse movement.
      *
-     * @param event the mouse event
+     * @param event The mouse event.
      */
     canvasPaint(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
@@ -223,7 +223,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * Shows a rectangle on the tempCanvas in real time on mouse movement.
      * When shift is pressed, the rectangle is a square.
      *
-     * @param event the mouse event
+     * @param event The mouse event.
      */
     canvasRectangularDrag(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
@@ -258,7 +258,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * Detects the mouse release on the canvas.
      * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
      *
-     * @param event the mouse event
+     * @param event The mouse event.
      */
     canvasRelease(): void {
         this.isDragging = false;

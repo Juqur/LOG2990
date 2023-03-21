@@ -101,7 +101,7 @@ export class CreationPageService {
      * The method is in charge of taking the default image given in the input, verifying that it is
      * of the correct format and then displaying it.
      *
-     * @param event file upload event on the HTMLInputElement
+     * @param event File upload event on the HTMLInputElement.
      */
     defaultImageSelector(event: Event): void {
         this.restartGame();
@@ -120,7 +120,7 @@ export class CreationPageService {
      * The method is in charge of taking the modified image given in the input, verifying that it is
      * of the correct format and then displaying it.
      *
-     * @param event file upload event on the HTMLInputElement
+     * @param event File upload event on the HTMLInputElement.
      */
     diffImageSelector(event: Event): void {
         this.restartGame();
@@ -178,8 +178,8 @@ export class CreationPageService {
     }
 
     /**
-     * Changes the value of the radius depending on a value given as parameter. The possible options
-     * are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters.
+     * Changes the value of the radius depending on a value given as parameter.
+     * The possible options are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters.
      *
      * @param value The index of the new slider value.
      */
@@ -241,8 +241,8 @@ export class CreationPageService {
     }
 
     /**
-     * This method is used to save the game, it opens a popUp asking the user
-     * to give a name to their new game and saves it.
+     * This method is used to save the game.
+     * It opens a popUp asking the user to give a name to their new game and saves it.
      */
     saveGame(): void {
         if (this.isSaveable && this.defaultUploadFile && this.diffUploadFile) {
@@ -284,7 +284,7 @@ export class CreationPageService {
     }
 
     /**
-     * When the user press on the paint brush button, this method is called
+     * When the user press on the paint brush button, this method is called.
      * It sets the mouse service to Paint mode.
      *
      * @param defaultCtx The default canvas context.
@@ -300,7 +300,7 @@ export class CreationPageService {
     }
 
     /**
-     * When the user press on the erase brush button, this method is called
+     * When the user press on the erase brush button, this method is called.
      * It sets the mouse service to Erase mode.
      *
      * @param defaultCtx The default canvas context.
@@ -316,8 +316,8 @@ export class CreationPageService {
     }
 
     /**
-     * When the user press on the rectangle button, this method is called
-     * It sets the mouse service to rectangle mode
+     * When the user press on the rectangle button, this method is called.
+     * It sets the mouse service to rectangle mode.
      */
     rectangleMode(): void {
         this.mouseServiceDefault.isRectangleMode = true;
@@ -325,8 +325,8 @@ export class CreationPageService {
     }
 
     /**
-     * When the user press on the color picker button, this method is called
-     * It sets the color of the paint brush and the Rectangle brush to the color
+     * When the user press on the color picker button, this method is called.
+     * It sets the color of the paint brush and the Rectangle brush to the color.
      */
     colorPickerMode(): void {
         this.mouseServiceDefault.mouseDrawColor = this.color;
@@ -351,7 +351,7 @@ export class CreationPageService {
     /**
      * This method is used to get the File() object associated with the image_empty.bmp.
      *
-     * @returns a file Object containing the image_empty.bmp
+     * @returns A file Object containing the image_empty.bmp.
      */
     private async getEmptyBMPFile(): Promise<File> {
         const imageSrc = './assets/images/image_empty.bmp';
@@ -407,7 +407,7 @@ export class CreationPageService {
     }
 
     /**
-     * Verifies if an image file is of the good format, that is the file is in PNG and of type image/bmp
+     * Verifies if an image file is of the good format, that is the file is in PNG and of type image/bmp.
      * The image must also have only 24 bits per pixels.
      *
      * @param imageFile the image file we want to check if the format is valid.

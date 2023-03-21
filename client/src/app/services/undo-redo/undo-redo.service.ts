@@ -13,8 +13,8 @@ export class UndoRedoService {
     /**
      * After the user has drawn on the canvas, we add the canvas to the stack.
      *
-     * @param defaultCanvas the default (left) canvas
-     * @param diffCanvas the diff (right) canvas
+     * @param defaultCanvas The default (left) canvas.
+     * @param diffCanvas The diff (right) canvas.
      */
     static addToStack(defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D): void {
         const tempDefaultCanvas = document.createElement('canvas');
@@ -36,7 +36,7 @@ export class UndoRedoService {
     /**
      * The undo function pops the last action from the stack and returns it.
      *
-     * @returns the last action in the stack, or undefined if the stack is empty
+     * @returns The last action in the stack, or undefined if the stack is empty.
      */
     static undo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         if (this.undoPointer === 0) {
@@ -57,7 +57,7 @@ export class UndoRedoService {
     /**
      * The redo function pops the last action from the redo stack and returns it.
      *
-     * @returns the last action in the redo stack, or undefined if the stack is empty
+     * @returns The last action in the redo stack, or undefined if the stack is empty.
      */
     static redo(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         if (this.redoPointer >= 0) {
@@ -96,7 +96,7 @@ export class UndoRedoService {
     /**
      * Checks if the redo stack is empty.
      *
-     * @returns true if the redo stack is empty, false otherwise
+     * @returns True if the redo stack is empty, false otherwise.
      */
     static isRedoStackEmpty(): boolean {
         return this.redoStack.length === 0;
@@ -105,7 +105,7 @@ export class UndoRedoService {
     /**
      * Checks if the undo stack is empty.
      *
-     * @returns true if the undo stack is empty, false otherwise
+     * @returns True if the undo stack is empty, false otherwise.
      */
     static isUndoStackEmpty(): boolean {
         return this.undoPointer === Constants.EMPTY_STACK;

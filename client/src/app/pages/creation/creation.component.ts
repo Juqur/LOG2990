@@ -134,7 +134,7 @@ export class CreationComponent implements OnDestroy {
     }
 
     /**
-     * When the user press on the Interchanger button, this method is called.
+     * When the user press on the "interchanger" button, this method is called.
      */
     swapCanvas(): void {
         this.setPaintBrushMode();
