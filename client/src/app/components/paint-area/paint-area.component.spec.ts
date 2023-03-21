@@ -76,6 +76,7 @@ describe('PaintAreaComponent', () => {
 
     it('loadBackground should call the diff canvas when isDiff is true', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        component.isDiff = true;
         component.loadBackground(environment.serverUrl + 'originals/1.bmp');
         component.currentImage.dispatchEvent(new Event('load'));
 

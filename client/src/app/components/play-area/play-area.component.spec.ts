@@ -62,6 +62,15 @@ describe('PlayAreaComponent', () => {
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
 
+    it('drawPlayArea should call the diff canvas when isDiff is true', fakeAsync(() => {
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        component.isDiff = true;
+        component.drawPlayArea(environment.serverUrl + 'originals/1.bmp');
+        component.currentImage.dispatchEvent(new Event('load'));
+
+        expect(drawImageSpy).toHaveBeenCalledTimes(1);
+    }));
+
     it('should call fillRect', () => {
         const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
         const area = [0, 1, 2, 3];
