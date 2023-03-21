@@ -48,7 +48,7 @@ export class GameGateway {
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
         if (secondPlayerId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = this.gameService.getGameState(socket.id).foundDifferences.length;
+            dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
             this.server.sockets.sockets.get(secondPlayerId).emit(GameEvents.ProcessedClick, dataToSend);
         }
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {

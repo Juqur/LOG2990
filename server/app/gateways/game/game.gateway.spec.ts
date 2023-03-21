@@ -27,6 +27,7 @@ describe('GameGateway', () => {
         gameState = {
             levelId: 1,
             foundDifferences: [],
+            amountOfDifferencesFound: 0,
             playerName: 'Alice',
             isInGame: false,
             isGameFound: false,
@@ -181,6 +182,7 @@ describe('GameGateway', () => {
             const secondGameState: GameState = {
                 levelId: 1,
                 foundDifferences: [],
+                amountOfDifferencesFound: 0,
                 playerName: 'Bob',
                 isGameFound: true,
                 isInGame: true,
@@ -200,6 +202,7 @@ describe('GameGateway', () => {
             const secondGameState: GameState = {
                 levelId: 1,
                 foundDifferences: [],
+                amountOfDifferencesFound: 0,
                 playerName: 'Bob',
                 isGameFound: true,
                 isInGame: true,
