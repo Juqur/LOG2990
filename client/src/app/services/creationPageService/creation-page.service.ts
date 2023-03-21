@@ -302,7 +302,7 @@ export class CreationPageService {
     /**
      * When the user press on the erase brush button, this method is called
      * It sets the mouse service to Erase mode.
-     * 
+     *
      * @param defaultCtx The default canvas context.
      * @param diffCtx The diff canvas context.
      */
