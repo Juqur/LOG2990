@@ -237,8 +237,6 @@ describe('CreationPageService', () => {
         const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         service.brushSliderChange(mockEvent, defaultCanvasCtx, diffCanvasCtx);
-        // expect(drawServiceDefaultSpy.setBrushSize).toHaveBeenCalledWith(Constants.thirty);
-        // expect(drawServiceDiffSpy.setBrushSize).toHaveBeenCalledWith(Constants.thirty);
         expect(defaultDrawSpy).toHaveBeenCalledOnceWith(Constants.thirty);
         expect(diffDrawSpy).toHaveBeenCalledWith(Constants.thirty);
     });
@@ -359,8 +357,8 @@ describe('CreationPageService', () => {
 
     it('save game should call open dialog twice if we can save and post level was successful', () => {
         service['isSaveable'] = true;
-        (service as any).defaultUploadFile = new File([], 'test1');
-        (service as any).diffUploadFile = new File([], 'test2');
+        service['defaultUploadFile'] = new File([], 'test1');
+        service['diffUploadFile'] = new File([], 'test2');
         popUpServiceSpy.openDialog.and.returnValue({
             afterClosed: () =>
                 of({
@@ -379,8 +377,8 @@ describe('CreationPageService', () => {
 
     it('save game should call open dialog once if we can save and post level was not successful', () => {
         service['isSaveable'] = true;
-        (service as any).defaultUploadFile = new File([], 'test1');
-        (service as any).diffUploadFile = new File([], 'test2');
+        service['defaultUploadFile'] = new File([], 'test1');
+        service['diffUploadFile'] = new File([], 'test2');
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
         popUpServiceSpy.openDialog.and.returnValue({
             afterClosed: () =>
@@ -585,7 +583,7 @@ describe('CreationPageService', () => {
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
         context.fillRect(0, 0, Constants.RECTANGLE_SIZE, Constants.RECTANGLE_SIZE);
         const res = await service.toImgFile(context);
-        expect(res instanceof Blob).toBe(true);
+        expect(res).toBeInstanceOf(Blob);
     });
 
     it('get radius should return the correct radius', fakeAsync(() => {
