@@ -193,7 +193,7 @@ export class GameGateway {
     /**
      * This method is called when the player abandons the game.
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnAbandonGame)
     onAbandonGame(socket: Socket): void {
@@ -203,7 +203,7 @@ export class GameGateway {
     /**
      * Method called when the player toggles on the cheat mode.
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnStartCheatMode)
     async onStartCheatMode(socket: Socket): Promise<void> {
@@ -214,7 +214,7 @@ export class GameGateway {
     /**
      * Method called when the player toggles off the cheat mode.
      *
-     * @param socket the socket of the player
+     * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnStopCheatMode)
     onStopCheatMode(socket: Socket): void {
