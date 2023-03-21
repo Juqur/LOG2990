@@ -64,7 +64,7 @@ describe('PaintAreaComponent', () => {
 
     it('getCanvas should return the canvas element', () => {
         const canvas = component.paintCanvas;
-        expect(canvas).toEqual(component.fgCanvas.nativeElement);
+        expect(canvas).toEqual(component.foregroundCanvas.nativeElement);
     });
 
     it('loadBackground should call context.drawImage', fakeAsync(() => {
@@ -89,7 +89,7 @@ describe('PaintAreaComponent', () => {
         component.isDiff = false;
         component.isDragging = true;
         component.onMouseLeave();
-        expect(stackSpy).toHaveBeenCalledOnceWith(component.fgCanvas.nativeElement.getContext('2d'), null);
+        expect(stackSpy).toHaveBeenCalledOnceWith(component.foregroundCanvas.nativeElement.getContext('2d'), null);
     });
 
     it('onMouseLeave should add the default canvas to the stack if isDiff is true', () => {
@@ -97,7 +97,7 @@ describe('PaintAreaComponent', () => {
         component.isDiff = true;
         component.isDragging = true;
         component.onMouseLeave();
-        expect(stackSpy).toHaveBeenCalledOnceWith(null, component.fgCanvas.nativeElement.getContext('2d'));
+        expect(stackSpy).toHaveBeenCalledOnceWith(null, component.foregroundCanvas.nativeElement.getContext('2d'));
     });
 
     it('mergeCanvas should return a canvas with the correct size', () => {
@@ -115,9 +115,9 @@ describe('PaintAreaComponent', () => {
         expect(tempCanvas.width).toBe(Constants.DEFAULT_WIDTH);
         expect(tempCanvas.height).toBe(Constants.DEFAULT_HEIGHT);
         expect(tempCanvas.style.position).toBe('absolute');
-        expect(tempCanvas.style.top).toBe(component.fgCanvas.nativeElement.offsetTop + 'px');
-        expect(tempCanvas.style.left).toBe(component.fgCanvas.nativeElement.offsetLeft + 'px');
-        expect(tempCanvas.previousElementSibling).toBe(component.fgCanvas.nativeElement);
+        expect(tempCanvas.style.top).toBe(component.foregroundCanvas.nativeElement.offsetTop + 'px');
+        expect(tempCanvas.style.left).toBe(component.foregroundCanvas.nativeElement.offsetLeft + 'px');
+        expect(tempCanvas.previousElementSibling).toBe(component.foregroundCanvas.nativeElement);
     });
 
     it('canvasClick should set isDragging to true and call appropriate functions if in in rectangle mode', () => {
@@ -155,7 +155,7 @@ describe('PaintAreaComponent', () => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
         const tempCanvas = document.createElement('canvas');
         tempCanvas.classList.add('draw');
-        const currentCanvas = document.body.querySelector('#' + component.fgCanvas.nativeElement.id);
+        const currentCanvas = document.body.querySelector('#' + component.foregroundCanvas.nativeElement.id);
         currentCanvas?.parentNode?.insertBefore(tempCanvas, currentCanvas);
         component.canvasClick(mouseEvent);
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
