@@ -6,18 +6,19 @@ import { MouseService } from '@app/services/mouseService/mouse.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 
-@Component({
-    selector: 'app-paint-area',
-    templateUrl: './paint-area.component.html',
-    styleUrls: ['./paint-area.component.scss'],
-    providers: [DrawService],
-})
 /**
  * This component represents one of the two canvas inside a game page.
  *
  * @author Simon Gagné
  * @class PaintAreaComponent
  */
+
+@Component({
+    selector: 'app-paint-area',
+    templateUrl: './paint-area.component.html',
+    styleUrls: ['./paint-area.component.scss'],
+    providers: [DrawService],
+})
 export class PaintAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
@@ -48,8 +49,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * This method listens for a shift key press and updates the isShiftPressed attribute in
-     * consequences.
+     * This method listens for a shift key press and forces the user to draw a square.
      *
      * @param event the keyboardEvent to process.
      */
