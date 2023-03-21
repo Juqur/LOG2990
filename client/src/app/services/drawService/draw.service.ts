@@ -91,8 +91,8 @@ export class DrawService {
     /**
      * Method used to draw on the canvas at a given coordinate.
      *
-     * @param prevCoord the previous coordinate
-     * @param actCoord the current coordinate
+     * @param prevCoord The previous coordinate
+     * @param actCoord The current coordinate
      */
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
         this.context.beginPath();
@@ -109,9 +109,9 @@ export class DrawService {
     /**
      * DrawRect draws a rectangle on the canvas.
      *
-     * @param coord starting coordinate of the rectangle
-     * @param width the width of the rectangle
-     * @param height the height of the rectangle
+     * @param coord Starting coordinate of the rectangle
+     * @param width The width of the rectangle
+     * @param height The height of the rectangle
      */
     drawRect(coord: Vec2, width: number, height: number): void {
         this.context.beginPath();
