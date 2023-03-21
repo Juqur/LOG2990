@@ -240,6 +240,13 @@ describe('GamePageService', () => {
             expect(service['imagesData']).toEqual(expectedArray);
         });
 
+        it('should correctly filter areaNotFOund in handleAreaFoundInDiff', () => {
+            service['areaNotFound'] = [0, 1, 2, 3];
+            const expectedArray = [0, 1, 2];
+            service['handleAreaFoundInDiff'](expectedArray, true);
+            expect(service['areaNotFound']).toEqual([3]);
+        });
+
         it('should call quickPlay', () => {
             service['handleAreaFoundInDiff']([], false);
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
@@ -296,6 +303,13 @@ describe('GamePageService', () => {
             const expectedArray = [0, 1, 2];
             service['handleAreaFoundInOriginal'](expectedArray, false);
             expect(service['imagesData']).toEqual(expectedArray);
+        });
+
+        it('should correctly filter areaNotFound in handleAreaFoundInOriginal', () => {
+            const expectedArray = [0, 1, 2];
+            service['areaNotFound'] = [0, 1, 2, 3];
+            service['handleAreaFoundInOriginal'](expectedArray, true);
+            expect(service['areaNotFound']).toEqual([3]);
         });
 
         it('should call quickPlay', () => {
