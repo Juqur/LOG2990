@@ -111,6 +111,7 @@ describe('GameGateway', () => {
 
         it('should emit to the opponent when player clicks if they exist', async () => {
             gameState.otherSocketId = '1';
+            gameData.differencePixels = [0, 1, 2];
             const spy = jest.spyOn(socket, 'to').mockImplementation(() => ({ emit: jest.fn() } as never));
             await gateway.onClick(socket, 1);
             expect(spy).toBeCalledTimes(1);
