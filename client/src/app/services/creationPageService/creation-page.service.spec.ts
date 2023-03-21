@@ -3,7 +3,7 @@
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatSliderModule } from '@angular/material/slider';
+import { MatSlider, MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LevelDifferences } from '@app/classes/difference';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -231,14 +231,14 @@ describe('CreationPageService', () => {
     });
 
     it('brushSlider change should correctly update the value of both draw services', () => {
-        const mockEvent = { value: Constants.thirty };
+        const mockEvent = { value: 1 } as MatSlider;
         const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'setBrushSize');
         const diffDrawSpy = spyOn(drawServiceDiffSpy, 'setBrushSize');
         const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         service.brushSliderChange(mockEvent, defaultCanvasCtx, diffCanvasCtx);
-        expect(defaultDrawSpy).toHaveBeenCalledOnceWith(Constants.thirty);
-        expect(diffDrawSpy).toHaveBeenCalledWith(Constants.thirty);
+        expect(defaultDrawSpy).toHaveBeenCalledOnceWith(1);
+        expect(diffDrawSpy).toHaveBeenCalledWith(1);
     });
 
     it('detectDifference should not call errorDialog if none of the canvases are null and call DifferenceService detectDifferences', () => {

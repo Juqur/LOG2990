@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
-import { MatSliderChange } from '@angular/material/slider';
+import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { CreationPageService } from '@app/services/creationPageService/creation-page.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -56,7 +56,7 @@ export class CreationComponent implements OnDestroy {
     setBrushSize(event: MatSliderChange): void {
         const defaultCtx = this.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = this.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.creationService.brushSliderChange(event, defaultCtx, diffCtx);
+        this.creationService.brushSliderChange(event as unknown as MatSlider, defaultCtx, diffCtx);
     }
 
     /**

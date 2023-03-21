@@ -2,7 +2,7 @@
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatSliderChange, MatSliderModule } from '@angular/material/slider';
+import { MatSlider } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
@@ -33,7 +33,7 @@ describe('CreationComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [CreationComponent, ScaleContainerComponent, PaintAreaComponent],
             providers: [{ provide: CreationPageService, useValue: creationPageServiceSpy }, HttpClient, HttpHandler],
-            imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
+            imports: [AppMaterialModule, FormsModule, RouterTestingModule],
         }).compileComponents();
         fixture = TestBed.createComponent(CreationComponent);
         component = fixture.componentInstance;
@@ -195,8 +195,8 @@ describe('CreationComponent', () => {
     it('setBrushSize should set the brush size', () => {
         const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const matSlider = { value: 1 } as MatSliderChange;
+        const matSlider = { value: 1 } as MatSlider;
         component.setBrushSize(matSlider);
-        expect(creationPageServiceSpy.brushSliderChange).toHaveBeenCalledWith(matSlider, defaultCtx, diffCtx);
+        expect(creationPageServiceSpy.brushSliderChange).toHaveBeenCalledWith(matSlider as MatSlider, defaultCtx, diffCtx);
     });
 });

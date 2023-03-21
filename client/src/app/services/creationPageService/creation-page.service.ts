@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
+import { MatSlider } from '@angular/material/slider';
 import { LevelDifferences } from '@app/classes/difference';
 import { LevelFormData } from '@app/classes/level-form-data';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
@@ -62,7 +63,7 @@ export class CreationPageService {
     }
 
     /**
-     * Getter for the radius attribute
+     * Getter for the radius attribute.
      */
     get radius(): number {
         return this.creationSpecs.radius;
@@ -76,21 +77,21 @@ export class CreationPageService {
     }
 
     /**
-     * Getter for the difference amount message
+     * Getter for the difference amount message.
      */
     get differenceMsg(): string {
         return this.differenceAmountMsg;
     }
 
     /**
-     * Getter for the isSaveable attribute
+     * Getter for the isSaveable attribute.
      */
     get saveable(): boolean {
         return this.isSaveable;
     }
 
     /**
-     * Sets isSaveable to false as it shouldnt be set to true from outside the service.
+     * Sets isSaveable to false as it should not be set to true from outside the service.
      */
     saveFalse(): void {
         this.isSaveable = false;
@@ -136,7 +137,7 @@ export class CreationPageService {
      * This method is in charge of selecting the image given to the input verifying that it is
      * of the correct format and display as both the default and different image.
      *
-     * @param event event on the HTMLInputElement
+     * @param event Event on the HTMLInputElement.
      */
     bothImagesSelector(event: Event): void {
         this.defaultImageSelector(event);
@@ -146,7 +147,7 @@ export class CreationPageService {
     /**
      * This method clears the value of the input, effectively removing the file that was given.
      *
-     * @param event event on the HTMLInputElement
+     * @param event Event on the HTMLInputElement.
      */
     cleanSrc(event: Event): void {
         (event.target as HTMLInputElement).value = '';
@@ -178,9 +179,9 @@ export class CreationPageService {
 
     /**
      * Changes the value of the radius depending on a value given as parameter. The possible options
-     * are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters
+     * are 0, 3, 9, and 15 each corresponding to the indexes 0, 1, 2 and 3 that can be given as parameters.
      *
-     * @param value the index of the new slider value
+     * @param value The index of the new slider value.
      */
     diffSliderChange(value: number): void {
         this.creationSpecs.radius = Constants.RADIUS_TABLE[value];
@@ -189,10 +190,9 @@ export class CreationPageService {
     /**
      * Changes the value of the brush size depending on a value given as parameter.
      *
-     * @param value the index of the new slider value
+     * @param value The index of the new slider value.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    brushSliderChange(event: any, defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
+    brushSliderChange(event: MatSlider, defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
         this.drawServiceDefault.context = defaultCtx;
         this.drawServiceDiff.context = diffCtx;
         this.drawServiceDefault.setBrushSize(event.value);
