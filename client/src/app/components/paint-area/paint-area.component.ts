@@ -80,12 +80,19 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * This method listens for the mouse leaving the component and adds the current canvas to the undo/redo stack.
+     * It also releases the mouse from the canvas to prevent the user from drawing outside of the canvas.
+     *
+     */
     @HostListener('mouseleave')
     onMouseLeave(): void {
         if (this.isDragging) {
-            this.isDiff ? 
-            UndoRedoService.addToStack(null, this.fgCanvas.nativeElement.getContext('2d'))
-                : UndoRedoService.addToStack(this.fgCanvas.nativeElement.getContext('2d'), null);
+            if (this.isDiff) {
+                UndoRedoService.addToStack(null, this.fgCanvas.nativeElement.getContext('2d'));
+            } else {
+                UndoRedoService.addToStack(this.fgCanvas.nativeElement.getContext('2d'), null);
+            }
             this.canvasRelease();
         }
     }
@@ -93,7 +100,6 @@ export class PaintAreaComponent implements AfterViewInit {
     /**
      * Detects the mouse release on the canvas.
      * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
-     * It is also called when the mouse leaves the component.
      *
      * @param event The mouse event.
      */
