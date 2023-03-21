@@ -285,7 +285,10 @@ export class CreationPageService {
 
     /**
      * When the user press on the paint brush button, this method is called
-     * It sets the mouse service to Paint mode
+     * It sets the mouse service to Paint mode.
+     *
+     * @param defaultCtx The default canvas context.
+     * @param diffCtx The diff canvas context.
      */
     paintBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
@@ -298,7 +301,10 @@ export class CreationPageService {
 
     /**
      * When the user press on the erase brush button, this method is called
-     * It sets the mouse service to Erase mode
+     * It sets the mouse service to Erase mode.
+     * 
+     * @param defaultCtx The default canvas context.
+     * @param diffCtx The diff canvas context.
      */
     eraseBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
@@ -428,8 +434,7 @@ export class CreationPageService {
     }
 
     /**
-     * This method re initializes the game games values to prevent the user from saving
-     * using obsolete values after a change.
+     * This method re-initializes the game games values to prevent the user from saving.
      */
     private restartGame(): void {
         this.creationSpecs.nbDifferences = Constants.INIT_DIFF_NB;
