@@ -48,8 +48,12 @@ export class CreationComponent implements OnDestroy {
         UndoRedoService.resetAllStacks();
     }
 
+    /**
+     * Set the size of the brush
+     *
+     * @param event The event that is triggered when the user changes the value of the slider
+     */
     setBrushSize(event: MatSliderChange): void {
-        console.log(event);
         const defaultCtx = this.defaultPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const diffCtx = this.diffPaintArea.getPaintCanvas().getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.creationService.brushSliderChange(event, defaultCtx, diffCtx);
