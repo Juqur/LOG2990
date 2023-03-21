@@ -312,7 +312,7 @@ describe('GameGateway', () => {
 
     describe('onAbandonGame', () => {
         it('should call handlePlayerLeavingGame', () => {
-            const handlePlayerLeavingGameSpy = jest.spyOn(gateway, 'handlePlayerLeavingGame' as never).mockImplementation();
+            const handlePlayerLeavingGameSpy = jest.spyOn(gateway, 'handlePlayerLeavingGame' as never);
             gateway.onAbandonGame(socket);
             expect(handlePlayerLeavingGameSpy).toBeCalledWith(socket);
         });
@@ -320,7 +320,7 @@ describe('GameGateway', () => {
 
     describe('onStartCheatMode', () => {
         it('should call startCheatMode', () => {
-            const startCheatModeSpy = jest.spyOn(gameService, 'startCheatMode' as never).mockImplementation();
+            const startCheatModeSpy = jest.spyOn(gameService, 'startCheatMode' as never);
             gateway.onStartCheatMode(socket);
             expect(startCheatModeSpy).toBeCalledWith(socket.id);
         });
@@ -328,7 +328,7 @@ describe('GameGateway', () => {
 
     describe('onStopCheatMode', () => {
         it('should call stopCheatMode', () => {
-            const stopCheatModeSpy = jest.spyOn(gameService, 'stopCheatMode' as never).mockImplementation();
+            const stopCheatModeSpy = jest.spyOn(gameService, 'stopCheatMode' as never);
             gateway.onStopCheatMode(socket);
             expect(stopCheatModeSpy).toBeCalledWith(socket.id);
         });
@@ -336,7 +336,7 @@ describe('GameGateway', () => {
 
     describe('handleDisconnect', () => {
         it('should call handlePlayerLeavingGame', () => {
-            const handlePlayerLeavingGameSpy = jest.spyOn(gateway, 'handlePlayerLeavingGame' as never).mockImplementation();
+            const handlePlayerLeavingGameSpy = jest.spyOn(gateway, 'handlePlayerLeavingGame' as never);
             gateway.handleDisconnect(socket);
             expect(handlePlayerLeavingGameSpy).toBeCalledWith(socket);
         });
