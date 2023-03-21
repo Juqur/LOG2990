@@ -142,6 +142,28 @@ describe('GamePageService', () => {
         });
     });
 
+    describe('handleOpponentAbandon', () => {
+        it('should call create', () => {
+            service.handleOpponentAbandon();
+            expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        });
+
+        it('should call reset', () => {
+            service.handleOpponentAbandon();
+            expect(audioServiceSpy.reset).toHaveBeenCalled();
+        });
+
+        it('should call play', () => {
+            service.handleOpponentAbandon();
+            expect(audioServiceSpy.play).toHaveBeenCalled();
+        });
+
+        it('should call openDialog', () => {
+            service.handleOpponentAbandon();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['opponentAbandonedGameDialogData'], service['closePath']);
+        });
+    });
+
     describe('handleDefeat', () => {
         it('should call create', () => {
             service.handleDefeat();

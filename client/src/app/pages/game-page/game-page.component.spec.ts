@@ -36,6 +36,7 @@ describe('GamePageComponent', () => {
             'handleResponse',
             'resetImagesData',
             'handleVictory',
+            'handleOpponentAbandon',
             'handleDefeat',
             'startCheatMode',
             'stopCheatMode',
@@ -168,6 +169,16 @@ describe('GamePageComponent', () => {
             });
             component.handleSocket();
             expect(gamePageServiceSpy.handleVictory).toHaveBeenCalledTimes(1);
+        });
+
+        it('should handle abandon if server sends opponent abandoned request', () => {
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'opponentAbandoned') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.handleOpponentAbandon).toHaveBeenCalledTimes(1);
         });
 
         it('should handle defeat if server sends defeat request', () => {
