@@ -25,6 +25,26 @@ describe('UndoRedoService', () => {
         expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
     });
 
+    it('addToStack should still add to stack take the previous canvas if it has no context parameters', () => {
+        const defaultCanvas = document.createElement('canvas');
+        const defaultCanvasCtx = defaultCanvas.getContext('2d');
+        const tempDiffCanvas = document.createElement('canvas');
+        const tempDiffCanvasCtx = tempDiffCanvas.getContext('2d');
+        UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDiffCanvasCtx as CanvasRenderingContext2D);
+        expect(UndoRedoService.canvasStack.length).toEqual(1);
+        UndoRedoService.addToStack(null, null);
+        expect(UndoRedoService.canvasStack.length).toEqual(2);
+    });
+
+    it('addToStack should create empy canvas if there is no parameters and the stack is empty', () => {
+        const mockCanvas = document.createElement('canvas');
+        const createElementSpy = spyOn(document, 'createElement').and.returnValue(mockCanvas);
+        UndoRedoService.addToStack(null, null);
+        expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        expect(createElementSpy).toHaveBeenCalledTimes(4);
+    });
+
     it('addToStack should draw image', () => {
         spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
 

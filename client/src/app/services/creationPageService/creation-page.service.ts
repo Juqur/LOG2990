@@ -320,6 +320,8 @@ export class CreationPageService {
      * It sets the mouse service to rectangle mode.
      */
     rectangleMode(): void {
+        this.drawServiceDefault.paintBrush();
+        this.drawServiceDiff.paintBrush();
         this.mouseServiceDefault.isRectangleMode = true;
         this.mouseServiceDiff.isRectangleMode = true;
     }

@@ -16,7 +16,19 @@ export class UndoRedoService {
      * @param defaultCanvas The default (left) canvas.
      * @param diffCanvas The diff (right) canvas.
      */
-    static addToStack(defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D): void {
+    static addToStack(defaultCanvas: CanvasRenderingContext2D | null, diffCanvas: CanvasRenderingContext2D | null): void {
+        if (!defaultCanvas) {
+            defaultCanvas =
+                this.undoPointer === Constants.EMPTY_STACK
+                    ? (document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D)
+                    : (this.canvasStack[this.undoPointer].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
+        }
+        if (!diffCanvas) {
+            diffCanvas =
+                this.undoPointer === Constants.EMPTY_STACK
+                    ? (document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D)
+                    : (this.canvasStack[this.undoPointer].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        }
         const tempDefaultCanvas = document.createElement('canvas');
         tempDefaultCanvas.width = defaultCanvas.canvas.width;
         tempDefaultCanvas.height = defaultCanvas.canvas.height;

@@ -58,6 +58,9 @@ export class PlayAreaComponent implements AfterViewInit {
         this.drawPlayArea(this.image);
     }
 
+    /**
+     * Returns the canvas element.
+     */
     getCanvas() {
         return this.canvas;
     }

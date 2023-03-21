@@ -26,6 +26,8 @@ describe('CreationComponent', () => {
             'saveTrue',
             'brushSliderChange',
             'setBrushSize',
+            'resetDefaultBackground',
+            'resetDiffBackground',
         ]);
     });
 
@@ -60,6 +62,12 @@ describe('CreationComponent', () => {
         window.dispatchEvent(event);
         expect(handleRedospy).toHaveBeenCalledTimes(1);
         expect(applyChangesSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('ngOnDestroy should call resetAllStacks', () => {
+        const resetAllStacksSpy = spyOn(UndoRedoService, 'resetAllStacks');
+        component.ngOnDestroy();
+        expect(resetAllStacksSpy).toHaveBeenCalledTimes(1);
     });
 
     it('ngOnDestroy should call resetAllStacks', () => {

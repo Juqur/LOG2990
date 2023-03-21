@@ -422,7 +422,11 @@ describe('CreationPageService', () => {
     });
 
     it('rectangleMode should set isRectangleMode to true', () => {
+        const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'paintBrush');
+        const diffDrawSpy = spyOn(drawServiceDiffSpy, 'paintBrush');
         service.rectangleMode();
+        expect(defaultDrawSpy).toHaveBeenCalledTimes(1);
+        expect(diffDrawSpy).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.isRectangleMode).toBeTrue();
     });
 

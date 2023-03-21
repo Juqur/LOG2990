@@ -81,13 +81,28 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
+     * This method listens for the mouse leaving the component and adds the current canvas to the undo/redo stack.
+     * It also releases the mouse from the canvas to prevent the user from drawing outside of the canvas.
+     *
+     */
+    @HostListener('mouseleave')
+    onMouseLeave(): void {
+        if (this.isDragging) {
+            if (this.isDiff) {
+                UndoRedoService.addToStack(null, this.fgCanvas.nativeElement.getContext('2d'));
+            } else {
+                UndoRedoService.addToStack(this.fgCanvas.nativeElement.getContext('2d'), null);
+            }
+            this.canvasRelease();
+        }
+    }
+
+    /**
      * Detects the mouse release on the canvas.
      * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
-     * It is also called when the mouse leaves the component.
      *
      * @param event The mouse event.
      */
-    @HostListener('mouseleave')
     canvasRelease(): void {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
@@ -211,8 +226,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
         const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id) as HTMLCanvasElement;
-        const parentElement = currentCanvas.parentElement as HTMLElement;
-        parentElement.insertBefore(this.tempCanvas, currentCanvas);
+        currentCanvas.after(this.tempCanvas);
         this.tempCanvas.addEventListener('mousedown', this.canvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.canvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
