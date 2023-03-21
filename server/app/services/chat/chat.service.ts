@@ -1,6 +1,7 @@
 import { GameEvents } from '@app/gateways/game/game.gateway.events';
-import { GameData, GameService } from '@app/services/game/game.service';
+import { GameService } from '@app/services/game/game.service';
 import { ChatMessage, SenderType } from '@common/chat-messages';
+import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 
