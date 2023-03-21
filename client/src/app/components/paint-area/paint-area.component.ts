@@ -160,7 +160,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * Detects the mouse click on the canvas, and calls the appropriate function for drawing.
      * If a temporary canvas exists, it is removed and drawn on the foreground canvas.
      *
-     * @param event the mouse event
+     * @param event The mouse event.
      */
     canvasClick(event: MouseEvent): void {
         const currentCanvas = document.body.querySelector('#' + this.fgCanvas.nativeElement.id) as HTMLCanvasElement;
