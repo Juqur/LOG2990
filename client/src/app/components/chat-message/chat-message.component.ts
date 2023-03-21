@@ -2,18 +2,17 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ChatMessage } from '@common/chat-messages';
 import { Constants } from '@common/constants';
 
+/**
+ * This component represents a message in the chat history.
+ *
+ * @author Charles Degrandpré & Louis Félix St-Amour
+ * @class ChatMessageComponent
+ */
 @Component({
     selector: 'app-chat-message',
     templateUrl: './chat-message.component.html',
     styleUrls: ['./chat-message.component.scss'],
 })
-
-/**
- * This component represents a message in the chat history.
- *
- * @author Charles Degrandpré
- * @class ChatMessageComponent
- */
 export class ChatMessageComponent implements OnInit {
     private displayName: string;
     private chatMessage: ChatMessage;
