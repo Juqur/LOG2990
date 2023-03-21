@@ -17,30 +17,30 @@ export class DrawService {
     private brushSize = 1;
 
     /**
-     * Getter for the width of the canvas
+     * Getter for the width of the canvas.
      */
     get width(): number {
         return this.context.canvas.width;
     }
 
     /**
-     * Getter for the height of the canvas
+     * Getter for the height of the canvas.
      */
     get height(): number {
         return this.context.canvas.height;
     }
 
     /**
-     * Setter for the context
+     * Setter for the context.
      */
     set contextToUse(context: CanvasRenderingContext2D) {
         this.context = context;
     }
 
     /**
-     * Set the color of the brush
+     * Set the color of the brush.
      *
-     * @param color The color of the brush
+     * @param color The color of the brush.
      */
     setPaintColor(color: string): void {
         this.paintColor = color;
@@ -49,9 +49,9 @@ export class DrawService {
     }
 
     /**
-     * setBrushSize sets the brush size of the context
+     * SetBrushSize sets the brush size of the context.
      *
-     * @param size The size of the brush
+     * @param size The size of the brush.
      */
     setBrushSize(size: number): void {
         this.brushSize = size;
@@ -59,7 +59,7 @@ export class DrawService {
     }
 
     /**
-     * paintBrush sets the attributes for a brush
+     * PaintBrush sets the attributes for a brush.
      */
     paintBrush(): void {
         this.context.globalCompositeOperation = 'source-over';
@@ -69,7 +69,7 @@ export class DrawService {
     }
 
     /**
-     * eraseBrush sets the attributes for an eraser
+     * EraseBrush sets the attributes for an eraser.
      */
     eraseBrush(): void {
         this.context.globalCompositeOperation = 'destination-out';
@@ -78,9 +78,9 @@ export class DrawService {
     }
 
     /**
-     * Method used to draw an error message on the canvas at a given coordinate
+     * Method used to draw an error message on the canvas at a given coordinate.
      *
-     * @param coord The coordinate at which to start drawing the word ERREUR
+     * @param coord The coordinate at which to start drawing the word ERREUR.
      */
     drawError(coord: Vec2): void {
         this.context.font = '36px system-ui';
@@ -89,7 +89,7 @@ export class DrawService {
     }
 
     /**
-     * Method used to draw on the canvas at a given coordinate
+     * Method used to draw on the canvas at a given coordinate.
      *
      * @param prevCoord the previous coordinate
      * @param actCoord the current coordinate
@@ -107,7 +107,7 @@ export class DrawService {
     }
 
     /**
-     * drawRect draws a rectangle on the canvas
+     * DrawRect draws a rectangle on the canvas.
      *
      * @param coord starting coordinate of the rectangle
      * @param width the width of the rectangle
