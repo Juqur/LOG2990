@@ -114,7 +114,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             this.gamePageService.setImages(this.levelId);
             this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
