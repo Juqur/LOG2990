@@ -10,7 +10,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communicationService/communication.service';
 import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
-import { MouseService } from '@app/services/mouseService/mouse.service';
 import { PopUpService } from '@app/services/popUpService/pop-up.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
@@ -19,13 +18,11 @@ import SpyObj = jasmine.SpyObj;
 
 describe('CreationPageService', () => {
     let service: CreationPageService;
-    let mouseServiceSpy: SpyObj<MouseService>;
     let diffServiceSpy: SpyObj<DifferenceDetectorService>;
     let communicationSpy: SpyObj<CommunicationService>;
     let popUpServiceSpy: any;
 
     beforeEach(() => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getX', 'getY']);
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog', 'dialogRef']);
@@ -39,7 +36,6 @@ describe('CreationPageService', () => {
                 CanvasSharingService,
                 HttpClient,
                 HttpHandler,
-                { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: DifferenceDetectorService, useValue: diffServiceSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: CommunicationService, useValue: communicationSpy },
