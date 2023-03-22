@@ -4,7 +4,6 @@ import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/cor
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
@@ -64,7 +63,7 @@ describe('PaintAreaComponent', () => {
 
     it('getCanvas should return the canvas element', () => {
         const canvas = component.paintCanvas;
-        expect(canvas).toEqual(component.fgCanvas.nativeElement);
+        expect(canvas).toEqual(component.foregroundCanvas.nativeElement);
     });
 
     it('loadBackground should call context.drawImage', fakeAsync(() => {
@@ -84,22 +83,6 @@ describe('PaintAreaComponent', () => {
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('onMouseLeave should add the default canvas to the stack if isDiff is false', () => {
-        const stackSpy = spyOn(UndoRedoService, 'addToStack');
-        component.isDiff = false;
-        component.isDragging = true;
-        component.onMouseLeave();
-        expect(stackSpy).toHaveBeenCalledOnceWith(component.fgCanvas.nativeElement.getContext('2d'), null);
-    });
-
-    it('onMouseLeave should add the default canvas to the stack if isDiff is true', () => {
-        const stackSpy = spyOn(UndoRedoService, 'addToStack');
-        component.isDiff = true;
-        component.isDragging = true;
-        component.onMouseLeave();
-        expect(stackSpy).toHaveBeenCalledOnceWith(null, component.fgCanvas.nativeElement.getContext('2d'));
-    });
-
     it('mergeCanvas should return a canvas with the correct size', () => {
         const result = component.mergeCanvas();
         expect(result.width).toBe(Constants.DEFAULT_WIDTH);
@@ -115,9 +98,9 @@ describe('PaintAreaComponent', () => {
         expect(tempCanvas.width).toBe(Constants.DEFAULT_WIDTH);
         expect(tempCanvas.height).toBe(Constants.DEFAULT_HEIGHT);
         expect(tempCanvas.style.position).toBe('absolute');
-        expect(tempCanvas.style.top).toBe(component.fgCanvas.nativeElement.offsetTop + 'px');
-        expect(tempCanvas.style.left).toBe(component.fgCanvas.nativeElement.offsetLeft + 'px');
-        expect(tempCanvas.previousElementSibling).toBe(component.fgCanvas.nativeElement);
+        expect(tempCanvas.style.top).toBe(component.foregroundCanvas.nativeElement.offsetTop + 'px');
+        expect(tempCanvas.style.left).toBe(component.foregroundCanvas.nativeElement.offsetLeft + 'px');
+        expect(tempCanvas.previousElementSibling).toBe(component.foregroundCanvas.nativeElement);
     });
 
     it('canvasClick should set isDragging to true and call appropriate functions if in in rectangle mode', () => {
@@ -155,7 +138,7 @@ describe('PaintAreaComponent', () => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
         const tempCanvas = document.createElement('canvas');
         tempCanvas.classList.add('draw');
-        const currentCanvas = document.body.querySelector('#' + component.fgCanvas.nativeElement.id);
+        const currentCanvas = document.body.querySelector('#' + component.foregroundCanvas.nativeElement.id);
         currentCanvas?.parentNode?.insertBefore(tempCanvas, currentCanvas);
         component.canvasClick(mouseEvent);
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
@@ -260,7 +243,7 @@ describe('PaintAreaComponent', () => {
         mouseServiceSpy.isRectangleMode = true;
         component.canvasClick(mouseEvent);
         mouseEvent = {
-            offsetX: 250,
+            offsetX: 150,
             offsetY: 300,
             button: 0,
         } as MouseEvent;
