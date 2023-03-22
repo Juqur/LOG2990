@@ -199,11 +199,14 @@ describe('SelectionPageService', () => {
 
     describe('waitForMatch', () => {
         it('should emit a socket event when the user waits for a player and when player closes the dialog', () => {
-            const id = 1;
-            const name = 'Alice';
-            service['waitForMatch'](id, name);
+            service['levelId'] = 1;
+            service['name'] = 'Alice';
+            service['waitForMatch']();
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameSelection', { levelId: id, playerName: name });
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameSelection', {
+                levelId: service['levelId'],
+                playerName: service['name'],
+            });
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onCancelledWhileWaiting', {});
         });
     });
@@ -237,7 +240,7 @@ describe('SelectionPageService', () => {
             service['openToBeAcceptedDialog']();
             expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameCancelled', {});
         });
 
         it('should emit a socket event when the player accepts the invitation', () => {
@@ -251,7 +254,7 @@ describe('SelectionPageService', () => {
             dialogRefSpy.afterClosed.and.returnValue(of(false));
             service['openPlayerSelectionDialog']('');
             expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(2);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
         });
     });

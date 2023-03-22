@@ -29,6 +29,8 @@ export class SelectionPageService implements OnDestroy {
     private waitingForOtherPlayer: boolean = true;
     private waitingForAcceptation: boolean = true;
     private dialog: DialogData;
+    private levelId: number;
+    private name: string;
 
     constructor(private socketHandler: SocketHandler, private router: Router, private popUpService: PopUpService) {}
 
@@ -89,7 +91,8 @@ export class SelectionPageService implements OnDestroy {
      *
      * @param levelId The id of the level that the player wants to play.
      */
-    startGameDialog(levelId: number): void {
+    startGameDialog(gameId: number): void {
+        this.levelId = gameId;
         this.waitingForAcceptation = true;
         this.waitingForOtherPlayer = true;
         this.dialog = {
@@ -109,7 +112,8 @@ export class SelectionPageService implements OnDestroy {
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result && this.waitingForOtherPlayer) {
-                this.waitForMatch(levelId, result);
+                this.name = result;
+                this.waitForMatch();
             }
         });
     }
@@ -121,8 +125,8 @@ export class SelectionPageService implements OnDestroy {
      * @param id The id of the level that the player wants to play.
      * @param name The name of the player.
      */
-    private waitForMatch(id: number, name: string): void {
-        this.socketHandler.send('game', 'onGameSelection', { levelId: id, playerName: name });
+    private waitForMatch(): void {
+        this.socketHandler.send('game', 'onGameSelection', { levelId: this.levelId, playerName: this.name });
         this.dialog = {
             textToSend: "En attente d'un autre joueur",
             closeButtonMessage: 'Annuler',
@@ -140,6 +144,8 @@ export class SelectionPageService implements OnDestroy {
      * This method is called when the player rejects your game
      */
     private rejectedMatch(): void {
+        this.waitingForOtherPlayer = false;
+        this.waitingForAcceptation = false;
         this.popUpService.dialogRef.close();
         this.dialog = {
             textToSend: 'Le joueur a refusé la partie',
@@ -192,7 +198,7 @@ export class SelectionPageService implements OnDestroy {
         this.popUpService.openDialog(this.dialog);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
             if (this.waitingForAcceptation) {
-                this.socketHandler.send('game', 'onGameRejected', {});
+                this.socketHandler.send('game', 'onGameCancelled', {});
             }
         });
     }
@@ -218,6 +224,8 @@ export class SelectionPageService implements OnDestroy {
                 this.socketHandler.send('game', 'onGameAccepted', {});
             } else if (this.waitingForAcceptation) {
                 this.socketHandler.send('game', 'onGameRejected', {});
+                this.waitingForOtherPlayer = true;
+                this.waitForMatch();
             }
         });
     }
