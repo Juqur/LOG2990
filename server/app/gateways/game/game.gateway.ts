@@ -141,20 +141,25 @@ export class GameGateway {
 
     /**
      * This method is called when a player rejects a game.
-     * It updates the selection page join button.
-     * It removes the player and the other player from the game.
-     * It emits a event to the other player to tell them that the game was rejected.
      *
      * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnGameRejected)
     onGameRejected(socket: Socket): void {
+        this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).levelId, canJoin: true });
+        this.cancelGame(socket);
+    }
+
+    /**
+     * This method is called when a player cancels a game.
+     *
+     * @param socket The socket of the player.
+     */
+    @SubscribeMessage(GameEvents.OnGameCancelled)
+    onGameCancelled(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).levelId, canJoin: false });
-        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
+        this.cancelGame(socket);
         this.gameService.deleteUserFromGame(socket);
-        this.gameService.deleteUserFromGame(this.server.sockets.sockets.get(secondPlayerId));
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
 
     /**
@@ -253,5 +258,19 @@ export class GameGateway {
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);
         }
+    }
+
+    /**
+     * It removes the player and the other player from the game.
+     * It emits a event to the other player to tell them that the game was rejected.
+     *
+     * @param socket The socket of the player.
+     */
+    private cancelGame(socket: Socket): void {
+        this.gameService.setIsGameFound(socket.id, false);
+        const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
+        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+        this.gameService.deleteUserFromGame(secondPlayerSocket);
+        secondPlayerSocket.emit(GameEvents.RejectedGame);
     }
 }

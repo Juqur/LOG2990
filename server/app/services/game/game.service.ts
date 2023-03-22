@@ -80,6 +80,18 @@ export class GameService {
     }
 
     /**
+     * This method sets the attribute of IsInGame.
+     *
+     * @param socketId The socket id of the player.
+     * @param isInGame A boolean indicating whether the player is in the game.
+     */
+    setIsGameFound(socketId: string, isGameFound: boolean): void {
+        const gameState = this.playerGameMap.get(socketId);
+        gameState.isGameFound = isGameFound;
+        this.playerGameMap.set(socketId, gameState);
+    }
+
+    /**
      * This method is called when a player clicks on a pixel.
      * It uses imageService to detect whether the pixel is a difference pixel.
      *
