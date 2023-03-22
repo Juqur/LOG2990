@@ -264,13 +264,12 @@ describe('GameGateway', () => {
     describe('onGameRejected', () => {
         it('should update the selection page', () => {
             gateway.onGameRejected(socket);
-            expect(emitServerSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: false });
+            expect(emitServerSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: true });
         });
 
         it('should delete the user and the opponent from the game map', () => {
             const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
             gateway.onGameRejected(socket);
-            expect(deleteUserFromGameSpy).toBeCalledWith(socket);
             expect(deleteUserFromGameSpy).toBeCalledWith(otherSocket);
         });
 
@@ -356,6 +355,25 @@ describe('GameGateway', () => {
             const handlePlayerLeavingGameSpy = jest.spyOn(gateway, 'handlePlayerLeavingGame' as never);
             gateway.handleDisconnect(socket);
             expect(handlePlayerLeavingGameSpy).toBeCalledWith(socket);
+        });
+    });
+
+    describe('onGameCancelled', () => {
+        it('should call cancelGame', () => {
+            const cancelGameSpy = jest.spyOn(gateway, 'cancelGame' as never);
+            gateway.onGameCancelled(socket);
+            expect(cancelGameSpy).toBeCalledWith(socket);
+        });
+
+        it('should update the selection page', () => {
+            gateway.onGameCancelled(socket);
+            expect(emitServerSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: false });
+        });
+
+        it('should emit to the opponent that the game has been cancelled', () => {
+            const deletePlayerSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            gateway.onGameCancelled(socket);
+            expect(deletePlayerSpy).toBeCalledWith(socket);
         });
     });
 
