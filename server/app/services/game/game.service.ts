@@ -178,6 +178,8 @@ export class GameService {
     findAvailableGame(socketId: string, levelId: number): string {
         for (const [otherSocketId, otherGameState] of this.playerGameMap.entries()) {
             if (otherGameState.levelId === levelId && otherSocketId !== socketId && !otherGameState.isGameFound) {
+                this.setIsGameFound(otherSocketId, true);
+                this.setIsGameFound(socketId, true);
                 return otherSocketId;
             }
         }

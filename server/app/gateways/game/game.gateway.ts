@@ -94,6 +94,7 @@ export class GameGateway {
             this.gameService.bindPlayers(socket.id, otherPlayerId);
             socket.emit(GameEvents.ToBeAccepted);
             this.server.sockets.sockets.get(otherPlayerId).emit(GameEvents.PlayerSelection, data.playerName);
+            this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).levelId, canJoin: false });
         } else {
             this.server.emit(GameEvents.UpdateSelection, { levelId: data.levelId, canJoin: true });
         }
