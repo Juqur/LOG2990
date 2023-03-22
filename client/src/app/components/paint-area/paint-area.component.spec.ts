@@ -4,7 +4,6 @@ import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/cor
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
@@ -83,22 +82,6 @@ describe('PaintAreaComponent', () => {
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
-
-    it('onMouseLeave should add the default canvas to the stack if isDiff is false', () => {
-        const stackSpy = spyOn(UndoRedoService, 'addToStack');
-        component.isDiff = false;
-        component.isDragging = true;
-        component.onMouseLeave();
-        expect(stackSpy).toHaveBeenCalledOnceWith(component.foregroundCanvas.nativeElement.getContext('2d'), null);
-    });
-
-    it('onMouseLeave should add the default canvas to the stack if isDiff is true', () => {
-        const stackSpy = spyOn(UndoRedoService, 'addToStack');
-        component.isDiff = true;
-        component.isDragging = true;
-        component.onMouseLeave();
-        expect(stackSpy).toHaveBeenCalledOnceWith(null, component.foregroundCanvas.nativeElement.getContext('2d'));
-    });
 
     it('mergeCanvas should return a canvas with the correct size', () => {
         const result = component.mergeCanvas();

@@ -3,7 +3,6 @@ import { Vec2 } from '@app/interfaces/vec2';
 import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
 import { DrawService } from '@app/services/drawService/draw.service';
 import { MouseService } from '@app/services/mouseService/mouse.service';
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 
 /**
@@ -24,7 +23,6 @@ export class PaintAreaComponent implements AfterViewInit {
     @Input() image: string = '';
     @ViewChild('foregroundCanvas', { static: false }) foregroundCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('backgroundCanvas', { static: false }) backgroundCanvas!: ElementRef<HTMLCanvasElement>;
-    undoRedoService: UndoRedoService = new UndoRedoService();
     currentImage: HTMLImageElement;
     isShiftPressed = false;
     isDragging = false;
@@ -77,23 +75,6 @@ export class PaintAreaComponent implements AfterViewInit {
     buttonRelease(event: KeyboardEvent): void {
         if (event.key === 'Shift') {
             this.isShiftPressed = false;
-        }
-    }
-
-    /**
-     * This method listens for the mouse leaving the component and adds the current canvas to the undo/redo stack.
-     * It also releases the mouse from the canvas to prevent the user from drawing outside of the canvas.
-     *
-     */
-    @HostListener('mouseleave')
-    onMouseLeave(): void {
-        if (this.isDragging) {
-            if (this.isDiff) {
-                UndoRedoService.addToStack(null, this.foregroundCanvas.nativeElement.getContext('2d'));
-            } else {
-                UndoRedoService.addToStack(this.foregroundCanvas.nativeElement.getContext('2d'), null);
-            }
-            this.canvasRelease();
         }
     }
 
