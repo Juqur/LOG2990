@@ -121,9 +121,6 @@ export class SelectionPageService implements OnDestroy {
     /**
      * This method is called when a player creates a game.
      * It tells the player to wait for the other player to join the game.
-     *
-     * @param id The id of the level that the player wants to play.
-     * @param name The name of the player.
      */
     private waitForMatch(): void {
         this.socketHandler.send('game', 'onGameSelection', { levelId: this.levelId, playerName: this.name });
