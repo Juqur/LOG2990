@@ -1,9 +1,12 @@
 <div id="message-outer-box">
     <div id="content">
-        <div id="sender" class="sender" [ngClass]="this.message.senderId">
+        <div *ngIf="true" id="sender" class="sender" [ngClass]="this.message.senderId">
             <p>[</p>
             <p id="sender-name">{{ name }}</p>
             <p>]</p>
+        </div>
+        <div id="time" class="time" [ngClass]="this.message.senderId">
+            <p id="time-formatted">{{ timeReceived + '&nbsp;-&nbsp;' }}</p>
         </div>
         <p id="message-text" [ngClass]="this.message.senderId === 'system' ? this.message.senderId : ''">{{ message.text }}</p>
     </div>
