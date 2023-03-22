@@ -7,7 +7,7 @@ import { CreationSpecs } from '@app/interfaces/creation-specs';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
-import { DrawService } from '@app/services/drawService/draw.service';
+import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants } from '@common/constants';
