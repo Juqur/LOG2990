@@ -69,6 +69,7 @@ describe('SelectionPageService', () => {
         let openPlayerSelectionDialogSpy: jasmine.Spy;
         let closeDialogOnDeletedLevelSpy: jasmine.Spy;
         let startMultiplayerGameSpy: jasmine.Spy;
+        let rejectedMatchSpy: jasmine.Spy;
 
         beforeEach(() => {
             updateSelectionSpy = spyOn(service, 'updateSelection' as never);
@@ -77,6 +78,7 @@ describe('SelectionPageService', () => {
             openPlayerSelectionDialogSpy = spyOn(service, 'openPlayerSelectionDialog' as never);
             closeDialogOnDeletedLevelSpy = spyOn(service, 'closeDialogOnDeletedLevel' as never);
             startMultiplayerGameSpy = spyOn(service, 'startMultiplayerGame' as never);
+            rejectedMatchSpy = spyOn(service, 'rejectedMatch' as never);
         });
 
         it('should call updateSelection when server sends updateSelection event', () => {
@@ -152,7 +154,7 @@ describe('SelectionPageService', () => {
                 }
             });
             service.setupSocket(levelServiceSpy);
-            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
+            expect(rejectedMatchSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call startMultiplayerGame when server deleteLevel event', () => {
@@ -197,11 +199,14 @@ describe('SelectionPageService', () => {
 
     describe('waitForMatch', () => {
         it('should emit a socket event when the user waits for a player and when player closes the dialog', () => {
-            const id = 1;
-            const name = 'Alice';
-            service['waitForMatch'](id, name);
+            service['levelId'] = 1;
+            service['name'] = 'Alice';
+            service['waitForMatch']();
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameSelection', { levelId: id, playerName: name });
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameSelection', {
+                levelId: service['levelId'],
+                playerName: service['name'],
+            });
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onCancelledWhileWaiting', {});
         });
     });
@@ -235,7 +240,7 @@ describe('SelectionPageService', () => {
             service['openToBeAcceptedDialog']();
             expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameCancelled', {});
         });
 
         it('should emit a socket event when the player accepts the invitation', () => {
@@ -249,7 +254,7 @@ describe('SelectionPageService', () => {
             dialogRefSpy.afterClosed.and.returnValue(of(false));
             service['openPlayerSelectionDialog']('');
             expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(2);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onGameRejected', {});
         });
     });
@@ -272,6 +277,14 @@ describe('SelectionPageService', () => {
     describe('closeDialogOnDeletedLevel', () => {
         it('should open a dialog when the level gets deleted while waiting for a player', () => {
             service['closeDialogOnDeletedLevel']();
+            expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('rejectedMatch', () => {
+        it('should open a dialog when the player is rejected', () => {
+            service['rejectedMatch']();
             expect(popUpServiceSpy.dialogRef.close).toHaveBeenCalledTimes(1);
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
         });

@@ -456,4 +456,25 @@ describe('GameService', () => {
             expect(deleteLevelDataSpy).toHaveBeenCalled();
         });
     });
+
+    describe('setIsGameFound', () => {
+        it('should set isGameFound to true', () => {
+            service['playerGameMap'] = new Map<string, GameState>([
+                [
+                    'socket1',
+                    {
+                        levelId: 0,
+                        foundDifferences: [],
+                        amountOfDifferencesFound: 0,
+                        playerName: 'player1',
+                        isInGame: false,
+                        isGameFound: false,
+                        isInCheatMode: false,
+                    },
+                ],
+            ]);
+            service.setIsGameFound('socket1', true);
+            expect(service['playerGameMap'].get('socket1').isGameFound).toBeTruthy();
+        });
+    });
 });
