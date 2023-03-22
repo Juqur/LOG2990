@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Vec2 } from '@app/interfaces/vec2';
-import { DrawService } from '@app/services/drawService/draw.service';
+import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
 
 describe('DrawService', () => {

@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
+import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { DrawService } from '@app/services/drawService/draw.service';
-import { MouseService } from '@app/services/mouseService/mouse.service';
+import { MouseService } from '@app/services/mouse/mouse.service';
 import { Constants } from '@common/constants';
 
 /**

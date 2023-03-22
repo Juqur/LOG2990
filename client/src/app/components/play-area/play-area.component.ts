@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { CanvasSharingService } from '@app/services/canvasSharingService/canvas-sharing.service';
-import { DrawService } from '@app/services/drawService/draw.service';
+import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
+import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
 
 @Component({

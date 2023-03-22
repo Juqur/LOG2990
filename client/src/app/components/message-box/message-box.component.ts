@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { ChatMessage, SenderType } from '@common/chat-messages';
 
 /**

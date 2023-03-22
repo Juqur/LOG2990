@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { DrawService } from '@app/services/drawService/draw.service';
+import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
 import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;

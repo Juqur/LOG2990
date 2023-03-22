@@ -12,9 +12,9 @@ import { ScaleContainerComponent } from '@app/components/scale-container/scale-c
 import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
-import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { GamePageService } from '@app/services/gamePageService/game-page.service';
-import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
+import { GamePageService } from '@app/services/game-page/game-page.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { GameData } from '@common/game-data';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;

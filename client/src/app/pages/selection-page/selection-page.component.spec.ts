@@ -6,7 +6,7 @@ import { CardComponent } from '@app/components/card/card.component';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { LevelService } from '@app/services/levelService/level.service';
+import { LevelService } from '@app/services/level/level.service';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {

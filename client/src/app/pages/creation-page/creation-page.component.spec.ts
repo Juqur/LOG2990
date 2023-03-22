@@ -7,15 +7,15 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { CreationPageService } from '@app/services/creationPageService/creation-page.service';
+import { CreationPageService } from '@app/services/creation-page/creation-page.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
-import { CreationComponent } from './creation.component';
+import { CreationPageComponent } from './creation-page.component';
 
-describe('CreationComponent', () => {
+describe('CreationPageComponent', () => {
     let creationPageServiceSpy: jasmine.SpyObj<CreationPageService>;
-    let component: CreationComponent;
-    let fixture: ComponentFixture<CreationComponent>;
+    let component: CreationPageComponent;
+    let fixture: ComponentFixture<CreationPageComponent>;
 
     beforeEach(() => {
         creationPageServiceSpy = jasmine.createSpyObj('CreationPageService', [
@@ -33,11 +33,11 @@ describe('CreationComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [CreationComponent, ScaleContainerComponent, PaintAreaComponent],
+            declarations: [CreationPageComponent, ScaleContainerComponent, PaintAreaComponent],
             providers: [{ provide: CreationPageService, useValue: creationPageServiceSpy }, HttpClient, HttpHandler],
             imports: [AppMaterialModule, FormsModule, RouterTestingModule],
         }).compileComponents();
-        fixture = TestBed.createComponent(CreationComponent);
+        fixture = TestBed.createComponent(CreationPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

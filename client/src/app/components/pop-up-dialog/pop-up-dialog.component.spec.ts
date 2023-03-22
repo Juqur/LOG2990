@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogData, InputData, PopUpService } from '@app/services/popUpService/pop-up.service';
+import { DialogData, InputData, PopUpService } from '@app/services/pop-up/pop-up.service';
 
 import { PopUpDialogComponent } from './pop-up-dialog.component';
 import SpyObj = jasmine.SpyObj;

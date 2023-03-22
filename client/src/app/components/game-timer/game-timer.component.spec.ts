@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { GameTimerComponent } from './game-timer.component';
 
 describe('GameTimerComponent', () => {

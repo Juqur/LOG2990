@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { ChatMessage } from '@common/chat-messages';
 import { Constants } from '@common/constants';
 

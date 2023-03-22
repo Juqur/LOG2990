@@ -1,8 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Level } from '@app/levels';
-import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 import { of } from 'rxjs';

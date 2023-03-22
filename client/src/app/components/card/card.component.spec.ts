@@ -3,7 +3,7 @@ import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
-import { PopUpService } from '@app/services/popUpService/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { of } from 'rxjs';
 import { CardComponent } from './card.component';
 
