@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { LevelService } from '@app/services/levelService/level.service';
-import { SelectionPageService } from '@app/services/selectionPageService/selection-page.service';
+import { LevelService } from '@app/services/level/level.service';
+import { SelectionPageService } from '@app/services/selection-page/selection-page.service';
 
 /**
  * This component represents the selection page, it is the page where the user selects which game to play

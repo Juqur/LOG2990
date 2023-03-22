@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { DialogData, PopUpService } from '@app/services/popUpService/pop-up.service';
+import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants, MouseButton } from '@common/constants';
 
 /**

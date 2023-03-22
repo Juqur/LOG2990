@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Level } from '@app/levels';
-import { CommunicationService } from '@app/services/communicationService/communication.service';
-import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 
 /**

@@ -2,22 +2,22 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
-import { CreationPageService } from '@app/services/creationPageService/creation-page.service';
+import { CreationPageService } from '@app/services/creation-page/creation-page.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Constants } from '@common/constants';
 
-@Component({
-    selector: 'app-creation',
-    templateUrl: './creation.component.html',
-    styleUrls: ['./creation.component.scss', '../pages.scss'],
-})
 /**
  * This component represents the creation, the page where we can create new levels/games.
  *
  * @author Simon Gagné & Galen Hu
- * @class CreationComponent
+ * @class CreationPageComponent
  */
-export class CreationComponent implements AfterViewInit, OnDestroy {
+@Component({
+    selector: 'app-creation-page',
+    templateUrl: './creation-page.component.html',
+    styleUrls: ['./creation-page.component.scss', '../pages.scss'],
+})
+export class CreationPageComponent implements AfterViewInit, OnDestroy {
     @ViewChild('defaultArea', { static: false }) defaultPaintArea!: PaintAreaComponent;
     @ViewChild('diffArea', { static: false }) diffPaintArea!: PaintAreaComponent;
     diffSliderValue = Constants.SLIDER_DEFAULT;

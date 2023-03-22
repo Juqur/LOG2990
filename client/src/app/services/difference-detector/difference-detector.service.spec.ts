@@ -3,7 +3,7 @@ import { LevelDifferences } from '@app/classes/difference';
 import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 
-import { DifferenceDetectorService } from '@app/services/differenceDetectorService/difference-detector.service';
+import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
 
 import SpyObj = jasmine.SpyObj;
 

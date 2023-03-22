@@ -21,7 +21,7 @@ import { PaintAreaComponent } from './components/paint-area/paint-area.component
 import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.component';
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
-import { CreationComponent } from './pages/creation/creation.component';
+import { CreationPageComponent } from './pages/creation-page/creation-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -44,7 +44,7 @@ import { CreationComponent } from './pages/creation/creation.component';
         MessageBoxComponent,
         CarouselComponent,
         ConfigurationPageComponent,
-        CreationComponent,
+        CreationPageComponent,
         ScaleContainerComponent,
         PopUpDialogComponent,
     ],

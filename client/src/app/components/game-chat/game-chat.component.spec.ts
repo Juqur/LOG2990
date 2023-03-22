@@ -6,7 +6,7 @@ import SpyObj = jasmine.SpyObj;
 
 import { ElementRef } from '@angular/core';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { SocketHandler } from '@app/services/socketHandlerService/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { ChatMessage } from '@common/chat-messages';
 import { GameChatComponent } from './game-chat.component';
 

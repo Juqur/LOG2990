@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LevelService } from '@app/services/levelService/level.service';
+import { LevelService } from '@app/services/level/level.service';
 
 /**
  * This component represents the page where the user can modify, delete or create new games. It is accessible from
