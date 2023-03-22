@@ -273,9 +273,10 @@ describe('GameGateway', () => {
             expect(deleteUserFromGameSpy).toBeCalledWith(otherSocket);
         });
 
-        it('should emit to the opponent that the game has been rejected', () => {
+        it('should call cancelGame function', () => {
+            const cancelMatchSpy = jest.spyOn(gateway, 'cancelGame' as never);
             gateway.onGameRejected(socket);
-            expect(emitOtherSpy).toBeCalledWith('rejectedGame');
+            expect(cancelMatchSpy).toBeCalled();
         });
     });
 
@@ -423,6 +424,14 @@ describe('GameGateway', () => {
         it('should stop the timer', () => {
             gateway['handlePlayerLeavingGame'](socket);
             expect(stopTimerSpy).toBeCalledWith(socket.id);
+        });
+    });
+
+    describe('cancelGame', () => {
+        it('should emit to the opponent that the game has been cancelled', () => {
+            const secondPlayerEmit = jest.spyOn(otherSocket, 'emit');
+            gateway['cancelGame'](socket);
+            expect(secondPlayerEmit).toBeCalledWith('rejectedGame');
         });
     });
 });
