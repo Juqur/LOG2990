@@ -13,6 +13,7 @@ export enum GameEvents {
     OnStopCheatMode = 'onStopCheatMode',
     OnAbandonGame = 'onAbandonGame',
     OnMessageReception = 'onMessageReception',
+    OnGameCancelled = 'onGameCancelled',
 
     MessageSent = 'messageSent',
     UpdateSelection = 'updateSelection',
