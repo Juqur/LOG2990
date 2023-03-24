@@ -1,5 +1,6 @@
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService } from '@app/services/game/game.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
 import { Injectable } from '@nestjs/common';
@@ -18,7 +19,13 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
+    // eslint-disable-next-line max-len, max-params
+    constructor(
+        private gameService: GameService,
+        private timerService: TimerService,
+        private chatService: ChatService,
+        private mongodbService: MongodbService,
+    ) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -195,6 +202,7 @@ export class GameGateway {
     onMessageReception(socket: Socket, message: ChatMessage): void {
         const gameState = this.gameService.getGameState(socket.id);
         this.chatService.sendToBothPlayers(socket, message, gameState);
+        this.mongodbService.saveLevel();
     }
 
     /**

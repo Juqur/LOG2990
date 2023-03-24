@@ -10,6 +10,7 @@ import { levelModel } from './model/schema/level.schema';
 import { ChatService } from './services/chat/chat.service';
 import { GameService } from './services/game/game.service';
 import { ImageService } from './services/image/image.service';
+import { MongodbService } from './services/mongodb/mongodb.service';
 import { TimerService } from './services/timer/timer.service';
 
 @Module({
@@ -29,6 +30,6 @@ import { TimerService } from './services/timer/timer.service';
         MongooseModule.forFeature([{ name: 'high-score', schema: levelModel }]),
     ],
     controllers: [ImageController],
-    providers: [GameGateway, ImageService, GameService, ChatService, TimerService, Logger],
+    providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],
 })
 export class AppModule {}

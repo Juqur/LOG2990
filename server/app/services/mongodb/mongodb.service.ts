@@ -1,10 +1,16 @@
 import { levelModel } from '@app/model/schema/level.schema';
 import { Injectable } from '@nestjs/common';
 
+/**
+ * This service is used communicate to the database.
+ *
+ * @author Louis Félix St-Amour
+ * @class MongodbService
+ */
 @Injectable()
 export class MongodbService {
-    saveLevel() {
-        // create a new Level object
+    saveLevel(): void {
+        // mocked test level
         const level = new levelModel({
             id: 1,
             name: 'Cocogoat',
@@ -22,7 +28,7 @@ export class MongodbService {
             nbDifferences: 5,
         });
 
-        // save the Level object to the database
+        // hopefully saves the Level object to the database
         level
             .save()
             .then((result) => {
