@@ -145,10 +145,22 @@ fdescribe('UndoRedoService', () => {
         expect(redoStackPushSpy).toHaveBeenCalled();
     });
 
-    it('should clear redo stack', () => {
-        UndoRedoService.resetRedoStack();
-        expect(UndoRedoService.redoStack.length).toEqual(0);
-        expect(UndoRedoService.redoPointer).toEqual(Constants.EMPTY_STACK);
+    describe('resetRedoStack', () => {
+        it('should clear redo stack correctly', () => {
+            const expectedPointer = -1;
+            UndoRedoService.resetRedoStack();
+            expect(UndoRedoService.redoStack).toEqual([]);
+            expect(UndoRedoService.redoPointer).toEqual(expectedPointer);
+        });
+    });
+
+    describe('resetUndoStack', () => {
+        it('should clear redo stack correctly', () => {
+            const expectedPointer = -1;
+            UndoRedoService.resetUndoStack();
+            expect(UndoRedoService.canvasStack).toEqual([]);
+            expect(UndoRedoService.undoPointer).toEqual(expectedPointer);
+        });
     });
 
     describe('resetAllStacks', () => {
