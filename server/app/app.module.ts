@@ -1,17 +1,17 @@
+import { ImageController } from '@app/controllers/image/image.controller';
 import { GameGateway } from '@app/gateways/game/game.gateway';
+import { levelModel } from '@app/model/schema/level.schema';
+import { ChatService } from '@app/services/chat/chat.service';
+import { GameService } from '@app/services/game/game.service';
+import { ImageService } from '@app/services/image/image.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
-import { ImageController } from './controllers/image/image.controller';
-import { levelModel } from './model/schema/level.schema';
-import { ChatService } from './services/chat/chat.service';
-import { GameService } from './services/game/game.service';
-import { ImageService } from './services/image/image.service';
-import { MongodbService } from './services/mongodb/mongodb.service';
-import { TimerService } from './services/timer/timer.service';
 
 @Module({
     imports: [
