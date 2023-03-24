@@ -6,6 +6,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
 import { ImageController } from './controllers/image/image.controller';
+import { levelModel } from './model/schema/level.schema';
 import { ChatService } from './services/chat/chat.service';
 import { GameService } from './services/game/game.service';
 import { ImageService } from './services/image/image.service';
@@ -25,7 +26,7 @@ import { TimerService } from './services/timer/timer.service';
                 uri: config.get<string>('DATABASE_CONNECTION_STRING'), // Loaded from .env
             }),
         }),
-        MongooseModule.forFeature(),
+        MongooseModule.forFeature([{ name: 'high-score', schema: levelModel }]),
     ],
     controllers: [ImageController],
     providers: [GameGateway, ImageService, GameService, ChatService, TimerService, Logger],
