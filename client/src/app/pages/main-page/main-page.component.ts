@@ -55,17 +55,10 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Redirects to the selection page.
+     * Redirects to a specific page.
      */
-    classicPageOnClick(): void {
-        this.mainPageService.navigateTo('/selection');
-    }
-
-    /**
-     * Redirects to the configuration page.
-     */
-    configPageOnClick(): void {
-        this.mainPageService.navigateTo('/config');
+    navigateTo(path: string): void {
+        this.mainPageService.navigateTo(path);
     }
 
     /**
