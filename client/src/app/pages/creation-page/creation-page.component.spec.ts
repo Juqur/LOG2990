@@ -10,7 +10,7 @@ import { CreationPageService } from '@app/services/creation-page/creation-page.s
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { CreationPageComponent } from './creation-page.component';
 
-fdescribe('CreationPageComponent', () => {
+describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
     let fixture: ComponentFixture<CreationPageComponent>;
 
