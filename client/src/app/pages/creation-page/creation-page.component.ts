@@ -144,9 +144,9 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
-     * When the user press on the "interchanger" button, this method is called.
+     * Event when the user press on the "interchanger" button, this method is called.
      */
-    swapCanvas(): void {
+    onSwapCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.paintCanvas;
         const diffCanvas = this.diffPaintArea.paintCanvas;
