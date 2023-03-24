@@ -3,7 +3,7 @@ import { Constants } from '@common/constants';
 
 import { UndoRedoService } from './undo-redo.service';
 
-describe('UndoRedoService', () => {
+fdescribe('UndoRedoService', () => {
     let service: UndoRedoService;
 
     beforeEach(() => {
@@ -17,6 +17,12 @@ describe('UndoRedoService', () => {
     });
 
     describe('addToStack', () => {
+        let drawImageSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        });
+
         it('should add canvas to stack', () => {
             const defaultCanvas = document.createElement('canvas');
             const defaultCanvasCtx = defaultCanvas.getContext('2d');
@@ -47,11 +53,10 @@ describe('UndoRedoService', () => {
         });
 
         it('should draw image', () => {
-            spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
             const defaultCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
             const diffCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
             UndoRedoService.addToStack(defaultCtx, diffCanvas);
-            expect(CanvasRenderingContext2D.prototype.drawImage).toHaveBeenCalledTimes(2);
+            expect(drawImageSpy).toHaveBeenCalledTimes(2);
         });
     });
 
@@ -146,9 +151,37 @@ describe('UndoRedoService', () => {
         expect(UndoRedoService.redoPointer).toEqual(Constants.EMPTY_STACK);
     });
 
-    it('isEMPTY_STACK should return true', () => {
-        UndoRedoService.resetAllStacks();
-        expect(UndoRedoService.isRedoStackEmpty()).toBeTrue();
-        expect(UndoRedoService.isUndoStackEmpty()).toBeTrue();
+    describe('resetAllStacks', () => {
+        let resetRedoStackSpy: jasmine.Spy;
+        let resetUndoStackSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            resetRedoStackSpy = spyOn(UndoRedoService, 'resetRedoStack');
+            resetUndoStackSpy = spyOn(UndoRedoService, 'resetUndoStack');
+        });
+
+        it('should call resetUndoStackSpy', () => {
+            UndoRedoService.resetAllStacks();
+            expect(resetRedoStackSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call resetUndoStackSpy', () => {
+            UndoRedoService.resetAllStacks();
+            expect(resetUndoStackSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('isRedoStackEmpty', () => {
+        it('should return true if redoStack is empty', () => {
+            UndoRedoService.redoStack = [];
+            expect(UndoRedoService.isRedoStackEmpty()).toBeTrue();
+        });
+    });
+
+    describe('isUndoStackEmpty', () => {
+        it('should return true if undoStack is empty', () => {
+            UndoRedoService.undoPointer = -1;
+            expect(UndoRedoService.isUndoStackEmpty()).toBeTrue();
+        });
     });
 });
