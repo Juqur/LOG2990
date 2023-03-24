@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { AfterViewInit, Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
@@ -29,13 +28,13 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
      * When the user press ctrl z it calls the handleUndo method.
      * When the user press ctrl shift z it calls the handleRedo method.
      *
-     * @param $event The event that is triggered when the user press a key.
+     * @param event The event that is triggered when the user press a key.
      */
-    @HostListener('window:keydown ', ['$event'])
-    onKeyPress($event: KeyboardEvent): void {
-        if ($event.ctrlKey && $event.shiftKey && ($event.key === 'Z' || $event.key === 'z')) {
+    @HostListener('window:keydown ', ['event'])
+    onKeyPress(event: KeyboardEvent): void {
+        if (event.ctrlKey && event.shiftKey && (event.key === 'Z' || event.key === 'z')) {
             this.handleRedo();
-        } else if ($event.ctrlKey && ($event.key === 'Z' || $event.key === 'z')) {
+        } else if (event.ctrlKey && (event.key === 'Z' || event.key === 'z')) {
             this.handleUndo();
         }
     }
@@ -144,7 +143,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
-     * Event when the user press on the "interchanger" button, this method is called.
+     * Event when the user press on the swap button, this method is called.
      */
     onSwapCanvas(): void {
         this.setPaintBrushMode();
