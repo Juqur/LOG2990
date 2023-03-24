@@ -90,6 +90,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
      * It starts the preparation for a timed timed game.
      */
     onLimitedTimeClick(): void {
-        this.mainPageService.startTimedGame();
+        this.mainPageService.chooseName();
     }
 }
