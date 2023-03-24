@@ -96,7 +96,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
-     * When the user's mouse is realeased from the canvas, this method is called.
+     * When the user's mouse is released from the canvas, this method is called.
      * It adds both canvas to the undo/redo stack.
      * It also resets the redo stack.
      */
@@ -125,8 +125,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     /**
      * After the undo or redo function has been called, this method will apply the changes to the canvas.
      *
-     * @param canvas Takes 2 canvas, the default(left) canvas and the diff(right) canvas.
-     * @returns Undefined if the input is undefined. Otherwise, it will apply the changes to the canvas.
+     * @param canvas Takes 2 canvas, the default (left) canvas and the diff (right) canvas.
      */
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
