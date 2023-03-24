@@ -10,5 +10,5 @@ export interface Level {
 
 export interface Score {
     name: string;
-    time: string;
+    time: number;
 }

@@ -3,7 +3,7 @@ import { model, Schema } from 'mongoose';
 
 const scoreSchema = new Schema<Score>({
     name: { type: String, required: true },
-    time: { type: String, required: true },
+    time: { type: Number, required: true },
 });
 
 const levelSchema = new Schema<Level>({
