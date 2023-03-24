@@ -16,44 +16,43 @@ describe('UndoRedoService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should add canvas to stack', () => {
-        const defaultCanvas = document.createElement('canvas');
-        const defaultCanvasCtx = defaultCanvas.getContext('2d');
-        const tempDiffCanvas = document.createElement('canvas');
-        const tempDiffCanvasCtx = tempDiffCanvas.getContext('2d');
-        UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDiffCanvasCtx as CanvasRenderingContext2D);
-        expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
-    });
+    describe('addToStack', () => {
+        it('should add canvas to stack', () => {
+            const defaultCanvas = document.createElement('canvas');
+            const defaultCanvasCtx = defaultCanvas.getContext('2d');
+            const tempDiffCanvas = document.createElement('canvas');
+            const tempDiffCanvasCtx = tempDiffCanvas.getContext('2d');
+            UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDiffCanvasCtx as CanvasRenderingContext2D);
+            expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
+        });
 
-    it('addToStack should still add to stack take the previous canvas if it has no context parameters', () => {
-        const defaultCanvas = document.createElement('canvas');
-        const defaultCanvasCtx = defaultCanvas.getContext('2d');
-        const tempDiffCanvas = document.createElement('canvas');
-        const tempDiffCanvasCtx = tempDiffCanvas.getContext('2d');
-        UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDiffCanvasCtx as CanvasRenderingContext2D);
-        expect(UndoRedoService.canvasStack.length).toEqual(1);
-        UndoRedoService.addToStack(null, null);
-        expect(UndoRedoService.canvasStack.length).toEqual(2);
-    });
+        it('should still add to stack take the previous canvas if it has no context parameters', () => {
+            const defaultCanvas = document.createElement('canvas');
+            const defaultCanvasCtx = defaultCanvas.getContext('2d');
+            const tempDiffCanvas = document.createElement('canvas');
+            const tempDiffCanvasCtx = tempDiffCanvas.getContext('2d');
+            UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDiffCanvasCtx as CanvasRenderingContext2D);
+            expect(UndoRedoService.canvasStack.length).toEqual(1);
+            UndoRedoService.addToStack(null, null);
+            expect(UndoRedoService.canvasStack.length).toEqual(2);
+        });
 
-    it('addToStack should create empy canvas if there is no parameters and the stack is empty', () => {
-        const mockCanvas = document.createElement('canvas');
-        const createElementSpy = spyOn(document, 'createElement').and.returnValue(mockCanvas);
-        UndoRedoService.addToStack(null, null);
-        expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        expect(createElementSpy).toHaveBeenCalledTimes(4);
-    });
+        it('should create empty canvas if there is no parameters and the stack is empty', () => {
+            const expectedCalls = 4;
+            const mockCanvas = document.createElement('canvas');
+            const createElementSpy = spyOn(document, 'createElement').and.returnValue(mockCanvas);
+            UndoRedoService.addToStack(null, null);
+            expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
+            expect(createElementSpy).toHaveBeenCalledTimes(expectedCalls);
+        });
 
-    it('addToStack should draw image', () => {
-        spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-
-        const defaultCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-
-        UndoRedoService.addToStack(defaultCtx, diffCanvas);
-
-        expect(CanvasRenderingContext2D.prototype.drawImage).toHaveBeenCalledTimes(2);
+        it('should draw image', () => {
+            spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+            const defaultCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+            const diffCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+            UndoRedoService.addToStack(defaultCtx, diffCanvas);
+            expect(CanvasRenderingContext2D.prototype.drawImage).toHaveBeenCalledTimes(2);
+        });
     });
 
     it('should undo', () => {
