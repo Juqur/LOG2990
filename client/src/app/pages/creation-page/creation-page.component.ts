@@ -28,7 +28,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
      * When the user press ctrl z it calls the handleUndo method.
      * When the user press ctrl shift z it calls the handleRedo method.
      *
-     * @param event The event that is triggered when the user press a key.
+     * @param $event The event that is triggered when the user press a key.
      */
     @HostListener('window:keydown ', ['$event'])
     onKeyPress($event: KeyboardEvent): void {
