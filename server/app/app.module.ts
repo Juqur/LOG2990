@@ -27,7 +27,8 @@ import { join } from 'path';
                 uri: config.get<string>('DATABASE_CONNECTION_STRING'), // Loaded from .env
             }),
         }),
-        MongooseModule.forFeature([{ name: 'Level', schema: levelSchema }]),
+        MongooseModule.forFeature([{ name: 'level', schema: levelSchema }]),
+        // Note that in mongodb, the collection names are pluralized (unless it already finishes with an s) and ignore the case.
     ],
     controllers: [ImageController],
     providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],

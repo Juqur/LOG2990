@@ -202,7 +202,8 @@ export class GameGateway {
     onMessageReception(socket: Socket, message: ChatMessage): void {
         const gameState = this.gameService.getGameState(socket.id);
         this.chatService.sendToBothPlayers(socket, message, gameState);
-        // this.mongodbService.saveLevel();
+        console.log('Oh hi Mark');
+        this.mongodbService.saveLevel();
     }
 
     /**
