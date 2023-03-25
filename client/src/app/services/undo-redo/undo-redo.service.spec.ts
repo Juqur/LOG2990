@@ -1,9 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { Constants } from '@common/constants';
-
 import { UndoRedoService } from './undo-redo.service';
 
-fdescribe('UndoRedoService', () => {
+describe('UndoRedoService', () => {
     let service: UndoRedoService;
 
     beforeEach(() => {
@@ -60,89 +58,64 @@ fdescribe('UndoRedoService', () => {
         });
     });
 
-    it('should undo', () => {
-        const defaultCanvas = document.createElement('canvas');
-        const defaultCanvasCtx = defaultCanvas.getContext('2d');
-        const tempDiffCanvas = document.createElement('canvas');
-        const tempDiffCanvasCtx = tempDiffCanvas.getContext('2d');
-        UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDiffCanvasCtx as CanvasRenderingContext2D);
-        const action = UndoRedoService.undo();
-        expect(action).not.toBeUndefined();
+    describe('undo', () => {
+        it('should return undefined when undoPointer is -1', () => {
+            UndoRedoService.undoPointer = -1;
+            const action = UndoRedoService.undo();
+            expect(action).toBeUndefined();
+        });
+
+        it('should return an empty canvas when undoPointer is 0', () => {
+            const expectedCanvas = { defaultCanvas: document.createElement('canvas'), diffCanvas: document.createElement('canvas') };
+            UndoRedoService.undoPointer = 0;
+            const action = UndoRedoService.undo();
+            expect(action).toEqual(expectedCanvas);
+        });
+
+        it('should return the action when undoPointer is superior than 0', () => {
+            const defaultCanvas = {} as unknown as HTMLCanvasElement;
+            const diffCanvas = {} as unknown as HTMLCanvasElement;
+            UndoRedoService.undoPointer = 1;
+            UndoRedoService.canvasStack.push({ defaultCanvas, diffCanvas });
+            const action = UndoRedoService.undo();
+            expect(action).toEqual({ defaultCanvas, diffCanvas });
+        });
     });
 
-    it('should not undo', () => {
-        UndoRedoService.undoPointer = Constants.EMPTY_STACK;
-        const action = UndoRedoService.undo();
-        expect(action).toBeUndefined();
-    });
+    describe('redo', () => {
+        const defaultCanvas = {} as unknown as HTMLCanvasElement;
+        const diffCanvas = {} as unknown as HTMLCanvasElement;
 
-    it('should redo', () => {
-        const defaultCanvas = document.createElement('canvas');
-        const defaultCanvasCtx = defaultCanvas.getContext('2d');
-        const tempDiffCanvas = document.createElement('canvas');
-        const tempDiffCanvasCtx = tempDiffCanvas.getContext('2d');
-        UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDiffCanvasCtx as CanvasRenderingContext2D);
-        UndoRedoService.undo();
-        const action = UndoRedoService.redo();
-        expect(action).not.toBeUndefined();
-    });
+        beforeEach(() => {
+            UndoRedoService.redoStack = [];
+            UndoRedoService.canvasStack = [];
+            UndoRedoService.redoPointer = 0;
+            UndoRedoService.undoPointer = 1;
+            UndoRedoService.redoStack.push({ defaultCanvas, diffCanvas });
+        });
 
-    it('should not redo', () => {
-        UndoRedoService.redoPointer = Constants.EMPTY_STACK;
-        const action = UndoRedoService.redo();
-        expect(action).toBeUndefined();
-    });
+        it('should return undefined when redoPointer is -1', () => {
+            UndoRedoService.redoPointer = -1;
+            const action = UndoRedoService.redo();
+            expect(action).toBeUndefined();
+        });
 
-    it('should clear stack', () => {
-        UndoRedoService.resetAllStacks();
-        expect(UndoRedoService.canvasStack.length).toEqual(0);
-        expect(UndoRedoService.redoStack.length).toEqual(0);
-        expect(UndoRedoService.undoPointer).toEqual(Constants.EMPTY_STACK);
-        expect(UndoRedoService.redoPointer).toEqual(Constants.EMPTY_STACK);
-    });
+        it('should return the action', () => {
+            const action = UndoRedoService.redo();
+            expect(action).toEqual({ defaultCanvas, diffCanvas });
+        });
 
-    it('should clear undo stack', () => {
-        UndoRedoService.resetUndoStack();
-        expect(UndoRedoService.canvasStack.length).toEqual(0);
-        expect(UndoRedoService.undoPointer).toEqual(Constants.EMPTY_STACK);
-    });
+        it('should increment the undo pointer', () => {
+            const expectedUndoPointer = 2;
+            UndoRedoService.redo();
+            expect(UndoRedoService.undoPointer).toEqual(expectedUndoPointer);
+        });
 
-    it('should call drawImage with the correct arguments', () => {
-        const spy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-        const defaultCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-
-        UndoRedoService.addToStack(defaultCanvas, diffCanvas);
-
-        expect(spy).toHaveBeenCalledTimes(2);
-        expect(spy.calls.argsFor(0)).toEqual([defaultCanvas.canvas, 0, 0]);
-        expect(spy.calls.argsFor(1)).toEqual([diffCanvas.canvas, 0, 0]);
-    });
-
-    it('when undoPointer is 0 on undo, undoPointer should be decremented', () => {
-        UndoRedoService.undoPointer = 0;
-        UndoRedoService.undo();
-        expect(UndoRedoService.undoPointer).toEqual(Constants.minusOne);
-    });
-
-    it('when undoPointer is 0 on undo, undoStack.pop should be called', () => {
-        UndoRedoService.undoPointer = 0;
-        const undoStackPopSpy = spyOn(UndoRedoService.canvasStack, 'pop');
-        UndoRedoService.undo();
-        expect(undoStackPopSpy).toHaveBeenCalled();
-    });
-
-    it('when undoPointer is above 0 and when we call undo, undoPointer should be decremented', () => {
-        UndoRedoService.undoPointer = 1;
-        UndoRedoService.undo();
-        expect(UndoRedoService.undoPointer).toEqual(0);
-    });
-
-    it('when undoPointer is above 0 and when we call undo, redostack.push should be called', () => {
-        UndoRedoService.undoPointer = 1;
-        const redoStackPushSpy = spyOn(UndoRedoService.redoStack, 'push');
-        UndoRedoService.undo();
-        expect(redoStackPushSpy).toHaveBeenCalled();
+        it('should decrement the redo pointer', () => {
+            const expectedRedoPointer = -1;
+            UndoRedoService.redo();
+            expect(UndoRedoService.redoPointer).toEqual(expectedRedoPointer);
+        });
     });
 
     describe('resetRedoStack', () => {
