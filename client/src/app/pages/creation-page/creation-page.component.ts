@@ -31,10 +31,10 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
      * @param event The event that is triggered when the user press a key.
      */
     @HostListener('window:keydown ', ['event'])
-    onKeyPress(event: KeyboardEvent): void {
-        if (event.ctrlKey && event.shiftKey && (event.key === 'Z' || event.key === 'z')) {
+    onKeyPress($event: KeyboardEvent): void {
+        if ($event.ctrlKey && $event.shiftKey && ($event.key === 'Z' || $event.key === 'z')) {
             this.handleRedo();
-        } else if (event.ctrlKey && (event.key === 'Z' || event.key === 'z')) {
+        } else if ($event.ctrlKey && ($event.key === 'Z' || $event.key === 'z')) {
             this.handleUndo();
         }
     }
