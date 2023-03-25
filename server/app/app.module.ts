@@ -1,6 +1,6 @@
 import { ImageController } from '@app/controllers/image/image.controller';
 import { GameGateway } from '@app/gateways/game/game.gateway';
-import { levelModel } from '@app/model/schema/level.schema';
+import { levelSchema } from '@app/model/schema/level.schema';
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
@@ -27,7 +27,7 @@ import { join } from 'path';
                 uri: config.get<string>('DATABASE_CONNECTION_STRING'), // Loaded from .env
             }),
         }),
-        MongooseModule.forFeature([{ name: 'high-score', schema: levelModel }]),
+        MongooseModule.forFeature([{ name: 'Level', schema: levelSchema }]),
     ],
     controllers: [ImageController],
     providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],

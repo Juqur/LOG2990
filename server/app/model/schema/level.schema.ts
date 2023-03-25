@@ -6,14 +6,15 @@ const scoreSchema = new Schema<Score>({
     time: { type: Number, required: true },
 });
 
-const levelSchema = new Schema<Level>({
+export const levelSchema = new Schema<Level>({
     id: { type: Number, required: true },
     name: { type: String, required: true },
-    scoreSolo: [scoreSchema],
-    scoreMulti: [scoreSchema],
+    scoreSolo: { type: [scoreSchema], default: [] },
+    scoreMulti: { type: [scoreSchema], default: [] },
     isEasy: { type: Boolean, required: true },
     nbDifferences: { type: Number, required: true },
     canJoin: { type: Boolean, default: false },
 });
 
 export const levelModel = model<Level>('Level', levelSchema);
+// dunno what to do with this right now
