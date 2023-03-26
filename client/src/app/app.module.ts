@@ -22,6 +22,7 @@ import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.c
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
 import { CreationPageComponent } from './pages/creation-page/creation-page.component';
+import { VideoPageComponent } from './pages/video-page/video-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -47,6 +48,7 @@ import { CreationPageComponent } from './pages/creation-page/creation-page.compo
         CreationPageComponent,
         ScaleContainerComponent,
         PopUpDialogComponent,
+        VideoPageComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, MatSliderModule, FormsModule, HttpClientModule],
     providers: [],
