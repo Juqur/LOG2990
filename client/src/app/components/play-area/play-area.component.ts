@@ -125,4 +125,16 @@ export class PlayAreaComponent implements AfterViewInit {
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
+
+    simulateClick(pixelData: number) {
+        const xPosition = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
+        const yPosition = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
+
+        const mouseClick = new MouseEvent('mousedown', {
+            clientX: xPosition,
+            clientY: yPosition,
+        });
+
+        this.canvas.nativeElement.dispatchEvent(mouseClick);
+    }
 }

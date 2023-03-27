@@ -6,6 +6,7 @@ import { CommunicationService } from '@app/services/communication/communication.
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
@@ -123,7 +124,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
         });
         this.socketHandler.on('game', 'victory', () => {
-            this.gamePageService.handleVictory();
+            this.gamePageService.handleVictory(this.levelId);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
             this.gamePageService.handleOpponentAbandon();
@@ -147,6 +148,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
+            VideoService.addToStack(mousePosition, true);
             this.clickedOriginalImage = true;
         }
     }
@@ -161,6 +163,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
+            VideoService.addToStack(mousePosition, false);
             this.clickedOriginalImage = false;
         }
     }
@@ -191,6 +194,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     private settingGameLevel(): void {
         try {
             this.communicationService.getLevel(this.levelId).subscribe((value) => {
+                console.log(value);
                 this.currentLevel = value;
                 this.nbDiff = value.nbDifferences;
             });

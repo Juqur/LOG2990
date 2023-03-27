@@ -1,1 +1,54 @@
-<p>video-page works!</p>
+<app-scale-container>
+    <div class="container">
+        <section id="top-area">
+            <button (click)="abandonGame()" mat-button routerLink="/home">
+                <span>Abandonner</span>
+            </button>
+            <button (click)="startVideo()">Start</button>
+            <app-game-timer></app-game-timer>
+            <div id="diff-counter">
+                <div *ngIf="playerName" class="player-counter">
+                    <span class="diff-self">{{ playerName + ': ' }}</span>
+                    <span> {{ playerDifferencesCount }} </span>
+                    <span class="diff-self">différences trouvées</span>
+                </div>
+                <div *ngIf="secondPlayerName" class="player-counter">
+                    <span class="diff-friend">{{ secondPlayerName }} :</span>
+                    <span> {{ secondPlayerDifferencesCount }} </span>
+                    <span class="diff-friend">différences trouvées</span>
+                </div>
+            </div>
+        </section>
+        <section id="play-area-container">
+            <app-play-area [isDiff]="false" [image]="originalImageSrc" (click)="clickedOnOriginal($event)" #originalPlayArea></app-play-area>
+            <div *ngIf="!secondPlayerName" id="between-images">
+                <button mat-button>
+                    <span> <mat-icon>image_search</mat-icon></span>
+                </button>
+                <p>{{ nbHints }}</p>
+                <span id="nb-hints">indices restants</span>
+            </div>
+            <app-play-area [isDiff]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
+            <app-play-area #tempDiffPlayArea class="tempDiffPlayArea"></app-play-area>
+        </section>
+        <section id="bottom-area">
+            <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat>
+            <div id="info-game" *ngIf="currentLevel">
+                <div>
+                    <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Difficulté : </span
+                    ><span class="info-answer">{{ currentLevel.isEasy ? 'Facile' : 'Difficile' }}</span>
+                </div>
+                <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
+                <div>
+                    <span class="info-question">Différences totale: </span><span class="info-answer">{{ currentLevel.nbDifferences }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + ' secondes' }}</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</app-scale-container>

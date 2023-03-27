@@ -1,0 +1,154 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #355070;
+}
+
+#diff-counter {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    color: #ffffff;
+    font-size: 150%;
+}
+
+#diff-counter .diff-self {
+    font-weight: normal;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: #3ab138;
+}
+
+#diff-counter .diff-friend {
+    font-weight: normal;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: #f63b3b;
+}
+
+.player-counter {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#top-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 10%;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+#top-area button {
+    background-color: #eaac8b00;
+    text-align: center;
+    border: 2px solid #f63b3b;
+    transition: 0.2s;
+}
+
+#top-area button span {
+    color: #f63b3b;
+    border: none;
+    transition: 0.2s;
+    font-size: 200%;
+}
+
+#top-area button:hover {
+    transition: 0.3s;
+    background-color: #f63b3b;
+    transform: rotate(3deg) scale(1.1);
+}
+
+#top-area button:hover span {
+    transition: 0.3s;
+    color: #355070;
+}
+
+app-game-timer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#between-images {
+    width: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 150%;
+}
+
+#between-images p {
+    padding-top: 10px;
+    font-weight: bold;
+    color: #3ab138;
+}
+
+#between-images button {
+    position: relative;
+    min-width: 50px;
+    min-height: 50px;
+    background-color: #eaac8b;
+    border-radius: 50%;
+    color: white;
+    z-index: 11;
+}
+
+#between-images button:hover {
+    border: 2px solid white;
+}
+
+.mat-icon {
+    color: white;
+    vertical-align: middle;
+    padding-bottom: 5px;
+}
+
+#nb-hints {
+    text-align: center;
+    color: #ffffff;
+}
+
+#play-area-container {
+    overflow: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 70%;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+#bottom-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 10%;
+    margin-top: 10px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.info-question {
+    font-size: 150%;
+    font-weight: bold;
+    color: #eaac8b;
+}
+
+.info-answer {
+    font-size: 150%;
+    color: #ffffff;
+}
+
+.tempDiffPlayArea {
+    display: none;
+}

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -27,8 +28,9 @@ export class GamePageService {
     private diffPlayArea: PlayAreaComponent;
     private tempDiffPlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu principal',
+        textToSend: 'Voulez-vous voir la reprise vidéo de la partie?',
+        closeButtonMessage: 'Non',
+        isConfirmation: true,
         mustProcess: false,
     };
     private opponentAbandonedGameDialogData: DialogData = {
@@ -39,6 +41,7 @@ export class GamePageService {
     private loseDialogData: DialogData = {
         textToSend: 'Vous avez perdu!',
         closeButtonMessage: 'Retour au menu principal',
+        isConfirmation: true,
         mustProcess: false,
     };
     private isInCheatMode: boolean = false;
@@ -143,8 +146,14 @@ export class GamePageService {
      * This method is called when the player wins.
      * It will open a dialog and play a victory sound.
      */
-    handleVictory(): void {
+    handleVictory(levelId: number): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+        this.popUpService.dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.router.navigate(['/video/' + levelId], {});
+            }
+        });
+
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
         this.audioService.reset();
         this.audioService.play();
