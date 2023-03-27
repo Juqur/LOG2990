@@ -51,4 +51,37 @@ describe('MainPageService', () => {
             expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
         });
     });
+
+    describe('connectToSocket', () => {
+        it('should connect to the socket if it is not connected', () => {
+            socketHandlerSpy.isSocketAlive.and.returnValue(false);
+            service.connectToSocket();
+            expect(socketHandlerSpy.connect).toHaveBeenCalledWith('game');
+        });
+
+        it('should not connect to the socket if it is already connected', () => {
+            socketHandlerSpy.isSocketAlive.and.returnValue(true);
+            service.connectToSocket();
+            expect(socketHandlerSpy.connect).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('chooseGameType', () => {
+        it('should open a pop up', () => {
+            service['chooseGameType']('test');
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+        });
+        it('should emit a socket event to the sever with false if the player does not want to play with another player', () => {
+            const name = 'test';
+            dialogRefSpy.afterClosed.and.returnValue(of(false));
+            service['chooseGameType'](name);
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'createTimedGame', { multiplayer: false, playerName: name });
+        });
+        it('should emit a socket event to the sever with true if the player wants to play with another player', () => {
+            const name = 'test';
+            dialogRefSpy.afterClosed.and.returnValue(of(true));
+            service['chooseGameType'](name);
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'createTimedGame', { multiplayer: true, playerName: name });
+        });
+    });
 });
