@@ -64,17 +64,10 @@ export class MainPageService {
     private chooseGameType(playerName: string) {
         this.popUpService.openDialog(this.multiplayerDialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-                this.socketHandler.send('game', 'createTimedGame', { multiplayer: true, playerName });
-                this.router.navigate([`/game/${0}/`], {
-                    queryParams: { playerName },
-                });
-            } else {
-                this.socketHandler.send('game', 'createTimedGame', { multiplayer: false, playerName });
-                this.router.navigate([`/game/${0}/`], {
-                    queryParams: { playerName },
-                });
-            }
+            this.socketHandler.send('game', 'createTimedGame', { multiplayer: result, playerName });
+            this.router.navigate([`/game/${0}/`], {
+                queryParams: { playerName },
+            });
         });
     }
 }
