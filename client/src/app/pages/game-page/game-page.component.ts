@@ -43,6 +43,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     private levelId: number;
     private clickedOriginalImage: boolean = true;
+    private isClassic: boolean = true;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -118,9 +119,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.gamePageService.setImages(this.levelId);
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-            this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+            if (this.isClassic) {
+                this.gamePageService.setImages(this.levelId);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+            }
         });
         this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
@@ -131,9 +134,20 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
         });
+        this.socketHandler.on('game', 'timedModeFinished', (data) => {
+            const finishedWithLastLevel = data as boolean;
+            if (finishedWithLastLevel) this.playerDifferencesCount++;
+            this.gamePageService.handleTimedModeFinished(finishedWithLastLevel);
+        });
         this.socketHandler.on('game', 'startCheatMode', (data) => {
             const differences = data as number[];
             this.gamePageService.startCheatMode(differences);
+        });
+        this.socketHandler.on('game', 'changeLevelTimedMode', (levelId) => {
+            this.levelId = levelId as number;
+            this.settingGameImage();
+            this.gamePageService.setMouseCanClick(true);
+            this.gamePageService.setImages(this.levelId);
         });
     }
 
@@ -180,6 +194,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
+
+        if (this.route.snapshot.params.id === '0') {
+            this.isClassic = false;
+            return;
+        }
 
         this.settingGameLevel();
         this.settingGameImage();
