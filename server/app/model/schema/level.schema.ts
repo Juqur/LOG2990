@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, model } from 'mongoose';
-import { Score } from './score.schema';
 
 export type LevelDocument = HydratedDocument<Level>;
 
@@ -17,11 +16,19 @@ export class Level {
 
     @ApiProperty()
     @Prop()
-    scoreSolo: Score[];
+    playerSolo: string[];
 
     @ApiProperty()
     @Prop()
-    scoreMulti: Score[];
+    timeSolo: number[];
+
+    @ApiProperty()
+    @Prop()
+    playerMulti: string[];
+
+    @ApiProperty()
+    @Prop()
+    timeMulti: number[];
 
     @ApiProperty()
     @Prop({ required: true })
