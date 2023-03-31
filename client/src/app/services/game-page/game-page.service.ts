@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -53,7 +54,7 @@ export class GamePageService {
         private audioService: AudioService,
         private drawServiceDiff: DrawService,
         private drawServiceOriginal: DrawService,
-    ) { }
+    ) {}
 
     /**
      * Ensures the difference array is valid and not empty.
@@ -257,7 +258,6 @@ export class GamePageService {
      * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
     private resetCanvas(): void {
-
         this.mouseService.canClick = true;
         const delay = 1000; // ms
         this.diffPlayArea

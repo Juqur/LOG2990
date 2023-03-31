@@ -37,7 +37,7 @@ describe('GamePageService', () => {
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
-        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
+        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout', 'deleteTempCanvas']);
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
@@ -389,6 +389,7 @@ describe('GamePageService', () => {
         expect(spy).toHaveBeenCalledTimes(1);
         expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
         expect(service['areaNotFound']).toEqual([3]);
+        tick(Constants.millisecondsEighthOfSecond);
         clearInterval(service['flashInterval']);
     }));
 

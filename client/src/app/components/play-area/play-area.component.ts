@@ -104,12 +104,9 @@ export class PlayAreaComponent implements AfterViewInit {
     flashArea(area: number[]) {
         let x = 0;
         let y = 0;
-        if(this.tempCanvas) this.deleteTempCanvas();
+        if (this.tempCanvas) this.deleteTempCanvas();
         this.createTempCanvas();
         const context = this.tempCanvas.getContext('2d') as CanvasRenderingContext2D;
-        if (!context) {
-            return;
-        }
         area.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % this.width;
             y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
@@ -118,8 +115,11 @@ export class PlayAreaComponent implements AfterViewInit {
         });
     }
 
+    /**
+     * Creates a temporary canvas that will be used to flash the differences between the two images.
+     * The temporary canvas is over the play canvas and lets click events pass through it.
+     */
     createTempCanvas(): void {
-        this.drawService.paintBrush();
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.className = 'temp';
         this.tempCanvas.style.position = 'absolute';
@@ -133,6 +133,9 @@ export class PlayAreaComponent implements AfterViewInit {
         this.tempCanvas.style.pointerEvents = 'none';
     }
 
+    /**
+     * Deletes the temporary canvas if it exists.
+     */
     deleteTempCanvas(): void {
         if (this.tempCanvas) this.tempCanvas.remove();
     }
