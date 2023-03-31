@@ -63,7 +63,6 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
      * It is used to reload the image on the canvas.
      */
     ngOnChanges(): void {
-        console.log('ngOnChanges', this.image);
         this.drawPlayArea(this.image);
     }
 
