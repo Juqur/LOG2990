@@ -22,7 +22,7 @@ export class PlayAreaComponent implements AfterViewInit {
     currentImage: HTMLImageElement;
 
     buttonPressed = '';
-
+    private tempCanvas: HTMLCanvasElement;
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
@@ -104,7 +104,9 @@ export class PlayAreaComponent implements AfterViewInit {
     flashArea(area: number[]) {
         let x = 0;
         let y = 0;
-        const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        if(this.tempCanvas) this.deleteTempCanvas();
+        this.createTempCanvas();
+        const context = this.tempCanvas.getContext('2d') as CanvasRenderingContext2D;
         if (!context) {
             return;
         }
@@ -114,6 +116,25 @@ export class PlayAreaComponent implements AfterViewInit {
             context.fillStyle = 'red';
             context.fillRect(x, y, 1, 1);
         });
+    }
+
+    createTempCanvas(): void {
+        this.drawService.paintBrush();
+        this.tempCanvas = document.createElement('canvas');
+        this.tempCanvas.className = 'temp';
+        this.tempCanvas.style.position = 'absolute';
+        this.tempCanvas.style.top = this.canvas.nativeElement.offsetTop + 'px';
+        this.tempCanvas.style.left = this.canvas.nativeElement.offsetLeft + 'px';
+        this.tempCanvas.width = this.width;
+        this.tempCanvas.height = this.height;
+        this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const currentCanvas = document.body.querySelector('#' + this.canvas.nativeElement.id) as HTMLCanvasElement;
+        currentCanvas.after(this.tempCanvas);
+        this.tempCanvas.style.pointerEvents = 'none';
+    }
+
+    deleteTempCanvas(): void {
+        if (this.tempCanvas) this.tempCanvas.remove();
     }
 
     /**
