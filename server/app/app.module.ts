@@ -24,11 +24,10 @@ import { levelSchema } from './model/schema/level.schema';
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: async (config: ConfigService) => ({
-                uri: config.get<string>('DATABASE_CONNECTION_STRING'), // Loaded from .env
+                uri: config.get<string>('DATABASE_CONNECTION_STRING'),
             }),
         }),
         MongooseModule.forFeature([{ name: 'level', schema: levelSchema }]),
-        // Note that in mongodb, the collection names are pluralized (unless it already finishes with an s) and ignore the case.
     ],
     controllers: [ImageController],
     providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],

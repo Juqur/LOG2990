@@ -38,38 +38,3 @@ export class Level {
 
 export const levelSchema = SchemaFactory.createForClass(Level);
 export const levelModel = model<Level>('Level', levelSchema);
-// import { Prop } from '@nestjs/mongoose';
-// import { HydratedDocument, model, Schema } from 'mongoose';
-
-// export type LevelDocument = HydratedDocument<Level>;
-
-// const scoreSchema = new Schema<Score>({
-//     name: { type: String, required: true },
-//     time: { type: Number, required: true },
-// });
-
-// @Schema()
-// export class Level {
-//     @Prop()
-//     id: number;
-
-//     @Prop()
-//     name: string;
-
-//     @Prop()
-//     scoreSolo: [scoreSchema];
-// }
-// // export levelSchema = new Schema<Level>({
-// //     id: { type: Number, required: true },
-// //     name: { type: String, required: true },
-// //     scoreSolo: { type: [scoreSchema], default: [] },
-// //     scoreMulti: { type: [scoreSchema], default: [] },
-// //     isEasy: { type: Boolean, required: true },
-// //     nbDifferences: { type: Number, required: true },
-// //     canJoin: { type: Boolean, default: false },
-// // });
-
-// export const levelModel = model<Level>('Level', Level);
-// export const LevelSchema = SchemaFactory.createForClass(Level);
-
-// // dunno what to do with this right now
