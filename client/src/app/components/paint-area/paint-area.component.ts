@@ -11,7 +11,6 @@ import { Constants } from '@common/constants';
  * @author Simon Gagné
  * @class PaintAreaComponent
  */
-
 @Component({
     selector: 'app-paint-area',
     templateUrl: './paint-area.component.html',
@@ -28,8 +27,8 @@ export class PaintAreaComponent implements AfterViewInit {
     isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
-
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
+
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
 
     /**
