@@ -34,20 +34,6 @@ export class ImageService {
     }
 
     /**
-     * This method gets all the levels id from the json file.
-     *
-     * @returns All the levels id.
-     */
-    async getLevelsId(): Promise<number[]> {
-        try {
-            const levels = await this.getLevels();
-            return levels.map((level) => level.id);
-        } catch (error) {
-            return undefined;
-        }
-    }
-
-    /**
      * Gets the level from the json file.
      *
      * @param id The id of the level.
