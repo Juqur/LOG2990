@@ -32,21 +32,6 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
-    private opponentAbandonedGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
-    private loseDialogData: DialogData = {
-        textToSend: 'Vous avez perdu!',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
-    private timedGameFinishedDialogData: DialogData = {
-        textToSend: 'La partie est terminée! Le temps est écoulé.',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
     private flashInterval: ReturnType<typeof setInterval>;
     private isInCheatMode: boolean = false;
     private areaNotFound: number[];
@@ -158,19 +143,25 @@ export class GamePageService {
      */
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        this.audioService.reset();
-        this.audioService.play();
+        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
     }
 
+    /**
+     * This method is called when the timed game is finished.
+     * It will open a dialog and play a victory sound.
+     *
+     * @param finishedWithLastLevel Boolean that represents if the player finished the last level of the timed mode.
+     */
     handleTimedModeFinished(finishedWithLastLevel: boolean): void {
-        if (finishedWithLastLevel) {
-            this.timedGameFinishedDialogData.textToSend = 'La partie est terminée! Vous avez terminé le dernier niveau du mode à temps limité.';
-        }
-        this.popUpService.openDialog(this.timedGameFinishedDialogData, this.closePath);
-        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        this.audioService.reset();
-        this.audioService.play();
+        const timedGameFinishedDialogData: DialogData = {
+            textToSend: finishedWithLastLevel
+                ? 'La partie est terminée! Vous avez terminé le dernier niveau du mode à temps limité.'
+                : 'La partie est terminée! Le temps est écoulé.',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(timedGameFinishedDialogData, this.closePath);
+        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
     }
 
     /**
@@ -178,10 +169,13 @@ export class GamePageService {
      * It will open a dialog and play a victory sound.
      */
     handleOpponentAbandon(): void {
-        this.popUpService.openDialog(this.opponentAbandonedGameDialogData, this.closePath);
-        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        this.audioService.reset();
-        this.audioService.play();
+        const opponentAbandonedGameDialogData: DialogData = {
+            textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(opponentAbandonedGameDialogData, this.closePath);
+        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
     }
 
     /**
@@ -189,10 +183,13 @@ export class GamePageService {
      * It will open a dialog and play a losing sound.
      */
     handleDefeat(): void {
-        this.popUpService.openDialog(this.loseDialogData, this.closePath);
-        this.audioService.create('./assets/audio/LossSound.mp3');
-        this.audioService.reset();
-        this.audioService.play();
+        const loseDialogData: DialogData = {
+            textToSend: 'Vous avez perdu!',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(loseDialogData, this.closePath);
+        AudioService.quickPlay('./assets/audio/LossSound.mp3');
     }
 
     /**
