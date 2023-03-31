@@ -101,6 +101,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.removeListener('game', 'victory');
         this.socketHandler.removeListener('game', 'defeat');
         this.socketHandler.removeListener('game', 'startCheatMode');
+        this.socketHandler.removeListener('game', 'timedModeFinished');
+        this.socketHandler.removeListener('game', 'opponentAbandoned');
+        this.socketHandler.removeListener('game', 'changeLevelTimedMode');
         this.gamePageService.stopCheatMode();
     }
 
@@ -119,7 +122,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            if (this.isClassic) {
+            if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
                 this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
@@ -143,8 +146,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
             const differences = data as number[];
             this.gamePageService.startCheatMode(differences);
         });
-        this.socketHandler.on('game', 'changeLevelTimedMode', (levelId) => {
-            this.levelId = levelId as number;
+        this.socketHandler.on('game', 'changeLevelTimedMode', (data) => {
+            const level = data as Level;
+            this.levelId = level.id;
+            this.currentLevel = level;
             this.settingGameImage();
             this.gamePageService.setMouseCanClick(true);
             this.gamePageService.setImages(this.levelId);
