@@ -1,6 +1,7 @@
 import { ImageService } from '@app/services/image/image.service';
 import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
+import { Level } from 'assets/data/level';
 import { Server, Socket } from 'socket.io';
 
 export interface GameState {
@@ -12,7 +13,7 @@ export interface GameState {
     isGameFound: boolean;
     isInCheatMode: boolean;
     otherSocketId?: string;
-    timedLevelList?: number[];
+    timedLevelList?: Level[];
 }
 
 /**
@@ -98,9 +99,9 @@ export class GameService {
      * @param socketId the socket id of the player.
      * @param levelId the level id of the level.
      */
-    setLevelId(socketId: string, levelId: number): void {
+    setLevelId(socketId: string, level: Level): void {
         const gameState = this.playerGameMap.get(socketId);
-        gameState.levelId = levelId;
+        gameState.levelId = level.id;
         this.playerGameMap.set(socketId, gameState);
     }
 
@@ -181,7 +182,7 @@ export class GameService {
             isInCheatMode: false,
         };
         if (data.levelId === 0) {
-            playerGameState.timedLevelList = await this.imageService.getLevelsId();
+            playerGameState.timedLevelList = await this.imageService.getLevels();
         }
         this.playerGameMap.set(socketId, playerGameState);
     }
@@ -272,11 +273,11 @@ export class GameService {
         }
     }
 
-    getRandomLevelForTimedGame(socketId: string): number {
+    getRandomLevelForTimedGame(socketId: string): Level {
         const gameState = this.playerGameMap.get(socketId);
-        const levelId = gameState.timedLevelList[Math.floor(Math.random() * gameState.timedLevelList.length)];
-        gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(levelId), 1);
-        return levelId;
+        const level = gameState.timedLevelList[Math.floor(Math.random() * gameState.timedLevelList.length)];
+        gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
+        return level;
     }
 
     /**
