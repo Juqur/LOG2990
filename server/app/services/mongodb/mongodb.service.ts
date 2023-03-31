@@ -1,6 +1,6 @@
 import { levelModel } from '@app/model/schema/level.schema';
-import { Score } from '@app/model/schema/score.schema';
 import { Injectable } from '@nestjs/common';
+import { Level } from 'assets/data/level';
 import mongoose from 'mongoose';
 
 /**
@@ -11,27 +11,38 @@ import mongoose from 'mongoose';
  */
 @Injectable()
 export class MongodbService {
-    async saveLevel(): Promise<void> {
-        // mocked test level
-        mongoose.connect('mongodb+srv://admin:d5jrnGEteyCCNMcW@log2990.ic11qkn.mongodb.net/?');
+    async createNewLevel(level: Level) {
+        this.openConnection();
         await levelModel.create({
-            id: 1,
-            name: 'Cocogoat',
-            scoreSolo: [{ name: 'Player 1', time: 23 } as Score, { name: 'Player 2', time: 27 } as Score, { name: 'Player 3', time: 98 } as Score],
-            scoreMulti: [{ name: 'Player x', time: 12 } as Score, { name: 'Player y', time: 15 } as Score, { name: 'Player z', time: 150 } as Score],
-            isEasy: true,
-            nbDifferences: 5,
+            id: level.id,
+            name: level.name,
+            playerSolo: level.playerMulti,
+            timeSolo: level.timeMulti,
+            playerMulti: level.playerMulti,
+            timeMulti: level.timeMulti,
+            isEasy: level.isEasy,
+            nbDifferences: level.nbDifferences,
+            canJoin: level.canJoin,
         });
-        mongoose.disconnect();
-        // await level
-        //     .save()
-        //     .then((result) => {
-        //         // eslint-disable-next-line no-console
-        //         console.log('Level saved successfully:', result);
-        //     })
-        //     .catch((error) => {
-        //         // eslint-disable-next-line no-console
-        //         console.error('Error while saving Level:', error);
-        //     });
+        this.closeConnection();
+    }
+
+    /**
+     * This method opens the connection to the mongoDB to allow inserting and manipulating the data inside.
+     * The method only opens connection if we aren't connected.
+     */
+    private openConnection(): void {
+        if (!mongoose.connection.readyState) {
+            mongoose.connect('mongodb+srv://admin:d5jrnGEteyCCNMcW@log2990.ic11qkn.mongodb.net/?');
+        }
+    }
+
+    /**
+     * This method closes the connection to the mongoDB.
+     */
+    private closeConnection(): void {
+        if (mongoose.connection.readyState) {
+            mongoose.disconnect();
+        }
     }
 }

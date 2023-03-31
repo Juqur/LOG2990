@@ -1,4 +1,5 @@
 import { Message } from '@app/model/schema/message.schema';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
@@ -18,6 +19,8 @@ export class ImageService {
     readonly pathModified: string = '../server/assets/images/modified/';
     readonly pathOriginal: string = '../server/assets/images/original/';
     readonly pathData: string = '../server/assets/data/';
+
+    private mongodbService = new MongodbService();
 
     /**
      * Gets all the levels from the json file.
@@ -129,7 +132,6 @@ export class ImageService {
     async writeLevelData(newLevel: unknown): Promise<Message> {
         const levels = await this.getLevels();
         try {
-            const allDifferences = await this.getLevels();
             const newId = levels[levels.length - 1].id + 1;
             const levelData = newLevel as LevelData;
             const level: Level = {
@@ -143,8 +145,7 @@ export class ImageService {
                 nbDifferences: levelData.nbDifferences,
             };
 
-            // Updated list of levels
-            allDifferences.push(level);
+            this.mongodbService.createNewLevel(level);
 
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
                 if (error) throw error;
@@ -155,7 +156,6 @@ export class ImageService {
             fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
                 if (error) throw error;
             });
-            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(allDifferences));
 
             return this.confirmUpload();
         } catch (error) {
