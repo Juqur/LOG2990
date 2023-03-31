@@ -130,6 +130,7 @@ export class PlayAreaComponent implements AfterViewInit {
         const xPosition = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
         const yPosition = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
 
+        console.log('x: ' + xPosition + ' y: ' + yPosition);
         const mouseClick = new MouseEvent('mousedown', {
             clientX: xPosition,
             clientY: yPosition,

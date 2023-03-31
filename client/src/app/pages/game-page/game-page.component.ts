@@ -41,7 +41,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
     isInCheatMode: boolean = false;
+    isReplayMode: boolean = false;
 
+    private showVideo: ReturnType<typeof setInterval>;
     private levelId: number;
     private clickedOriginalImage: boolean = true;
 
@@ -89,6 +91,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
         this.handleSocket();
+        console.log(this.gamePageService.getImageData);
+        console.log(this.gamePageService.getAreaNotFound);
     }
 
     /**
@@ -175,6 +179,26 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.send('game', 'onAbandonGame');
     }
 
+    putInCanvas(): void {
+        if (VideoService.isStackEmpty()) {
+            clearInterval(this.showVideo);
+            return;
+        }
+        const frame = VideoService.popStack() as unknown as { clickedOnOriginal: boolean; mousePosition: number };
+        console.log(frame);
+        if (frame.clickedOnOriginal) {
+            this.originalPlayArea.simulateClick(frame.mousePosition);
+        } else if (!frame.clickedOnOriginal) {
+            this.diffPlayArea.simulateClick(frame.mousePosition);
+        }
+    }
+
+    startVideo(): void {
+        this.showVideo = setInterval(() => {
+            this.putInCanvas();
+        }, Constants.millisecondsInOneSecond);
+    }
+
     /**
      * Settings the game parameters.
      * It sets the level id and the player names.
@@ -194,7 +218,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     private settingGameLevel(): void {
         try {
             this.communicationService.getLevel(this.levelId).subscribe((value) => {
-                console.log(value);
                 this.currentLevel = value;
                 this.nbDiff = value.nbDifferences;
             });

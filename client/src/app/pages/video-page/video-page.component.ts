@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication/communication.service';
+import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { VideoService } from '@app/services/video/video.service';
@@ -20,6 +21,7 @@ import { environment } from 'src/environments/environment';
     selector: 'app-video-page',
     templateUrl: './video-page.component.html',
     styleUrls: ['./video-page.component.scss'],
+    providers: [DrawService, CommunicationService],
 })
 export class VideoPageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
@@ -88,6 +90,8 @@ export class VideoPageComponent implements OnInit, OnDestroy {
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
         this.handleSocket();
+        console.log(this.gamePageService.getImageData);
+        console.log(this.gamePageService.getAreaNotFound);
     }
 
     /**

@@ -59,6 +59,14 @@ export class GamePageService {
         private drawServiceOriginal: DrawService,
     ) {}
 
+    get getImageData(): number[] {
+        return this.imagesData;
+    }
+
+    get getAreaNotFound(): number[] {
+        return this.areaNotFound;
+    }
+
     /**
      * Ensures the difference array is valid and not empty.
      *
