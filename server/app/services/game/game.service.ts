@@ -10,8 +10,9 @@ export interface GameState {
     playerName: string;
     isInGame: boolean;
     isGameFound: boolean;
-    otherSocketId?: string;
     isInCheatMode: boolean;
+    otherSocketId?: string;
+    timedLevelList?: number[];
 }
 
 /**
@@ -80,7 +81,7 @@ export class GameService {
     }
 
     /**
-     * This method sets the attribute of IsInGame.
+     * This method sets the attribute of isGameFound.
      *
      * @param socketId The socket id of the player.
      * @param isInGame A boolean indicating whether the player is in the game.
@@ -88,6 +89,18 @@ export class GameService {
     setIsGameFound(socketId: string, isGameFound: boolean): void {
         const gameState = this.playerGameMap.get(socketId);
         gameState.isGameFound = isGameFound;
+        this.playerGameMap.set(socketId, gameState);
+    }
+
+    /**
+     * This method sets the attribute of levelId.
+     *
+     * @param socketId the socket id of the player.
+     * @param levelId the level id of the level.
+     */
+    setLevelId(socketId: string, levelId: number): void {
+        const gameState = this.playerGameMap.get(socketId);
+        gameState.levelId = levelId;
         this.playerGameMap.set(socketId, gameState);
     }
 
@@ -105,6 +118,9 @@ export class GameService {
         const response = await this.imageService.findDifference(id, gameState.foundDifferences, position);
         if (response.differencePixels && response.differencePixels.length > 0) {
             gameState.amountOfDifferencesFound++;
+            if (gameState.timedLevelList) {
+                gameState.foundDifferences = [];
+            }
             this.playerGameMap.set(socketId, gameState);
             if (gameState.otherSocketId) {
                 const otherGameState = this.playerGameMap.get(gameState.otherSocketId);
@@ -154,7 +170,7 @@ export class GameService {
      * @param data The data containing the level id, the player name.
      * @param isMultiplayer A boolean flag indicating whether the game is multiplayer.
      */
-    createGameState(socketId: string, data: { levelId: number; playerName: string }, isMultiplayer: boolean): void {
+    async createGameState(socketId: string, data: { levelId: number; playerName: string }, isMultiplayer: boolean): Promise<void> {
         const playerGameState: GameState = {
             levelId: data.levelId,
             foundDifferences: [],
@@ -164,6 +180,9 @@ export class GameService {
             isGameFound: !isMultiplayer,
             isInCheatMode: false,
         };
+        if (data.levelId === 0) {
+            playerGameState.timedLevelList = await this.imageService.getLevelsId();
+        }
         this.playerGameMap.set(socketId, playerGameState);
     }
 
@@ -251,6 +270,13 @@ export class GameService {
             this.levelDeletionQueue.splice(index, 1);
             this.imageService.deleteLevelData(levelId);
         }
+    }
+
+    getRandomLevelForTimedGame(socketId: string): number {
+        const gameState = this.playerGameMap.get(socketId);
+        const levelId = gameState.timedLevelList[Math.floor(Math.random() * gameState.timedLevelList.length)];
+        gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(levelId), 1);
+        return levelId;
     }
 
     /**
