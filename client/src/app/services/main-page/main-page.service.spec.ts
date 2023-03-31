@@ -75,13 +75,13 @@ describe('MainPageService', () => {
             const name = 'test';
             dialogRefSpy.afterClosed.and.returnValue(of(false));
             service['chooseGameType'](name);
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'createTimedGame', { multiplayer: false, playerName: name });
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onCreateTimedGame', { multiplayer: false, playerName: name });
         });
         it('should emit a socket event to the sever with true if the player wants to play with another player', () => {
             const name = 'test';
             dialogRefSpy.afterClosed.and.returnValue(of(true));
             service['chooseGameType'](name);
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'createTimedGame', { multiplayer: true, playerName: name });
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onCreateTimedGame', { multiplayer: true, playerName: name });
         });
     });
 });
