@@ -1,6 +1,5 @@
 import { ImageController } from '@app/controllers/image/image.controller';
 import { GameGateway } from '@app/gateways/game/game.gateway';
-import { levelSchema } from '@app/model/schema/level.schema';
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
@@ -12,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
+import { levelSchema } from './model/schema/level.schema';
 
 @Module({
     imports: [
