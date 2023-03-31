@@ -90,18 +90,14 @@ export class GameGateway {
             if (endtime < scores[2].time) {
                 scores.push({ playerName: 'the newcomer' /* gameState.playerName*/, time: endtime } as Highscore);
                 scores.sort((a: Highscore, b: Highscore) => {
-                    const A = a.time;
-                    const B = b.time;
-
-                    let comparison = 0;
-                    if (A > B) {
-                        comparison = 1;
-                    } else if (A < B) {
-                        comparison = -1;
-                    }
-                    return comparison;
+                    // this callback function is called for each element in the array
+                    // returning a negative number will put a before b
+                    return a.time - b.time;
                 });
+                scores.pop();
             }
+
+            console.log(scores);
 
             if (otherSocketId) {
                 this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.Defeat);
