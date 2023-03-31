@@ -70,6 +70,18 @@ export class GameGateway {
             socket.emit(GameEvents.Victory);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
+
+            const scores: Score[] = otherSocketId
+                ? this.mongodbService.getMultiplayerScores(level.id)
+                : this.mongodbService.getSoloPlayerScores(level.id);
+            const endtime = this.timerService.getTime(socket);
+            for (const score of scores) {
+                if (endtime < score.last) {
+                    score.push(endtime);
+                    score.sort();
+                }
+            }
+
             if (otherSocketId) {
                 this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.Defeat);
                 this.timerService.stopTimer(otherSocketId);
