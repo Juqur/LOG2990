@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -41,8 +42,13 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
-    private isInCheatMode: boolean = false;
+    private timedGameFinishedDialogData: DialogData = {
+        textToSend: 'La partie est terminée! Le temps est écoulé.',
+        closeButtonMessage: 'Retour au menu principal',
+        mustProcess: false,
+    };
     private flashInterval: ReturnType<typeof setInterval>;
+    private isInCheatMode: boolean = false;
     private areaNotFound: number[];
     private closePath: string = '/home';
 
@@ -77,6 +83,13 @@ export class GamePageService {
         this.originalPlayArea = originalPlayArea;
         this.diffPlayArea = diffPlayArea;
         this.tempDiffPlayArea = tempDiffPlayArea;
+    }
+
+    /**
+     * This methods sets the canClick property of the mouse service to a certain value.
+     */
+    setMouseCanClick(canClick: boolean): void {
+        this.mouseService.canClick = canClick;
     }
 
     /**
@@ -145,6 +158,16 @@ export class GamePageService {
      */
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.reset();
+        this.audioService.play();
+    }
+
+    handleTimedModeFinished(finishedWithLastLevel: boolean): void {
+        if (finishedWithLastLevel) {
+            this.timedGameFinishedDialogData.textToSend = 'La partie est terminée! Vous avez terminé le dernier niveau du mode à temps limité.';
+        }
+        this.popUpService.openDialog(this.timedGameFinishedDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
         this.audioService.reset();
         this.audioService.play();
@@ -328,7 +351,6 @@ export class GamePageService {
         this.diffPlayArea.flashArea(result);
         this.resetCanvas();
     }
-
     /**
      * Performs a failed sound and prompts an error in the original canvas.
      */
