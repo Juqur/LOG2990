@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
@@ -17,17 +17,15 @@ fdescribe('PaintAreaComponent', () => {
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw', 'drawRect', 'setPaintColor', 'paintBrush']);
     });
 
-    beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
             declarations: [PaintAreaComponent],
             imports: [HttpClientModule],
             providers: [{ provide: MouseService, useValue: mouseServiceSpy }],
         })
             .overrideProvider(DrawService, { useValue: drawServiceSpy })
             .compileComponents();
-    }));
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(PaintAreaComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -37,28 +35,88 @@ fdescribe('PaintAreaComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('buttonDetect should detect when shift is pressed', () => {
-    //     const expectedKey = 'Shift';
-    //     const buttonEvent = {
-    //         key: expectedKey,
-    //     } as KeyboardEvent;
-    //     component.buttonDetect(buttonEvent);
-    //     expect(component.isShiftPressed).toEqual(true);
+    describe('getter', () => {
+        it('width should return the canvas width.', () => {
+            const expected = 100;
+            component['canvasSize'].x = expected;
+            expect(component.width).toEqual(expected);
+        });
+
+        it('height should return the canvas height.', () => {
+            const expected = 100;
+            component['canvasSize'].y = expected;
+            expect(component.height).toEqual(expected);
+        });
+
+        it('paintCanvas should return the foreground canvas.', () => {
+            const expected = component.foregroundCanvas.nativeElement;
+            expect(component.paintCanvas).toEqual(expected);
+        });
+    });
+
+    describe('buttonDetect', () => {
+        it('should detect when shift is pressed', () => {
+            const buttonEvent = {
+                key: 'Shift',
+            } as KeyboardEvent;
+            component.buttonDetect(buttonEvent);
+            expect(component.isShiftPressed).toBeTrue();
+        });
+    });
+
+    describe('buttonRelease', () => {
+        it('should detect when shift is released', () => {
+            const buttonEvent = {
+                key: 'Shift',
+            } as KeyboardEvent;
+            component.buttonRelease(buttonEvent);
+            expect(component.isShiftPressed).toBeFalse();
+        });
+    });
+
+    describe('onCanvasClick', () => {
+        const mouseEvent = {
+            offsetX: 100,
+            offsetY: 200,
+            button: 0,
+        } as MouseEvent;
+
+        it('onCanvasClick should set isDragging to true and call appropriate functions if in in rectangle mode', () => {
+            mouseServiceSpy.isRectangleMode = true;
+            const tempCanvasSpy = spyOn(component, 'createTempCanvas');
+            component.onCanvasClick(mouseEvent);
+            expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
+            expect(tempCanvasSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    // it('onCanvasClick should set isDragging to true and call appropriate functions if not in rectangle mode', () => {
+    //     const mouseEvent = {
+    //         offsetX: 100,
+    //         offsetY: 200,
+    //         button: 0,
+    //     } as MouseEvent;
+    //     mouseServiceSpy.isRectangleMode = false;
+    //     component.onCanvasClick(mouseEvent);
+    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
+    //     expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
     // });
 
-    // it('buttonRelease should detect when shift is released', () => {
-    //     const expectedKey = 'Shift';
-    //     const buttonEvent = {
-    //         key: expectedKey,
-    //     } as KeyboardEvent;
-    //     const releaseEvent = new KeyboardEvent('keyup', {
-    //         key: expectedKey,
-    //     });
-    //     component.buttonDetect(buttonEvent);
-    //     component.buttonRelease(releaseEvent);
-    //     expect(component.isShiftPressed).toEqual(false);
+    // it('onCanvasClick should draw any extra tempCanvas', () => {
+    //     const mouseEvent = {
+    //         offsetX: 100,
+    //         offsetY: 200,
+    //         button: 0,
+    //     } as MouseEvent;
+    //     mouseServiceSpy.isRectangleMode = true;
+    //     const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+    //     const tempCanvas = document.createElement('canvas');
+    //     tempCanvas.classList.add('draw');
+    //     const currentCanvas = document.body.querySelector('#' + component.foregroundCanvas.nativeElement.id);
+    //     currentCanvas?.parentNode?.insertBefore(tempCanvas, currentCanvas);
+    //     component.onCanvasClick(mouseEvent);
+    //     expect(drawImageSpy).toHaveBeenCalledTimes(1);
     // });
-
     // it('getCanvas should return the canvas element', () => {
     //     const canvas = component.paintCanvas;
     //     expect(canvas).toEqual(component.foregroundCanvas.nativeElement);
@@ -99,47 +157,6 @@ fdescribe('PaintAreaComponent', () => {
     //     expect(tempCanvas.style.top).toBe(component.foregroundCanvas.nativeElement.offsetTop + 'px');
     //     expect(tempCanvas.style.left).toBe(component.foregroundCanvas.nativeElement.offsetLeft + 'px');
     //     expect(tempCanvas.previousElementSibling).toBe(component.foregroundCanvas.nativeElement);
-    // });
-
-    // it('canvasClick should set isDragging to true and call appropriate functions if in in rectangle mode', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     const tempCanvasSpy = spyOn(component, 'createTempCanvas');
-    //     component.canvasClick(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-    //     expect(tempCanvasSpy).toHaveBeenCalledTimes(1);
-    // });
-
-    // it('canvasClick should set isDragging to true and call appropriate functions if not in rectangle mode', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.isRectangleMode = false;
-    //     component.canvasClick(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-    //     expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
-    // });
-
-    // it('canvasClick should draw any extra tempCanvas', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-    //     const tempCanvas = document.createElement('canvas');
-    //     tempCanvas.classList.add('draw');
-    //     const currentCanvas = document.body.querySelector('#' + component.foregroundCanvas.nativeElement.id);
-    //     currentCanvas?.parentNode?.insertBefore(tempCanvas, currentCanvas);
-    //     component.canvasClick(mouseEvent);
-    //     expect(drawImageSpy).toHaveBeenCalledTimes(1);
     // });
 
     // it('canvasDrag should call the appropriate drawing function if in rectangle mode', () => {
@@ -190,7 +207,7 @@ fdescribe('PaintAreaComponent', () => {
     //     } as MouseEvent;
     //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     const releaseSpy = spyOn(component, 'canvasRelease');
+    //     const releaseSpy = spyOn(component, 'onCanvasRelease');
     //     component.canvasPaint(mouseEvent);
     //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
     //     expect(releaseSpy).toHaveBeenCalledTimes(1);
@@ -219,7 +236,7 @@ fdescribe('PaintAreaComponent', () => {
     //         offsetY: 2000,
     //         button: 0,
     //     } as MouseEvent;
-    //     const releaseSpy = spyOn(component, 'canvasRelease');
+    //     const releaseSpy = spyOn(component, 'onCanvasRelease');
     //     component.createTempCanvas();
     //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
@@ -239,7 +256,7 @@ fdescribe('PaintAreaComponent', () => {
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     component.isShiftPressed = true;
     //     mouseServiceSpy.isRectangleMode = true;
-    //     component.canvasClick(mouseEvent);
+    //     component.onCanvasClick(mouseEvent);
     //     mouseEvent = {
     //         offsetX: 150,
     //         offsetY: 300,
@@ -262,7 +279,7 @@ fdescribe('PaintAreaComponent', () => {
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     component.isShiftPressed = true;
     //     mouseServiceSpy.isRectangleMode = true;
-    //     component.canvasClick(mouseEvent);
+    //     component.onCanvasClick(mouseEvent);
     //     mouseEvent = {
     //         offsetX: 250,
     //         offsetY: 100,
@@ -285,7 +302,7 @@ fdescribe('PaintAreaComponent', () => {
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     component.isShiftPressed = true;
     //     mouseServiceSpy.isRectangleMode = true;
-    //     component.canvasClick(mouseEvent);
+    //     component.onCanvasClick(mouseEvent);
     //     mouseEvent = {
     //         offsetX: 150,
     //         offsetY: 100,
@@ -308,7 +325,7 @@ fdescribe('PaintAreaComponent', () => {
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     component.isShiftPressed = true;
     //     mouseServiceSpy.isRectangleMode = true;
-    //     component.canvasClick(mouseEvent);
+    //     component.onCanvasClick(mouseEvent);
     //     mouseEvent = {
     //         offsetX: 50,
     //         offsetY: 100,
@@ -331,7 +348,7 @@ fdescribe('PaintAreaComponent', () => {
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     component.isShiftPressed = true;
     //     mouseServiceSpy.isRectangleMode = true;
-    //     component.canvasClick(mouseEvent);
+    //     component.onCanvasClick(mouseEvent);
     //     mouseEvent = {
     //         offsetX: 10,
     //         offsetY: 150,
@@ -344,15 +361,15 @@ fdescribe('PaintAreaComponent', () => {
     //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
     // });
 
-    // it('canvasRelease should set isDragging to false', () => {
-    //     component.canvasRelease();
+    // it('onCanvasRelease should set isDragging to false', () => {
+    //     component.onCanvasRelease();
     //     expect(component.isDragging).toBe(false);
     // });
 
-    // it('canvasRelease should remove the temp canvas', () => {
+    // it('onCanvasRelease should remove the temp canvas', () => {
     //     mouseServiceSpy.isRectangleMode = true;
     //     component.createTempCanvas();
-    //     component.canvasRelease();
+    //     component.onCanvasRelease();
     //     const tempCanvasElement = document.body.querySelector('.draw');
     //     expect(tempCanvasElement).toBeNull();
     // });
