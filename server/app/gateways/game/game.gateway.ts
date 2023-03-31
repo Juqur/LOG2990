@@ -1,7 +1,9 @@
 import { ChatService } from '@app/services/chat/chat.service';
-import { GameService } from '@app/services/game/game.service';
+import { GameService, GameState } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
+import { Constants } from '@common/constants';
+import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -33,6 +35,15 @@ export class GameGateway {
         this.timerService.startTimer(socket.id, this.server, true);
     }
 
+    @SubscribeMessage(GameEvents.OnCreateTimedGame)
+    async onCreateTimedGame(socket: Socket, data: { mutliplayer: boolean; playerName: string }): Promise<void> {
+        await this.gameService.createGameState(socket.id, { playerName: data.playerName, levelId: 0 }, data.mutliplayer);
+        const levelId = this.gameService.getRandomLevelForTimedGame(socket.id);
+        this.gameService.setLevelId(socket.id, levelId);
+        socket.emit(GameEvents.ChangeLevelTimedMode, levelId);
+        this.timerService.startTimer(socket.id, this.server, false);
+    }
+
     /**
      * This method is called when a player clicks on the image. It sends back the pixels of the difference,
      * the total amount of differences in the level, the amount of differences found, and the amount of differences found
@@ -46,10 +57,14 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnClick)
     async onClick(socket: Socket, position: number): Promise<void> {
-        const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
-        socket.emit(GameEvents.ProcessedClick, dataToSend);
-        const otherSocketId = this.gameService.getGameState(socket.id).otherSocketId;
         const gameState = this.gameService.getGameState(socket.id);
+        const dataToSend = await this.gameService.getImageInfoOnClick(socket.id, position);
+        if (gameState.timedLevelList) {
+            this.handleTimedGame(socket, dataToSend, gameState);
+            return;
+        }
+        socket.emit(GameEvents.ProcessedClick, dataToSend);
+        const otherSocketId = gameState.otherSocketId;
         this.chatService.sendSystemMessage(socket, dataToSend, gameState);
 
         if (otherSocketId) {
@@ -273,5 +288,22 @@ export class GameGateway {
         const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
         this.gameService.deleteUserFromGame(secondPlayerSocket);
         secondPlayerSocket.emit(GameEvents.RejectedGame);
+    }
+
+    private handleTimedGame(socket: Socket, dataToSend: GameData, gameState: GameState): void {
+        if (dataToSend.differencePixels.length > 0) {
+            this.timerService.addTime(this.server, socket.id, Constants.FOUND_DIFFERENCE_BONUS);
+            if (gameState.timedLevelList.length === 0) {
+                socket.emit(GameEvents.TimedModeFinished, true);
+                this.timerService.stopTimer(socket.id);
+                this.gameService.deleteUserFromGame(socket);
+                return;
+            }
+            const levelId = this.gameService.getRandomLevelForTimedGame(socket.id);
+            this.gameService.setLevelId(socket.id, levelId);
+            this.server.to(socket.id).emit(GameEvents.ChangeLevelTimedMode, levelId);
+            this.server.to(socket.id).emit(GameEvents.ProcessedClick, dataToSend);
+            return;
+        }
     }
 }
