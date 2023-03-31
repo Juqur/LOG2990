@@ -2,7 +2,6 @@ import { ChatService } from '@app/services/chat/chat.service';
 import { GameService } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { ChatMessage } from '@common/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -71,15 +70,37 @@ export class GameGateway {
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
-            const scores: Score[] = otherSocketId
-                ? this.mongodbService.getMultiplayerScores(level.id)
-                : this.mongodbService.getSoloPlayerScores(level.id);
-            const endtime = this.timerService.getTime(socket);
-            for (const score of scores) {
-                if (endtime < score.last) {
-                    score.push(endtime);
-                    score.sort();
-                }
+            interface Highscore {
+                playerName: string;
+                time: number;
+            }
+
+            // this code will look stupid because we made the structure of highscores stupid and we are too lazy to fix it
+            // const scores: Highscore[] = otherSocketId
+            //     ? this.mongodbService.getMultiplayerScores(level.id)
+            //     : this.mongodbService.getSoloPlayerScores(level.id);
+            const endtime = 50; /* this.timerService.getTime(socket);*/
+
+            const scores: Highscore[] = [
+                { playerName: 'the best', time: 10 },
+                { playerName: 'there is no second best', time: 50 },
+                { playerName: 'the loser', time: 60 },
+            ];
+
+            if (endtime < scores[2].time) {
+                scores.push({ playerName: 'the newcomer' /* gameState.playerName*/, time: endtime } as Highscore);
+                scores.sort((a: Highscore, b: Highscore) => {
+                    const A = a.time;
+                    const B = b.time;
+
+                    let comparison = 0;
+                    if (A > B) {
+                        comparison = 1;
+                    } else if (A < B) {
+                        comparison = -1;
+                    }
+                    return comparison;
+                });
             }
 
             if (otherSocketId) {
