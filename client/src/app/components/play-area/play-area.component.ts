@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, ViewChild } from '@angular/core';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
@@ -15,7 +15,7 @@ import { Constants } from '@common/constants';
  * @author Simon Gagné & Galen Hu & Charles Degrandpré
  * @class PlayAreaComponent
  */
-export class PlayAreaComponent implements AfterViewInit {
+export class PlayAreaComponent implements AfterViewInit, OnChanges {
     @Input() isDiff: boolean;
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
@@ -55,6 +55,15 @@ export class PlayAreaComponent implements AfterViewInit {
      * Method called after the initial rendering.
      */
     ngAfterViewInit(): void {
+        this.drawPlayArea(this.image);
+    }
+
+    /**
+     * Method called when the input changes.
+     * It is used to reload the image on the canvas.
+     */
+    ngOnChanges(): void {
+        console.log('ngOnChanges', this.image);
         this.drawPlayArea(this.image);
     }
 
