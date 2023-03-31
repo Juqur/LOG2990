@@ -85,7 +85,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.foregroundCanvas.nativeElement.id = this.isDiff ? 'diffDrawCanvas' : 'defaultDrawCanvas';
         this.foregroundCanvas.nativeElement.addEventListener('mousedown', this.onCanvasClick.bind(this));
         this.foregroundCanvas.nativeElement.addEventListener('mouseup', this.onCanvasRelease.bind(this));
-        this.foregroundCanvas.nativeElement.addEventListener('mousemove', this.canvasDrag.bind(this));
+        this.foregroundCanvas.nativeElement.addEventListener('mousemove', this.onCanvasDrag.bind(this));
         this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
     }
 
@@ -96,21 +96,20 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event The mouse event.
      */
     onCanvasClick(event: MouseEvent): void {
-        const canvas = document.body.querySelector('#' + this.foregroundCanvas.nativeElement.id) as HTMLCanvasElement;
+        const canvas = this.foregroundCanvas.nativeElement;
         const parent = canvas.parentElement as HTMLElement;
-        const drawElements = parent.querySelectorAll('.draw') as NodeListOf<HTMLCanvasElement>;
-
-        this.drawSiblingCanvases(drawElements);
+        const drawElements = parent.querySelectorAll('.draw');
+        this.drawSiblingCanvases(drawElements as NodeListOf<HTMLCanvasElement>);
 
         this.isDragging = true;
         this.mouseService.mouseDrag(event);
         this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() };
 
         if (!this.mouseService.isRectangleMode) {
-            this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawService.context = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawService.draw(this.lastMousePosition);
         } else {
-            this.createTempCanvas();
+            this.createTemporaryCanvas();
         }
     }
 
@@ -124,11 +123,11 @@ export class PaintAreaComponent implements AfterViewInit {
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {
-            const ctx = this.foregroundCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-            ctx.drawImage(this.tempCanvas, 0, 0);
-            const currentCanvas = document.body.querySelector('#' + this.foregroundCanvas.nativeElement.id) as HTMLCanvasElement;
-            const parentElement = currentCanvas.parentElement as HTMLElement;
-            parentElement.removeChild(this.tempCanvas);
+            const context = this.foregroundCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+            context.drawImage(this.tempCanvas, 0, 0);
+            const canvas = this.foregroundCanvas.nativeElement;
+            const parent = canvas.parentElement as HTMLElement;
+            parent.removeChild(this.tempCanvas);
         }
     }
 
@@ -138,7 +137,7 @@ export class PaintAreaComponent implements AfterViewInit {
      *
      * @param event the mouse event
      */
-    canvasDrag(event: MouseEvent): void {
+    onCanvasDrag(event: MouseEvent): void {
         if (this.mouseService && this.isDragging) {
             if (this.mouseService.isRectangleMode) {
                 this.canvasRectangularDrag(event);
@@ -192,7 +191,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * Creates a temporary canvas on top of the other canvases.
      * It is used to display the rectangle in real time before applying it to the foreground canvas.
      */
-    createTempCanvas(): void {
+    createTemporaryCanvas(): void {
         this.drawService.paintBrush();
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.className = 'draw';
@@ -207,7 +206,7 @@ export class PaintAreaComponent implements AfterViewInit {
         currentCanvas.after(this.tempCanvas);
         this.tempCanvas.addEventListener('mousedown', this.onCanvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.onCanvasRelease.bind(this));
-        this.tempCanvas.addEventListener('mousemove', this.canvasDrag.bind(this));
+        this.tempCanvas.addEventListener('mousemove', this.onCanvasDrag.bind(this));
     }
 
     /**
@@ -253,10 +252,10 @@ export class PaintAreaComponent implements AfterViewInit {
                 const yDistance = accCoords.y - this.lastMousePosition.y;
                 if (Math.abs(xDistance) < Math.abs(yDistance)) {
                     squareSizeX = xDistance;
-                    squareSizeY = (yDistance > 0 && xDistance > 0) || (yDistance < 0 && xDistance < 0) ? squareSizeX : -squareSizeX;
+                    squareSizeY = Math.sign(yDistance) * Math.abs(xDistance);
                 } else {
                     squareSizeY = yDistance;
-                    squareSizeX = (xDistance > 0 && yDistance > 0) || (xDistance < 0 && yDistance < 0) ? squareSizeY : -squareSizeY;
+                    squareSizeX = Math.sign(xDistance) * Math.abs(yDistance);
                 }
                 this.drawService.drawRect(this.lastMousePosition, squareSizeX, squareSizeY);
             } else {
@@ -265,6 +264,11 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    /**
+     * Internal method that draws the rectangle on the foreground canvas and removes it.
+     *
+     * @param siblingCanvases The sibling canvases of the foreground canvas.
+     */
     private drawSiblingCanvases(siblingCanvases: NodeListOf<HTMLCanvasElement>): void {
         siblingCanvases.forEach((siblingCanvas) => {
             const context = this.foregroundCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;

@@ -7,6 +7,7 @@ import { MouseService } from '@app/services/mouse/mouse.service';
 import SpyObj = jasmine.SpyObj;
 
 fdescribe('PaintAreaComponent', () => {
+    const mouseEvent = {} as unknown as MouseEvent;
     let mouseServiceSpy: SpyObj<MouseService>;
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PaintAreaComponent;
@@ -75,48 +76,101 @@ fdescribe('PaintAreaComponent', () => {
     });
 
     describe('onCanvasClick', () => {
-        const mouseEvent = {
-            offsetX: 100,
-            offsetY: 200,
-            button: 0,
-        } as MouseEvent;
+        let drawSiblingCanvasesSpy: jasmine.Spy;
+        let createTemporaryCanvasSpy: jasmine.Spy;
 
-        it('onCanvasClick should set isDragging to true and call appropriate functions if in in rectangle mode', () => {
-            mouseServiceSpy.isRectangleMode = true;
-            const tempCanvasSpy = spyOn(component, 'createTempCanvas');
+        beforeEach(() => {
+            drawSiblingCanvasesSpy = spyOn(component, 'drawSiblingCanvases' as never);
+            createTemporaryCanvasSpy = spyOn(component, 'createTemporaryCanvas');
+        });
+
+        it('should call drawSiblingCanvases', () => {
+            component.onCanvasClick(mouseEvent);
+            expect(drawSiblingCanvasesSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call mouseDrag', () => {
             component.onCanvasClick(mouseEvent);
             expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-            expect(tempCanvasSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should set lastMousePosition to the appropriate expected mouse position', () => {
+            const expected = { x: 100, y: 200 };
+            mouseServiceSpy.getX.and.returnValue(expected.x);
+            mouseServiceSpy.getY.and.returnValue(expected.y);
+            component.onCanvasClick(mouseEvent);
+            expect(component['lastMousePosition']).toEqual(expected);
+        });
+
+        it('should call createTemporaryCanvas if it is in rectangle mode', () => {
+            mouseServiceSpy.isRectangleMode = true;
+            component.onCanvasClick(mouseEvent);
+            expect(createTemporaryCanvasSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not call createTemporaryCanvas if it is not in rectangle mode', () => {
+            mouseServiceSpy.isRectangleMode = false;
+            component.onCanvasClick(mouseEvent);
+            expect(createTemporaryCanvasSpy).not.toHaveBeenCalled();
         });
     });
 
-    // it('onCanvasClick should set isDragging to true and call appropriate functions if not in rectangle mode', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.isRectangleMode = false;
-    //     component.onCanvasClick(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-    //     expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
-    // });
+    describe('onCanvasRelease', () => {
+        let drawImageSpy: jasmine.Spy;
+        let removeChildSpy: jasmine.Spy;
 
-    // it('onCanvasClick should draw any extra tempCanvas', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-    //     const tempCanvas = document.createElement('canvas');
-    //     tempCanvas.classList.add('draw');
-    //     const currentCanvas = document.body.querySelector('#' + component.foregroundCanvas.nativeElement.id);
-    //     currentCanvas?.parentNode?.insertBefore(tempCanvas, currentCanvas);
-    //     component.onCanvasClick(mouseEvent);
-    //     expect(drawImageSpy).toHaveBeenCalledTimes(1);
-    // });
+        beforeEach(() => {
+            drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+            removeChildSpy = spyOn(HTMLElement.prototype, 'removeChild' as never);
+        });
+        it('should set isDragging to false', () => {
+            component.onCanvasRelease();
+            expect(component.isDragging).toBeFalse();
+        });
+
+        it('should set lastMousePosition to the appropriate expected mouse position', () => {
+            const expected = { x: -1, y: -1 };
+            mouseServiceSpy.getX.and.returnValue(expected.x);
+            mouseServiceSpy.getY.and.returnValue(expected.y);
+            component.onCanvasRelease();
+            expect(component['lastMousePosition']).toEqual(expected);
+        });
+
+        it('should call drawImage if it is in rectangle mode', () => {
+            mouseServiceSpy.isRectangleMode = true;
+            component.onCanvasRelease();
+            expect(drawImageSpy).toHaveBeenCalledWith(component['tempCanvas'], 0, 0);
+        });
+
+        it('should call removeChildSpy if it is in rectangle mode', () => {
+            mouseServiceSpy.isRectangleMode = true;
+            component.onCanvasRelease();
+            expect(removeChildSpy).toHaveBeenCalledWith(component['tempCanvas']);
+        });
+    });
+
+    describe('onCanvasDrag', () => {
+        let canvasRectangularDragSpy: jasmine.Spy;
+        let canvasPaintSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            component['isDragging'] = true;
+            canvasRectangularDragSpy = spyOn(component, 'canvasRectangularDrag');
+            canvasPaintSpy = spyOn(component, 'canvasPaint');
+        });
+
+        it('should call canvasRectangularDrag if it is in rectangle mode', () => {
+            mouseServiceSpy.isRectangleMode = true;
+            component.onCanvasDrag(mouseEvent);
+            expect(canvasRectangularDragSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call canvasPaint if it is not in rectangle mode', () => {
+            mouseServiceSpy.isRectangleMode = false;
+            component.onCanvasDrag(mouseEvent);
+            expect(canvasPaintSpy).toHaveBeenCalledTimes(1);
+        });
+    });
     // it('getCanvas should return the canvas element', () => {
     //     const canvas = component.paintCanvas;
     //     expect(canvas).toEqual(component.foregroundCanvas.nativeElement);
@@ -145,8 +199,8 @@ fdescribe('PaintAreaComponent', () => {
     //     expect(result.height).toBe(Constants.DEFAULT_HEIGHT);
     // });
 
-    // it('createTempCanvas should correctly add a canvas on top of the other canvas', () => {
-    //     component.createTempCanvas();
+    // it('createTemporaryCanvas should correctly add a canvas on top of the other canvas', () => {
+    //     component.createTemporaryCanvas();
     //     const tempCanvasElement = document.body.querySelector('.draw');
     //     expect(tempCanvasElement).not.toBeNull();
     //     expect(tempCanvasElement?.tagName).toBe('CANVAS');
@@ -159,7 +213,7 @@ fdescribe('PaintAreaComponent', () => {
     //     expect(tempCanvas.previousElementSibling).toBe(component.foregroundCanvas.nativeElement);
     // });
 
-    // it('canvasDrag should call the appropriate drawing function if in rectangle mode', () => {
+    // it('onCanvasDrag should call the appropriate drawing function if in rectangle mode', () => {
     //     const mouseEvent = {
     //         offsetX: 100,
     //         offsetY: 200,
@@ -168,11 +222,11 @@ fdescribe('PaintAreaComponent', () => {
     //     component.isDragging = true;
     //     mouseServiceSpy.isRectangleMode = true;
     //     const rectangleSpy = spyOn(component, 'canvasRectangularDrag');
-    //     component.canvasDrag(mouseEvent);
+    //     component.onCanvasDrag(mouseEvent);
     //     expect(rectangleSpy).toHaveBeenCalledTimes(1);
     // });
 
-    // it('canvasDrag should call the appropriate drawing function if not in rectangle mode', () => {
+    // it('onCanvasDrag should call the appropriate drawing function if not in rectangle mode', () => {
     //     const mouseEvent = {
     //         offsetX: 100,
     //         offsetY: 200,
@@ -181,7 +235,7 @@ fdescribe('PaintAreaComponent', () => {
     //     component.isDragging = true;
     //     mouseServiceSpy.isRectangleMode = false;
     //     const paintSpy = spyOn(component, 'canvasPaint');
-    //     component.canvasDrag(mouseEvent);
+    //     component.onCanvasDrag(mouseEvent);
     //     expect(paintSpy).toHaveBeenCalledTimes(1);
     // });
 
@@ -222,7 +276,7 @@ fdescribe('PaintAreaComponent', () => {
     //         offsetY: 200,
     //         button: 0,
     //     } as MouseEvent;
-    //     component.createTempCanvas();
+    //     component.createTemporaryCanvas();
     //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     component.canvasRectangularDrag(mouseEvent);
@@ -237,7 +291,7 @@ fdescribe('PaintAreaComponent', () => {
     //         button: 0,
     //     } as MouseEvent;
     //     const releaseSpy = spyOn(component, 'onCanvasRelease');
-    //     component.createTempCanvas();
+    //     component.createTemporaryCanvas();
     //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     component.canvasRectangularDrag(mouseEvent);
@@ -359,18 +413,5 @@ fdescribe('PaintAreaComponent', () => {
     //     component.canvasRectangularDrag(mouseEvent);
     //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
     //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
-    // });
-
-    // it('onCanvasRelease should set isDragging to false', () => {
-    //     component.onCanvasRelease();
-    //     expect(component.isDragging).toBe(false);
-    // });
-
-    // it('onCanvasRelease should remove the temp canvas', () => {
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     component.createTempCanvas();
-    //     component.onCanvasRelease();
-    //     const tempCanvasElement = document.body.querySelector('.draw');
-    //     expect(tempCanvasElement).toBeNull();
     // });
 });
