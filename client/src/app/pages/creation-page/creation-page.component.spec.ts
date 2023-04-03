@@ -77,15 +77,15 @@ describe('CreationPageComponent', () => {
     });
 
     it('setPaintBrushMode should call paintBrushMode', () => {
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         component.setPaintBrushMode();
         expect(creationPageServiceSpy.paintBrushMode).toHaveBeenCalledWith(defaultCtx, diffCtx);
     });
 
     it('setEraseBrushMode should call eraseBrushMode', () => {
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         component.setEraseBrushMode();
         expect(creationPageServiceSpy.eraseBrushMode).toHaveBeenCalledWith(defaultCtx, diffCtx);
     });
@@ -97,8 +97,8 @@ describe('CreationPageComponent', () => {
 
     it('swapCanvas should swap the canvas', () => {
         spyOn(component, 'addToUndoRedoStack');
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         diffCtx.fillText('test', Constants.ten, Constants.ten);
         const defaultCanvasData = defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         const diffCanvasData = diffCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
@@ -109,8 +109,8 @@ describe('CreationPageComponent', () => {
 
     it('clearCanvas should clear the canvas', () => {
         spyOn(component, 'addToUndoRedoStack');
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCtx.fillText('test', Constants.ten, Constants.ten);
         component.clearDefaultCanvas();
         expect(defaultCtx.getImageData(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT)).toEqual(
@@ -125,8 +125,8 @@ describe('CreationPageComponent', () => {
 
     it('duplicateDefaultCanvas should duplicate the canvas on the diffCanvas', () => {
         spyOn(component, 'addToUndoRedoStack');
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCtx.fillText('test', Constants.ten, Constants.ten);
         diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.duplicateDefaultCanvas();
@@ -137,8 +137,8 @@ describe('CreationPageComponent', () => {
 
     it('duplicateDiffCanvas should duplicate the canvas on the defaultCanvas', () => {
         spyOn(component, 'addToUndoRedoStack');
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         defaultCtx.fillText('test', Constants.ten, Constants.ten);
         diffCtx.fillText('test2', Constants.AREA_TO_DUPLICATE, Constants.AREA_TO_DUPLICATE);
         component.duplicateDiffCanvas();
@@ -166,8 +166,8 @@ describe('CreationPageComponent', () => {
     it('applyChanges should call clearRect and drawImage', () => {
         const defaultCanvas = document.createElement('canvas');
         const diffCanvas = document.createElement('canvas');
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const canvas = { defaultCanvas, diffCanvas };
 
         spyOn(defaultCtx, 'clearRect');
@@ -184,8 +184,8 @@ describe('CreationPageComponent', () => {
     });
 
     it('should not perform changes when canvas is undefined', () => {
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
         spyOn(defaultCtx, 'clearRect');
         spyOn(diffCtx, 'clearRect');
@@ -201,8 +201,8 @@ describe('CreationPageComponent', () => {
     });
 
     it('setBrushSize should set the brush size', () => {
-        const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const matSlider = { value: 1 } as MatSlider;
         const masSliderChange = { value: 1 } as MatSliderChange;
         component.setBrushSize(masSliderChange);

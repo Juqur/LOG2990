@@ -51,9 +51,9 @@ fdescribe('PaintAreaComponent', () => {
             expect(component.height).toEqual(expected);
         });
 
-        it('paintCanvas should return the foreground canvas.', () => {
+        it('canvas should return the foreground canvas.', () => {
             const expected = component.foregroundCanvas.nativeElement;
-            expect(component.paintCanvas).toEqual(expected);
+            expect(component.canvas).toEqual(expected);
         });
     });
 
@@ -153,12 +153,12 @@ fdescribe('PaintAreaComponent', () => {
 
     describe('onCanvasDrag', () => {
         let canvasRectangularDragSpy: jasmine.Spy;
-        let canvasPaintSpy: jasmine.Spy;
+        let paintCanvasSpy: jasmine.Spy;
 
         beforeEach(() => {
             component['isDragging'] = true;
             canvasRectangularDragSpy = spyOn(component, 'canvasRectangularDrag');
-            canvasPaintSpy = spyOn(component, 'canvasPaint');
+            paintCanvasSpy = spyOn(component, 'paintCanvas');
         });
 
         it('should call canvasRectangularDrag if it is in rectangle mode', () => {
@@ -167,10 +167,10 @@ fdescribe('PaintAreaComponent', () => {
             expect(canvasRectangularDragSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should call canvasPaint if it is not in rectangle mode', () => {
+        it('should call paintCanvas if it is not in rectangle mode', () => {
             mouseServiceSpy.isRectangleMode = false;
             component.onCanvasDrag(mouseEvent);
-            expect(canvasPaintSpy).toHaveBeenCalledTimes(1);
+            expect(paintCanvasSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -262,25 +262,7 @@ fdescribe('PaintAreaComponent', () => {
         });
     });
 
-    // it('mergeCanvas should return a canvas with the correct size', () => {
-    //     const result = component.mergeCanvas();
-    //     expect(result.width).toBe(Constants.DEFAULT_WIDTH);
-    //     expect(result.height).toBe(Constants.DEFAULT_HEIGHT);
-    // });
-
-    // it('createTemporaryCanvas should correctly add a canvas on top of the other canvas', () => {
-    //     component.createTemporaryCanvas();
-    //     const tempCanvasElement = document.body.querySelector('.draw');
-    //     expect(tempCanvasElement).not.toBeNull();
-    //     expect(tempCanvasElement?.tagName).toBe('CANVAS');
-    //     const tempCanvas = tempCanvasElement as HTMLCanvasElement;
-    //     expect(tempCanvas.width).toBe(Constants.DEFAULT_WIDTH);
-    //     expect(tempCanvas.height).toBe(Constants.DEFAULT_HEIGHT);
-    //     expect(tempCanvas.style.position).toBe('absolute');
-    //     expect(tempCanvas.style.top).toBe(component.foregroundCanvas.nativeElement.offsetTop + 'px');
-    //     expect(tempCanvas.style.left).toBe(component.foregroundCanvas.nativeElement.offsetLeft + 'px');
-    //     expect(tempCanvas.previousElementSibling).toBe(component.foregroundCanvas.nativeElement);
-    // });
+    // describe('paintCanvas', () => {')
 
     // it('onCanvasDrag should call the appropriate drawing function if in rectangle mode', () => {
     //     const mouseEvent = {
@@ -303,12 +285,12 @@ fdescribe('PaintAreaComponent', () => {
     //     } as MouseEvent;
     //     component.isDragging = true;
     //     mouseServiceSpy.isRectangleMode = false;
-    //     const paintSpy = spyOn(component, 'canvasPaint');
+    //     const paintSpy = spyOn(component, 'paintCanvas');
     //     component.onCanvasDrag(mouseEvent);
     //     expect(paintSpy).toHaveBeenCalledTimes(1);
     // });
 
-    // it('canvasPaint should paint on the canvas', () => {
+    // it('paintCanvas should paint on the canvas', () => {
     //     const mouseEvent = {
     //         offsetX: 100,
     //         offsetY: 200,
@@ -316,13 +298,13 @@ fdescribe('PaintAreaComponent', () => {
     //     } as MouseEvent;
     //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasPaint(mouseEvent);
+    //     component.paintCanvas(mouseEvent);
     //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
     //     expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
     //     expect(drawServiceSpy.setPaintColor).toHaveBeenCalledTimes(1);
     // });
 
-    // it('canvasPaint should not paint outside of the canvas', () => {
+    // it('paintCanvas should not paint outside of the canvas', () => {
     //     const mouseEvent = {
     //         offsetX: 1000,
     //         offsetY: 2000,
@@ -331,7 +313,7 @@ fdescribe('PaintAreaComponent', () => {
     //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
     //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
     //     const releaseSpy = spyOn(component, 'onCanvasRelease');
-    //     component.canvasPaint(mouseEvent);
+    //     component.paintCanvas(mouseEvent);
     //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
     //     expect(releaseSpy).toHaveBeenCalledTimes(1);
 

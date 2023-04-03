@@ -48,7 +48,7 @@ export class PaintAreaComponent implements AfterViewInit {
     /**
      * Getter for the foreground canvas.
      */
-    get paintCanvas(): HTMLCanvasElement {
+    get canvas(): HTMLCanvasElement {
         return this.foregroundCanvas.nativeElement;
     }
 
@@ -141,7 +141,7 @@ export class PaintAreaComponent implements AfterViewInit {
         if (this.mouseService && this.isDragging) {
             if (this.mouseService.isRectangleMode) {
                 this.canvasRectangularDrag(event);
-            } else this.canvasPaint(event);
+            } else this.paintCanvas(event);
         }
     }
 
@@ -153,10 +153,6 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param imageSource The imageSource to load on the canvas.
      */
     loadBackground(imageSource: string): void {
-        // if (!this.backgroundCanvas) {
-        //     return;
-        // }
-
         this.backgroundCanvas.nativeElement.id = this.isDiff ? 'diffImgCanvas' : 'defaultImgCanvas';
         if (!this.isDiff) {
             this.canvasSharing.defaultCanvas = this.backgroundCanvas.nativeElement;
@@ -217,7 +213,7 @@ export class PaintAreaComponent implements AfterViewInit {
      *
      * @param event The mouse event.
      */
-    canvasPaint(event: MouseEvent): void {
+    paintCanvas(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
         const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
         if (accCoords.x < 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height) {
