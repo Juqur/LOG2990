@@ -262,7 +262,31 @@ fdescribe('PaintAreaComponent', () => {
         });
     });
 
-    // describe('paintCanvas', () => {')
+    describe('paintCanvas', () => {
+        it('should call mouseDrag', () => {
+            component.paintCanvas(mouseEvent);
+            expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call setPaintColor', () => {
+            component.paintCanvas(mouseEvent);
+            expect(drawServiceSpy.setPaintColor).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call draw', () => {
+            component.paintCanvas(mouseEvent);
+            expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call onCanvasRelease if mouse button is not pressed', () => {
+            const outsideValue = -1;
+            const releaseSpy = spyOn(component, 'onCanvasRelease');
+            mouseServiceSpy.getX.and.returnValue(outsideValue);
+            mouseServiceSpy.getY.and.returnValue(outsideValue);
+            component.paintCanvas(mouseEvent);
+            expect(releaseSpy).toHaveBeenCalledTimes(1);
+        });
+    });
 
     // it('onCanvasDrag should call the appropriate drawing function if in rectangle mode', () => {
     //     const mouseEvent = {
