@@ -135,7 +135,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * Detects the mouse movement on the canvas when clicking on it.
      * It then calls the appropriate function for drawing.
      *
-     * @param event the mouse event
+     * @param event The mouse event.
      */
     onCanvasDrag(event: MouseEvent): void {
         if (this.mouseService && this.isDragging) {
