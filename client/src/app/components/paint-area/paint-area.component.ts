@@ -153,23 +153,26 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param imageSource The imageSource to load on the canvas.
      */
     loadBackground(imageSource: string): void {
-        if (this.backgroundCanvas) {
-            this.backgroundCanvas.nativeElement.id = this.isDiff ? 'diffImgCanvas' : 'defaultImgCanvas';
-            const context = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            if (!this.isDiff) {
-                this.canvasSharing.defaultCanvas = this.backgroundCanvas.nativeElement;
-            } else {
-                this.canvasSharing.diffCanvas = this.backgroundCanvas.nativeElement;
-            }
-            this.currentImage = new Image();
-            this.currentImage.crossOrigin = 'anonymous';
-            this.currentImage.src = imageSource;
-            this.currentImage.onload = () => {
-                context.drawImage(this.currentImage, 0, 0, this.width, this.height);
-            };
-            this.backgroundCanvas.nativeElement.style.backgroundColor = 'white';
-            this.backgroundCanvas.nativeElement.focus();
+        // if (!this.backgroundCanvas) {
+        //     return;
+        // }
+
+        this.backgroundCanvas.nativeElement.id = this.isDiff ? 'diffImgCanvas' : 'defaultImgCanvas';
+        if (!this.isDiff) {
+            this.canvasSharing.defaultCanvas = this.backgroundCanvas.nativeElement;
+        } else {
+            this.canvasSharing.diffCanvas = this.backgroundCanvas.nativeElement;
         }
+
+        const context = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.currentImage = new Image();
+        this.currentImage.crossOrigin = 'anonymous';
+        this.currentImage.src = imageSource;
+        this.currentImage.onload = () => {
+            context.drawImage(this.currentImage, 0, 0, this.width, this.height);
+        };
+        this.backgroundCanvas.nativeElement.style.backgroundColor = 'white';
+        this.backgroundCanvas.nativeElement.focus();
     }
 
     /**
@@ -202,7 +205,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.tempCanvas.height = this.height;
         this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
-        const currentCanvas = document.body.querySelector('#' + this.foregroundCanvas.nativeElement.id) as HTMLCanvasElement;
+        const currentCanvas = this.foregroundCanvas.nativeElement;
         currentCanvas.after(this.tempCanvas);
         this.tempCanvas.addEventListener('mousedown', this.onCanvasClick.bind(this));
         this.tempCanvas.addEventListener('mouseup', this.onCanvasRelease.bind(this));

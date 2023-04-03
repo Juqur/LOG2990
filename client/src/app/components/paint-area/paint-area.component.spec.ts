@@ -8,6 +8,7 @@ import SpyObj = jasmine.SpyObj;
 
 fdescribe('PaintAreaComponent', () => {
     const mouseEvent = {} as unknown as MouseEvent;
+    let loadBackgroundSpy: jasmine.Spy;
     let mouseServiceSpy: SpyObj<MouseService>;
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PaintAreaComponent;
@@ -29,6 +30,7 @@ fdescribe('PaintAreaComponent', () => {
 
         fixture = TestBed.createComponent(PaintAreaComponent);
         component = fixture.componentInstance;
+        loadBackgroundSpy = spyOn(component, 'loadBackground');
         fixture.detectChanges();
     });
 
@@ -171,27 +173,94 @@ fdescribe('PaintAreaComponent', () => {
             expect(canvasPaintSpy).toHaveBeenCalledTimes(1);
         });
     });
-    // it('getCanvas should return the canvas element', () => {
-    //     const canvas = component.paintCanvas;
-    //     expect(canvas).toEqual(component.foregroundCanvas.nativeElement);
-    // });
 
-    // it('loadBackground should call context.drawImage', fakeAsync(() => {
-    //     const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-    //     component.loadBackground(environment.serverUrl + 'originals/1.bmp');
-    //     component.currentImage.dispatchEvent(new Event('load'));
+    describe('loadBackground', () => {
+        beforeEach(() => {
+            loadBackgroundSpy.and.callThrough();
+        });
 
-    //     expect(drawImageSpy).toHaveBeenCalledTimes(1);
-    // }));
+        it('should set the background canvas to diffImgCanvas', () => {
+            const setSpy = spyOnProperty(component['canvasSharing'], 'diffCanvas', 'set');
+            const expected = 'diffImgCanvas';
+            component.isDiff = true;
+            component.loadBackground('');
+            expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
+            expect(setSpy).toHaveBeenCalledTimes(1);
+        });
 
-    // it('loadBackground should call the diff canvas when isDiff is true', fakeAsync(() => {
-    //     const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-    //     component.isDiff = true;
-    //     component.loadBackground(environment.serverUrl + 'originals/1.bmp');
-    //     component.currentImage.dispatchEvent(new Event('load'));
+        it('should set the background canvas to defaultImgCanvas', () => {
+            const setSpy = spyOnProperty(component['canvasSharing'], 'defaultCanvas', 'set');
+            const expected = 'defaultImgCanvas';
+            component.isDiff = false;
+            component.loadBackground('');
+            expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
+            expect(setSpy).toHaveBeenCalledTimes(1);
+        });
 
-    //     expect(drawImageSpy).toHaveBeenCalledTimes(1);
-    // }));
+        it('should call drawImage', async () => {
+            const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+            const imageSpy = jasmine.createSpyObj('Image', ['onload']);
+            spyOn(window, 'Image').and.returnValue(imageSpy);
+            component.loadBackground('');
+            imageSpy.onload();
+            expect(drawImageSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    // May need to recheck the mock.
+    describe('mergeCanvas', () => {
+        it('should call drawImage twice', () => {
+            const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+            component.mergeCanvas();
+            expect(drawImageSpy).toHaveBeenCalledTimes(2);
+        });
+
+        it('should return a canvas', () => {
+            spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+            const expected = { width: 640, height: 480 };
+            const result = component.mergeCanvas();
+            expect(result).toBeInstanceOf(HTMLCanvasElement);
+            expect(result.width).toEqual(expected.width);
+            expect(result.height).toEqual(expected.height);
+        });
+    });
+
+    describe('createTemporaryCanvas', () => {
+        let addEventListenerSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
+        });
+
+        it('should call paintBrush', () => {
+            component.createTemporaryCanvas();
+            expect(drawServiceSpy.paintBrush).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call setPaintColor', () => {
+            component.createTemporaryCanvas();
+            expect(drawServiceSpy.setPaintColor).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call addEventListener trice', () => {
+            component.createTemporaryCanvas();
+            expect(addEventListenerSpy).toHaveBeenCalledTimes(3);
+            expect(addEventListenerSpy).toHaveBeenCalledWith('mousedown', jasmine.any(Function));
+            expect(addEventListenerSpy).toHaveBeenCalledWith('mouseup', jasmine.any(Function));
+            expect(addEventListenerSpy).toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+        });
+
+        it('should set the temporary canvas with the appropriate attributes', () => {
+            component.createTemporaryCanvas();
+            expect(component['tempCanvas']).toBeInstanceOf(HTMLCanvasElement);
+            expect(component['tempCanvas'].className).toEqual('draw');
+            expect(component['tempCanvas'].style.position).toEqual('absolute');
+            expect(component['tempCanvas'].style.top).toEqual(component.foregroundCanvas.nativeElement.offsetTop + 'px');
+            expect(component['tempCanvas'].style.left).toEqual(component.foregroundCanvas.nativeElement.offsetLeft + 'px');
+            expect(component['tempCanvas'].width).toEqual(component.width);
+            expect(component['tempCanvas'].height).toEqual(component.height);
+        });
+    });
 
     // it('mergeCanvas should return a canvas with the correct size', () => {
     //     const result = component.mergeCanvas();
@@ -413,5 +482,12 @@ fdescribe('PaintAreaComponent', () => {
     //     component.canvasRectangularDrag(mouseEvent);
     //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
     //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+    // });
+
+    // describe('drawSiblingCanvases', () => {
+    //     it('should call drawServiceSpy.drawCanvas', () => {
+    //         component.drawSiblingCanvases();
+    //         expect(drawServiceSpy.drawCanvas).toHaveBeenCalledTimes(1);
+    //     });
     // });
 });
