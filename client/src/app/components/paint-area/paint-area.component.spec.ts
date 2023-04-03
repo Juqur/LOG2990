@@ -63,7 +63,7 @@ describe('PaintAreaComponent', () => {
                 key: 'Shift',
             } as KeyboardEvent;
             component.buttonDetect(buttonEvent);
-            expect(component.isShiftPressed).toBeTrue();
+            expect(component['isShiftPressed']).toBeTrue();
         });
     });
 
@@ -73,7 +73,7 @@ describe('PaintAreaComponent', () => {
                 key: 'Shift',
             } as KeyboardEvent;
             component.buttonRelease(buttonEvent);
-            expect(component.isShiftPressed).toBeFalse();
+            expect(component['isShiftPressed']).toBeFalse();
         });
     });
 
@@ -158,7 +158,7 @@ describe('PaintAreaComponent', () => {
         });
         it('should set isDragging to false', () => {
             component.onCanvasRelease();
-            expect(component.isDragging).toBeFalse();
+            expect(component['isDragging']).toBeFalse();
         });
 
         it('should set lastMousePosition to the appropriate expected mouse position', () => {
@@ -342,7 +342,7 @@ describe('PaintAreaComponent', () => {
             const { x, y } = { x: 100, y: 120 };
             mouseServiceSpy.getX.and.returnValue(x);
             mouseServiceSpy.getY.and.returnValue(y);
-            component.isShiftPressed = true;
+            component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
             expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
         });
@@ -351,13 +351,13 @@ describe('PaintAreaComponent', () => {
             const { x, y } = { x: 120, y: 100 };
             mouseServiceSpy.getX.and.returnValue(x);
             mouseServiceSpy.getY.and.returnValue(y);
-            component.isShiftPressed = true;
+            component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
             expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
         });
 
         it('should call drawRect if shift is not pressed', () => {
-            component.isShiftPressed = false;
+            component['isShiftPressed'] = false;
             component.canvasRectangularDrag(mouseEvent);
             expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
         });
