@@ -23,8 +23,8 @@ export class PaintAreaComponent implements AfterViewInit {
     @ViewChild('foregroundCanvas', { static: false }) foregroundCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('backgroundCanvas', { static: false }) backgroundCanvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
-    isShiftPressed = false;
-    isDragging = false;
+    private isShiftPressed = false;
+    private isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
@@ -96,6 +96,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event The mouse event.
      */
     onCanvasClick(event: MouseEvent): void {
+        console.log('clicked');
         const canvas = this.foregroundCanvas.nativeElement;
         const parent = canvas.parentElement as HTMLElement;
         const drawElements = parent.querySelectorAll('.draw');
@@ -120,6 +121,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event The mouse event.
      */
     onCanvasRelease(): void {
+        console.log('released');
         this.isDragging = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {
@@ -216,6 +218,7 @@ export class PaintAreaComponent implements AfterViewInit {
     paintCanvas(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
         const actualCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
+        console.log(actualCoords);
         if (actualCoords.x < 0 || actualCoords.y < 0 || actualCoords.x > this.width || actualCoords.y > this.height) {
             this.onCanvasRelease();
         } else {
