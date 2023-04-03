@@ -237,7 +237,7 @@ export class PaintAreaComponent implements AfterViewInit {
     canvasRectangularDrag(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
         const actualCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        if (actualCoords.x <= 0 || actualCoords.y < 0 || actualCoords.x > this.width || actualCoords.y > this.height - 2) {
+        if (actualCoords.x < 0 || actualCoords.y < 0 || actualCoords.x > this.width || actualCoords.y > this.height) {
             this.onCanvasRelease();
         } else {
             this.drawService.context = this.tempCanvas.getContext('2d', {

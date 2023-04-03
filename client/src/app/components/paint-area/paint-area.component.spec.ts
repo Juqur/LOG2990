@@ -6,7 +6,7 @@ import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import SpyObj = jasmine.SpyObj;
 
-fdescribe('PaintAreaComponent', () => {
+describe('PaintAreaComponent', () => {
     const mouseEvent = {} as unknown as MouseEvent;
     let loadBackgroundSpy: jasmine.Spy;
     let mouseServiceSpy: SpyObj<MouseService>;
@@ -74,6 +74,37 @@ fdescribe('PaintAreaComponent', () => {
             } as KeyboardEvent;
             component.buttonRelease(buttonEvent);
             expect(component.isShiftPressed).toBeFalse();
+        });
+    });
+
+    describe('ngAfterViewInit', () => {
+        let addEventListenerSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            loadBackgroundSpy.calls.reset();
+            addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
+        });
+
+        it('should call loadBackground', () => {
+            component.ngAfterViewInit();
+            expect(loadBackgroundSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call addEventListenerSpy trice', () => {
+            component.ngAfterViewInit();
+            expect(addEventListenerSpy).toHaveBeenCalledTimes(3);
+        });
+
+        it('should set foregroundCanvas id to diffDrawCanvas', () => {
+            component.isDiff = true;
+            component.ngAfterViewInit();
+            expect(component.foregroundCanvas.nativeElement.id).toEqual('diffDrawCanvas');
+        });
+
+        it('should set defaultDrawCanvas id to diffDrawCanvas', () => {
+            component.isDiff = false;
+            component.ngAfterViewInit();
+            expect(component.foregroundCanvas.nativeElement.id).toEqual('defaultDrawCanvas');
         });
     });
 
@@ -288,212 +319,68 @@ fdescribe('PaintAreaComponent', () => {
         });
     });
 
-    // it('onCanvasDrag should call the appropriate drawing function if in rectangle mode', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     component.isDragging = true;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     const rectangleSpy = spyOn(component, 'canvasRectangularDrag');
-    //     component.onCanvasDrag(mouseEvent);
-    //     expect(rectangleSpy).toHaveBeenCalledTimes(1);
-    // });
+    describe('canvasRectangularDrag', () => {
+        beforeEach(() => {
+            component['tempCanvas'] = document.createElement('canvas');
+        });
 
-    // it('onCanvasDrag should call the appropriate drawing function if not in rectangle mode', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     component.isDragging = true;
-    //     mouseServiceSpy.isRectangleMode = false;
-    //     const paintSpy = spyOn(component, 'paintCanvas');
-    //     component.onCanvasDrag(mouseEvent);
-    //     expect(paintSpy).toHaveBeenCalledTimes(1);
-    // });
+        it('should call mouseDrag', () => {
+            component.canvasRectangularDrag(mouseEvent);
+            expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
+        });
 
-    // it('paintCanvas should paint on the canvas', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.paintCanvas(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-    //     expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
-    //     expect(drawServiceSpy.setPaintColor).toHaveBeenCalledTimes(1);
-    // });
+        it('should call onCanvasRelease if mouse button is not pressed', () => {
+            const outsideValue = -1;
+            const releaseSpy = spyOn(component, 'onCanvasRelease');
+            mouseServiceSpy.getX.and.returnValue(outsideValue);
+            mouseServiceSpy.getY.and.returnValue(outsideValue);
+            component.canvasRectangularDrag(mouseEvent);
+            expect(releaseSpy).toHaveBeenCalledTimes(1);
+        });
 
-    // it('paintCanvas should not paint outside of the canvas', () => {
-    //     const mouseEvent = {
-    //         offsetX: 1000,
-    //         offsetY: 2000,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     const releaseSpy = spyOn(component, 'onCanvasRelease');
-    //     component.paintCanvas(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-    //     expect(releaseSpy).toHaveBeenCalledTimes(1);
+        it('should correctly call drawRect if shift x < y', () => {
+            const { x, y } = { x: 100, y: 120 };
+            mouseServiceSpy.getX.and.returnValue(x);
+            mouseServiceSpy.getY.and.returnValue(y);
+            component.isShiftPressed = true;
+            component.canvasRectangularDrag(mouseEvent);
+            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+        });
 
-    //     expect(drawServiceSpy.draw).not.toHaveBeenCalled();
-    //     expect(drawServiceSpy.setPaintColor).not.toHaveBeenCalled();
-    // });
+        it('should correctly call drawRect if shift x > y', () => {
+            const { x, y } = { x: 120, y: 100 };
+            mouseServiceSpy.getX.and.returnValue(x);
+            mouseServiceSpy.getY.and.returnValue(y);
+            component.isShiftPressed = true;
+            component.canvasRectangularDrag(mouseEvent);
+            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+        });
 
-    // it('canvasRectangularDrag should draw a rectangle inside the canvas', () => {
-    //     const mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     component.createTemporaryCanvas();
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasRectangularDrag(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-    //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
-    // });
+        it('should call drawRect if shift is not pressed', () => {
+            component.isShiftPressed = false;
+            component.canvasRectangularDrag(mouseEvent);
+            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+        });
+    });
 
-    // it('canvasRectangularDrag should not draw a rectangle outside the canvas', () => {
-    //     const mouseEvent = {
-    //         offsetX: 1000,
-    //         offsetY: 2000,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     const releaseSpy = spyOn(component, 'onCanvasRelease');
-    //     component.createTemporaryCanvas();
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasRectangularDrag(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
-    //     expect(releaseSpy).toHaveBeenCalledTimes(1);
-    //     expect(drawServiceSpy.drawRect).not.toHaveBeenCalled();
-    // });
+    describe('drawSiblingCanvases', () => {
+        const siblingCanvases = [document.createElement('canvas'), document.createElement('canvas')] as unknown as NodeListOf<HTMLCanvasElement>;
+        let drawImageSpy: jasmine.Spy;
+        let removeSpy: jasmine.Spy;
 
-    // it('canvasRectangularDrag should draw a square when shift is pressed', () => {
-    //     let mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.isShiftPressed = true;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     component.onCanvasClick(mouseEvent);
-    //     mouseEvent = {
-    //         offsetX: 150,
-    //         offsetY: 300,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasRectangularDrag(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
-    //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
-    // });
+        beforeEach(() => {
+            drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+            removeSpy = spyOn(HTMLCanvasElement.prototype, 'remove');
+        });
 
-    // it('canvasRectangularDrag should draw a square in the right quadrand', () => {
-    //     let mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.isShiftPressed = true;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     component.onCanvasClick(mouseEvent);
-    //     mouseEvent = {
-    //         offsetX: 250,
-    //         offsetY: 100,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasRectangularDrag(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
-    //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
-    // });
+        it('should call drawImage', () => {
+            component['drawSiblingCanvases'](siblingCanvases);
+            expect(drawImageSpy).toHaveBeenCalledTimes(2);
+        });
 
-    // it('canvasRectangularDrag should draw a square in the right quadrand', () => {
-    //     let mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.isShiftPressed = true;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     component.onCanvasClick(mouseEvent);
-    //     mouseEvent = {
-    //         offsetX: 150,
-    //         offsetY: 100,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasRectangularDrag(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
-    //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
-    // });
-
-    // it('canvasRectangularDrag should draw a square in the right quadrant', () => {
-    //     let mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.isShiftPressed = true;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     component.onCanvasClick(mouseEvent);
-    //     mouseEvent = {
-    //         offsetX: 50,
-    //         offsetY: 100,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasRectangularDrag(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
-    //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
-    // });
-
-    // it('canvasRectangularDrag should draw a square in the right quadrant', () => {
-    //     let mouseEvent = {
-    //         offsetX: 100,
-    //         offsetY: 200,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.isShiftPressed = true;
-    //     mouseServiceSpy.isRectangleMode = true;
-    //     component.onCanvasClick(mouseEvent);
-    //     mouseEvent = {
-    //         offsetX: 10,
-    //         offsetY: 150,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     mouseServiceSpy.getX.and.returnValue(mouseEvent.offsetX);
-    //     mouseServiceSpy.getY.and.returnValue(mouseEvent.offsetY);
-    //     component.canvasRectangularDrag(mouseEvent);
-    //     expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(2);
-    //     expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
-    // });
-
-    // describe('drawSiblingCanvases', () => {
-    //     it('should call drawServiceSpy.drawCanvas', () => {
-    //         component.drawSiblingCanvases();
-    //         expect(drawServiceSpy.drawCanvas).toHaveBeenCalledTimes(1);
-    //     });
-    // });
+        it('should call remove', () => {
+            component['drawSiblingCanvases'](siblingCanvases);
+            expect(removeSpy).toHaveBeenCalledTimes(2);
+        });
+    });
 });
