@@ -215,16 +215,16 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     paintCanvas(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
-        const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        if (accCoords.x < 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height) {
+        const actualCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
+        if (actualCoords.x < 0 || actualCoords.y < 0 || actualCoords.x > this.width || actualCoords.y > this.height) {
             this.onCanvasRelease();
         } else {
             this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', {
                 willReadFrequently: true,
             }) as CanvasRenderingContext2D;
             this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
-            this.drawService.draw(accCoords, this.lastMousePosition);
-            this.lastMousePosition = accCoords;
+            this.drawService.draw(actualCoords, this.lastMousePosition);
+            this.lastMousePosition = actualCoords;
         }
     }
 
@@ -236,8 +236,8 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     canvasRectangularDrag(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
-        const accCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        if (accCoords.x <= 0 || accCoords.y < 0 || accCoords.x > this.width || accCoords.y > this.height - 2) {
+        const actualCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
+        if (actualCoords.x <= 0 || actualCoords.y < 0 || actualCoords.x > this.width || actualCoords.y > this.height - 2) {
             this.onCanvasRelease();
         } else {
             this.drawService.context = this.tempCanvas.getContext('2d', {
@@ -247,8 +247,8 @@ export class PaintAreaComponent implements AfterViewInit {
             if (this.isShiftPressed) {
                 let squareSizeX = 0;
                 let squareSizeY = 0;
-                const xDistance = accCoords.x - this.lastMousePosition.x;
-                const yDistance = accCoords.y - this.lastMousePosition.y;
+                const xDistance = actualCoords.x - this.lastMousePosition.x;
+                const yDistance = actualCoords.y - this.lastMousePosition.y;
                 if (Math.abs(xDistance) < Math.abs(yDistance)) {
                     squareSizeX = xDistance;
                     squareSizeY = Math.sign(yDistance) * Math.abs(xDistance);
@@ -258,7 +258,11 @@ export class PaintAreaComponent implements AfterViewInit {
                 }
                 this.drawService.drawRect(this.lastMousePosition, squareSizeX, squareSizeY);
             } else {
-                this.drawService.drawRect(this.lastMousePosition, accCoords.x - this.lastMousePosition.x, accCoords.y - this.lastMousePosition.y);
+                this.drawService.drawRect(
+                    this.lastMousePosition,
+                    actualCoords.x - this.lastMousePosition.x,
+                    actualCoords.y - this.lastMousePosition.y,
+                );
             }
         }
     }
