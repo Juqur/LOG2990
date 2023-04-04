@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Vec2 } from '@app/interfaces/vec2';
 import { AudioService } from '@app/services/audio/audio.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
@@ -307,7 +306,7 @@ export class GamePageService {
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
+        this.drawServiceDiff.drawError(this.mouseService);
         this.resetCanvas();
     }
 
@@ -338,7 +337,8 @@ export class GamePageService {
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
+        // this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
+        this.drawServiceOriginal.drawError(this.mouseService);
         this.diffPlayArea.timeout(delay).then(() => {
             this.originalPlayArea.drawPlayArea(this.originalImageSrc);
             this.mouseService.canClick = true;

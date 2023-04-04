@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { Constants } from '@common/constants';
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service is used to "draw" on a canvas. This includes drawing words or a grid pattern.
  *
  * @author Nikolay Radoev & Galen Hu
  * @class DrawService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class DrawService {
     context: CanvasRenderingContext2D;
     private paintColor = 'black';
@@ -95,6 +95,7 @@ export class DrawService {
      * @param actCoord The current coordinate.
      */
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
+        console.log(actCoord);
         this.context.beginPath();
         this.context.moveTo(prevCoord.x, prevCoord.y);
         if (actCoord.x !== Constants.minusOne && actCoord.y !== Constants.minusOne) {

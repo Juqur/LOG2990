@@ -23,8 +23,9 @@ export class PaintAreaComponent implements AfterViewInit {
     @ViewChild('foregroundCanvas', { static: false }) foregroundCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('backgroundCanvas', { static: false }) backgroundCanvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
+
+    private isClicked = false;
     private isShiftPressed = false;
-    private isDragging = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
@@ -77,6 +78,13 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
+    @HostListener('window:mouseup', ['$event'])
+    mouseUp(): void {
+        if (this.isClicked) {
+            this.onCanvasRelease();
+        }
+    }
+
     /**
      * Method called after the initial rendering.
      */
@@ -84,7 +92,6 @@ export class PaintAreaComponent implements AfterViewInit {
         this.loadBackground(this.image);
         this.foregroundCanvas.nativeElement.id = this.isDiff ? 'diffDrawCanvas' : 'defaultDrawCanvas';
         this.foregroundCanvas.nativeElement.addEventListener('mousedown', this.onCanvasClick.bind(this));
-        this.foregroundCanvas.nativeElement.addEventListener('mouseup', this.onCanvasRelease.bind(this));
         this.foregroundCanvas.nativeElement.addEventListener('mousemove', this.onCanvasDrag.bind(this));
         this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
     }
@@ -96,14 +103,16 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event The mouse event.
      */
     onCanvasClick(event: MouseEvent): void {
+        console.log('clicking');
+        this.isClicked = true;
         const canvas = this.foregroundCanvas.nativeElement;
         const parent = canvas.parentElement as HTMLElement;
         const drawElements = parent.querySelectorAll('.draw');
         this.drawSiblingCanvases(drawElements as NodeListOf<HTMLCanvasElement>);
 
-        this.isDragging = true;
         this.mouseService.mouseDrag(event);
-        this.lastMousePosition = { x: this.mouseService.getX(), y: this.mouseService.getY() };
+        this.lastMousePosition = { x: this.mouseService.x, y: this.mouseService.y } as Vec2;
+        // this.lastMousePosition = this.mouseService;
 
         if (!this.mouseService.isRectangleMode) {
             this.drawService.context = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -120,7 +129,7 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event The mouse event.
      */
     onCanvasRelease(): void {
-        this.isDragging = false;
+        this.isClicked = false;
         this.lastMousePosition = { x: -1, y: -1 };
         if (this.mouseService.isRectangleMode) {
             const context = this.foregroundCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -135,10 +144,10 @@ export class PaintAreaComponent implements AfterViewInit {
      * Detects the mouse movement on the canvas when clicking on it.
      * It then calls the appropriate function for drawing.
      *
-     * @param event The mouse event.
+     * @param event the mouse event
      */
     onCanvasDrag(event: MouseEvent): void {
-        if (this.mouseService && this.isDragging) {
+        if (this.mouseService && this.isClicked) {
             if (this.mouseService.isRectangleMode) {
                 this.canvasRectangularDrag(event);
             } else this.paintCanvas(event);
@@ -215,17 +224,17 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     paintCanvas(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
-        const actualCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        if (actualCoords.x < 0 || actualCoords.y < 0 || actualCoords.x > this.width || actualCoords.y > this.height) {
-            this.onCanvasRelease();
-        } else {
-            this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', {
-                willReadFrequently: true,
-            }) as CanvasRenderingContext2D;
-            this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
-            this.drawService.draw(actualCoords, this.lastMousePosition);
-            this.lastMousePosition = actualCoords;
+        const { x, y } = this.mouseService;
+        if (this.isOffBounds(x, y)) {
+            return;
         }
+
+        this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', {
+            willReadFrequently: true,
+        }) as CanvasRenderingContext2D;
+        this.drawService.setPaintColor(this.mouseService.mouseDrawColor);
+        this.drawService.draw({ x, y }, this.lastMousePosition);
+        this.lastMousePosition = { x, y };
     }
 
     /**
@@ -236,34 +245,30 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     canvasRectangularDrag(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
-        const actualCoords = { x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2;
-        if (actualCoords.x < 0 || actualCoords.y < 0 || actualCoords.x > this.width || actualCoords.y > this.height) {
-            this.onCanvasRelease();
-        } else {
-            this.drawService.context = this.tempCanvas.getContext('2d', {
-                willReadFrequently: true,
-            }) as CanvasRenderingContext2D;
-            this.drawService.context.clearRect(0, 0, this.width, this.height);
-            if (this.isShiftPressed) {
-                let squareSizeX = 0;
-                let squareSizeY = 0;
-                const xDistance = actualCoords.x - this.lastMousePosition.x;
-                const yDistance = actualCoords.y - this.lastMousePosition.y;
-                if (Math.abs(xDistance) < Math.abs(yDistance)) {
-                    squareSizeX = xDistance;
-                    squareSizeY = Math.sign(yDistance) * Math.abs(xDistance);
-                } else {
-                    squareSizeY = yDistance;
-                    squareSizeX = Math.sign(xDistance) * Math.abs(yDistance);
-                }
-                this.drawService.drawRect(this.lastMousePosition, squareSizeX, squareSizeY);
+        const { x, y } = this.mouseService;
+        if (this.isOffBounds(x, y)) {
+            return;
+        }
+
+        this.drawService.context = this.tempCanvas.getContext('2d', {
+            willReadFrequently: true,
+        }) as CanvasRenderingContext2D;
+        this.drawService.context.clearRect(0, 0, this.width, this.height);
+        if (this.isShiftPressed) {
+            let squareSizeX = 0;
+            let squareSizeY = 0;
+            const xDistance = x - this.lastMousePosition.x;
+            const yDistance = y - this.lastMousePosition.y;
+            if (Math.abs(xDistance) < Math.abs(yDistance)) {
+                squareSizeX = xDistance;
+                squareSizeY = Math.sign(yDistance) * Math.abs(xDistance);
             } else {
-                this.drawService.drawRect(
-                    this.lastMousePosition,
-                    actualCoords.x - this.lastMousePosition.x,
-                    actualCoords.y - this.lastMousePosition.y,
-                );
+                squareSizeY = yDistance;
+                squareSizeX = Math.sign(xDistance) * Math.abs(yDistance);
             }
+            this.drawService.drawRect(this.lastMousePosition, squareSizeX, squareSizeY);
+        } else {
+            this.drawService.drawRect(this.lastMousePosition, x - this.lastMousePosition.x, y - this.lastMousePosition.y);
         }
     }
 
@@ -278,5 +283,16 @@ export class PaintAreaComponent implements AfterViewInit {
             context.drawImage(siblingCanvas, 0, 0);
             siblingCanvas.remove();
         });
+    }
+
+    /**
+     * Internal method checks if the position is outside the boundaries of the canvas.
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @returns True if the position is outside the boundaries of the canvas.
+     */
+    private isOffBounds(x: number, y: number): boolean {
+        return x < 0 || y < 0 || x > this.width || y > this.height;
     }
 }

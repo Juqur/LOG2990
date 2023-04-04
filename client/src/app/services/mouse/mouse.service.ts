@@ -27,6 +27,21 @@ export class MouseService {
     constructor(public popUpService: PopUpService) {}
 
     /**
+     * Returns the x coordinate of the last loaded click.
+     */
+    get x(): number {
+        return this.mousePosition.x;
+    }
+
+    /**
+     * Returns the y coordinate of the last loaded click.
+     *
+     */
+    get y(): number {
+        return this.mousePosition.y;
+    }
+
+    /**
      * Takes the mouse event to calculate the position of the mouse
      * and returns the absolute position of the mouse in the canvas.
      *
@@ -39,24 +54,6 @@ export class MouseService {
             return this.mousePosition.x * Constants.PIXEL_SIZE + this.mousePosition.y * Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE;
         }
         return null;
-    }
-
-    /**
-     * Returns the x coordinate of the last loaded click.
-     *
-     * @returns The value of the x coordinate.
-     */
-    getX(): number {
-        return this.mousePosition.x;
-    }
-
-    /**
-     * Returns the y coordinate of the last loaded click.
-     *
-     * @returns the value of the y coordinate.
-     */
-    getY(): number {
-        return this.mousePosition.y;
     }
 
     /**
