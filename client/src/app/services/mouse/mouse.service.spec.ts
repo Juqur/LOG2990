@@ -43,13 +43,13 @@ describe('MouseService', () => {
     it('getX should return the correct value', () => {
         const expectedValue = 7;
         service['mousePosition'] = { x: expectedValue, y: 1 };
-        expect(service.getX()).toEqual(expectedValue);
+        expect(service.x).toEqual(expectedValue);
     });
 
     it('getY should return the correct value', () => {
         const expectedValue = 7;
         service['mousePosition'] = { x: 1, y: expectedValue };
-        expect(service.getY()).toEqual(expectedValue);
+        expect(service.y).toEqual(expectedValue);
     });
 
     it('should update mousePosition when left mouse button is pressed', async () => {
@@ -59,8 +59,8 @@ describe('MouseService', () => {
             button: 0,
         } as MouseEvent;
         await service.mouseDrag(mouseEvent);
-        const x = service.getX();
-        const y = service.getY();
+        const x = service.x;
+        const y = service.y;
         expect(x).toEqual(mouseEvent.offsetX);
         expect(y).toEqual(mouseEvent.offsetY);
     });
