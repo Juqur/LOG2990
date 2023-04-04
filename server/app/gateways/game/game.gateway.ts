@@ -34,6 +34,14 @@ export class GameGateway {
         this.timerService.startTimer(socket, this.server, true);
     }
 
+    /**
+     * This method is called when a timed game is created.
+     * It sets all the levels, chooses a random one and sends it to the client.
+     * It also creates a new game state and starts the timer.
+     *
+     * @param socket The socket of the player.
+     * @param data The data of the player, including whether the game is multiplayer and the playerName.
+     */
     @SubscribeMessage(GameEvents.OnCreateTimedGame)
     async onCreateTimedGame(socket: Socket, data: { mutliplayer: boolean; playerName: string }): Promise<void> {
         await this.gameService.createGameState(socket.id, { playerName: data.playerName, levelId: 0 }, data.mutliplayer);
@@ -191,7 +199,7 @@ export class GameGateway {
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(socket.id);
+        this.gameService.removeLevel(levelId);
     }
 
     /**
@@ -258,7 +266,7 @@ export class GameGateway {
     private handlePlayerLeavingGame(socket: Socket): void {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
-            this.gameService.removeLevel(socket.id);
+            this.gameService.removeLevel(gameState.levelId);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(socket, gameState);
