@@ -1,4 +1,5 @@
 import { GameEvents } from '@app/gateways/game/game.gateway.events';
+import { GameService } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
@@ -7,6 +8,8 @@ import { Server } from 'socket.io';
 export class TimerService {
     private timeMap = new Map<string, number>();
     private timeIntervalMap = new Map<string, NodeJS.Timeout>();
+
+    constructor(private gameService: GameService) {}
 
     /**
      * Gets the game time.
@@ -40,6 +43,7 @@ export class TimerService {
                 this.timeIntervalMap.delete(socketId);
                 this.timeMap.delete(socketId);
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
+                this.gameService.removeLevel(socketId);
             }
             server.to(socketId).emit(GameEvents.SendTime, time);
         }, Constants.millisecondsInOneSecond);
