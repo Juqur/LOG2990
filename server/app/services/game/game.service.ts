@@ -152,13 +152,11 @@ export class GameService {
         if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            if (this.levelDeletionQueue.includes(gameState.levelId) && !this.verifyIfLevelIsBeingPlayed(gameState.levelId))
-                this.removeLevelFromDeletionQueue(gameState.levelId);
+            this.removeLevel(socket.id);
             return true;
         } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
-            if (this.levelDeletionQueue.includes(gameState.levelId) && !this.verifyIfLevelIsBeingPlayed(gameState.levelId))
-                this.removeLevelFromDeletionQueue(gameState.levelId);
+            this.removeLevel(socket.id);
             return true;
         }
         return false;
@@ -238,32 +236,6 @@ export class GameService {
     }
 
     /**
-     * This method verifies if there are players currently playing the level.
-     * If there are no players playing the level, it deletes the level from the server.
-     * If the level is in the timed level list of a player, it removes it from the list.
-     *
-     * @param levelId The id of the level.
-     * @returns A boolean indicating whether the level is being played.
-     */
-    verifyIfLevelIsBeingPlayed(levelId: number): boolean {
-        for (const gameState of this.playerGameMap.values()) {
-            if (gameState.levelId === levelId && gameState.isInGame) {
-                return true;
-            }
-            if (gameState.timedLevelList) {
-                let level: Level;
-                for (level of gameState.timedLevelList) {
-                    if (level.id === levelId) {
-                        break;
-                    }
-                }
-                gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
-            }
-        }
-        return false;
-    }
-
-    /**
      * This method adds the level id to the levelDeletionQueue.
      *
      * @param levelId The id of the level.
@@ -273,16 +245,34 @@ export class GameService {
     }
 
     /**
+     * This method adds the level to the timed level list of all players who are currently in game.
+     * This method is called when a level is created.
+     *
+     * @param level The level that has to be added to the timed level list.
+     */
+    addLevelToTimedGame(level: Level): void {
+        for (const [socketId, gameState] of this.playerGameMap.entries()) {
+            if (gameState.timedLevelList) {
+                gameState.timedLevelList.push(level);
+                this.playerGameMap.set(socketId, gameState);
+            }
+        }
+    }
+
+    /**
      * This method removes the level id from the levelDeletionQueue if it is found in it.
      * It also deletes the level from the server.
      *
      * @param levelId The id of the level.
      */
-    removeLevelFromDeletionQueue(levelId: number): void {
-        const index = this.levelDeletionQueue.indexOf(levelId);
-        if (index >= 0) {
-            this.levelDeletionQueue.splice(index, 1);
-            this.imageService.deleteLevelData(levelId);
+    removeLevel(socketId: string): void {
+        const gameState = this.getGameState(socketId);
+        if (this.levelDeletionQueue.includes(gameState.levelId) && !this.verifyIfLevelIsBeingPlayed(gameState.levelId)) {
+            const index = this.levelDeletionQueue.indexOf(gameState.levelId);
+            if (index >= 0) {
+                this.levelDeletionQueue.splice(index, 1);
+                this.imageService.deleteLevelData(gameState.levelId);
+            }
         }
     }
 
@@ -325,15 +315,6 @@ export class GameService {
     }
 
     /**
-     * This method deletes the level from the server.
-     *
-     * @param levelId The id of the level.
-     */
-    deleteLevel(levelId: number): void {
-        this.imageService.deleteLevelData(levelId);
-    }
-
-    /**
      * Binds the two players together by their socket ids.
      * It is used to match make the players, but unofficially since it needs confirmation.
      *
@@ -350,5 +331,31 @@ export class GameService {
         otherGameState.isGameFound = true;
         otherGameState.otherSocketId = socketId;
         this.playerGameMap.set(otherSocketId, otherGameState);
+    }
+
+    /**
+     * This method verifies if there are players currently playing the level.
+     * If there are no players playing the level, it deletes the level from the server.
+     * If the level is in the timed level list of a player, it removes it from the list.
+     *
+     * @param levelId The id of the level.
+     * @returns A boolean indicating whether the level is being played.
+     */
+    private verifyIfLevelIsBeingPlayed(levelId: number): boolean {
+        for (const gameState of this.playerGameMap.values()) {
+            if (gameState.levelId === levelId && gameState.isInGame) {
+                return true;
+            }
+            if (gameState.timedLevelList) {
+                let level: Level;
+                for (level of gameState.timedLevelList) {
+                    if (level.id === levelId) {
+                        break;
+                    }
+                }
+                gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
+            }
+        }
+        return false;
     }
 }
