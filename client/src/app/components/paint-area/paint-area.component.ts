@@ -78,16 +78,6 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
-    // /**
-    //  * This method listens for a global mouse release.
-    //  */
-    // @HostListener('window:mouseup', ['$event'])
-    // mouseUp(): void {
-    //     if (this.isClicked) {
-    //         this.onCanvasRelease();
-    //     }
-    // }
-
     /**
      * Method called after the initial rendering.
      */
