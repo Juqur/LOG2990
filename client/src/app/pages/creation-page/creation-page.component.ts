@@ -41,6 +41,22 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
+     * This method listens for a global mouse release.
+     */
+    @HostListener('window:mouseup', ['$event'])
+    mouseUp(): void {
+        if (this.defaultPaintArea.isClicked) {
+            this.defaultPaintArea.onCanvasRelease();
+            this.addToUndoRedoStack();
+        }
+
+        if (this.diffPaintArea.isClicked) {
+            this.diffPaintArea.onCanvasRelease();
+            this.addToUndoRedoStack();
+        }
+    }
+
+    /**
      * Method called after the initial rendering.
      * It makes sur both backgrounds are empty.
      */

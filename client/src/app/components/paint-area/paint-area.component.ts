@@ -23,8 +23,8 @@ export class PaintAreaComponent implements AfterViewInit {
     @ViewChild('foregroundCanvas', { static: false }) foregroundCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('backgroundCanvas', { static: false }) backgroundCanvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
+    isClicked = false;
 
-    private isClicked = false;
     private isShiftPressed = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
@@ -78,12 +78,15 @@ export class PaintAreaComponent implements AfterViewInit {
         }
     }
 
-    @HostListener('window:mouseup', ['$event'])
-    mouseUp(): void {
-        if (this.isClicked) {
-            this.onCanvasRelease();
-        }
-    }
+    // /**
+    //  * This method listens for a global mouse release.
+    //  */
+    // @HostListener('window:mouseup', ['$event'])
+    // mouseUp(): void {
+    //     if (this.isClicked) {
+    //         this.onCanvasRelease();
+    //     }
+    // }
 
     /**
      * Method called after the initial rendering.
@@ -103,7 +106,6 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param event The mouse event.
      */
     onCanvasClick(event: MouseEvent): void {
-        console.log('clicking');
         this.isClicked = true;
         const canvas = this.foregroundCanvas.nativeElement;
         const parent = canvas.parentElement as HTMLElement;
@@ -112,7 +114,6 @@ export class PaintAreaComponent implements AfterViewInit {
 
         this.mouseService.mouseDrag(event);
         this.lastMousePosition = { x: this.mouseService.x, y: this.mouseService.y } as Vec2;
-        // this.lastMousePosition = this.mouseService;
 
         if (!this.mouseService.isRectangleMode) {
             this.drawService.context = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -213,7 +214,7 @@ export class PaintAreaComponent implements AfterViewInit {
         const currentCanvas = this.foregroundCanvas.nativeElement;
         currentCanvas.after(this.tempCanvas);
         this.tempCanvas.addEventListener('mousedown', this.onCanvasClick.bind(this));
-        this.tempCanvas.addEventListener('mouseup', this.onCanvasRelease.bind(this));
+        // this.tempCanvas.addEventListener('mouseup', this.onCanvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.onCanvasDrag.bind(this));
     }
 
