@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
 import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
@@ -151,11 +152,13 @@ export class GameService {
         if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
+            if (this.levelDeletionQueue.includes(gameState.levelId) && !this.verifyIfLevelIsBeingPlayed(gameState.levelId))
+                this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
         } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
-            if (!this.verifyIfLevelIsBeingPlayed(gameState.levelId)) this.removeLevelFromDeletionQueue(gameState.levelId);
+            if (this.levelDeletionQueue.includes(gameState.levelId) && !this.verifyIfLevelIsBeingPlayed(gameState.levelId))
+                this.removeLevelFromDeletionQueue(gameState.levelId);
             return true;
         }
         return false;
@@ -237,6 +240,7 @@ export class GameService {
     /**
      * This method verifies if there are players currently playing the level.
      * If there are no players playing the level, it deletes the level from the server.
+     * If the level is in the timed level list of a player, it removes it from the list.
      *
      * @param levelId The id of the level.
      * @returns A boolean indicating whether the level is being played.
@@ -245,6 +249,15 @@ export class GameService {
         for (const gameState of this.playerGameMap.values()) {
             if (gameState.levelId === levelId && gameState.isInGame) {
                 return true;
+            }
+            if (gameState.timedLevelList) {
+                let level: Level;
+                for (level of gameState.timedLevelList) {
+                    if (level.id === levelId) {
+                        break;
+                    }
+                }
+                gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
             }
         }
         return false;
