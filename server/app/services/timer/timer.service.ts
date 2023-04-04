@@ -2,7 +2,7 @@ import { GameEvents } from '@app/gateways/game/game.gateway.events';
 import { GameService } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 @Injectable()
 export class TimerService {
@@ -30,7 +30,8 @@ export class TimerService {
      * @param otherSocketId The socket id of the other player.
      */
     // eslint-disable-next-line max-params
-    startTimer(socketId: string, server: Server, isClassic: boolean, otherSocketId?: string): void {
+    startTimer(socket: Socket, server: Server, isClassic: boolean, otherSocketId?: string): void {
+        const socketId = socket.id;
         this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
@@ -42,8 +43,9 @@ export class TimerService {
                 clearInterval(interval);
                 this.timeIntervalMap.delete(socketId);
                 this.timeMap.delete(socketId);
-                server.to(socketId).emit(GameEvents.TimedModeFinished, false);
                 this.gameService.removeLevel(socketId);
+                this.gameService.deleteUserFromGame(socket);
+                server.to(socketId).emit(GameEvents.TimedModeFinished, false);
             }
             server.to(socketId).emit(GameEvents.SendTime, time);
         }, Constants.millisecondsInOneSecond);
