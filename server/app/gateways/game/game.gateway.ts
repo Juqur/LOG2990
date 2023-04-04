@@ -31,7 +31,7 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
         this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, false);
-        this.timerService.startTimer(socket.id, this.server, true);
+        this.timerService.startTimer(socket, this.server, true);
     }
 
     @SubscribeMessage(GameEvents.OnCreateTimedGame)
@@ -40,7 +40,7 @@ export class GameGateway {
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);
         this.gameService.setLevelId(socket.id, level);
         socket.emit(GameEvents.ChangeLevelTimedMode, level);
-        this.timerService.startTimer(socket.id, this.server, false);
+        this.timerService.startTimer(socket, this.server, false);
     }
 
     /**
@@ -136,7 +136,7 @@ export class GameGateway {
             playerName: secondPlayerName,
             secondPlayerName: gameState.playerName,
         });
-        this.timerService.startTimer(socket.id, this.server, true, secondPlayerSocket.id);
+        this.timerService.startTimer(socket, this.server, true, secondPlayerSocket.id);
         this.server.emit(GameEvents.UpdateSelection, { levelId: gameState.levelId, canJoin: false });
     }
 
@@ -191,11 +191,7 @@ export class GameGateway {
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        if (this.gameService.verifyIfLevelIsBeingPlayed(levelId)) {
-            this.gameService.addLevelToDeletionQueue(levelId);
-        } else {
-            this.gameService.deleteLevel(levelId);
-        }
+        this.gameService.removeLevel(socket.id);
     }
 
     /**
@@ -262,7 +258,7 @@ export class GameGateway {
     private handlePlayerLeavingGame(socket: Socket): void {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
-            this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
+            this.gameService.removeLevel(socket.id);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(socket, gameState);
