@@ -25,8 +25,8 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     constructor(public creationService: CreationPageService) {}
 
     /**
-     * When the user press ctrl z it calls the handleUndo method.
-     * When the user press ctrl shift z it calls the handleRedo method.
+     * When the user presses ctrl z it calls the handleUndo method.
+     * When the user presses ctrl shift z it calls the handleRedo method.
      *
      * @param $event The event that is triggered when the user press a key.
      */
