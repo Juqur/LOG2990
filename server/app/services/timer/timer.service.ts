@@ -43,7 +43,7 @@ export class TimerService {
                 clearInterval(interval);
                 this.timeIntervalMap.delete(socketId);
                 this.timeMap.delete(socketId);
-                this.gameService.removeLevel(socketId);
+                this.gameService.removeLevel(this.gameService.getGameState(socketId).levelId);
                 this.gameService.deleteUserFromGame(socket);
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
             }
