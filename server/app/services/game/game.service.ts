@@ -152,11 +152,11 @@ export class GameService {
         if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            this.removeLevel(socket.id);
+            this.removeLevel(gameState.levelId);
             return true;
         } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
-            this.removeLevel(socket.id);
+            this.removeLevel(gameState.levelId);
             return true;
         }
         return false;
@@ -265,17 +265,25 @@ export class GameService {
      *
      * @param levelId The id of the level.
      */
-    removeLevel(socketId: string): void {
-        const gameState = this.getGameState(socketId);
-        if (this.levelDeletionQueue.includes(gameState.levelId) && !this.verifyIfLevelIsBeingPlayed(gameState.levelId)) {
-            const index = this.levelDeletionQueue.indexOf(gameState.levelId);
+    removeLevel(levelId: number): void {
+        if (!this.verifyIfLevelIsBeingPlayed(levelId)) {
+            const index = this.levelDeletionQueue.indexOf(levelId);
             if (index >= 0) {
                 this.levelDeletionQueue.splice(index, 1);
-                this.imageService.deleteLevelData(gameState.levelId);
             }
+            this.imageService.deleteLevelData(levelId);
+        } else {
+            this.addLevelToDeletionQueue(levelId);
         }
     }
 
+    /**
+     * This method gets a random level from the timed level list of the player.
+     * It also removes the level from the timed level list.
+     *
+     * @param socketId The id of the socket.
+     * @returns The level that has been removed from the timed level list.
+     */
     getRandomLevelForTimedGame(socketId: string): Level {
         const gameState = this.playerGameMap.get(socketId);
         const level = gameState.timedLevelList[Math.floor(Math.random() * gameState.timedLevelList.length)];
