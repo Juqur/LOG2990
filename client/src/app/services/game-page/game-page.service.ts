@@ -258,18 +258,18 @@ export class GamePageService {
      * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
     private resetCanvas(): void {
-        this.mouseService.canClick = true;
+        this.mouseService.canClick = false;
         const delay = 1000; // ms
         this.diffPlayArea
             .timeout(delay)
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                this.mouseService.canClick = true;
             })
             .then(() => {
                 setTimeout(() => {
                     this.copyArea(this.imagesData);
+                    this.mouseService.canClick = true;
                 }, 0);
             })
             .then(() => {
@@ -345,15 +345,11 @@ export class GamePageService {
      * Performs a failed sound and prompts an error in the original canvas.
      */
     private handleAreaNotFoundInOriginal(): void {
-        const delay = 1000;
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.diffPlayArea.timeout(delay).then(() => {
-            this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-            this.mouseService.canClick = true;
-        });
+        this.resetCanvas();
     }
 }
