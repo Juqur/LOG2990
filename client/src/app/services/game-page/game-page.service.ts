@@ -192,7 +192,7 @@ export class GamePageService {
                 this.originalPlayArea.flashArea(this.areaNotFound);
             }
             isVisible = !isVisible;
-        }, Constants.millisecondsEighthOfSecond);
+        }, Constants.CHEAT_FLASHING_DELAY);
     }
 
     /**

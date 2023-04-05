@@ -16,10 +16,10 @@ export namespace Constants {
     export const ninety: number = 90;
     export const hundred: number = 100;
     export const thousand: number = 1000;
-    export const millisecondsEighthOfSecond: number = 125;
 
     // Global time constants
     export const SECONDS_PER_MINUTE: number = 60;
+    export const CHEAT_FLASHING_DELAY: number = 125;
 
     // Page display
     export const levelsPerPage: number = 4;

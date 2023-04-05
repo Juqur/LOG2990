@@ -385,11 +385,11 @@ describe('GamePageService', () => {
         service['imagesData'] = [1, 2];
         const spy = spyOn(service, 'resetCanvas' as never);
         service.startCheatMode(data);
-        tick(Constants.millisecondsEighthOfSecond);
+        tick(Constants.CHEAT_FLASHING_DELAY);
         expect(spy).toHaveBeenCalledTimes(1);
         expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
         expect(service['areaNotFound']).toEqual([3]);
-        tick(Constants.millisecondsEighthOfSecond);
+        tick(Constants.CHEAT_FLASHING_DELAY);
         clearInterval(service['flashInterval']);
     }));
 

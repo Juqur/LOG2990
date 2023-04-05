@@ -3,18 +3,18 @@ import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharin
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
 
-@Component({
-    selector: 'app-play-area',
-    templateUrl: './play-area.component.html',
-    styleUrls: ['./play-area.component.scss'],
-    providers: [DrawService],
-})
 /**
  * This component represents one of the two canvas inside a game page.
  *
  * @author Simon Gagné & Galen Hu & Charles Degrandpré
  * @class PlayAreaComponent
  */
+@Component({
+    selector: 'app-play-area',
+    templateUrl: './play-area.component.html',
+    styleUrls: ['./play-area.component.scss'],
+    providers: [DrawService],
+})
 export class PlayAreaComponent implements AfterViewInit {
     @Input() isDiff: boolean;
     @Input() image: string = '';
@@ -47,7 +47,7 @@ export class PlayAreaComponent implements AfterViewInit {
      * @param event the keyboardEvent to process.
      */
     @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
+    buttonDetect(event: KeyboardEvent): void {
         this.buttonPressed = event.key;
     }
 
@@ -61,7 +61,7 @@ export class PlayAreaComponent implements AfterViewInit {
     /**
      * Returns the canvas element.
      */
-    getCanvas() {
+    getCanvas(): ElementRef<HTMLCanvasElement> {
         return this.canvas;
     }
 
@@ -72,7 +72,7 @@ export class PlayAreaComponent implements AfterViewInit {
      *
      * @param image the image source
      */
-    drawPlayArea(image: string) {
+    drawPlayArea(image: string): void {
         if (this.canvas) {
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -101,7 +101,7 @@ export class PlayAreaComponent implements AfterViewInit {
      *
      * @param area the area to flash
      */
-    flashArea(area: number[]) {
+    flashArea(area: number[]): void {
         let x = 0;
         let y = 0;
         if (this.tempCanvas) this.deleteTempCanvas();
