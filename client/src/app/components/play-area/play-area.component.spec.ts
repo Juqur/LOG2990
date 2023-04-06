@@ -92,4 +92,10 @@ describe('PlayAreaComponent', () => {
         component.timeout(Constants.millisecondsInOneSecond);
         expect(timeoutSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('should call drawPlayArea when the image changes', () => {
+        const spy = spyOn(component, 'drawPlayArea');
+        component.ngOnChanges();
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
 });
