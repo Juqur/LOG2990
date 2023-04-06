@@ -199,7 +199,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
-
         if (this.route.snapshot.params.id === '0') {
             this.isClassic = false;
             return;
