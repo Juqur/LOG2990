@@ -259,6 +259,11 @@ describe('CreationPageComponent', () => {
             expect(drawImageSpy).toHaveBeenCalledWith(component.diffPaintArea.canvas, 0, 0);
             expect(drawImageSpy).toHaveBeenCalledWith(component.defaultPaintArea.canvas, 0, 0);
         });
+
+        it('should call addToUndoRedoStack', () => {
+            component.onSwapCanvas();
+            expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe('clearDefaultCanvas', () => {
