@@ -3,6 +3,7 @@ import { GameService } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
+import { GameHistory } from '@common/game-history';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -68,7 +69,17 @@ export class GameGateway {
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             const endtime = this.timerService.getTime(socket.id);
+
             socket.emit(GameEvents.Victory);
+            const gameHistory = {
+                startDate: new Date(),
+                lengthGame: this.timerService.getTime(socket.id),
+                isClassic: !gameState.timedLevelList ? true : false,
+                firstPlayerName: gameState.playerName,
+                secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
+                hasPlayerAbandoned: false,
+            } as GameHistory;
+            await this.mongodbService.addGameHistory(gameHistory);
 
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
@@ -253,8 +264,8 @@ export class GameGateway {
      * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnAbandonGame)
-    onAbandonGame(socket: Socket): void {
-        this.handlePlayerLeavingGame(socket);
+    async onAbandonGame(socket: Socket): Promise<void> {
+        await this.handlePlayerLeavingGame(socket);
     }
 
     /**
@@ -284,8 +295,8 @@ export class GameGateway {
      *
      * @param socket The socket of the player.
      */
-    handleDisconnect(socket: Socket): void {
-        this.handlePlayerLeavingGame(socket);
+    async handleDisconnect(socket: Socket): Promise<void> {
+        await this.handlePlayerLeavingGame(socket);
     }
 
     /**
@@ -296,7 +307,7 @@ export class GameGateway {
      *
      * @param socket The socket of the player.
      */
-    private handlePlayerLeavingGame(socket: Socket): void {
+    private async handlePlayerLeavingGame(socket: Socket): Promise<void> {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
@@ -306,6 +317,15 @@ export class GameGateway {
                 otherSocket.emit(GameEvents.OpponentAbandoned);
                 this.gameService.deleteUserFromGame(otherSocket);
             }
+            const gameHistory = {
+                startDate: new Date(),
+                lengthGame: this.timerService.getTime(socket.id),
+                isClassic: !gameState.timedLevelList ? true : false,
+                firstPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : gameState.playerName,
+                secondPlayerName: gameState.otherSocketId ? gameState.playerName : undefined,
+                hasPlayerAbandoned: true,
+            } as GameHistory;
+            await this.mongodbService.addGameHistory(gameHistory);
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);
         }

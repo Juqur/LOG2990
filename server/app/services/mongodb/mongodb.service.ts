@@ -1,7 +1,8 @@
+import { GameHistory, gameHistoryModel } from '@app/model/schema/game-history.schema';
 import { levelModel } from '@app/model/schema/level.schema';
 import { Injectable } from '@nestjs/common';
 import { Level } from 'assets/data/level';
-import mongoose from 'mongoose';
+import mongoose, { ConnectionStates } from 'mongoose';
 
 mongoose.set('strictQuery', false); // fixes a warning
 
@@ -50,10 +51,10 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns the solo highscores names of the specified level.
      */
-    async getPlayerSoloArray(id: number): Promise<string[]> {
+    async getPlayerSoloArray(levelId: number): Promise<string[]> {
         this.openConnection();
         await new Promise((f) => setTimeout(f, 1000)); // horrible
-        const level = await levelModel.findOne({ id });
+        const level = await levelModel.findOne({ levelId });
         this.closeConnection();
         await new Promise((f) => setTimeout(f, 1000)); // horrible
         return level.playerSolo;
@@ -77,16 +78,34 @@ export class MongodbService {
     /**
      * This method returns the multiplayer highscores names of the specified level.
      *
-     * @param id the id of the level.
+     * @param levelId the id of the level.
      * @returns the multiplayer highscores names of the specified level.
      */
-    async getPlayerMultiArray(id: number): Promise<string[]> {
+    async getPlayerMultiArray(levelId: number): Promise<string[]> {
         this.openConnection();
         await new Promise((f) => setTimeout(f, 1000)); // horrible
-        const level = await levelModel.findOne({ id });
+        const level = await levelModel.findOne({ levelId });
         this.closeConnection();
         await new Promise((f) => setTimeout(f, 1000)); // horrible
         return level.playerMulti;
+    }
+
+    /**
+     * This method adds a GameHistory instance to the database.
+     *
+     * @param gameHistory The game history containing the pertinent information to create a GameHistory in the database.
+     */
+    async addGameHistory(gameHistory: GameHistory): Promise<void> {
+        await this.openConnection();
+        await gameHistoryModel.create({
+            startDate: gameHistory.startDate,
+            lengthGame: gameHistory.lengthGame,
+            isClassic: gameHistory.isClassic,
+            firstPlayerName: gameHistory.firstPlayerName,
+            secondPlayerName: gameHistory.secondPlayerName,
+            hasPlayerAbandoned: gameHistory.hasPlayerAbandoned,
+        });
+        await this.closeConnection();
     }
 
     /**
@@ -95,10 +114,11 @@ export class MongodbService {
      */
     private async openConnection(): Promise<void> {
         try {
-            if (!mongoose.connection.readyState) {
-                await mongoose.connect('mongodb+srv://admin:d5jrnGEteyCCNMcW@log2990.ic11qkn.mongodb.net/?');
+            if (!(mongoose.connection.readyState === ConnectionStates.connected || mongoose.connection.readyState === ConnectionStates.connecting)) {
+                await mongoose.connect('mongodb+srv://charlesdegrandpre:bcnWPxjUMghWxIZI@cluster0.civxl2l.mongodb.net/test');
             }
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.log(error);
         }
     }
@@ -107,8 +127,13 @@ export class MongodbService {
      * This method closes the connection to the mongoDB.
      */
     private async closeConnection(): Promise<void> {
-        if (mongoose.connection.readyState) {
-            await mongoose.disconnect();
+        try {
+            if (mongoose.connection.readyState === ConnectionStates.connected || mongoose.connection.readyState === ConnectionStates.connecting) {
+                await mongoose.disconnect();
+            }
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.log(error);
         }
     }
 }

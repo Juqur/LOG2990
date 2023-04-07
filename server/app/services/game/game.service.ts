@@ -1,6 +1,7 @@
 import { ImageService } from '@app/services/image/image.service';
 import { GameData } from '@common/game-data';
 import { Injectable } from '@nestjs/common';
+import { Level } from 'assets/data/level';
 import { Server, Socket } from 'socket.io';
 
 export interface GameState {
@@ -12,6 +13,7 @@ export interface GameState {
     isGameFound: boolean;
     otherSocketId?: string;
     isInCheatMode: boolean;
+    timedLevelList?: Level[];
 }
 
 /**
