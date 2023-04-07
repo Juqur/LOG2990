@@ -67,7 +67,9 @@ export class GameGateway {
         }
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
+            const endtime = this.timerService.getTime(socket.id);
             socket.emit(GameEvents.Victory);
+
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
@@ -97,17 +99,10 @@ export class GameGateway {
             for (let i = 0; i < names.length; i++) {
                 scores.push({ playerName: names[i], time: times[i] } as Highscore);
             }
-            const endtime = this.timerService.getTime(socket);
-
-            console.log(scores);
-            // const scoreks: Highscore[] = [
-            //     { playerName: 'the best', time: 10 },
-            //     { playerName: 'there is no second best', time: 50 },
-            //     { playerName: 'the loser', time: 60 },
-            // ];
 
             if (endtime < scores[2].time) {
                 scores.push({ playerName: 'the newcomer' /* gameState.playerName*/, time: endtime } as Highscore);
+                console.log('Hell0!' + endtime);
                 scores.sort((a: Highscore, b: Highscore) => {
                     // this callback function is called for each element in the array
                     // returning a negative number will put a before b
