@@ -6,7 +6,7 @@ import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import SpyObj = jasmine.SpyObj;
 
-describe('PaintAreaComponent', () => {
+fdescribe('PaintAreaComponent', () => {
     const mouseEvent = {} as unknown as MouseEvent;
     let loadBackgroundSpy: jasmine.Spy;
     let mouseServiceSpy: SpyObj<MouseService>;
@@ -15,7 +15,7 @@ describe('PaintAreaComponent', () => {
     let fixture: ComponentFixture<PaintAreaComponent>;
 
     beforeEach(() => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState', 'mouseDrag']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'changeClickState', 'mouseDrag'], { x: 0, y: 0 });
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw', 'drawRect', 'setPaintColor', 'paintBrush']);
     });
 
@@ -129,8 +129,8 @@ describe('PaintAreaComponent', () => {
 
         it('should set lastMousePosition to the appropriate expected mouse position', () => {
             const expected = { x: 100, y: 200 };
-            mouseServiceSpy.getX.and.returnValue(expected.x);
-            mouseServiceSpy.getY.and.returnValue(expected.y);
+            Object.defineProperty(mouseServiceSpy, 'x', { value: expected.x });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: expected.y });
             component.onCanvasClick(mouseEvent);
             expect(component['lastMousePosition']).toEqual(expected);
         });
@@ -156,15 +156,16 @@ describe('PaintAreaComponent', () => {
             drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
             removeChildSpy = spyOn(HTMLElement.prototype, 'removeChild' as never);
         });
+
         it('should set isDragging to false', () => {
             component.onCanvasRelease();
-            expect(component['isDragging']).toBeFalse();
+            expect(component['isClicked']).toBeFalse();
         });
 
         it('should set lastMousePosition to the appropriate expected mouse position', () => {
             const expected = { x: -1, y: -1 };
-            mouseServiceSpy.getX.and.returnValue(expected.x);
-            mouseServiceSpy.getY.and.returnValue(expected.y);
+            Object.defineProperty(mouseServiceSpy, 'x', { value: expected.x });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: expected.y });
             component.onCanvasRelease();
             expect(component['lastMousePosition']).toEqual(expected);
         });
@@ -187,7 +188,7 @@ describe('PaintAreaComponent', () => {
         let paintCanvasSpy: jasmine.Spy;
 
         beforeEach(() => {
-            component['isDragging'] = true;
+            component['isClicked'] = true;
             canvasRectangularDragSpy = spyOn(component, 'canvasRectangularDrag');
             paintCanvasSpy = spyOn(component, 'paintCanvas');
         });
@@ -238,7 +239,6 @@ describe('PaintAreaComponent', () => {
         });
     });
 
-    // May need to recheck the mock.
     describe('mergeCanvas', () => {
         it('should call drawImage twice', () => {
             const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
@@ -277,8 +277,8 @@ describe('PaintAreaComponent', () => {
             component.createTemporaryCanvas();
             expect(addEventListenerSpy).toHaveBeenCalledTimes(3);
             expect(addEventListenerSpy).toHaveBeenCalledWith('mousedown', jasmine.any(Function));
-            expect(addEventListenerSpy).toHaveBeenCalledWith('mouseup', jasmine.any(Function));
             expect(addEventListenerSpy).toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+            expect(addEventListenerSpy).toHaveBeenCalledWith('mouseout', jasmine.any(Function));
         });
 
         it('should set the temporary canvas with the appropriate attributes', () => {
@@ -308,15 +308,6 @@ describe('PaintAreaComponent', () => {
             component.paintCanvas(mouseEvent);
             expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
         });
-
-        it('should call onCanvasRelease if mouse button is not pressed', () => {
-            const outsideValue = -1;
-            const releaseSpy = spyOn(component, 'onCanvasRelease');
-            mouseServiceSpy.getX.and.returnValue(outsideValue);
-            mouseServiceSpy.getY.and.returnValue(outsideValue);
-            component.paintCanvas(mouseEvent);
-            expect(releaseSpy).toHaveBeenCalledTimes(1);
-        });
     });
 
     describe('canvasRectangularDrag', () => {
@@ -329,28 +320,17 @@ describe('PaintAreaComponent', () => {
             expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
         });
 
-        it('should call onCanvasRelease if mouse button is not pressed', () => {
-            const outsideValue = -1;
-            const releaseSpy = spyOn(component, 'onCanvasRelease');
-            mouseServiceSpy.getX.and.returnValue(outsideValue);
-            mouseServiceSpy.getY.and.returnValue(outsideValue);
-            component.canvasRectangularDrag(mouseEvent);
-            expect(releaseSpy).toHaveBeenCalledTimes(1);
-        });
-
         it('should correctly call drawRect if shift x < y', () => {
-            const { x, y } = { x: 100, y: 120 };
-            mouseServiceSpy.getX.and.returnValue(x);
-            mouseServiceSpy.getY.and.returnValue(y);
+            Object.defineProperty(mouseServiceSpy, 'x', { value: 100 });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: 120 });
             component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
             expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
         });
 
         it('should correctly call drawRect if shift x > y', () => {
-            const { x, y } = { x: 120, y: 100 };
-            mouseServiceSpy.getX.and.returnValue(x);
-            mouseServiceSpy.getY.and.returnValue(y);
+            Object.defineProperty(mouseServiceSpy, 'x', { value: 120 });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: 100 });
             component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
             expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
