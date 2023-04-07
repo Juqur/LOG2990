@@ -6,9 +6,10 @@ import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import SpyObj = jasmine.SpyObj;
 
-fdescribe('PaintAreaComponent', () => {
+describe('PaintAreaComponent', () => {
     const mouseEvent = {} as unknown as MouseEvent;
     let loadBackgroundSpy: jasmine.Spy;
+    let addEventListenerSpy: jasmine.Spy;
     let mouseServiceSpy: SpyObj<MouseService>;
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PaintAreaComponent;
@@ -31,7 +32,11 @@ fdescribe('PaintAreaComponent', () => {
         fixture = TestBed.createComponent(PaintAreaComponent);
         component = fixture.componentInstance;
         loadBackgroundSpy = spyOn(component, 'loadBackground');
+        addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
         fixture.detectChanges();
+
+        loadBackgroundSpy.calls.reset();
+        addEventListenerSpy.calls.reset();
     });
 
     it('should create', () => {
@@ -78,13 +83,6 @@ fdescribe('PaintAreaComponent', () => {
     });
 
     describe('ngAfterViewInit', () => {
-        let addEventListenerSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            loadBackgroundSpy.calls.reset();
-            addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
-        });
-
         it('should call loadBackground', () => {
             component.ngAfterViewInit();
             expect(loadBackgroundSpy).toHaveBeenCalledTimes(1);
@@ -105,6 +103,13 @@ fdescribe('PaintAreaComponent', () => {
             component.isDiff = false;
             component.ngAfterViewInit();
             expect(component.foregroundCanvas.nativeElement.id).toEqual('defaultDrawCanvas');
+        });
+    });
+
+    describe('onMouseOut', () => {
+        it('should set isInCanvas to false', () => {
+            component.onMouseOut();
+            expect(drawServiceSpy.isInCanvas).toBeFalse();
         });
     });
 
@@ -257,12 +262,6 @@ fdescribe('PaintAreaComponent', () => {
     });
 
     describe('createTemporaryCanvas', () => {
-        let addEventListenerSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
-        });
-
         it('should call paintBrush', () => {
             component.createTemporaryCanvas();
             expect(drawServiceSpy.paintBrush).toHaveBeenCalledTimes(1);
@@ -311,13 +310,21 @@ fdescribe('PaintAreaComponent', () => {
     });
 
     describe('canvasRectangularDrag', () => {
+        let clearRectSpy: jasmine.Spy;
+
         beforeEach(() => {
+            clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
             component['tempCanvas'] = document.createElement('canvas');
         });
 
         it('should call mouseDrag', () => {
             component.canvasRectangularDrag(mouseEvent);
             expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call clearRect', () => {
+            component.canvasRectangularDrag(mouseEvent);
+            expect(clearRectSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should correctly call drawRect if shift x < y', () => {
