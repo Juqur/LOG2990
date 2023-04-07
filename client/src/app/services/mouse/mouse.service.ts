@@ -59,8 +59,7 @@ export class MouseService {
     /**
      * Returns the mouse position.
      *
-     * @param event the mouse event
-     * @returns an empty array when promise is resolved.
+     * @param event The mouse event.
      */
     async mouseDrag(event: MouseEvent): Promise<void> {
         if (event.button === MouseButton.Left) {

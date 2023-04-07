@@ -86,7 +86,12 @@ export class PaintAreaComponent implements AfterViewInit {
         this.foregroundCanvas.nativeElement.id = this.isDiff ? 'diffDrawCanvas' : 'defaultDrawCanvas';
         this.foregroundCanvas.nativeElement.addEventListener('mousedown', this.onCanvasClick.bind(this));
         this.foregroundCanvas.nativeElement.addEventListener('mousemove', this.onCanvasDrag.bind(this));
+        this.foregroundCanvas.nativeElement.addEventListener('mouseout', this.onMouseOut.bind(this));
         this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+    }
+
+    onMouseOut(): void {
+        this.drawService.isInCanvas = false;
     }
 
     /**
@@ -204,8 +209,8 @@ export class PaintAreaComponent implements AfterViewInit {
         const currentCanvas = this.foregroundCanvas.nativeElement;
         currentCanvas.after(this.tempCanvas);
         this.tempCanvas.addEventListener('mousedown', this.onCanvasClick.bind(this));
-        // this.tempCanvas.addEventListener('mouseup', this.onCanvasRelease.bind(this));
         this.tempCanvas.addEventListener('mousemove', this.onCanvasDrag.bind(this));
+        this.tempCanvas.addEventListener('mouseout', this.onMouseOut.bind(this));
     }
 
     /**
@@ -216,10 +221,6 @@ export class PaintAreaComponent implements AfterViewInit {
     paintCanvas(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
         const { x, y } = this.mouseService;
-        if (this.isOffBounds(x, y)) {
-            return;
-        }
-
         this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', {
             willReadFrequently: true,
         }) as CanvasRenderingContext2D;
