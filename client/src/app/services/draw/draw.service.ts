@@ -92,21 +92,20 @@ export class DrawService {
     /**
      * Method used to draw on the canvas at a given coordinate.
      *
-     * @param prevCoord The previous coordinate.
-     * @param actCoord The current coordinate.
+     * @param previous The previous coordinate.
+     * @param active The current coordinate.
      */
-    draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
-        // Pass a parameter to skip.
+    draw(previous: Vec2, active: Vec2 = { x: -1, y: -1 }): void {
         this.context.beginPath();
-        this.context.moveTo(prevCoord.x, prevCoord.y);
-        if (actCoord.x !== Constants.minusOne && actCoord.y !== Constants.minusOne) {
+        this.context.moveTo(previous.x, previous.y);
+        if (active.x !== Constants.minusOne && active.y !== Constants.minusOne) {
             if (!this.isInCanvas) {
-                this.context.moveTo(actCoord.x, actCoord.y);
+                this.context.moveTo(active.x, active.y);
                 this.isInCanvas = true;
             }
-            this.context.lineTo(actCoord.x, actCoord.y); // Active
+            this.context.lineTo(active.x, active.y);
         } else {
-            this.context.lineTo(prevCoord.x + 1, prevCoord.y); // Active
+            this.context.lineTo(previous.x + 1, previous.y);
         }
         this.context.stroke();
     }
@@ -114,13 +113,13 @@ export class DrawService {
     /**
      * This function is called when the user is on rectangle tool and draws a rectangle.
      *
-     * @param coord Starting coordinate of the rectangle.
+     * @param coordinate Starting coordinate of the rectangle.
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    drawRect(coord: Vec2, width: number, height: number): void {
+    drawRect(coordinate: Vec2, width: number, height: number): void {
         this.context.beginPath();
-        this.context.rect(coord.x, coord.y, width, height);
+        this.context.rect(coordinate.x, coordinate.y, width, height);
         this.context.fill();
         this.context.stroke();
     }
