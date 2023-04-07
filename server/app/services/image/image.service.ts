@@ -20,7 +20,7 @@ export class ImageService {
     readonly pathOriginal: string = '../server/assets/images/original/';
     readonly pathData: string = '../server/assets/data/';
 
-    private mongodbService = new MongodbService();
+    constructor(private mongodbService: MongodbService) {}
 
     /**
      * Gets all the levels from the json file.

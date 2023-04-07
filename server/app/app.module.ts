@@ -11,7 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
-import { levelSchema } from './model/schema/level.schema';
+import { Level, levelSchema } from './model/schema/level.schema';
 
 @Module({
     imports: [
@@ -27,7 +27,7 @@ import { levelSchema } from './model/schema/level.schema';
                 uri: config.get<string>('DATABASE_CONNECTION_STRING'),
             }),
         }),
-        MongooseModule.forFeature([{ name: 'level', schema: levelSchema }]),
+        MongooseModule.forFeature([{ name: Level.name, schema: levelSchema }]),
     ],
     controllers: [ImageController],
     providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],

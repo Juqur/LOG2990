@@ -1,1 +1,1 @@
-export const DEFAULT_TIME_VALUES: number[] = [0, 0, 0];
+export const DEFAULT_TIME_VALUES: number[] = [30, 45, 60];
