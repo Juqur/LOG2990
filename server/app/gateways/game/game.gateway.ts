@@ -322,7 +322,7 @@ export class GameGateway {
                 names[i] = scores[i].playerName;
                 times[i] = scores[i].time;
             }
-            await this.mongodbService.updateHighscore(names, times, gameState.otherSocketId ? true : false, tempLevelId);
+            // await this.mongodbService.updateHighscore(names, times, gameState.otherSocketId ? true : false, tempLevelId);
         }
 
         console.log(scores);

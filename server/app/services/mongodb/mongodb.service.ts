@@ -1,7 +1,8 @@
-import { levelModel } from '@app/model/schema/level.schema';
+import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { Injectable } from '@nestjs/common';
-import { Level } from 'assets/data/level';
-import mongoose from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Level as LevelDto } from 'assets/data/level';
+import mongoose, { Model } from 'mongoose';
 
 mongoose.set('strictQuery', false); // fixes a warning
 
@@ -13,9 +14,11 @@ mongoose.set('strictQuery', false); // fixes a warning
  */
 @Injectable()
 export class MongodbService {
-    async createNewLevel(level: Level) {
+    constructor(@InjectModel(Level.name) public levelModel: Model<LevelDocument>) {}
+
+    async createNewLevel(level: LevelDto) {
         this.openConnection();
-        await levelModel.create({
+        await this.levelModel.create({
             id: level.id,
             name: level.name,
             playerSolo: level.playerMulti,
@@ -32,60 +35,60 @@ export class MongodbService {
     /**
      * This method returns the solo highscores of the specified level.
      *
-     * @param levelId the id of the level.
+     * @param id the id of the level.
      * @returns level.timesolo the solo highscores of the specified level.
      */
-    async getTimeSoloArray(levelId: number): Promise<number[]> {
-        this.openConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
-        const level = await levelModel.findOne({ levelId });
-        this.closeConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
+    async getTimeSoloArray(id: number): Promise<number[]> {
+        await this.openConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
+        const level = await this.levelModel.findOne({ id });
+        await this.closeConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
         return level.timeSolo;
     }
 
     /**
      * This method returns the solo highscores names of the specified level.
      *
-     * @param levelId the id of the level.
+     * @param id the id of the level.
      * @returns the solo highscores names of the specified level.
      */
-    async getPlayerSoloArray(levelId: number): Promise<string[]> {
-        this.openConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
-        const level = await levelModel.findOne({ levelId });
-        this.closeConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
+    async getPlayerSoloArray(id: number): Promise<string[]> {
+        await this.openConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
+        const level = await this.levelModel.findOne({ id });
+        await this.closeConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
         return level.playerSolo;
     }
 
     /**
      * This method returns the multiplayer highscores of the specified level.
      *
-     * @param levelId the id of the level.
+     * @param id the id of the level.
      * @returns level.timesolo the multiplayer highscores of the specified level.
      */
-    async getTimeMultiArray(levelId: number): Promise<number[]> {
-        this.openConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
-        const level = await levelModel.findOne({ levelId });
-        this.closeConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
+    async getTimeMultiArray(id: number): Promise<number[]> {
+        await this.openConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
+        const level = await this.levelModel.findOne({ id });
+        await this.closeConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
         return level.timeMulti;
     }
 
     /**
      * This method returns the multiplayer highscores names of the specified level.
      *
-     * @param levelId the id of the level.
+     * @param id the id of the level.
      * @returns the multiplayer highscores names of the specified level.
      */
-    async getPlayerMultiArray(levelId: number): Promise<string[]> {
-        this.openConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
-        const level = await levelModel.findOne({ levelId });
-        this.closeConnection();
-        await new Promise((f) => setTimeout(f, 1000)); // horrible
+    async getPlayerMultiArray(id: number): Promise<string[]> {
+        await this.openConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
+        const level = await this.levelModel.findOne({ id });
+        await this.closeConnection();
+        // await new Promise((f) => setTimeout(f, 1000)); // horrible
         return level.playerMulti;
     }
 
@@ -95,10 +98,10 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns the multiplayer highscores names of the specified level.
      */
-    async updateHighscore(playerNames: string[], playerTimes: number[], multiplayer: boolean, levelId: number): Promise<void> {
-        this.openConnection();
+    async updateHighscore(playerNames: string[], playerTimes: number[], multiplayer: boolean, id: number): Promise<void> {
+        await this.openConnection();
         await new Promise((f) => setTimeout(f, 1000)); // horrible
-        const level = await levelModel.findOne({ levelId });
+        const level = await this.levelModel.findOne({ id });
         if (multiplayer) {
             level.playerMulti = playerNames;
             level.timeMulti = playerTimes;
@@ -108,7 +111,7 @@ export class MongodbService {
         }
         level.save();
 
-        this.closeConnection();
+        await this.closeConnection();
         await new Promise((f) => setTimeout(f, 1000)); // horrible
     }
 
