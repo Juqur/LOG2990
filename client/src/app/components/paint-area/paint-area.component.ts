@@ -66,8 +66,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * This method listens for a shift key release and updates the isShiftPressed attribute in
-     * consequences.
+     * This method listens for a shift key release.
      *
      * @param event The keyboardEvent to process.
      */
@@ -90,12 +89,16 @@ export class PaintAreaComponent implements AfterViewInit {
         this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
     }
 
+    /**
+     * Event listener when the mouse is outside the canvas.
+     * It prevents the interpolation of two points when the mouse is outside the canvas.
+     */
     onMouseOut(): void {
         this.drawService.isInCanvas = false;
     }
 
     /**
-     * Detects the mouse click on the canvas, and calls the appropriate function for drawing.
+     * Event listener of the mouse click inside the canvas.
      * If a temporary canvas exists, it is removed and drawn on the foreground canvas.
      *
      * @param event The mouse event.
@@ -119,7 +122,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Detects the mouse release on the canvas.
+     * Event listener of the mouse release globally.
      * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
      *
      * @param event The mouse event.
@@ -137,13 +140,12 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Detects the mouse movement on the canvas when clicking on it.
-     * It then calls the appropriate function for drawing.
+     * Event listener of the mouse drag inside the canvas.
      *
      * @param event The mouse event.
      */
     onCanvasDrag(event: MouseEvent): void {
-        if (this.mouseService && this.isClicked) {
+        if (this.isClicked) {
             if (this.mouseService.isRectangleMode) {
                 this.canvasRectangularDrag(event);
             } else this.paintCanvas(event);
@@ -220,7 +222,7 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     paintCanvas(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
-        const { x, y } = this.mouseService;
+        const { x, y }: Vec2 = this.mouseService;
         this.drawService.context = this.foregroundCanvas.nativeElement.getContext('2d', {
             willReadFrequently: true,
         }) as CanvasRenderingContext2D;
@@ -237,10 +239,7 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     canvasRectangularDrag(event: MouseEvent): void {
         this.mouseService.mouseDrag(event);
-        const { x, y } = this.mouseService;
-        if (this.isOffBounds(x, y)) {
-            return;
-        }
+        const { x, y }: Vec2 = this.mouseService;
 
         this.drawService.context = this.tempCanvas.getContext('2d', {
             willReadFrequently: true,
@@ -275,16 +274,5 @@ export class PaintAreaComponent implements AfterViewInit {
             context.drawImage(siblingCanvas, 0, 0);
             siblingCanvas.remove();
         });
-    }
-
-    /**
-     * Internal method checks if the position is outside the boundaries of the canvas.
-     *
-     * @param x The x coordinate.
-     * @param y The y coordinate.
-     * @returns True if the position is outside the boundaries of the canvas.
-     */
-    private isOffBounds(x: number, y: number): boolean {
-        return x < 0 || y < 0 || x > this.width || y > this.height;
     }
 }
