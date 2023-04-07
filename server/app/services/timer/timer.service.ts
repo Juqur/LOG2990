@@ -14,7 +14,7 @@ export class TimerService {
     /**
      * Gets the game time.
      */
-    getTime(socketId): number {
+    getTime(socketId: string): number {
         return this.timeMap.get(socketId);
     }
 
