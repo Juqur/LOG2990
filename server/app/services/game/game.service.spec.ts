@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { Server, Socket } from 'socket.io';
 import { GameService, GameState } from './game.service';
 
@@ -131,7 +131,7 @@ describe('GameService', () => {
 
         beforeEach(() => {
             spyDeleteUser = jest.spyOn(service, 'deleteUserFromGame').mockImplementation();
-            spyRemoveLevel = jest.spyOn(service, 'removeLevelFromDeletionQueue').mockImplementation();
+            spyRemoveLevel = jest.spyOn(service, 'removeLevel').mockImplementation();
         });
 
         it('should call deleteUserFromGame twice if the user wins in multiplayer', () => {
@@ -311,7 +311,7 @@ describe('GameService', () => {
                     },
                 ],
             ]);
-            const result = service.verifyIfLevelIsBeingPlayed(0);
+            const result = service['verifyIfLevelIsBeingPlayed'](0);
             expect(result).toBeTruthy();
         });
 
@@ -330,7 +330,7 @@ describe('GameService', () => {
                     },
                 ],
             ]);
-            const result = service.verifyIfLevelIsBeingPlayed(0);
+            const result = service['verifyIfLevelIsBeingPlayed'](0);
             expect(result).toBeFalsy();
         });
     });
@@ -342,24 +342,24 @@ describe('GameService', () => {
         });
     });
 
-    describe('removeLevelFromDeletionQueue', () => {
+    describe('removeLevel', () => {
         it('should call deleteLevelData', () => {
             const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
             service['levelDeletionQueue'] = [1];
-            service.removeLevelFromDeletionQueue(1);
+            service.removeLevel(1);
             expect(deleteLevelDataSpy).toHaveBeenCalled();
         });
 
         it('should not call deleteLevelData if the level is undefined', () => {
             const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
             service['levelDeletionQueue'] = [];
-            service.removeLevelFromDeletionQueue(1);
+            service.removeLevel(1);
             expect(deleteLevelDataSpy).not.toHaveBeenCalled();
         });
 
         it('should remove the level from the deletion queue', () => {
             service['levelDeletionQueue'] = [1, 2, 3];
-            service.removeLevelFromDeletionQueue(2);
+            service.removeLevel(2);
             expect(service['levelDeletionQueue']).toEqual([1, 3]);
         });
     });
@@ -446,14 +446,6 @@ describe('GameService', () => {
             });
             service.stopCheatMode('socket1');
             expect(service['playerGameMap'].get('socket1').isInCheatMode).toEqual(false);
-        });
-    });
-
-    describe('deleteLevel', () => {
-        it('should call deleteLevelData', () => {
-            const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
-            service.deleteLevel(0);
-            expect(deleteLevelDataSpy).toHaveBeenCalled();
         });
     });
 
