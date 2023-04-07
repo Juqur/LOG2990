@@ -65,6 +65,5 @@ export class MouseService {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
         }
-        return Promise.resolve();
     }
 }
