@@ -95,14 +95,19 @@ export class DrawService {
      * @param actCoord The current coordinate.
      */
     draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
+        console.log(actCoord);
+        // Pass a parameter to skip.
         this.context.beginPath();
         this.context.moveTo(prevCoord.x, prevCoord.y);
         if (actCoord.x !== Constants.minusOne && actCoord.y !== Constants.minusOne) {
-            this.context.lineTo(actCoord.x, actCoord.y);
+            // this.context.lineTo(actCoord.x, actCoord.y);
+            this.context.moveTo(actCoord.x, actCoord.y);
         } else {
-            this.context.lineTo(prevCoord.x + 1, prevCoord.y);
+            // this.context.lineTo(prevCoord.x + 1, prevCoord.y);
+            this.context.moveTo(prevCoord.x + 1, prevCoord.y);
         }
 
+        this.context.lineTo(actCoord.x, actCoord.y);
         this.context.stroke();
     }
 
