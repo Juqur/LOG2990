@@ -43,8 +43,8 @@ export class GameGateway {
      * @param data The data of the player, including whether the game is multiplayer and the playerName.
      */
     @SubscribeMessage(GameEvents.OnCreateTimedGame)
-    async onCreateTimedGame(socket: Socket, data: { mutliplayer: boolean; playerName: string }): Promise<void> {
-        await this.gameService.createGameState(socket.id, { playerName: data.playerName, levelId: 0 }, data.mutliplayer);
+    async onCreateTimedGame(socket: Socket, data: { multiplayer: boolean; playerName: string }): Promise<void> {
+        await this.gameService.createGameState(socket.id, { playerName: data.playerName, levelId: 0 }, data.multiplayer);
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);
         this.gameService.setLevelId(socket.id, level);
         socket.emit(GameEvents.ChangeLevelTimedMode, level);
