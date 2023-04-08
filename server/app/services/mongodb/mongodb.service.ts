@@ -1,4 +1,5 @@
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
+import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -52,7 +53,7 @@ export class MongodbService {
      * There is a possibility we have no elements in the database and so this query
      * can return null.
      *
-     * @returns returns all the levels in the db
+     * @returns returns all the levels in the db.
      */
     async getAllLevels(): Promise<Level[] | null> {
         return (await this.levelModel.find({})) as Level[] | null;
@@ -75,7 +76,7 @@ export class MongodbService {
     /**
      * This method returns the id of the last inserted level.
      *
-     * @returns the id of the last inserted level
+     * @returns the id of the last inserted level.
      */
     async getLastLevelId(): Promise<number> {
         return (await this.levelModel.find().limit(1).sort({ $natural: -1 }))[0].id as number;
@@ -122,25 +123,47 @@ export class MongodbService {
     }
 
     /**
-     * This method updates in the database the high scores for a given game mode with new ones depending
-     * on the game mode these new high scores where achieved.
+     * This method is in charge of updating the new highscores of a game. It takes the time
+     * of a game that has just completed as well as the game state associated with this game
+     * and verifies if the time is a new high core, if it is it updates the database accordingly.
      *
-     * @param playerNames the new names of the best players
-     * @param playerTimes the new times of the best players
-     * @param multiplayer a boolean that indicates if the new highscores achieved were in multiplayer
-     * @param levelId the id of the level the new score where achieved at.
+     * @param endTime the duration of the game in seconds.
+     * @param gameState the game state associated with the game that just finished.
      */
-    // eslint-disable-next-line max-params
-    async updateHighscore(playerNames: string[], playerTimes: number[], multiplayer: boolean, levelId: number): Promise<void> {
-        const level = await this.levelModel.findOne({ id: levelId });
-        if (multiplayer) {
-            level.playerMulti = playerNames;
-            level.timeMulti = playerTimes;
+    async updateHighscore(endTime: number, gameState: GameState): Promise<void> {
+        let names: string[] = [];
+        let times: number[] = [];
+
+        if (gameState.otherSocketId) {
+            names = await this.getPlayerMultiArray(gameState.levelId);
+            times = await this.getTimeMultiArray(gameState.levelId);
         } else {
-            level.playerSolo = playerNames;
-            level.timeSolo = playerTimes;
+            names = await this.getPlayerSoloArray(gameState.levelId);
+            times = await this.getTimeSoloArray(gameState.levelId);
         }
-        level.save();
+
+        if (endTime < times[2]) {
+            names[2] = gameState.playerName;
+            times[2] = endTime;
+            for (let i = names.length - 1; i > 0; i--) {
+                if (times[i] < times[i - 1]) {
+                    times[i] = times[i - 1];
+                    names[i] = names[i - 1];
+
+                    times[i - 1] = endTime;
+                    names[i - 1] = gameState.playerName;
+                }
+            }
+            const level = await this.levelModel.findOne({ id: gameState.levelId });
+            if (gameState.otherSocketId) {
+                level.playerMulti = names;
+                level.timeMulti = times;
+            } else {
+                level.playerSolo = names;
+                level.timeSolo = times;
+            }
+            level.save();
+        }
     }
 
     /**

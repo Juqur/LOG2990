@@ -1,5 +1,5 @@
 import { ChatService } from '@app/services/chat/chat.service';
-import { GameService, GameState } from '@app/services/game/game.service';
+import { GameService } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
@@ -68,7 +68,7 @@ export class GameGateway {
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
-            this.updateHighScores(this.timerService.getTime(socket.id), socket.id, gameState);
+            this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
@@ -282,43 +282,5 @@ export class GameGateway {
         const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
         this.gameService.deleteUserFromGame(secondPlayerSocket);
         secondPlayerSocket.emit(GameEvents.RejectedGame);
-    }
-
-    private async updateHighScores(endTime: number, socketId: string, gameState: GameState): Promise<void> {
-        // Temporary interface for highscores, greatly helps the sorting
-        interface Highscore {
-            playerName: string;
-            time: number;
-        }
-        const scores: Highscore[] = [];
-        let names: string[] = [];
-        let times: number[] = [];
-
-        if (gameState.otherSocketId) {
-            names = await this.mongodbService.getPlayerMultiArray(gameState.levelId);
-            times = await this.mongodbService.getTimeMultiArray(gameState.levelId);
-        } else {
-            names = await this.mongodbService.getPlayerSoloArray(gameState.levelId);
-            times = await this.mongodbService.getTimeSoloArray(gameState.levelId);
-        }
-
-        for (let i = 0; i < names.length; i++) {
-            scores.push({ playerName: names[i], time: times[i] } as Highscore);
-        }
-
-        if (endTime < scores[2].time) {
-            scores.push({ playerName: gameState.playerName, time: endTime } as Highscore);
-            scores.sort((a: Highscore, b: Highscore) => {
-                // this callback function is called for each element in the array
-                // returning a negative number will put a before b
-                return a.time - b.time;
-            });
-            scores.pop();
-            for (let i = 0; i < scores.length; i++) {
-                names[i] = scores[i].playerName;
-                times[i] = scores[i].time;
-            }
-            await this.mongodbService.updateHighscore(names, times, gameState.otherSocketId ? true : false, gameState.levelId);
-        }
     }
 }
