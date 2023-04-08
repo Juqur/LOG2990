@@ -40,19 +40,19 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns level.timesolo the solo highscores of the specified level.
      */
-    async getTimeSoloArray(levelId: number): Promise<number[]> {
-        const level = await this.levelModel.findOne({ levelId });
+    async getTimeSoloArray(id: number): Promise<number[]> {
+        const level = await this.levelModel.findOne({ id });
         return level.timeSolo;
     }
 
     /**
-     * This method returns the solo highscores names of the specified level.
+     * This method returns the solo highscores names of thSe specified level.
      *
      * @param id the id of the level.
      * @returns the solo highscores names of the specified level.
      */
-    async getPlayerSoloArray(levelId: number): Promise<string[]> {
-        const level = await this.levelModel.findOne({ levelId });
+    async getPlayerSoloArray(id: number): Promise<string[]> {
+        const level = await this.levelModel.findOne({ id });
         return level.playerSolo;
     }
 
@@ -62,8 +62,8 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns level.timesolo the multiplayer highscores of the specified level.
      */
-    async getTimeMultiArray(levelId: number): Promise<number[]> {
-        const level = await this.levelModel.findOne({ levelId });
+    async getTimeMultiArray(id: number): Promise<number[]> {
+        const level = await this.levelModel.findOne({ id });
         return level.timeMulti;
     }
 
@@ -73,8 +73,8 @@ export class MongodbService {
      * @param levelId the id of the level.
      * @returns the multiplayer highscores names of the specified level.
      */
-    async getPlayerMultiArray(levelId: number): Promise<string[]> {
-        const level = await this.levelModel.findOne({ levelId });
+    async getPlayerMultiArray(id: number): Promise<string[]> {
+        const level = await this.levelModel.findOne({ id });
         return level.playerMulti;
     }
 
