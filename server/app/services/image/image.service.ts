@@ -1,10 +1,10 @@
 import { Message } from '@app/model/schema/message.schema';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
-import { DEFAULT_TIME_VALUES } from './image.service.constants';
 
 /**
  * This service is used to get the amount of differences left between the two images.
@@ -20,7 +20,7 @@ export class ImageService {
     readonly pathOriginal: string = '../server/assets/images/original/';
     readonly pathData: string = '../server/assets/data/';
 
-    private mongodbService = new MongodbService();
+    constructor(private mongodbService: MongodbService) {}
 
     /**
      * Gets all the levels from the json file.
@@ -137,10 +137,10 @@ export class ImageService {
             const level: Level = {
                 id: newId,
                 name: levelData.name,
-                playerSolo: ['Bot1', 'Bot2', 'Bot3'],
-                timeSolo: DEFAULT_TIME_VALUES,
-                playerMulti: ['Bot1', 'Bot2', 'Bot3'],
-                timeMulti: DEFAULT_TIME_VALUES,
+                playerSolo: Constants.defaultPlayerSolo,
+                timeSolo: Constants.defaultTimeSolo,
+                playerMulti: Constants.defaultPlayerMulti,
+                timeMulti: Constants.defaultTimeMulti,
                 isEasy: levelData.isEasy === 'true',
                 nbDifferences: levelData.nbDifferences,
             };
