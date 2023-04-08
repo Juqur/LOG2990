@@ -1,4 +1,4 @@
-import { GameHistory, gameHistoryModel } from '@app/model/schema/game-history.schema';
+import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history.schema';
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,7 +15,10 @@ mongoose.set('strictQuery', false); // fixes a warning
  */
 @Injectable()
 export class MongodbService {
-    constructor(@InjectModel(Level.name) public levelModel: Model<LevelDocument>) {}
+    constructor(
+        @InjectModel(Level.name) public levelModel: Model<LevelDocument>,
+        @InjectModel(GameHistory.name) public gameHistoryModel: Model<GameHistoryDocument>,
+    ) {}
 
     async createNewLevel(level: LevelDto) {
         await this.levelModel.create({
@@ -37,9 +40,8 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns level.timesolo the solo highscores of the specified level.
      */
-    async getTimeSoloArray(id: number): Promise<number[]> {
-        const level = await this.levelModel.findOne({ id });
-
+    async getTimeSoloArray(levelId: number): Promise<number[]> {
+        const level = await this.levelModel.findOne({ levelId });
         return level.timeSolo;
     }
 
@@ -49,8 +51,8 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns the solo highscores names of the specified level.
      */
-    async getPlayerSoloArray(id: number): Promise<string[]> {
-        const level = await this.levelModel.findOne({ id });
+    async getPlayerSoloArray(levelId: number): Promise<string[]> {
+        const level = await this.levelModel.findOne({ levelId });
         return level.playerSolo;
     }
 
@@ -60,8 +62,8 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns level.timesolo the multiplayer highscores of the specified level.
      */
-    async getTimeMultiArray(id: number): Promise<number[]> {
-        const level = await this.levelModel.findOne({ id });
+    async getTimeMultiArray(levelId: number): Promise<number[]> {
+        const level = await this.levelModel.findOne({ levelId });
         return level.timeMulti;
     }
 
@@ -71,8 +73,8 @@ export class MongodbService {
      * @param levelId the id of the level.
      * @returns the multiplayer highscores names of the specified level.
      */
-    async getPlayerMultiArray(id: number): Promise<string[]> {
-        const level = await this.levelModel.findOne({ id });
+    async getPlayerMultiArray(levelId: number): Promise<string[]> {
+        const level = await this.levelModel.findOne({ levelId });
         return level.playerMulti;
     }
 
@@ -82,8 +84,7 @@ export class MongodbService {
      * @param gameHistory The game history containing the pertinent information to create a GameHistory in the database.
      */
     async addGameHistory(gameHistory: GameHistory): Promise<void> {
-        await this.openConnection();
-        await gameHistoryModel.create({
+        await this.gameHistoryModel.create({
             startDate: gameHistory.startDate,
             lengthGame: gameHistory.lengthGame,
             isClassic: gameHistory.isClassic,
@@ -91,7 +92,6 @@ export class MongodbService {
             secondPlayerName: gameHistory.secondPlayerName,
             hasPlayerAbandoned: gameHistory.hasPlayerAbandoned,
         });
-        await this.closeConnection();
     }
 
     /*
@@ -100,6 +100,7 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns the multiplayer highscores names of the specified level.
      */
+    // eslint-disable-next-line max-params
     async updateHighscore(playerNames: string[], playerTimes: number[], multiplayer: boolean, id: number): Promise<void> {
         const level = await this.levelModel.findOne({ id });
         if (multiplayer) {
@@ -110,28 +111,5 @@ export class MongodbService {
             level.timeSolo = playerTimes;
         }
         level.save();
-    }
-
-    /**
-     * This method opens the connection to the mongoDB to allow inserting and manipulating the data inside.
-     * The method only opens connection if we aren't connected.
-     */
-    private async openConnection(): Promise<void> {
-        // try {
-        //     if (!mongoose.connection.readyState) {
-        //         await mongoose.connect('mongodb+srv://admin:d5jrnGEteyCCNMcW@log2990.ic11qkn.mongodb.net/?');
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        // }
-    }
-
-    /**
-     * This method closes the connection to the mongoDB.
-     */
-    private async closeConnection(): Promise<void> {
-        // if (mongoose.connection.readyState) {
-        //     await mongoose.disconnect();
-        // }
     }
 }

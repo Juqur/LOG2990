@@ -11,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
+import { GameHistory, gameHistorySchema } from './model/schema/game-history.schema';
 import { Level, levelSchema } from './model/schema/level.schema';
 
 @Module({
@@ -31,7 +32,10 @@ import { Level, levelSchema } from './model/schema/level.schema';
         //     { name: 'level', schema: levelSchema },
         //     { name: 'gameHistory', schema: gameHistorySchema },
         // ]), // COme back and add it to the one bellow.
-        MongooseModule.forFeature([{ name: Level.name, schema: levelSchema }]),
+        MongooseModule.forFeature([
+            { name: Level.name, schema: levelSchema },
+            { name: GameHistory.name, schema: gameHistorySchema },
+        ]),
     ],
     controllers: [ImageController],
     providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],

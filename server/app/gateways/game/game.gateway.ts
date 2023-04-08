@@ -68,18 +68,15 @@ export class GameGateway {
         }
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
-            // socket.emit(GameEvents.Victory);
-            // const gameHistory = {
-            //     startDate: new Date(),
-            //     lengthGame: this.timerService.getTime(socket.id),
-            //     isClassic: !gameState.timedLevelList ? true : false,
-            //     firstPlayerName: gameState.playerName,
-            //     secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
-            //     hasPlayerAbandoned: false,
-            // } as GameHistory;
-            // await this.mongodbService.addGameHistory(gameHistory); // replace with the bottom stuff latter.
-
             socket.emit(GameEvents.Victory);
+            await this.mongodbService.addGameHistory({
+                startDate: new Date(),
+                lengthGame: this.timerService.getTime(socket.id),
+                isClassic: !gameState.timedLevelList ? true : false,
+                firstPlayerName: gameState.playerName,
+                secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
+                hasPlayerAbandoned: false,
+            });
             this.updateHighScores(this.timerService.getTime(socket.id), socket.id, gameState);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
@@ -307,14 +304,11 @@ export class GameGateway {
 
     private async updateHighScores(endTime: number, socketId: string, gameState: GameState): Promise<void> {
         const tempLevelId = 8;
-        // const levelId = gameState.levelId;
-        // Temporary interface for highscores, greatly helps the sorting
         interface Highscore {
             playerName: string;
             time: number;
         }
 
-        // This code will look stupid because we made the structure of highscores stupid and we considered its not worth fixing.
         const scores: Highscore[] = [];
         let names: string[] = [];
         let times: number[] = [];
@@ -332,10 +326,8 @@ export class GameGateway {
         }
 
         if (endTime < scores[2].time) {
-            scores.push({ playerName: 'the newcomer' /* gameState.playerName*/, time: endTime } as Highscore);
+            scores.push({ playerName: 'the newcomer', time: endTime } as Highscore);
             scores.sort((a: Highscore, b: Highscore) => {
-                // this callback function is called for each element in the array
-                // returning a negative number will put a before b
                 return a.time - b.time;
             });
             scores.pop();
