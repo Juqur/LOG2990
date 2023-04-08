@@ -5,12 +5,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Level as LevelDto } from 'assets/data/level';
 import mongoose, { Model } from 'mongoose';
 
-mongoose.set('strictQuery', false); // fixes a warning
+mongoose.set('strictQuery', false);
 
 /**
  * This service is used communicate to the database.
  *
- * @author Louis Félix St-Amour
+ * @author Louis Félix St-Amour & Charles Degrandpré
  * @class MongodbService
  */
 @Injectable()
@@ -22,7 +22,7 @@ export class MongodbService {
      *
      * @param level the level DTO with the relevant information to create a new level in the database.
      */
-    async createNewLevel(level: LevelDto) {
+    async createNewLevel(level: LevelDto): Promise<void> {
         await this.levelModel.create({
             id: level.id,
             name: level.name,
@@ -41,7 +41,7 @@ export class MongodbService {
      *
      * @param levelId the id of the level we wish to delete.
      */
-    async deleteLevel(levelId: number) {
+    async deleteLevel(levelId: number): Promise<void> {
         await this.levelModel.deleteOne({ id: levelId });
     }
 
@@ -55,7 +55,7 @@ export class MongodbService {
      * @returns returns all the levels in the db
      */
     async getAllLevels(): Promise<Level[] | null> {
-        return (await this.levelModel.find({})) as Level[];
+        return (await this.levelModel.find({})) as Level[] | null;
     }
 
     /**
@@ -69,7 +69,7 @@ export class MongodbService {
      * @returns the level associated with the given id.
      */
     async getLevelById(levelId: number): Promise<Level | null> {
-        return (await this.levelModel.findOne({ id: levelId })) as Level;
+        return (await this.levelModel.findOne({ id: levelId })) as Level | null;
     }
 
     /**
@@ -82,15 +82,13 @@ export class MongodbService {
     }
 
     /**
-     * This method returns the solo highscores of the specified level.
+     * This method returns the solo highscores times of the specified level.
      *
      * @param id the id of the level.
-     * @returns level.timesolo the solo highscores of the specified level.
+     * @returns level.timesolo the solo highscores times of the specified level.
      */
-    async getTimeSoloArray(id: number): Promise<number[]> {
-        const level = await this.levelModel.findOne({ id });
-
-        return level.timeSolo;
+    async getTimeSoloArray(levelId: number): Promise<number[] | null> {
+        return (await this.levelModel.findOne({ id: levelId })).timeSolo as number[] | null;
     }
 
     /**
@@ -99,20 +97,18 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns the solo highscores names of the specified level.
      */
-    async getPlayerSoloArray(id: number): Promise<string[]> {
-        const level = await this.levelModel.findOne({ id });
-        return level.playerSolo;
+    async getPlayerSoloArray(levelId: number): Promise<string[] | null> {
+        return (await this.levelModel.findOne({ id: levelId })).playerSolo as string[] | null;
     }
 
     /**
-     * This method returns the multiplayer highscores of the specified level.
+     * This method returns the multiplayer highscores times of the specified level.
      *
      * @param id the id of the level.
-     * @returns level.timesolo the multiplayer highscores of the specified level.
+     * @returns level.timesolo the multiplayer highscores times of the specified level.
      */
-    async getTimeMultiArray(id: number): Promise<number[]> {
-        const level = await this.levelModel.findOne({ id });
-        return level.timeMulti;
+    async getTimeMultiArray(levelId: number): Promise<number[] | null> {
+        return (await this.levelModel.findOne({ id: levelId })).timeMulti as number[] | null;
     }
 
     /**
@@ -121,20 +117,22 @@ export class MongodbService {
      * @param id the id of the level.
      * @returns the multiplayer highscores names of the specified level.
      */
-    async getPlayerMultiArray(id: number): Promise<string[]> {
-        const level = await this.levelModel.findOne({ id });
-        return level.playerMulti;
+    async getPlayerMultiArray(levelId: number): Promise<string[] | null> {
+        return (await this.levelModel.findOne({ id: levelId })).playerMulti as string[] | null;
     }
 
     /**
-     * This method returns the multiplayer highscores names of the specified level.
+     * This method updates in the database the high scores for a given game mode with new ones depending
+     * on the game mode these new high scores where achieved.
      *
-     * @param id the id of the level.
-     * @returns the multiplayer highscores names of the specified level.
+     * @param playerNames the new names of the best players
+     * @param playerTimes the new times of the best players
+     * @param multiplayer a boolean that indicates if the new highscores achieved were in multiplayer
+     * @param levelId the id of the level the new score where achieved at.
      */
     // eslint-disable-next-line max-params
-    async updateHighscore(playerNames: string[], playerTimes: number[], multiplayer: boolean, id: number): Promise<void> {
-        const level = await this.levelModel.findOne({ id });
+    async updateHighscore(playerNames: string[], playerTimes: number[], multiplayer: boolean, levelId: number): Promise<void> {
+        const level = await this.levelModel.findOne({ id: levelId });
         if (multiplayer) {
             level.playerMulti = playerNames;
             level.timeMulti = playerTimes;
