@@ -286,7 +286,6 @@ export class GameGateway {
 
     private async updateHighScores(endTime: number, socketId: string, gameState: GameState): Promise<void> {
         const tempLevelId = 8;
-        const levelId = gameState.levelId;
         // Temporary interface for highscores, greatly helps the sorting
         interface Highscore {
             playerName: string;
@@ -324,7 +323,5 @@ export class GameGateway {
             }
             await this.mongodbService.updateHighscore(names, times, gameState.otherSocketId ? true : false, tempLevelId);
         }
-
-        console.log(scores);
     }
 }
