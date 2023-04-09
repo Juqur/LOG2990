@@ -1,9 +1,9 @@
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Level } from 'assets/data/level';
 import * as fs from 'fs';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
-import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { ImageService } from './image.service';
 
 describe('ImageService', () => {
@@ -136,16 +136,6 @@ describe('ImageService', () => {
             expect(result).toEqual('success');
         });
 
-        it('should return an error message if the file cannot be found', async () => {
-            fs.promises.readFile = jest.fn().mockRejectedValue(new Error('file cannot be read'));
-            fs.promises.writeFile = jest.fn();
-
-            const result = await service.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
-            expect(service['confirmUpload']).not.toHaveBeenCalled();
-            expect(service['handleErrors']).toHaveBeenCalledTimes(1);
-            expect(result).toBeInstanceOf(Error);
-        });
-
         it('should return an error message when writing the file is a failure', async () => {
             const error = new Error('Failed to write file');
             fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
@@ -194,12 +184,16 @@ describe('ImageService', () => {
         const levelId = 1;
         const mockSyncUnlink = jest.spyOn(fs, 'unlink');
         let spyGetLevel: jest.SpyInstance;
-        let spyGetLevels: jest.SpyInstance;
 
         beforeEach(() => {
+            const returnLevel = levels.find((item) => {
+                if (item.id === levelId) return item;
+            });
             mockSyncUnlink.mockImplementation();
-            spyGetLevel = jest.spyOn(service, 'getLevel').mockResolvedValue(levels.find((item) => item.id === levelId));
-            spyGetLevels = jest.spyOn(service, 'getLevels').mockResolvedValue(levels);
+            spyGetLevel = jest.spyOn(mongodbService, 'getLevelById').mockResolvedValue(returnLevel);
+
+            // mongodbService.getLevelById.resolves(returnLevel);
+            // mongodbService.getAllLevels.resolves(levels);
             fs.promises.writeFile = jest.fn();
         });
 
@@ -208,19 +202,9 @@ describe('ImageService', () => {
             expect(spyGetLevel).toHaveBeenCalledTimes(1);
         });
 
-        it('should call getLevels', async () => {
-            await service.deleteLevelData(levelId);
-            expect(spyGetLevels).toHaveBeenCalledTimes(1);
-        });
-
         it('should call unlink', async () => {
             await service.deleteLevelData(levelId);
             expect(mockSyncUnlink).toHaveBeenCalled();
-        });
-
-        it('should call writeFile', async () => {
-            await service.deleteLevelData(levelId);
-            expect(fs.promises.writeFile).toHaveBeenCalledTimes(1);
         });
 
         it('should return true on normal use case', async () => {
@@ -230,13 +214,6 @@ describe('ImageService', () => {
 
         it('should return false if the level does not exist', async () => {
             spyGetLevel.mockResolvedValue(undefined);
-            const result = await service.deleteLevelData(levelId);
-            expect(result).toBeFalsy();
-        });
-
-        it('should return false if an error is being raised', async () => {
-            const error = new Error('Failed to write file');
-            fs.promises.writeFile = jest.fn().mockRejectedValue(error);
             const result = await service.deleteLevelData(levelId);
             expect(result).toBeFalsy();
         });
