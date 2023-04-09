@@ -55,8 +55,8 @@ export class MongodbService {
      *
      * @returns returns all the levels in the db.
      */
-    async getAllLevels(): Promise<Level[] | null> {
-        return (await this.levelModel.find({})) as Level[] | null;
+    async getAllLevels(): Promise<LevelDto[] | null> {
+        return (await this.levelModel.find({})) as LevelDto[] | null;
     }
 
     /**
@@ -69,8 +69,8 @@ export class MongodbService {
      * @param levelId the id of the level we want to find.
      * @returns the level associated with the given id.
      */
-    async getLevelById(levelId: number): Promise<Level | null> {
-        return (await this.levelModel.findOne({ id: levelId })) as Level | null;
+    async getLevelById(levelId: number): Promise<LevelDto | null> {
+        return (await this.levelModel.findOne({ id: levelId })) as LevelDto | null;
     }
 
     /**

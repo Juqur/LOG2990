@@ -104,7 +104,7 @@ export class ImageService {
         try {
             const newId = (await this.mongodbService.getLastLevelId()) + 1;
             const levelData = newLevel as LevelData;
-            this.mongodbService.createNewLevel({
+            await this.mongodbService.createNewLevel({
                 id: newId,
                 name: levelData.name,
                 playerSolo: Constants.defaultPlayerSolo,
@@ -140,7 +140,7 @@ export class ImageService {
     async deleteLevelData(id: number): Promise<boolean> {
         try {
             const level = await this.mongodbService.getLevelById(id);
-            if (level) {
+            if (!level) {
                 return false;
             }
             await this.mongodbService.deleteLevel(id);
