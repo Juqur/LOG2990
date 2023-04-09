@@ -16,6 +16,20 @@ describe('MongodbService', () => {
         expect(service).toBeDefined();
     });
 
+    it('should return playerSolo array for a level', async () => {
+        const levelModelMock = {
+            findOne: jest.fn().mockResolvedValue({
+                playerSolo: ['Bob', 'Charlie', 'Dave'],
+            }),
+        };
+        const mongodbService = new MongodbService(levelModelMock as unknown);
+
+        const result = await mongodbService.getPlayerSoloArray(1);
+
+        expect(levelModelMock.findOne).toHaveBeenCalledWith({ id: 1 });
+        expect(result).toEqual(['Bob', 'Charlie', 'Dave']);
+    });
+
     describe('updateHighscore', () => {
         it('should update highscores when new score is better than previous scores', async () => {
             const gameState = {
