@@ -24,17 +24,17 @@ describe('MongodbService', () => {
         expect(service).toBeDefined();
     });
 
-    // it('should return the solo highscores names of the specified level', async () => {
-    //     const levelId = 1;
-    //     const playerSolo = ['Bob', 'Charlie', 'Dave'];
-    //     jest.spyOn(levelModel, 'findOne').mockReturnValue({ playerSolo }); // wtf do you mean its a mock of the return value,
-    //     // why do you want a query?
+    it('should return the solo highscores names of the specified level', async () => {
+        const levelId = 1;
+        const playerSolo = ['Bob', 'Charlie', 'Dave'];
+        jest.spyOn(levelModel, 'findOne').mockReturnValue({ playerSolo }); // wtf do you mean its a mock of the return value,
+        // why do you want a query?
 
-    //     const result = await service.getPlayerSoloArray(levelId);
+        const result = await service.getPlayerSoloArray(levelId);
 
-    //     expect(result).toEqual(playerSolo);
-    //     expect(levelModel.findOne).toHaveBeenCalledWith({ id: levelId });
-    // });
+        expect(result).toEqual(playerSolo);
+        expect(levelModel.findOne).toHaveBeenCalledWith({ id: levelId });
+    });
 
     describe('updateHighscore', () => {
         it('should update highscores when new score is better than previous scores', async () => {
