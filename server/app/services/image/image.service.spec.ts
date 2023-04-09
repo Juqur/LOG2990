@@ -2,15 +2,25 @@ import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Level } from 'assets/data/level';
 import * as fs from 'fs';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { ImageService } from './image.service';
 
 describe('ImageService', () => {
     let service: ImageService;
+    let mongodbService: SinonStubbedInstance<MongodbService>;
     let levels: Level[] = [];
 
     beforeEach(async () => {
+        mongodbService = createStubInstance<MongodbService>(MongodbService);
         const module: TestingModule = await Test.createTestingModule({
-            providers: [ImageService],
+            providers: [
+                ImageService,
+                {
+                    provide: MongodbService,
+                    useValue: mongodbService,
+                },
+            ],
         }).compile();
         service = module.get<ImageService>(ImageService);
     });
@@ -27,52 +37,6 @@ describe('ImageService', () => {
     it('should return the mocked value for pathDifference()', () => {
         const result = service['pathDifference'];
         expect(result).toBe('../server/assets/test/');
-    });
-
-    describe('getLevels', () => {
-        it('should call fsp.readFile', async () => {
-            const spy = jest.spyOn(fs.promises, 'readFile').mockResolvedValue(Buffer.from(JSON.stringify(levels)));
-            await service.getLevels();
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it('should return the mocked levels', async () => {
-            fs.promises.readFile = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(levels)));
-            const result = await service.getLevels();
-            expect(result).toEqual(levels);
-        });
-
-        it('should return undefined if it cannot read the file', async () => {
-            fs.promises.readFile = jest.fn().mockRejectedValue(undefined);
-            const result = await service.getLevels();
-            expect(result).toBeUndefined();
-        });
-    });
-
-    describe('getLevel', () => {
-        it('should call getLevels', async () => {
-            const spy = jest.spyOn(service, 'getLevels').mockResolvedValue(levels);
-            await service.getLevel(1);
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it('should return the mocked level', async () => {
-            service.getLevels = jest.fn().mockResolvedValue(levels);
-            const result = await service.getLevel(1);
-            expect(result).toEqual(levels[0]);
-        });
-
-        it('should return undefined if it cannot read the file', async () => {
-            service.getLevels = jest.fn().mockRejectedValue(undefined);
-            const result = await service.getLevel(1);
-            expect(result).toBeUndefined();
-        });
-
-        it('should return undefined if the level does not exist', async () => {
-            service.getLevels = jest.fn().mockResolvedValue(levels);
-            const result = await service.getLevel(0);
-            expect(result).toBeUndefined();
-        });
     });
 
     describe('differencesCount', () => {
