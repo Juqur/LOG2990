@@ -71,20 +71,27 @@ describe('PlayAreaComponent', () => {
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('should call fillRect', () => {
-        const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
+    it('flashArea should call fillRect', () => {
+        const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
         const area = [0, 1, 2, 3];
         component.flashArea(area);
         expect(fillRectSpy).toHaveBeenCalledTimes(area.length);
     });
 
-    it('should not call fillRect if there is no canvas', () => {
-        spyOn(component.canvas.nativeElement, 'getContext').and.returnValue(null);
-
-        const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect').and.callThrough();
+    it('flashArea should call deleteTempCanvas if tempCanvas is defined', () => {
+        spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+        component.createTempCanvas();
+        const deleteTempCanvasSpy = spyOn(component, 'deleteTempCanvas');
         const area = [0, 1, 2, 3];
         component.flashArea(area);
-        expect(fillRectSpy).not.toHaveBeenCalled();
+        expect(deleteTempCanvasSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('deleteTempCanvas should delete tempCanvas if it is defined', () => {
+        const removeSpy = spyOn(HTMLCanvasElement.prototype, 'remove');
+        component.createTempCanvas();
+        component.deleteTempCanvas();
+        expect(removeSpy).toHaveBeenCalledTimes(1);
     });
 
     it('timeout should call setTimeout', () => {
