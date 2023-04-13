@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Level } from 'assets/data/level';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { Server, Socket } from 'socket.io';
 import { GameService, GameState } from './game.service';
@@ -86,8 +87,27 @@ describe('GameService', () => {
             expect(result).toStrictEqual([]);
         });
     });
-
+    describe('setLevelId', () => {
+        it('should set the levelId', () => {
+            const gameState: GameState = { levelId: 0 } as GameState;
+            service['playerGameMap'].set('1', gameState);
+            service.setLevelId('1', 1);
+            expect(service['playerGameMap'].get('1').levelId).toEqual(1);
+        });
+    });
     describe('getImageInfoOnClick', () => {
+        it('should remove all found differences if the game mode is timed', async () => {
+            const gameState: GameState = {
+                levelId: 1,
+                foundDifferences: 1,
+                amountOfDifferencesFound: 1,
+                timedLevelList: [1],
+            } as unknown as GameState;
+            service['playerGameMap'].set('1', gameState);
+            jest.spyOn(imageService, 'findDifference').mockReturnValue(Promise.resolve({ differencePixels: [1], totalDifferences: 1 }));
+            await service.getImageInfoOnClick('1', 1);
+            expect(service['playerGameMap'].get('1').foundDifferences).toEqual([]);
+        });
         it('should return the correct data', async () => {
             service['playerGameMap'] = new Map<string, GameState>([
                 [
@@ -99,6 +119,7 @@ describe('GameService', () => {
             const result = await service.getImageInfoOnClick('socket', 1);
             expect(result).toEqual({ differencePixels: [1], totalDifferences: 7, amountOfDifferencesFound: 1 });
         });
+
         it('should share found differences with other player', async () => {
             service['playerGameMap'] = new Map<string, GameState>([
                 [
@@ -214,6 +235,13 @@ describe('GameService', () => {
                 isGameFound: false,
                 isInCheatMode: false,
             });
+        });
+
+        it('should create a list of timed levels if default it is equal to 0', async () => {
+            const level = {} as Level;
+            jest.spyOn(imageService, 'getLevels').mockReturnValue(Promise.resolve([level]));
+            await service.createGameState('1', { levelId: 0, playerName: '' }, false);
+            expect(service['playerGameMap'].get('1').timedLevelList.length).toEqual(1);
         });
     });
 
@@ -342,25 +370,38 @@ describe('GameService', () => {
         });
     });
 
+    describe('addLevelToTimedGame', () => {
+        it('should add the level to timed level list for all gameStates', () => {
+            const level: Level = {} as Level;
+            const gameState: GameState = { timedLevelList: [level] } as GameState;
+            service['playerGameMap'].set('1', gameState);
+            service.addLevelToTimedGame(level);
+            expect(service['playerGameMap'].get('1').timedLevelList.length).toEqual(2);
+        });
+    });
+
     describe('removeLevel', () => {
-        it('should call deleteLevelData', () => {
-            const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
-            service['levelDeletionQueue'] = [1];
+        it('should add the level to deletion queue if it is not being played', () => {
+            jest.spyOn(service, 'verifyIfLevelIsBeingPlayed' as never).mockReturnValue(true as never);
+            const addLevelSpy = jest.spyOn(service, 'addLevelToDeletionQueue').mockImplementation();
             service.removeLevel(1);
-            expect(deleteLevelDataSpy).toHaveBeenCalled();
+            expect(addLevelSpy).toBeCalledWith(1);
         });
 
-        it('should not call deleteLevelData if the level is undefined', () => {
-            const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
-            service['levelDeletionQueue'] = [];
+        it('should remove the level from deletion queue if the level is to be deleted', () => {
+            jest.spyOn(service, 'verifyIfLevelIsBeingPlayed' as never).mockReturnValue(false as never);
+            jest.spyOn(imageService, 'deleteLevelData').mockImplementation();
+            service['levelDeletionQueue'] = [1, 2];
             service.removeLevel(1);
-            expect(deleteLevelDataSpy).not.toHaveBeenCalled();
+            expect(service['levelDeletionQueue']).toEqual([2]);
         });
 
-        it('should remove the level from the deletion queue', () => {
-            service['levelDeletionQueue'] = [1, 2, 3];
-            service.removeLevel(2);
-            expect(service['levelDeletionQueue']).toEqual([1, 3]);
+        it('should delete the level', () => {
+            jest.spyOn(service, 'verifyIfLevelIsBeingPlayed' as never).mockReturnValue(false as never);
+            const deleteSpy = jest.spyOn(imageService, 'deleteLevelData').mockImplementation();
+            service['levelDeletionQueue'] = [1, 2];
+            service.removeLevel(1);
+            expect(deleteSpy).toBeCalledWith(1);
         });
     });
 
@@ -467,6 +508,25 @@ describe('GameService', () => {
             ]);
             service.setIsGameFound('socket1', true);
             expect(service['playerGameMap'].get('socket1').isGameFound).toBeTruthy();
+        });
+    });
+
+    describe('removeLevelFromTimedList', () => {
+        it('should remove the level from the timed mode level list', () => {
+            const levelId = 1;
+            const gameState: GameState = { timedLevelList: [{ id: 1 } as Level] } as GameState;
+            service['removeLevelFromTimedList'](gameState, levelId);
+            expect(gameState.timedLevelList).toEqual([]);
+        });
+    });
+
+    describe('getRandomLevelForTimedGame', () => {
+        it('should return a random level', () => {
+            jest.spyOn(Math, 'random').mockReturnValue(0);
+            const level: Level = { id: 1 } as Level;
+            const gameState: GameState = { timedLevelList: [level, { id: 2 } as Level] } as GameState;
+            service['playerGameMap'].set('1', gameState);
+            expect(service.getRandomLevelForTimedGame('1')).toEqual(level);
         });
     });
 });
