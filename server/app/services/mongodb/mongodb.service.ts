@@ -43,7 +43,7 @@ export class MongodbService {
      * @param levelId the id of the level we wish to delete.
      */
     async deleteLevel(levelId: number): Promise<void> {
-        await this.levelModel.deleteOne({ id: levelId });
+        await this.levelModel.deleteOne({ id: levelId }).exec();
     }
 
     /**
@@ -56,7 +56,7 @@ export class MongodbService {
      * @returns returns all the levels in the db.
      */
     async getAllLevels(): Promise<LevelDto[] | null> {
-        return (await this.levelModel.find({})) as LevelDto[] | null;
+        return (await this.levelModel.find({}).exec()) as LevelDto[] | null;
     }
 
     /**
@@ -70,7 +70,7 @@ export class MongodbService {
      * @returns the level associated with the given id.
      */
     async getLevelById(levelId: number): Promise<LevelDto | null> {
-        return (await this.levelModel.findOne({ id: levelId })) as LevelDto | null;
+        return (await this.levelModel.findOne({ id: levelId }).exec()) as LevelDto | null;
     }
 
     /**
@@ -79,7 +79,7 @@ export class MongodbService {
      * @returns the id of the last inserted level.
      */
     async getLastLevelId(): Promise<number> {
-        return (await this.levelModel.find().limit(1).sort({ $natural: -1 }))[0].id as number;
+        return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
     }
 
     /**
@@ -89,7 +89,7 @@ export class MongodbService {
      * @returns level.timesolo the solo highscores times of the specified level.
      */
     async getTimeSoloArray(levelId: number): Promise<number[] | null> {
-        return (await this.levelModel.findOne({ id: levelId })).timeSolo as number[] | null;
+        return (await this.levelModel.findOne({ id: levelId }).exec()).timeSolo as number[] | null;
     }
 
     /**
@@ -99,7 +99,7 @@ export class MongodbService {
      * @returns the solo highscores names of the specified level.
      */
     async getPlayerSoloArray(levelId: number): Promise<string[] | null> {
-        return (await this.levelModel.findOne({ id: levelId })).playerSolo as string[] | null;
+        return (await this.levelModel.findOne({ id: levelId }).exec()).playerSolo as string[] | null;
     }
 
     /**
@@ -109,7 +109,7 @@ export class MongodbService {
      * @returns level.timesolo the multiplayer highscores times of the specified level.
      */
     async getTimeMultiArray(levelId: number): Promise<number[] | null> {
-        return (await this.levelModel.findOne({ id: levelId })).timeMulti as number[] | null;
+        return (await this.levelModel.findOne({ id: levelId }).exec()).timeMulti as number[] | null;
     }
 
     /**
@@ -119,7 +119,7 @@ export class MongodbService {
      * @returns the multiplayer highscores names of the specified level.
      */
     async getPlayerMultiArray(levelId: number): Promise<string[] | null> {
-        return (await this.levelModel.findOne({ id: levelId })).playerMulti as string[] | null;
+        return (await this.levelModel.findOne({ id: levelId }).exec()).playerMulti as string[] | null;
     }
 
     /**
@@ -154,15 +154,11 @@ export class MongodbService {
                     names[i - 1] = gameState.playerName;
                 }
             }
-            const level = await this.levelModel.findOne({ id: gameState.levelId });
             if (gameState.otherSocketId) {
-                level.playerMulti = names;
-                level.timeMulti = times;
+                await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerMulti: names, timeMulti: times }).exec();
             } else {
-                level.playerSolo = names;
-                level.timeSolo = times;
+                await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerSolo: names, timeSolo: times }).exec();
             }
-            level.save();
         }
     }
 
@@ -178,11 +174,12 @@ export class MongodbService {
      */
     async getLevelsInPage(pageNumber: number): Promise<Level[] | null> {
         if (pageNumber <= 0) {
-            return new Promise(null);
+            return Promise.resolve(null);
         }
         return (await this.levelModel
             .find({})
             .skip((pageNumber - 1) * Constants.levelsPerPage)
-            .limit(Constants.levelsPerPage)) as Level[];
+            .limit(Constants.levelsPerPage)
+            .exec()) as Level[];
     }
 }
