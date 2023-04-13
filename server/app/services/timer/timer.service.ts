@@ -40,12 +40,12 @@ export class TimerService {
             }
             this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
             if (!isClassic && time === 0) {
-                clearInterval(interval);
-                this.timeIntervalMap.delete(socketId);
-                this.timeMap.delete(socketId);
-                this.gameService.removeLevel(this.gameService.getGameState(socketId).levelId);
+                this.stopTimer(socketId);
+                const levelId = this.gameService.getGameState(socketId).levelId;
+                this.gameService.removeLevel(levelId);
                 this.gameService.deleteUserFromGame(socket);
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
+                clearInterval(interval);
             }
             server.to(socketId).emit(GameEvents.SendTime, time);
         }, Constants.millisecondsInOneSecond);
