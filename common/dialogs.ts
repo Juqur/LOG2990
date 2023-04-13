@@ -1,4 +1,4 @@
-import { DialogData } from './../client/src/app/services/pop-up/pop-up.service';
+import { DialogData } from '@app/services/pop-up/pop-up.service';
 import { Constants } from './constants';
 
 export namespace Dialogs {
