@@ -46,9 +46,22 @@ describe('MainPageService', () => {
     });
 
     describe('chooseName', () => {
+        let chooseGameTypeSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            chooseGameTypeSpy = spyOn(service, 'chooseGameType' as never);
+        });
+
         it('should open a pop up', () => {
             service.chooseName();
             expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+        });
+
+        it('should call chooseGameType if the player entered a name', () => {
+            const expected = 'name';
+            dialogRefSpy.afterClosed.and.returnValue(of(expected));
+            service.chooseName();
+            expect(chooseGameTypeSpy).toHaveBeenCalledWith(expected);
         });
     });
 
@@ -69,14 +82,16 @@ describe('MainPageService', () => {
     describe('chooseGameType', () => {
         it('should open a pop up', () => {
             service['chooseGameType']('test');
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
         });
+
         it('should emit a socket event to the sever with false if the player does not want to play with another player', () => {
             const name = 'test';
             dialogRefSpy.afterClosed.and.returnValue(of(false));
             service['chooseGameType'](name);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'createTimedGame', { multiplayer: false, playerName: name });
         });
+
         it('should emit a socket event to the sever with true if the player wants to play with another player', () => {
             const name = 'test';
             dialogRefSpy.afterClosed.and.returnValue(of(true));
