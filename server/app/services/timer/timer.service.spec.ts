@@ -19,10 +19,6 @@ describe('TimerService', () => {
         expect(service).toBeDefined();
     });
 
-    describe('getTime', ()=> {
-        service['timeMap'] = new Map()
-    })
-
     describe('startTimer ', () => {
         let server: Server;
 
