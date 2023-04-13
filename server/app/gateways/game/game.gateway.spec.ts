@@ -1,12 +1,15 @@
 /* eslint-disable max-lines */
+import { Level, levelModel } from '@app/model/schema/level.schema';
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
 import { GameData } from '@common/game-data';
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { Namespace, Server, Socket } from 'socket.io';
 import { GameGateway } from './game.gateway';
 
@@ -20,6 +23,7 @@ describe('GameGateway', () => {
     let gameService: SinonStubbedInstance<GameService>;
     let timerService: SinonStubbedInstance<TimerService>;
     let chatService: SinonStubbedInstance<ChatService>;
+    let mongodbService: SinonStubbedInstance<MongodbService>;
 
     let emitSpy: jest.SpyInstance;
     let emitOtherSpy: jest.SpyInstance;
@@ -48,6 +52,7 @@ describe('GameGateway', () => {
         otherSocket = createStubInstance<Socket>(Socket);
         server = createStubInstance<Server>(Server);
         chatService = createStubInstance<ChatService>(ChatService);
+        mongodbService = createStubInstance<MongodbService>(MongodbService);
 
         emitSpy = jest.spyOn(socket, 'emit');
         emitOtherSpy = jest.spyOn(otherSocket, 'emit');
@@ -60,9 +65,14 @@ describe('GameGateway', () => {
                 { provide: ChatService, useValue: chatService },
                 { provide: GameService, useValue: gameService },
                 { provide: TimerService, useValue: timerService },
+                { provide: MongodbService, useValue: mongodbService },
                 { provide: Socket, useValue: socket },
                 { provide: Socket, useValue: otherSocket },
                 { provide: Server, useValue: server },
+                {
+                    provide: getModelToken(Level.name),
+                    useValue: levelModel,
+                },
             ],
         }).compile();
 
