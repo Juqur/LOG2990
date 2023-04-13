@@ -46,7 +46,7 @@ export class GameGateway {
     async onCreateTimedGame(socket: Socket, data: { multiplayer: boolean; playerName: string }): Promise<void> {
         await this.gameService.createGameState(socket.id, { playerName: data.playerName, levelId: 0 }, data.multiplayer);
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);
-        this.gameService.setLevelId(socket.id, level);
+        this.gameService.setLevelId(socket.id, level.id);
         socket.emit(GameEvents.ChangeLevelTimedMode, level);
         this.timerService.startTimer(socket, this.server, false);
     }
@@ -310,9 +310,9 @@ export class GameGateway {
             this.gameService.deleteUserFromGame(socket);
             return true;
         }
-        const levelId = this.gameService.getRandomLevelForTimedGame(socket.id);
-        this.gameService.setLevelId(socket.id, levelId);
-        this.server.to(socket.id).emit(GameEvents.ChangeLevelTimedMode, levelId);
+        const level = this.gameService.getRandomLevelForTimedGame(socket.id);
+        this.gameService.setLevelId(socket.id, level.id);
+        this.server.to(socket.id).emit(GameEvents.ChangeLevelTimedMode, level);
         return false;
     }
 }
