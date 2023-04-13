@@ -460,19 +460,20 @@ describe('GameGateway', () => {
 
     describe('onCreateTimedGame', () => {
         it('should start the timer', async () => {
-            jest.spyOn(gameService, 'createGameState');
-            jest.spyOn(gameService, 'getRandomLevelForTimedGame');
-            jest.spyOn(gameService, 'setLevelId');
+            const level = { id: 1 } as Level;
+            jest.spyOn(gameService, 'createGameState').mockImplementation();
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue(level);
+            jest.spyOn(gameService, 'setLevelId').mockImplementation();
             const timerSpy = jest.spyOn(timerService, 'startTimer');
             await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: '' });
             expect(timerSpy).toBeCalled();
         });
 
         it('should emit a random level to the user', async () => {
-            const level = {} as Level;
-            jest.spyOn(gameService, 'createGameState');
+            const level = { id: 1 } as Level;
+            jest.spyOn(gameService, 'createGameState').mockImplementation();
             jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue(level);
-            jest.spyOn(gameService, 'setLevelId');
+            jest.spyOn(gameService, 'setLevelId').mockImplementation();
             await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: '' });
             expect(emitSpy).toBeCalledWith('changeLevelTimedMode', level);
         });
@@ -481,13 +482,15 @@ describe('GameGateway', () => {
     describe('handleTimedGame', () => {
         it('should add time', () => {
             gameState.timedLevelList = [{} as Level];
-            const addTimeSpy = jest.spyOn(timerService, 'addTime');
+            const addTimeSpy = jest.spyOn(timerService, 'addTime').mockImplementation();
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as Level);
+            jest.spyOn(gameService, 'setLevelId').mockImplementation();
             gateway['handleTimedGame'](socket, gameState);
             expect(addTimeSpy).toBeCalled();
         });
         it('should stop the timer, delete the user and emit to the player if he wins the game', () => {
-            const stopTimerSpy = jest.spyOn(timerService, 'stopTimer');
-            const deleteUserSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            const stopTimerSpy = jest.spyOn(timerService, 'stopTimer').mockImplementation();
+            const deleteUserSpy = jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
             gameState.timedLevelList = [];
             gateway['handleTimedGame'](socket, gameState);
             expect(stopTimerSpy).toBeCalled();
@@ -495,17 +498,25 @@ describe('GameGateway', () => {
             expect(emitSpy).toBeCalled();
         });
         it('should return true of game is won', () => {
-            jest.spyOn(timerService, 'stopTimer');
-            jest.spyOn(gameService, 'deleteUserFromGame');
+            jest.spyOn(timerService, 'stopTimer').mockImplementation();
+            jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
             gameState.timedLevelList = [];
             expect(gateway['handleTimedGame'](socket, gameState)).toBeTruthy();
         });
 
         it('should return false of game is not won', () => {
-            jest.spyOn(timerService, 'stopTimer');
-            jest.spyOn(gameService, 'deleteUserFromGame');
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as Level);
+            jest.spyOn(gameService, 'setLevelId').mockImplementation();
             gameState.timedLevelList = [{} as Level];
             expect(gateway['handleTimedGame'](socket, gameState)).toBeFalsy();
+        });
+
+        it('should set a new level if the game is not finished', () => {
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as Level);
+            const setLevelSpy = jest.spyOn(gameService, 'setLevelId').mockImplementation();
+            gameState.timedLevelList = [{} as Level];
+            gateway['handleTimedGame'](socket, gameState);
+            expect(setLevelSpy).toBeCalledWith(socket.id, 1);
         });
     });
 });
