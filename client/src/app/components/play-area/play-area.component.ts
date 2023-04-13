@@ -3,6 +3,12 @@ import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharin
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
 
+/**
+ * This component represents one of the two canvas inside a game page.
+ *
+ * @author Simon Gagné & Galen Hu & Charles Degrandpré
+ * @class PlayAreaComponent
+ */
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
@@ -22,7 +28,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     currentImage: HTMLImageElement;
 
     buttonPressed = '';
-
+    private tempCanvas: HTMLCanvasElement;
     private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
@@ -47,7 +53,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
      * @param event the keyboardEvent to process.
      */
     @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
+    buttonDetect(event: KeyboardEvent): void {
         this.buttonPressed = event.key;
     }
 
@@ -69,7 +75,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     /**
      * Returns the canvas element.
      */
-    getCanvas() {
+    getCanvas(): ElementRef<HTMLCanvasElement> {
         return this.canvas;
     }
 
@@ -80,7 +86,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
      *
      * @param image the image source
      */
-    drawPlayArea(image: string) {
+    drawPlayArea(image: string): void {
         if (this.canvas) {
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -109,19 +115,43 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
      *
      * @param area the area to flash
      */
-    flashArea(area: number[]) {
+    flashArea(area: number[]): void {
         let x = 0;
         let y = 0;
-        const context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        if (!context) {
-            return;
-        }
+        if (this.tempCanvas) this.deleteTempCanvas();
+        this.createTempCanvas();
+        const context = this.tempCanvas.getContext('2d') as CanvasRenderingContext2D;
         area.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % this.width;
             y = Math.floor(pixelData / this.width / Constants.PIXEL_SIZE);
             context.fillStyle = 'red';
             context.fillRect(x, y, 1, 1);
         });
+    }
+
+    /**
+     * Creates a temporary canvas that will be used to flash the differences between the two images.
+     * The temporary canvas is over the play canvas and lets click events pass through it.
+     */
+    createTempCanvas(): void {
+        this.tempCanvas = document.createElement('canvas');
+        this.tempCanvas.className = 'temp';
+        this.tempCanvas.style.position = 'absolute';
+        this.tempCanvas.style.top = this.canvas.nativeElement.offsetTop + 'px';
+        this.tempCanvas.style.left = this.canvas.nativeElement.offsetLeft + 'px';
+        this.tempCanvas.width = this.width;
+        this.tempCanvas.height = this.height;
+        this.drawService.context = this.tempCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const currentCanvas = document.body.querySelector('#' + this.canvas.nativeElement.id) as HTMLCanvasElement;
+        currentCanvas.after(this.tempCanvas);
+        this.tempCanvas.style.pointerEvents = 'none';
+    }
+
+    /**
+     * Deletes the temporary canvas if it exists.
+     */
+    deleteTempCanvas(): void {
+        if (this.tempCanvas) this.tempCanvas.remove();
     }
 
     /**
