@@ -30,7 +30,7 @@ describe('UndoRedoService', () => {
             expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
         });
 
-        it('should still add to stack take the previous canvas if it has no context parameters', () => {
+        it('should still add to stack the previous canvas if it has no context parameters', () => {
             const defaultCanvas = document.createElement('canvas');
             const defaultCanvasCtx = defaultCanvas.getContext('2d');
             const tempDiffCanvas = document.createElement('canvas');
@@ -145,7 +145,7 @@ describe('UndoRedoService', () => {
             resetUndoStackSpy = spyOn(UndoRedoService, 'resetUndoStack');
         });
 
-        it('should call resetUndoStackSpy', () => {
+        it('should call resetRedoStackSpy', () => {
             UndoRedoService.resetAllStacks();
             expect(resetRedoStackSpy).toHaveBeenCalledTimes(1);
         });
