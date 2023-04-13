@@ -100,9 +100,9 @@ export class GameService {
      * @param socketId the socket id of the player.
      * @param levelId the level id of the level.
      */
-    setLevelId(socketId: string, level: Level): void {
+    setLevelId(socketId: string, levelId: number): void {
         const gameState = this.playerGameMap.get(socketId);
-        gameState.levelId = level.id;
+        gameState.levelId = levelId;
         this.playerGameMap.set(socketId, gameState);
     }
 
@@ -354,16 +354,26 @@ export class GameService {
             if (gameState.levelId === levelId && gameState.isInGame) {
                 return true;
             }
-            if (gameState.timedLevelList) {
-                let level: Level;
-                for (level of gameState.timedLevelList) {
-                    if (level.id === levelId) {
-                        break;
-                    }
-                }
-                gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
-            }
+            this.removeLevelFromTimedList(gameState, levelId);
         }
         return false;
+    }
+
+    /**
+     * This method removes a level to delete from all current timed games.
+     *
+     * @param gameState The gameState of a player.
+     * @param levelId The level to be removed.
+     */
+    private removeLevelFromTimedList(gameState: GameState, levelId: number) {
+        if (gameState.timedLevelList) {
+            let level: Level;
+            for (level of gameState.timedLevelList) {
+                if (level.id === levelId) {
+                    break;
+                }
+            }
+            gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
+        }
     }
 }
