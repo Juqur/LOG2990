@@ -1,6 +1,5 @@
 # Merge Request
-### (Merge Request's name)
-
+>### (Merge Request's name)
 >**Current branch:** %{source_branch}
 >
 >**Target branch:** %{target_branch}
