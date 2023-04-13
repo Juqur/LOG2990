@@ -42,6 +42,7 @@ export interface InputData {
 })
 export class PopUpService {
     dialogRef: MatDialogRef<PopUpDialogComponent>;
+
     constructor(public dialog: MatDialog, private router: Router) {}
 
     /**
