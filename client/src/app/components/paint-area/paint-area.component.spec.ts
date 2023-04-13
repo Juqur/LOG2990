@@ -88,7 +88,7 @@ describe('PaintAreaComponent', () => {
             expect(loadBackgroundSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should call addEventListenerSpy trice', () => {
+        it('should call addEventListenerSpy thrice', () => {
             component.ngAfterViewInit();
             expect(addEventListenerSpy).toHaveBeenCalledTimes(3);
         });
