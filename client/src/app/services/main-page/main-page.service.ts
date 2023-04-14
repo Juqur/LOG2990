@@ -4,6 +4,11 @@ import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Dialogs } from '@common/dialogs';
 
+interface TimedGameData {
+    levelId: number;
+    otherPlayerName: string;
+}
+
 /**
  * Service that handles the main page.
  *
@@ -65,9 +70,32 @@ export class MainPageService {
         this.popUpService.openDialog(this.multiplayerDialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             this.socketHandler.send('game', 'onCreateTimedGame', { multiplayer: result, playerName });
-            this.router.navigate([`/game/${0}/`], {
-                queryParams: { playerName },
+            if (result) {
+                this.waitingForOpponent(playerName);
+            } else {
+                this.router.navigate([`/game/${0}/`], {
+                    queryParams: { playerName },
+                });
+            }
+        });
+    }
+
+    private waitingForOpponent(playerName: string) {
+        const dialogData: DialogData = {
+            textToSend: "En attente d'un adversaire",
+            isConfirmation: false,
+            closeButtonMessage: 'Annuler',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(dialogData);
+        this.popUpService.dialogRef.afterClosed().subscribe(() => {
+            this.socketHandler.send('game', 'onTimedGameCancelled');
+        });
+        this.socketHandler.on('game', 'startTimedGameMultiplayer', (data: TimedGameData) => {
+            this.router.navigate([`/game/${data.levelId}/`], {
+                queryParams: { playerName, otherPlayerName: data.otherPlayerName },
             });
+            this.popUpService.dialogRef.close();
         });
     }
 }
