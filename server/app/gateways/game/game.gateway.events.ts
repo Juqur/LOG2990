@@ -15,6 +15,7 @@ export enum GameEvents {
     OnMessageReception = 'onMessageReception',
     OnGameCancelled = 'onGameCancelled',
     OnCreateTimedGame = 'onCreateTimedGame',
+    OnHintRequest = 'onHintRequest',
 
     MessageSent = 'messageSent',
     UpdateSelection = 'updateSelection',
@@ -33,4 +34,5 @@ export enum GameEvents {
     TimedModeFinished = 'timedModeFinished',
     ProcessedClick = 'processedClick',
     ChangeLevelTimedMode = 'changeLevelTimedMode',
+    HintRequest = 'hintRequest',
 }

@@ -105,4 +105,15 @@ export class TimerService {
             this.timeMap.set(socketId, currentTime - time);
         }
     }
+
+    /**
+     * Returns the current time of the timer of a player.
+     * If the player does not have a timer, it returns 0.
+     *
+     * @param socket The socket of the player.
+     * @returns The current time of the timer as a number.
+     */
+    getCurrentTime(socketId: string): number {
+        return this.timeMap.get(socketId) ?? 0;
+    }
 }

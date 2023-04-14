@@ -42,6 +42,7 @@ describe('GameService', () => {
                 isInGame: false,
                 isGameFound: false,
                 isInCheatMode: false,
+                hintsUsed: 0,
             };
             service['playerGameMap'] = new Map<string, GameState>([['socket1', expectedGameState]]);
             service['playerGameMap'].set('socket', expectedGameState);
@@ -131,6 +132,7 @@ describe('GameService', () => {
                         playerName: 'player',
                         isInGame: false,
                         otherSocketId: 'socket2',
+                        hintsUsed: 0,
                     } as unknown as GameState,
                 ],
                 [
@@ -221,6 +223,7 @@ describe('GameService', () => {
                 isInGame: true,
                 isGameFound: true,
                 isInCheatMode: false,
+                hintsUsed: 0,
             });
         });
 
@@ -234,6 +237,7 @@ describe('GameService', () => {
                 isInGame: false,
                 isGameFound: false,
                 isInCheatMode: false,
+                hintsUsed: 0,
             });
         });
 
@@ -336,6 +340,7 @@ describe('GameService', () => {
                         isInGame: true,
                         isGameFound: true,
                         isInCheatMode: false,
+                        hintsUsed: 0,
                     },
                 ],
             ]);
@@ -355,6 +360,7 @@ describe('GameService', () => {
                         isInGame: false,
                         isGameFound: true,
                         isInCheatMode: false,
+                        hintsUsed: 0,
                     },
                 ],
             ]);
@@ -418,6 +424,7 @@ describe('GameService', () => {
                         isInGame: false,
                         isGameFound: false,
                         isInCheatMode: false,
+                        hintsUsed: 0,
                     },
                 ],
                 [
@@ -430,6 +437,7 @@ describe('GameService', () => {
                         isInGame: false,
                         isGameFound: false,
                         isInCheatMode: false,
+                        hintsUsed: 0,
                     },
                 ],
             ]);
@@ -451,6 +459,7 @@ describe('GameService', () => {
                 isInGame: false,
                 isGameFound: false,
                 isInCheatMode: false,
+                hintsUsed: 0,
             });
             const spy = jest.spyOn(service['imageService'], 'getAllDifferences');
             spy.mockImplementation().mockReturnValue(Promise.resolve([[1], [2], [3]]));
@@ -473,6 +482,7 @@ describe('GameService', () => {
                         isInGame: false,
                         isGameFound: false,
                         isInCheatMode: true,
+                        hintsUsed: 0,
                     },
                 ],
             ]);
@@ -484,9 +494,124 @@ describe('GameService', () => {
                 isInGame: false,
                 isGameFound: false,
                 isInCheatMode: true,
+                hintsUsed: 0,
             });
             service.stopCheatMode('socket1');
             expect(service['playerGameMap'].get('socket1').isInCheatMode).toEqual(false);
+        });
+    });
+
+    describe('askHint', () => {
+        it('should call the image service, and return a array of size 1 on the first hint', async () => {
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                amountOfDifferencesFound: 0,
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+                hintsUsed: 0,
+            });
+            const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[4]]));
+            const result = await service.askHint('socket1');
+            expect(differencesSpy).toHaveBeenCalledTimes(1);
+            expect(result).toHaveLength(1);
+        });
+
+        it('should call the image service, and return a array of size 2 on the second hint', async () => {
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                amountOfDifferencesFound: 0,
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+                hintsUsed: 1,
+            });
+            const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[1000000]]));
+            const result = await service.askHint('socket1');
+            expect(differencesSpy).toHaveBeenCalledTimes(1);
+            expect(result).toHaveLength(2);
+        });
+
+        it('should return the correct subquadrants', async () => {
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                amountOfDifferencesFound: 0,
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+                hintsUsed: 1,
+            });
+            const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[3500]]));
+            const result = await service.askHint('socket1');
+            expect(result).toEqual([1, 2]);
+        });
+
+        it('should return undefined if all hints have been used', () => {
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                amountOfDifferencesFound: 0,
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+                hintsUsed: 3,
+            });
+            const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[1]]));
+            const result = service.askHint('socket1') as Promise<number[]>;
+            expect(result).resolves.toEqual(undefined);
+        });
+
+        it('should call askShape on the third hint request', async () => {
+            jest.spyOn(service, 'getGameState').mockReturnValue({
+                levelId: 0,
+                foundDifferences: [],
+                amountOfDifferencesFound: 0,
+                playerName: 'player1',
+                isInGame: false,
+                isGameFound: false,
+                isInCheatMode: false,
+                hintsUsed: 2,
+            });
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            const askShapeSpy = jest.spyOn(service, 'askShape').mockImplementation().mockReturnValue([7]);
+            // const spy = sinon.spy(service, 'askShape');
+            const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[2]]));
+            const result = await service.askHint('socket1');
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            expect(result).toEqual([7]);
+            expect(askShapeSpy).toHaveBeenCalled();
+        });
+    });
+
+    describe('askShape', () => {
+        it('should return an array of a size two numbers greater', () => {
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            const mockedDifference = [1, 2, 3, 4, 5, 6, 7, 11, 1200000, 8, 9, 10];
+            const result = service.askShape(mockedDifference);
+            expect(result).toHaveLength(mockedDifference.length + 2);
+        });
+    });
+
+    describe('deleteLevel', () => {
+        it('should call deleteLevelData', () => {
+            const deleteLevelDataSpy = jest.spyOn(imageService, 'deleteLevelData' as never);
+            service.deleteLevel(0);
+            expect(deleteLevelDataSpy).toHaveBeenCalled();
         });
     });
 
@@ -503,6 +628,7 @@ describe('GameService', () => {
                         isInGame: false,
                         isGameFound: false,
                         isInCheatMode: false,
+                        hintsUsed: 0,
                     },
                 ],
             ]);
