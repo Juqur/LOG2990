@@ -10,19 +10,15 @@ describe('MainPageService', () => {
     let service: MainPageService;
     let socketHandlerSpy: jasmine.SpyObj<SocketHandler>;
     let routerSpy: jasmine.SpyObj<Router>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let popUpServiceSpy: any;
+    let popUpServiceSpy: jasmine.SpyObj<PopUpService>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<unknown>>;
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
-        dialogRefSpy.afterClosed.and.returnValue(of(true));
-        popUpServiceSpy = {
-            openDialog: jasmine.createSpy('openDialog').and.returnValue(of(undefined)),
-            dialogRef: dialogRefSpy,
-        };
+        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
+        dialogRefSpy.afterClosed.and.returnValue(of({ hasAccepted: true }));
         TestBed.configureTestingModule({
             providers: [
                 { provide: SocketHandler, useValue: socketHandlerSpy },
