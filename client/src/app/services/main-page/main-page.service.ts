@@ -25,6 +25,7 @@ export class MainPageService {
         closeButtonMessage: '',
         mustProcess: false,
     };
+    private waitingForPlayer: boolean = true;
 
     constructor(private popUpService: PopUpService, private socketHandler: SocketHandler, private router: Router) {}
 
@@ -74,7 +75,7 @@ export class MainPageService {
                 this.waitingForOpponent(playerName);
             } else {
                 this.router.navigate([`/game/${0}/`], {
-                    queryParams: { playerName },
+                    queryParams: { playerName, gameMode: 'timed' },
                 });
             }
         });
@@ -89,11 +90,15 @@ export class MainPageService {
         };
         this.popUpService.openDialog(dialogData);
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
-            this.socketHandler.send('game', 'onTimedGameCancelled');
+            if (this.waitingForPlayer) {
+                this.socketHandler.send('game', 'onTimedGameCancelled');
+                this.waitingForPlayer = true;
+            }
         });
         this.socketHandler.on('game', 'startTimedGameMultiplayer', (data: TimedGameData) => {
+            this.waitingForPlayer = false;
             this.router.navigate([`/game/${data.levelId}/`], {
-                queryParams: { playerName, otherPlayerName: data.otherPlayerName },
+                queryParams: { playerName, opponent: data.otherPlayerName, gameMode: 'timed' },
             });
             this.popUpService.dialogRef.close();
         });
