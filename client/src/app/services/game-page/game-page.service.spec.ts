@@ -11,7 +11,7 @@ import { MouseService } from '@app/services/mouse/mouse.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { environment } from 'src/environments/environment';
 
 describe('GamePageService', () => {

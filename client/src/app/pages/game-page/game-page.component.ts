@@ -7,7 +7,7 @@ import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { environment } from 'src/environments/environment';
 
 /**

@@ -1,5 +1,5 @@
 import { ImageService } from '@app/services/image/image.service';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
