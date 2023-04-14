@@ -77,7 +77,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Method called after the initial rendering.
+     * This method is called after the initial rendering.
      */
     ngAfterViewInit(): void {
         this.loadBackground(this.image);
@@ -89,7 +89,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Event listener when the mouse is outside the canvas.
+     * This method is a event handler when the mouse is outside the canvas.
      * It prevents the interpolation of two points when the mouse is outside the canvas.
      */
     onMouseOut(): void {
@@ -97,7 +97,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Event listener of the mouse click inside the canvas.
+     * This method is a event handler of the mouse click inside the canvas.
      * If a temporary canvas exists, it is removed and drawn on the foreground canvas.
      *
      * @param event The mouse event.
@@ -121,7 +121,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Event listener of the mouse release globally.
+     * This method is a event handler of the mouse release globally.
      * If the rectangle mode is on, it applies the rectangle to the foreground canvas.
      *
      * @param event The mouse event.
@@ -139,7 +139,7 @@ export class PaintAreaComponent implements AfterViewInit {
     }
 
     /**
-     * Event listener of the mouse drag inside the canvas.
+     * This method is a event handler of the mouse drag inside the canvas.
      *
      * @param event The mouse event.
      */
@@ -256,9 +256,9 @@ export class PaintAreaComponent implements AfterViewInit {
                 squareSizeY = yDistance;
                 squareSizeX = Math.sign(xDistance) * Math.abs(yDistance);
             }
-            this.drawService.drawRect(this.lastMousePosition, squareSizeX, squareSizeY);
+            this.drawService.drawRectangle(this.lastMousePosition, squareSizeX, squareSizeY);
         } else {
-            this.drawService.drawRect(this.lastMousePosition, x - this.lastMousePosition.x, y - this.lastMousePosition.y);
+            this.drawService.drawRectangle(this.lastMousePosition, x - this.lastMousePosition.x, y - this.lastMousePosition.y);
         }
     }
 

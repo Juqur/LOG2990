@@ -92,20 +92,20 @@ export class DrawService {
     /**
      * Method used to draw on the canvas at a given coordinate.
      *
-     * @param previous The previous coordinate.
-     * @param active The current coordinate.
+     * @param previousCoordinate The previous coordinate.
+     * @param activeCoordinate The current coordinate.
      */
-    draw(previous: Vec2, active: Vec2 = { x: Constants.DEFAULT_COORDINATE, y: Constants.DEFAULT_COORDINATE }): void {
+    draw(previousCoordinate: Vec2, activeCoordinate: Vec2 = { x: Constants.DEFAULT_COORDINATE, y: Constants.DEFAULT_COORDINATE }): void {
         this.context.beginPath();
-        this.context.moveTo(previous.x, previous.y);
-        if (active.x !== Constants.DEFAULT_COORDINATE && active.y !== Constants.DEFAULT_COORDINATE) {
+        this.context.moveTo(previousCoordinate.x, previousCoordinate.y);
+        if (activeCoordinate.x !== Constants.DEFAULT_COORDINATE && activeCoordinate.y !== Constants.DEFAULT_COORDINATE) {
             if (!this.isInCanvas) {
-                this.context.moveTo(active.x, active.y);
+                this.context.moveTo(activeCoordinate.x, activeCoordinate.y);
                 this.isInCanvas = true;
             }
-            this.context.lineTo(active.x, active.y);
+            this.context.lineTo(activeCoordinate.x, activeCoordinate.y);
         } else {
-            this.context.lineTo(previous.x + 1, previous.y);
+            this.context.lineTo(previousCoordinate.x + 1, previousCoordinate.y);
         }
         this.context.stroke();
     }
@@ -117,7 +117,7 @@ export class DrawService {
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    drawRect(coordinate: Vec2, width: number, height: number): void {
+    drawRectangle(coordinate: Vec2, width: number, height: number): void {
         this.context.beginPath();
         this.context.rect(coordinate.x, coordinate.y, width, height);
         this.context.fill();

@@ -17,7 +17,7 @@ describe('PaintAreaComponent', () => {
 
     beforeEach(() => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'changeClickState', 'mouseDrag'], { x: 0, y: 0 });
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw', 'drawRect', 'setPaintColor', 'paintBrush']);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw', 'drawRectangle', 'setPaintColor', 'paintBrush']);
     });
 
     beforeEach(async () => {
@@ -325,26 +325,26 @@ describe('PaintAreaComponent', () => {
             expect(clearRectSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should correctly call drawRect if shift x < y', () => {
+        it('should correctly call drawRectangle if shift x < y', () => {
             Object.defineProperty(mouseServiceSpy, 'x', { value: 100 });
             Object.defineProperty(mouseServiceSpy, 'y', { value: 120 });
             component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
-            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+            expect(drawServiceSpy.drawRectangle).toHaveBeenCalledTimes(1);
         });
 
-        it('should correctly call drawRect if shift x > y', () => {
+        it('should correctly call drawRectangle if shift x > y', () => {
             Object.defineProperty(mouseServiceSpy, 'x', { value: 120 });
             Object.defineProperty(mouseServiceSpy, 'y', { value: 100 });
             component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
-            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+            expect(drawServiceSpy.drawRectangle).toHaveBeenCalledTimes(1);
         });
 
-        it('should call drawRect if shift is not pressed', () => {
+        it('should call drawRectangle if shift is not pressed', () => {
             component['isShiftPressed'] = false;
             component.canvasRectangularDrag(mouseEvent);
-            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+            expect(drawServiceSpy.drawRectangle).toHaveBeenCalledTimes(1);
         });
     });
 

@@ -144,25 +144,25 @@ describe('DrawService', () => {
         });
     });
 
-    describe('drawRect', () => {
+    describe('drawRectangle', () => {
         it('should call beginPath', () => {
-            service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
+            service.drawRectangle({ x: 1, y: 1 } as Vec2, 1, 1);
             expect(beginPathSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call rect', () => {
             const expected = { x: 1, y: 1 } as Vec2;
-            service.drawRect(expected, 1, 1);
+            service.drawRectangle(expected, 1, 1);
             expect(rectSpy).toHaveBeenCalledOnceWith(expected.x, expected.y, 1, 1);
         });
 
         it('should call fill', () => {
-            service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
+            service.drawRectangle({ x: 1, y: 1 } as Vec2, 1, 1);
             expect(fillSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call stroke', () => {
-            service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
+            service.drawRectangle({ x: 1, y: 1 } as Vec2, 1, 1);
             expect(strokeSpy).toHaveBeenCalledTimes(1);
         });
     });
