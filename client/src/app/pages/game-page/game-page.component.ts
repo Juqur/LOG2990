@@ -93,6 +93,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         }
 
         this.gamePageService.resetImagesData();
+        this.gamePageService.setMouseCanClick(true);
         this.settingGameParameters();
         this.handleSocket();
     }
