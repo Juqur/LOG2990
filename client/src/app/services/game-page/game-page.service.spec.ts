@@ -37,7 +37,14 @@ describe('GamePageService', () => {
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
-        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout', 'deleteTempCanvas']);
+        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', [
+            'getCanvas',
+            'drawPlayArea',
+            'flashArea',
+            'timeout',
+            'deleteTempCanvas',
+            'showHintSection',
+        ]);
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
@@ -193,6 +200,33 @@ describe('GamePageService', () => {
         it('should call navigate', () => {
             service.preventJoining();
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+        });
+    });
+
+    describe('handleHintRequest', () => {
+        it('should call showHintSection on both canvas', () => {
+            const mockSection = [1];
+            service.handleHintRequest(mockSection);
+            expect(playAreaComponentSpy.showHintSection).toHaveBeenCalledTimes(2);
+            expect(playAreaComponentSpy.showHintSection).toHaveBeenCalledWith(mockSection);
+        });
+    });
+
+    describe('handleHintShapeRequest', () => {
+        it('should call the appropriate functions', () => {
+            const mockCanvas = document.createElement('canvas');
+            const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+            const mockSection = [0, 2, 2];
+            service.handleHintShapeRequest(mockSection, mockCanvas);
+            expect(fillRectSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not call anything if the size of the shape array is lower than 2', () => {
+            const mockCanvas = document.createElement('canvas');
+            const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+            const mockSection = [0, 0];
+            service.handleHintShapeRequest(mockSection, mockCanvas);
+            expect(fillRectSpy).not.toHaveBeenCalled();
         });
     });
 

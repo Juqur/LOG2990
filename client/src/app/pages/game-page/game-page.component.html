@@ -22,11 +22,13 @@
             <app-play-area [isDifferenceCanvas]="false" [image]="originalImageSrc" (click)="clickedOnOriginal($event)"
                 #originalPlayArea></app-play-area>
             <div *ngIf="!secondPlayerName" id="between-images">
-                <button mat-button>
+                <button mat-button (click)="askForHint()">
                     <span> <mat-icon>image_search</mat-icon></span>
                 </button>
                 <p>{{ nbHints }}</p>
                 <span id="nb-hints">indices restants</span>
+                <p class="hint-text" [ngClass]="{'visible': showThirdHint}">Forme de l'indice:</p>
+                <canvas [ngClass]="{'use-canvas': showThirdHint}" #hintShapeCanvas></canvas>
             </div>
             <app-play-area [isDifferenceCanvas]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)"
                 #diffPlayArea></app-play-area>

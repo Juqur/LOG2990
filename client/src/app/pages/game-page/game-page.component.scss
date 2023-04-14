@@ -89,6 +89,7 @@ app-game-timer {
     padding-top: 10px;
     font-weight: bold;
     color: #3ab138;
+    text-align: center;
 }
 
 #between-images button {
@@ -103,6 +104,23 @@ app-game-timer {
 
 #between-images button:hover {
     border: 2px solid white;
+}
+
+#between-images canvas {
+    padding: 5px;
+}
+
+.hint-text {
+    visibility: hidden;
+    padding-top: 25px;
+}
+
+.hint-text.visible {
+    visibility: visible;
+}
+
+.use-canvas {
+    border: 3px solid #eaac8b;
 }
 
 .mat-icon {

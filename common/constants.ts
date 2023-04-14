@@ -57,6 +57,13 @@ export namespace Constants {
     // Canvas for game
     export const DEFAULT_WIDTH = 640;
     export const DEFAULT_HEIGHT = 480;
+    export const DEFAULT_WIDTH_SHAPE_CANVAS = 300;
+    export const DEFAULT_HEIGHT_SHAPE_CANVAS = 150;
+    export const TOP_LEFT_QUADRANT: number = 1;
+    export const TOP_RIGHT_QUADRANT: number = 2;
+    export const BOTTOM_LEFT_QUADRANT: number = 3;
+    export const BOTTOM_RIGHT_QUADRANT: number = 4;
+    export const SUBQUADRANT_DIVIDER: number = 4;
 
     // Radius values and Creation Component constants
     export const RADIUS_DEFAULT = 3;
