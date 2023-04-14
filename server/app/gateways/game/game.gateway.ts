@@ -31,7 +31,7 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnJoinNewGame)
     onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
         this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, false);
-        this.timerService.startTimer(socket, this.server, true);
+        this.timerService.startTimer({ socket }, this.server, true);
     }
 
     /**
@@ -48,7 +48,7 @@ export class GameGateway {
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);
         this.gameService.setLevelId(socket.id, level.id);
         socket.emit(GameEvents.ChangeLevelTimedMode, level);
-        this.timerService.startTimer(socket, this.server, false);
+        this.timerService.startTimer({ socket }, this.server, false);
     }
 
     /**
@@ -144,7 +144,7 @@ export class GameGateway {
             playerName: secondPlayerName,
             secondPlayerName: gameState.playerName,
         });
-        this.timerService.startTimer(socket, this.server, true, secondPlayerSocket.id);
+        this.timerService.startTimer({ socket, otherSocketId: secondPlayerSocket.id }, this.server, true);
         this.server.emit(GameEvents.UpdateSelection, { levelId: gameState.levelId, canJoin: false });
     }
 
