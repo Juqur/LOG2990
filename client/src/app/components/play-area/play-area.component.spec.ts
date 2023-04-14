@@ -73,6 +73,9 @@ describe('PlayAreaComponent', () => {
 
     it('flashArea should call fillRect', () => {
         const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+        spyOn(component, 'createTempCanvas').and.callFake(() => {
+            component['tempCanvas'] = document.createElement('canvas');
+        });
         const area = [0, 1, 2, 3];
         component.flashArea(area);
         expect(fillRectSpy).toHaveBeenCalledTimes(area.length);
@@ -80,16 +83,26 @@ describe('PlayAreaComponent', () => {
 
     it('flashArea should call deleteTempCanvas if tempCanvas is defined', () => {
         spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
-        component.createTempCanvas();
-        const deleteTempCanvasSpy = spyOn(component, 'deleteTempCanvas');
+        spyOn(component, 'createTempCanvas');
+        component['tempCanvas'] = document.createElement('canvas');
+        const deleteTempCanvasSpy = spyOn(component, 'deleteTempCanvas').and.callThrough();
         const area = [0, 1, 2, 3];
         component.flashArea(area);
         expect(deleteTempCanvasSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('createTempCanvas should create a new canvas with the right properties', () => {
+        component.createTempCanvas();
+        expect(component['tempCanvas']).toBeDefined();
+        expect(component['tempCanvas'].width).toEqual(component.canvas.nativeElement.width);
+        expect(component['tempCanvas'].height).toEqual(component.canvas.nativeElement.height);
+        expect(component['tempCanvas'].style.position).toEqual('absolute');
+        expect(component['tempCanvas'].style.pointerEvents).toEqual('none');
+    });
+
     it('deleteTempCanvas should delete tempCanvas if it is defined', () => {
         const removeSpy = spyOn(HTMLCanvasElement.prototype, 'remove');
-        component.createTempCanvas();
+        component['tempCanvas'] = document.createElement('canvas');
         component.deleteTempCanvas();
         expect(removeSpy).toHaveBeenCalledTimes(1);
     });
@@ -104,5 +117,25 @@ describe('PlayAreaComponent', () => {
         const spy = spyOn(component, 'drawPlayArea');
         component.ngOnChanges();
         expect(spy).toHaveBeenCalledTimes(1);
+    });
+    it('showHintSection should call rect', () => {
+        const rectSpy = spyOn(CanvasRenderingContext2D.prototype, 'rect');
+        spyOn(component, 'createTempCanvas').and.callFake(() => {
+            component['tempCanvas'] = document.createElement('canvas');
+        });
+        const quadrantsNumbers = { quadrant: 4, subQuadrant: 4 };
+        const quadrants = [quadrantsNumbers.quadrant, quadrantsNumbers.subQuadrant];
+        component.showHintSection(quadrants);
+        expect(rectSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('showHintSection should call deleteTempCanvas if tempCanvas is defined', () => {
+        spyOn(CanvasRenderingContext2D.prototype, 'rect');
+        spyOn(component, 'createTempCanvas');
+        component['tempCanvas'] = document.createElement('canvas');
+        const deleteTempCanvasSpy = spyOn(component, 'deleteTempCanvas');
+        const quadrants = [1];
+        component.showHintSection(quadrants);
+        expect(deleteTempCanvasSpy).toHaveBeenCalledTimes(1);
     });
 });

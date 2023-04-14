@@ -44,6 +44,8 @@ describe('GamePageComponent', () => {
             'preventJoining',
             'setMouseCanClick',
             'handleTimedModeFinished',
+            'handleHintRequest',
+            'handleHintShapeRequest',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
@@ -75,6 +77,9 @@ describe('GamePageComponent', () => {
 
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
+        const canvas = document.createElement('canvas');
+        const nativeElementMock = { nativeElement: canvas };
+        component['hintShapeCanvas'] = nativeElementMock;
         component['diffPlayArea'] = playAreaComponentSpy;
         component['originalPlayArea'] = playAreaComponentSpy;
     });
@@ -236,6 +241,51 @@ describe('GamePageComponent', () => {
             component.handleSocket();
             expect(gamePageServiceSpy.startCheatMode).toHaveBeenCalledTimes(1);
         });
+
+        it('should handle handleHintShapeRequest if server sends hintRequest on the first hint', () => {
+            component['nbHints'] = 2;
+            const data = [1];
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'hintRequest') {
+                    callback(data as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.handleHintRequest).toHaveBeenCalledWith(data);
+            expect(component['nbHints']).toEqual(1);
+        });
+
+        it('should handle handleHintShapeRequest if server sends hintRequest on the last hint', () => {
+            component['nbHints'] = 1;
+            const data: number[] = [];
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'hintRequest') {
+                    callback(data as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.handleHintShapeRequest).toHaveBeenCalledWith(data, component['hintShapeCanvas'].nativeElement);
+            expect(component['nbHints']).toEqual(0);
+        });
+    });
+
+    describe('askForHint', () => {
+        it('should set playArea and emit a socket event if in single player', () => {
+            component['secondPlayerName'] = '';
+            component.askForHint();
+            expect(gamePageServiceSpy.setPlayArea).toHaveBeenCalled();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onHintRequest');
+        });
+    });
+
+    describe('removeHintShape', () => {
+        it('should clear the hintShapeCanvas and set showThirdHint to false', () => {
+            component['showThirdHint'] = true;
+            const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
+            component.removeHintShape();
+            expect(clearRectSpy).toHaveBeenCalled();
+            expect(component['showThirdHint']).toBe(false);
+        });
         it('should handle the end of a timed game if server sends timedModeFinished request', () => {
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'timedModeFinished') {
@@ -261,12 +311,12 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.setMouseCanClick).toHaveBeenCalledWith(true);
             expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
         });
-    });
 
-    describe('abandonGame', () => {
-        it('should emit a socket event when abandoning the game', () => {
-            component.abandonGame();
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+        describe('abandonGame', () => {
+            it('should emit a socket event when abandoning the game', () => {
+                component.abandonGame();
+                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+            });
         });
     });
 
@@ -289,6 +339,16 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
         });
+
+        it('should call removeHintShape if showThirdHint is true', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component['showThirdHint'] = true;
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component.clickedOnOriginal(event);
+            expect(removeHintShapeSpy).toHaveBeenCalled();
+        });
     });
 
     describe('clickedOnDiff', () => {
@@ -309,6 +369,16 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
             expect(component['clickedOriginalImage']).toBe(false);
+        });
+
+        it('should call removeHintShape if showThirdHint is true', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component['showThirdHint'] = true;
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component.clickedOnDiff(event);
+            expect(removeHintShapeSpy).toHaveBeenCalled();
         });
     });
 
@@ -390,7 +460,7 @@ describe('GamePageComponent', () => {
         });
 
         it('should make appropriate calls to functions if we are in cheat mode', () => {
-            const key = new KeyboardEvent('keydown', { key: 't' });
+            const key = new KeyboardEvent('keydown', { key: 'T' });
             const target = { tagName: 'BODY' } as HTMLElement;
             spyOnProperty(key, 'target', 'get').and.returnValue(target);
 
@@ -400,12 +470,28 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.stopCheatMode).toHaveBeenCalledTimes(1);
         });
 
-        it('should not start cheat mode when a key other than "t" is pressed', () => {
+        it('should call askForHint if the right key is pressed', () => {
+            const hintSpy = spyOn(component, 'askForHint');
+            const keyLowerCase = new KeyboardEvent('keydown', { key: 'i' });
+            const keyUpperCase = new KeyboardEvent('keydown', { key: 'I' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(keyLowerCase, 'target', 'get').and.returnValue(target);
+            spyOnProperty(keyUpperCase, 'target', 'get').and.returnValue(target);
+
+            component.handleKeyDownEvent(keyLowerCase);
+            expect(hintSpy).toHaveBeenCalledTimes(1);
+            component.handleKeyDownEvent(keyUpperCase);
+            expect(hintSpy).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not start cheat mode or ask for hint when a key other than "t" is pressed', () => {
+            const hintSpy = spyOn(component, 'askForHint');
             const key = new KeyboardEvent('keydown', { key: 'a' });
             const target = { tagName: 'BODY' } as HTMLElement;
             spyOnProperty(key, 'target', 'get').and.returnValue(target);
 
             component.isInCheatMode = false;
+            expect(hintSpy).not.toHaveBeenCalled();
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
             expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
             expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();

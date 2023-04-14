@@ -41,7 +41,7 @@ export class TimerService {
             if (!isClassic && time === 0) {
                 this.stopTimer(socketId);
                 const levelId = this.gameService.getGameState(socketId).levelId;
-                this.gameService.removeLevel(levelId);
+                this.gameService.removeLevel(levelId, true);
                 this.gameService.deleteUserFromGame(sockets.socket);
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
                 clearInterval(interval);
@@ -104,5 +104,16 @@ export class TimerService {
             server.to(socketId).emit('sendTime', currentTime - time);
             this.timeMap.set(socketId, currentTime - time);
         }
+    }
+
+    /**
+     * Returns the current time of the timer of a player.
+     * If the player does not have a timer, it returns 0.
+     *
+     * @param socket The socket of the player.
+     * @returns The current time of the timer as a number.
+     */
+    getCurrentTime(socketId: string): number {
+        return this.timeMap.get(socketId) ?? 0;
     }
 }

@@ -233,7 +233,7 @@ export class GameGateway {
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(levelId);
+        this.gameService.removeLevel(levelId, false);
     }
 
     /**
@@ -280,6 +280,23 @@ export class GameGateway {
     }
 
     /**
+     * Method called when the player asks for a hint
+     *
+     * @param socket The socket of the player.
+     */
+    @SubscribeMessage(GameEvents.OnHintRequest)
+    async onHintRequest(socket: Socket): Promise<void> {
+        if (this.timerService.getCurrentTime(socket.id) > 0) {
+            const data = await this.gameService.askHint(socket.id);
+            if (data !== undefined) {
+                this.timerService.addTime(this.server, socket.id, Constants.HINT_PENALTY);
+                this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
+                socket.emit(GameEvents.HintRequest, data);
+            }
+        }
+    }
+
+    /**
      * This method is called when a player disconnects.
      * Handles unexpected disconnections such as page refreshes.
      *
@@ -300,7 +317,7 @@ export class GameGateway {
     private handlePlayerLeavingGame(socket: Socket): void {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
-            this.gameService.removeLevel(gameState.levelId);
+            this.gameService.removeLevel(gameState.levelId, true);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(socket, gameState);

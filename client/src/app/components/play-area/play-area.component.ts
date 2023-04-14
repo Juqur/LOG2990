@@ -157,4 +157,29 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
+
+    /**
+     * Fills a given area of the canvas in red.
+     *
+     * @param area the area to flash
+     */
+    showHintSection(section: number[]) {
+        const rectangleZone: number[] = [0, 0, 0, 0];
+        if (section[1] === Constants.TOP_RIGHT_QUADRANT || section[1] === Constants.BOTTOM_RIGHT_QUADRANT)
+            rectangleZone[0] = this.width / Constants.SUBQUADRANT_DIVIDER;
+        if (section[1] === Constants.BOTTOM_LEFT_QUADRANT || section[1] === Constants.BOTTOM_RIGHT_QUADRANT)
+            rectangleZone[1] = this.height / Constants.SUBQUADRANT_DIVIDER;
+        rectangleZone[2] = section[1] ? this.width / Constants.SUBQUADRANT_DIVIDER : this.width / 2;
+        rectangleZone[3] = section[1] ? this.height / Constants.SUBQUADRANT_DIVIDER : this.height / 2;
+        rectangleZone[0] += section[0] === Constants.TOP_RIGHT_QUADRANT || section[0] === Constants.BOTTOM_RIGHT_QUADRANT ? this.width / 2 : 0;
+        rectangleZone[1] += section[0] === Constants.BOTTOM_LEFT_QUADRANT || section[0] === Constants.BOTTOM_RIGHT_QUADRANT ? this.height / 2 : 0;
+        if (this.tempCanvas) this.deleteTempCanvas();
+        this.createTempCanvas();
+        const context = this.tempCanvas.getContext('2d') as CanvasRenderingContext2D;
+        context.strokeStyle = 'green';
+        context.lineWidth = 5;
+        context.beginPath();
+        context.rect(rectangleZone[0], rectangleZone[1], rectangleZone[2], rectangleZone[3]);
+        context.stroke();
+    }
 }
