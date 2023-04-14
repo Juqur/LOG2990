@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
-import { ChatMessage, SenderType } from '@common/chat-messages';
+import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
 
 import { MessageBoxComponent } from './message-box.component';
 
