@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GameEvents } from './game.gateway.events';
-import { Constants } from '@common/constants';
 
 /**
  * This gateway is used to handle to all socket events.
@@ -200,7 +199,7 @@ export class GameGateway {
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(levelId);
+        this.gameService.removeLevel(levelId, false);
     }
 
     /**
@@ -256,7 +255,7 @@ export class GameGateway {
         if (this.timerService.getCurrentTime(socket.id) > 0) {
             const data = await this.gameService.askHint(socket.id);
             if (data !== undefined) {
-                this.timerService.addTime(socket.id, Constants.HINT_PENALTY); // À CHANGER LORS DE L'IMPLEMENTATION DES CONSTANTES DE JEU!!!
+                this.timerService.addTime(this.server, socket.id, Constants.HINT_PENALTY);
                 this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
                 socket.emit(GameEvents.HintRequest, data);
             }
@@ -284,7 +283,7 @@ export class GameGateway {
     private handlePlayerLeavingGame(socket: Socket): void {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
-            this.gameService.removeLevel(gameState.levelId);
+            this.gameService.removeLevel(gameState.levelId, true);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(socket, gameState);
