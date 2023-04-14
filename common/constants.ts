@@ -1,7 +1,3 @@
-/**
- * @author Louis Félix St-Amour
- */
-
 export namespace Constants {
     // Global constants
     export const minusOne: number = -1;
