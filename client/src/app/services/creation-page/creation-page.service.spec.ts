@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient, HttpHandler } from '@angular/common/http';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSlider, MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LevelDifferences } from '@app/classes/difference';
+import { LevelDifferences } from '@app/interfaces/level-differences';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -244,20 +244,18 @@ describe('CreationPageService', () => {
     it('detectDifference should not call errorDialog if none of the canvases are null and call DifferenceService detectDifferences', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-
         const errorDialogSpy = spyOn<any>(service, 'errorDialog');
-
-        const mockLevelDifference = new LevelDifferences();
-        mockLevelDifference.clusters = [
-            [1, 1, 1],
-            [2, 2, 2],
-            [3, 3, 3],
-        ];
-        mockLevelDifference.isHard = false;
-        mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const mockLevelDifference = {
+            clusters: [
+                [1, 1, 1],
+                [2, 2, 2],
+                [3, 3, 3],
+            ],
+            isHard: false,
+            canvas: document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D,
+        };
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
-
         service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(errorDialogSpy).not.toHaveBeenCalled();
@@ -280,15 +278,15 @@ describe('CreationPageService', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         spyOn<any>(service, 'errorDialog');
-
-        const mockLevelDifference = new LevelDifferences();
-        mockLevelDifference.clusters = [
-            [1, 1, 1],
-            [2, 2, 2],
-            [3, 3, 3],
-        ];
-        mockLevelDifference.isHard = false;
-        mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const mockLevelDifference = {
+            clusters: [
+                [1, 1, 1],
+                [2, 2, 2],
+                [3, 3, 3],
+            ],
+            isHard: false,
+            canvas: document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D,
+        } as LevelDifferences;
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
@@ -303,10 +301,11 @@ describe('CreationPageService', () => {
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         spyOn(service, 'errorDialog' as never);
 
-        const mockLevelDifference = new LevelDifferences();
-        mockLevelDifference.clusters = [[1, 1, 1]];
-        mockLevelDifference.isHard = false;
-        mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const mockLevelDifference = {
+            clusters: [[1, 1, 1]],
+            isHard: false,
+            canvas: document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D,
+        } as LevelDifferences;
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
@@ -328,10 +327,11 @@ describe('CreationPageService', () => {
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         spyOn(service, 'errorDialog' as never);
 
-        const mockLevelDifference = new LevelDifferences();
-        mockLevelDifference.clusters = [[1]];
-        mockLevelDifference.isHard = false;
-        mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const mockLevelDifference = {
+            clusters: [[1]],
+            isHard: false,
+            canvas: document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D,
+        } as LevelDifferences;
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
@@ -342,11 +342,11 @@ describe('CreationPageService', () => {
 
     it('detectDifference should call openDialog if the game is saveable', () => {
         spyOn<any>(service, 'errorDialog');
-
-        const mockLevelDifference = new LevelDifferences();
-        mockLevelDifference.clusters = [[1], [1], [1], [1], [1], [1]];
-        mockLevelDifference.isHard = false;
-        mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const mockLevelDifference = {
+            clusters: [[1], [1], [1], [1], [1], [1]],
+            isHard: false,
+            canvas: document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D,
+        } as LevelDifferences;
 
         diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
