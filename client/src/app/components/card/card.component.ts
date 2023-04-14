@@ -4,7 +4,7 @@ import { Level } from '@app/interfaces/levels';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
-import { Dialogs } from '@common/dialogs';
+import { Dialogs } from '@app/interfaces/dialogs';
 import { environment } from 'src/environments/environment';
 
 /**
