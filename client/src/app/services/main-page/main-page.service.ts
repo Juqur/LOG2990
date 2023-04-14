@@ -40,7 +40,7 @@ export class MainPageService {
     /**
      * This method opens a dialog to aks for his name.
      */
-    chooseName() {
+    chooseName(): void {
         this.popUpService.openDialog(Dialogs.inputNameDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((playerName) => {
             if (playerName) {
@@ -52,7 +52,7 @@ export class MainPageService {
     /**
      * This method connects to the socket if it is not already connected.
      */
-    connectToSocket() {
+    connectToSocket(): void {
         if (!this.socketHandler.isSocketAlive('game')) {
             this.socketHandler.connect('game');
         }
@@ -66,7 +66,7 @@ export class MainPageService {
      *
      * @param playerName The name of the player.
      */
-    private chooseGameType(playerName: string) {
+    private chooseGameType(playerName: string): void {
         this.popUpService.openDialog(this.multiplayerDialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             this.socketHandler.send('game', 'onCreateTimedGame', { multiplayer: result, playerName });

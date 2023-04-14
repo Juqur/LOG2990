@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -69,18 +70,52 @@ describe('CreationPageComponent', () => {
             handleRedoSpy = spyOn(component, 'handleRedo');
         });
 
-        it('should call handleUndo when ctrl+z is pressed', () => {
+        it('should call handleUndo when ctrl + z is pressed', () => {
             const event = new KeyboardEvent('keydown', { ctrlKey: true, key: 'z' });
             component.onKeyPress(event);
             expect(handleUndoSpy).toHaveBeenCalledTimes(1);
             expect(handleRedoSpy).not.toHaveBeenCalled();
         });
 
-        it('should call handleRedo when ctrl+shift+z is pressed', () => {
+        it('should call handleRedo when ctrl + shift + z is pressed', () => {
             const event = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'z' });
             component.onKeyPress(event);
             expect(handleRedoSpy).toHaveBeenCalledTimes(1);
             expect(handleUndoSpy).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('mouseUp', () => {
+        let onCanvasReleaseDefaultSpy: jasmine.Spy;
+        let onCanvasReleaseDiffSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            onCanvasReleaseDefaultSpy = spyOn(component.defaultPaintArea, 'onCanvasRelease');
+            onCanvasReleaseDiffSpy = spyOn(component.diffPaintArea, 'onCanvasRelease');
+        });
+
+        it('should call onCanvasRelease for defaultPaintArea if it is being clicked', () => {
+            component.defaultPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(onCanvasReleaseDefaultSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call addToUndoRedoStack for defaultPaintArea if it is being clicked', () => {
+            component.defaultPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call onCanvasRelease for defaultPaintArea if it is being clicked', () => {
+            component.diffPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(onCanvasReleaseDiffSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call addToUndoRedoStack for defaultPaintArea if it is being clicked', () => {
+            component.diffPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -119,8 +154,8 @@ describe('CreationPageComponent', () => {
 
     describe('setBrushSize', () => {
         it('should call setBrushSize', () => {
-            const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             const matSlider = {} as unknown as MatSliderChange;
             component.setBrushSize(matSlider);
             expect(creationPageServiceSpy.brushSliderChange).toHaveBeenCalledWith(matSlider as unknown as MatSlider, defaultCtx, diffCtx);
@@ -130,8 +165,8 @@ describe('CreationPageComponent', () => {
     describe('setPaintBrushMode', () => {
         it('should call paintBrushMode', () => {
             setPaintBrushModeSpy.and.callThrough();
-            const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             component.setPaintBrushMode();
             expect(creationPageServiceSpy.paintBrushMode).toHaveBeenCalledWith(defaultCtx, diffCtx);
         });
@@ -139,8 +174,8 @@ describe('CreationPageComponent', () => {
 
     describe('setEraseBrushMode', () => {
         it('should call eraseBrushMode', () => {
-            const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             component.setEraseBrushMode();
             expect(creationPageServiceSpy.eraseBrushMode).toHaveBeenCalledWith(defaultCtx, diffCtx);
         });
@@ -148,8 +183,8 @@ describe('CreationPageComponent', () => {
 
     describe('findDifference', () => {
         it('should call detectDifference', () => {
-            const defaultCtx = component.defaultPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component.diffPaintArea.paintCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultCtx = component.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const diffCtx = component.diffPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             component.findDifference();
             expect(creationPageServiceSpy.detectDifference).toHaveBeenCalledWith(defaultCtx, diffCtx);
         });
@@ -255,9 +290,14 @@ describe('CreationPageComponent', () => {
 
         it('should call drawImage', () => {
             component.onSwapCanvas();
-            expect(drawImageSpy).toHaveBeenCalledWith(component.defaultPaintArea.paintCanvas, 0, 0);
-            expect(drawImageSpy).toHaveBeenCalledWith(component.diffPaintArea.paintCanvas, 0, 0);
-            expect(drawImageSpy).toHaveBeenCalledWith(component.defaultPaintArea.paintCanvas, 0, 0);
+            expect(drawImageSpy).toHaveBeenCalledWith(component.defaultPaintArea.canvas, 0, 0);
+            expect(drawImageSpy).toHaveBeenCalledWith(component.diffPaintArea.canvas, 0, 0);
+            expect(drawImageSpy).toHaveBeenCalledWith(component.defaultPaintArea.canvas, 0, 0);
+        });
+
+        it('should call addToUndoRedoStack', () => {
+            component.onSwapCanvas();
+            expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
         });
     });
 

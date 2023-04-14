@@ -22,14 +22,14 @@ export class MainPageComponent implements OnInit, OnDestroy {
     constructor(private mainPageService: MainPageService) {}
 
     /**
-     * Getter for the icon value
+     * Getter for the icon value.
      */
     get icon(): string {
         return this.iconValue;
     }
 
     /**
-     * Getter for the canShowCredits attribute
+     * Getter for the canShowCredits attribute.
      */
     get showCredits(): boolean {
         return this.canShowCredits;
@@ -56,6 +56,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     /**
      * Redirects to a specific page.
+     *
+     * @param path The path to redirect to.
      */
     navigateTo(path: string): void {
         this.mainPageService.navigateTo(path);
