@@ -95,10 +95,10 @@ export class DrawService {
      * @param previous The previous coordinate.
      * @param active The current coordinate.
      */
-    draw(previous: Vec2, active: Vec2 = { x: -1, y: -1 }): void {
+    draw(previous: Vec2, active: Vec2 = { x: Constants.DEFAULT_COORDINATE, y: Constants.DEFAULT_COORDINATE }): void {
         this.context.beginPath();
         this.context.moveTo(previous.x, previous.y);
-        if (active.x !== Constants.minusOne && active.y !== Constants.minusOne) {
+        if (active.x !== Constants.DEFAULT_COORDINATE && active.y !== Constants.DEFAULT_COORDINATE) {
             if (!this.isInCanvas) {
                 this.context.moveTo(active.x, active.y);
                 this.isInCanvas = true;

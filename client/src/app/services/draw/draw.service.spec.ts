@@ -57,28 +57,65 @@ describe('DrawService', () => {
         expect(service.context.globalCompositeOperation).toEqual('destination-out');
     });
 
-    it('draw should call the correct method when cursor in the canvas', () => {
-        const beginPathSpy = spyOn(service.context, 'beginPath');
-        const moveToSpy = spyOn(service.context, 'moveTo');
-        const lineToSpy = spyOn(service.context, 'lineTo');
-        const strokeSpy = spyOn(service.context, 'stroke');
-        service.draw({ x: 1, y: 1 } as Vec2, { x: 2, y: 2 } as Vec2);
-        expect(beginPathSpy).toHaveBeenCalledTimes(1);
-        expect(moveToSpy).toHaveBeenCalledTimes(1);
-        expect(lineToSpy).toHaveBeenCalledTimes(1);
-        expect(strokeSpy).toHaveBeenCalledTimes(1);
-    });
+    describe('draw', () => {
+        let beginPathSpy: jasmine.Spy;
+        let moveToSpy: jasmine.Spy;
+        let lineToSpy: jasmine.Spy;
+        let strokeSpy: jasmine.Spy;
 
-    it('draw should not call the correct method when cursor not in the canvas', () => {
-        const beginPathSpy = spyOn(service.context, 'beginPath');
-        const moveToSpy = spyOn(service.context, 'moveTo');
-        const lineToSpy = spyOn(service.context, 'lineTo');
-        const strokeSpy = spyOn(service.context, 'stroke');
-        service.draw({ x: 1, y: 1 } as Vec2);
-        expect(beginPathSpy).toHaveBeenCalledTimes(1);
-        expect(moveToSpy).toHaveBeenCalledTimes(1);
-        expect(lineToSpy).toHaveBeenCalledTimes(1);
-        expect(strokeSpy).toHaveBeenCalledTimes(1);
+        beforeEach(() => {
+            beginPathSpy = spyOn(service.context, 'beginPath');
+            moveToSpy = spyOn(service.context, 'moveTo');
+            lineToSpy = spyOn(service.context, 'lineTo');
+            strokeSpy = spyOn(service.context, 'stroke');
+            service.isInCanvas = true;
+        });
+
+        it('should call beginPath', () => {
+            service.draw({ x: 1, y: 1 } as Vec2);
+            expect(beginPathSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call moveTo', () => {
+            const expected = { x: 1, y: 1 } as Vec2;
+            service.draw(expected);
+            expect(moveToSpy).toHaveBeenCalledOnceWith(expected.x, expected.y);
+        });
+
+        it('should call lineTo if the active coordinates are default', () => {
+            const expected = { x: 1, y: 1 } as Vec2;
+            service.draw(expected);
+            expect(lineToSpy).toHaveBeenCalledOnceWith(expected.x + 1, expected.y);
+        });
+
+        it('should call stroke', () => {
+            const coordinates = { x: 1, y: 1 } as Vec2;
+            service.draw(coordinates);
+            expect(strokeSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call lineTo if the active coordinates are not default', () => {
+            const coordinates = { x: 1, y: 1 } as Vec2;
+            const expected = { x: 2, y: 2 } as Vec2;
+            service.draw(coordinates, expected);
+            expect(lineToSpy).toHaveBeenCalledWith(expected.x, expected.y);
+        });
+
+        it('should call moveTo if the active coordinates are not default', () => {
+            const coordinates = { x: 1, y: 1 } as Vec2;
+            const expected = { x: 2, y: 2 } as Vec2;
+            service.isInCanvas = false;
+            service.draw(coordinates, expected);
+            expect(moveToSpy).toHaveBeenCalledWith(expected.x, expected.y);
+        });
+
+        it('should call moveTo if the active coordinates are not default', () => {
+            const coordinates = { x: 1, y: 1 } as Vec2;
+            const expected = { x: 2, y: 2 } as Vec2;
+            service.isInCanvas = false;
+            service.draw(coordinates, expected);
+            expect(service.isInCanvas).toBeTrue();
+        });
     });
 
     it('drawRect should call the correct method', () => {
