@@ -147,9 +147,9 @@ describe('GamePageService', () => {
 
     describe('handleOpponentAbandon', () => {
         it('should call create', () => {
-            const audioSpy = spyOn(AudioService, 'quickPlay');
             service.handleOpponentAbandon();
-            expect(audioSpy).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.create).toHaveBeenCalledOnceWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.play).toHaveBeenCalledOnceWith();
         });
 
         it('should call openDialog', () => {
@@ -394,9 +394,9 @@ describe('GamePageService', () => {
             mustProcess: false,
         };
         it('should play the appropriate sound', () => {
-            const spy = spyOn(AudioService, 'quickPlay');
             service.handleTimedModeFinished(true);
-            expect(spy).toHaveBeenCalledOnceWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.create).toHaveBeenCalledOnceWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.play).toHaveBeenCalledOnceWith();
         });
         it('should open specific dialog if finishedWithLastLevel is true', () => {
             timedGameFinishedDialogData.textToSend = 'La partie est terminée! Vous avez terminé le dernier niveau du mode à temps limité.';
