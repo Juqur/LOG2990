@@ -103,7 +103,6 @@ export class ImageService {
     async writeLevelData(newLevel: unknown): Promise<Message> {
         try {
             const newId = (await this.mongodbService.getLastLevelId()) + 1;
-            console.log('newId: ' + newId);
             const levelData = newLevel as LevelData;
             await this.mongodbService.createNewLevel({
                 id: newId,

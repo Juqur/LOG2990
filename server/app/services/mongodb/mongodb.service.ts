@@ -82,7 +82,7 @@ export class MongodbService {
     async getLastLevelId(): Promise<number> {
         try {
             // Verifies that there is at least one level in the database.
-            const test = await this.levelModel.findOneAndDelete({});
+            const test = await this.levelModel.findOne({});
             if (test) {
                 return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
             } else {
