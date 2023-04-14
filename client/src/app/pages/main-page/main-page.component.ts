@@ -56,6 +56,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     /**
      * Redirects to a specific page.
+     *
+     * @param path the path to redirect to.
      */
     navigateTo(path: string): void {
         this.mainPageService.navigateTo(path);
