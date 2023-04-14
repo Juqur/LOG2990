@@ -8,6 +8,13 @@ describe('DrawService', () => {
     let service: DrawService;
     let ctxStub: CanvasRenderingContext2D;
 
+    let beginPathSpy: jasmine.Spy;
+    let moveToSpy: jasmine.Spy;
+    let lineToSpy: jasmine.Spy;
+    let strokeSpy: jasmine.Spy;
+    let rectSpy: jasmine.Spy;
+    let fillSpy: jasmine.Spy;
+
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(DrawService);
@@ -15,59 +22,78 @@ describe('DrawService', () => {
             willReadFrequently: true,
         }) as CanvasRenderingContext2D;
         service.context = ctxStub;
+
+        beginPathSpy = spyOn(service.context, 'beginPath');
+        moveToSpy = spyOn(service.context, 'moveTo');
+        lineToSpy = spyOn(service.context, 'lineTo');
+        strokeSpy = spyOn(service.context, 'stroke');
+        rectSpy = spyOn(service.context, 'rect');
+        fillSpy = spyOn(service.context, 'fill');
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('width should return the width of the grid canvas', () => {
-        expect(service.width).toEqual(Constants.DEFAULT_WIDTH);
+    describe('getters', () => {
+        it('width should return the width of the grid canvas', () => {
+            expect(service.width).toEqual(Constants.DEFAULT_WIDTH);
+        });
+
+        it('height should return the height of the grid canvas', () => {
+            expect(service.height).toEqual(Constants.DEFAULT_HEIGHT);
+        });
     });
 
-    it('height should return the height of the grid canvas', () => {
-        expect(service.height).toEqual(Constants.DEFAULT_HEIGHT);
+    describe('setters', () => {
+        it('contextToUse should set the appropriate context', () => {
+            service.contextToUse = ctxStub;
+            expect(service.context).toEqual(ctxStub);
+        });
     });
 
-    it('drawError should have red text', () => {
-        service.drawError({ x: 1, y: 1 } as Vec2);
-        expect(service.context.fillStyle.toString()).toEqual('#ff0000');
+    describe('setPaintColor', () => {
+        it('should set the color of the context', () => {
+            service.setPaintColor('#000000');
+            expect(service['paintColor']).toEqual('#000000');
+            expect(service.context.strokeStyle).toEqual('#000000');
+            expect(service.context.fillStyle).toEqual('#000000');
+        });
     });
 
-    it('setPaintColor should set the color of the context', () => {
-        service.setPaintColor('#000000');
-        expect(service.context.strokeStyle).toEqual('#000000');
-        expect(service.context.fillStyle).toEqual('#000000');
+    describe('setBrushSize', () => {
+        it('should set the brush size of the context', () => {
+            const expected = 10;
+            service.setBrushSize(expected);
+            expect(service.context.lineWidth).toEqual(expected);
+        });
     });
 
-    it('setBrushSize should set the brush size of the context', () => {
-        service.setBrushSize(Constants.ten);
-        expect(service.context.lineWidth).toEqual(Constants.ten);
+    describe('paintBrush', () => {
+        it('should set the attributes of the brush', () => {
+            service.paintBrush();
+            expect(service.context.lineCap).toEqual('round');
+            expect(service.context.globalCompositeOperation).toEqual('source-over');
+        });
     });
 
-    it('paintBrush should set attributes for a brush', () => {
-        service.paintBrush();
-        expect(service.context.lineCap).toEqual('round');
-        expect(service.context.globalCompositeOperation).toEqual('source-over');
+    describe('eraseBrush', () => {
+        it('should set attributes for an eraser', () => {
+            service.eraseBrush();
+            expect(service.context.lineCap).toEqual('square');
+            expect(service.context.globalCompositeOperation).toEqual('destination-out');
+        });
     });
 
-    it('eraseBrush should set attributes for an eraser', () => {
-        service.eraseBrush();
-        expect(service.context.lineCap).toEqual('square');
-        expect(service.context.globalCompositeOperation).toEqual('destination-out');
+    describe('drawError', () => {
+        it('should have red text', () => {
+            service.drawError({ x: 1, y: 1 } as Vec2);
+            expect(service.context.fillStyle.toString()).toEqual('#ff0000');
+        });
     });
 
     describe('draw', () => {
-        let beginPathSpy: jasmine.Spy;
-        let moveToSpy: jasmine.Spy;
-        let lineToSpy: jasmine.Spy;
-        let strokeSpy: jasmine.Spy;
-
         beforeEach(() => {
-            beginPathSpy = spyOn(service.context, 'beginPath');
-            moveToSpy = spyOn(service.context, 'moveTo');
-            lineToSpy = spyOn(service.context, 'lineTo');
-            strokeSpy = spyOn(service.context, 'stroke');
             service.isInCanvas = true;
         });
 
@@ -118,23 +144,26 @@ describe('DrawService', () => {
         });
     });
 
-    it('drawRect should call the correct method', () => {
-        const beginPathSpy = spyOn(service.context, 'beginPath');
-        const rectSpy = spyOn(service.context, 'rect');
-        const fillSpy = spyOn(service.context, 'fill');
-        const strokeSpy = spyOn(service.context, 'stroke');
-        service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
-        expect(beginPathSpy).toHaveBeenCalledTimes(1);
-        expect(rectSpy).toHaveBeenCalledTimes(1);
-        expect(fillSpy).toHaveBeenCalledTimes(1);
-        expect(strokeSpy).toHaveBeenCalledTimes(1);
-    });
+    describe('drawRect', () => {
+        it('should call beginPath', () => {
+            service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
+            expect(beginPathSpy).toHaveBeenCalledTimes(1);
+        });
 
-    it('contextToUse should set the context to the correct value', () => {
-        const context = CanvasTestHelper.createCanvas(Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT).getContext('2d', {
-            willReadFrequently: true,
-        }) as CanvasRenderingContext2D;
-        service.contextToUse = context;
-        expect(service.context).toEqual(context);
+        it('should call rect', () => {
+            const expected = { x: 1, y: 1 } as Vec2;
+            service.drawRect(expected, 1, 1);
+            expect(rectSpy).toHaveBeenCalledOnceWith(expected.x, expected.y, 1, 1);
+        });
+
+        it('should call fill', () => {
+            service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
+            expect(fillSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call stroke', () => {
+            service.drawRect({ x: 1, y: 1 } as Vec2, 1, 1);
+            expect(strokeSpy).toHaveBeenCalledTimes(1);
+        });
     });
 });
