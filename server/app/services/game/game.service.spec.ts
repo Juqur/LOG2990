@@ -390,15 +390,22 @@ describe('GameService', () => {
         it('should add the level to deletion queue if it is not being played', () => {
             jest.spyOn(service, 'verifyIfLevelIsBeingPlayed' as never).mockReturnValue(true as never);
             const addLevelSpy = jest.spyOn(service, 'addLevelToDeletionQueue').mockImplementation();
-            service.removeLevel(1);
+            service.removeLevel(1, false);
             expect(addLevelSpy).toBeCalledWith(1);
+        });
+
+        it('should not add the level to deletion queue if a game eneded', () => {
+            jest.spyOn(service, 'verifyIfLevelIsBeingPlayed' as never).mockReturnValue(true as never);
+            const addLevelSpy = jest.spyOn(service, 'addLevelToDeletionQueue').mockImplementation();
+            service.removeLevel(1, true);
+            expect(addLevelSpy).not.toBeCalled();
         });
 
         it('should remove the level from deletion queue if the level is to be deleted', () => {
             jest.spyOn(service, 'verifyIfLevelIsBeingPlayed' as never).mockReturnValue(false as never);
             jest.spyOn(imageService, 'deleteLevelData').mockImplementation();
             service['levelDeletionQueue'] = [1, 2];
-            service.removeLevel(1);
+            service.removeLevel(1, false);
             expect(service['levelDeletionQueue']).toEqual([2]);
         });
 
@@ -406,7 +413,7 @@ describe('GameService', () => {
             jest.spyOn(service, 'verifyIfLevelIsBeingPlayed' as never).mockReturnValue(false as never);
             const deleteSpy = jest.spyOn(imageService, 'deleteLevelData').mockImplementation();
             service['levelDeletionQueue'] = [1, 2];
-            service.removeLevel(1);
+            service.removeLevel(1, false);
             expect(deleteSpy).toBeCalledWith(1);
         });
     });
