@@ -33,7 +33,6 @@ describe('CreationPageService', () => {
     beforeEach(() => {
         diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
-        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog', 'dialogRef']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
         dialogRefSpy.afterClosed.and.returnValue(of({ hasAccepted: true }));
