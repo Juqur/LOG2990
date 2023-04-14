@@ -24,7 +24,8 @@ export namespace Constants {
     // Page display
     export const levelsPerPage: number = 4;
 
-    // Caroussel
+    // Draw Service
+    export const DEFAULT_COORDINATE = -1;
 
     // Level mock values
     export const timeSolo: number[] = [60, 65, 70];

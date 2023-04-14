@@ -16,7 +16,7 @@ import { Constants } from '@common/constants';
     providers: [DrawService],
 })
 export class PlayAreaComponent implements AfterViewInit {
-    @Input() isDiff: boolean;
+    @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
@@ -70,13 +70,13 @@ export class PlayAreaComponent implements AfterViewInit {
      * It is also used to reload the image and erase any text or modifications we may
      * have added to it.
      *
-     * @param image the image source
+     * @param image The image source.
      */
     drawPlayArea(image: string): void {
         if (this.canvas) {
-            this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
+            this.canvas.nativeElement.id = this.isDifferenceCanvas ? 'diffCanvas' : 'defaultCanvas';
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            if (!this.isDiff) {
+            if (!this.isDifferenceCanvas) {
                 // Default canvas (left canvas)
                 this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -99,7 +99,7 @@ export class PlayAreaComponent implements AfterViewInit {
     /**
      * Fills a given area of the canvas in red.
      *
-     * @param area the area to flash
+     * @param area The area to flash.
      */
     flashArea(area: number[]): void {
         let x = 0;
@@ -143,8 +143,8 @@ export class PlayAreaComponent implements AfterViewInit {
     /**
      * This function creates a new timeout with a given time in milliseconds as a parameter.
      *
-     * @param ms a number of milliseconds
-     * @return promise that resolves after ms milliseconds
+     * @param ms The amount of milliseconds.
+     * @return A promise that resolves after ms milliseconds.
      */
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
