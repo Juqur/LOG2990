@@ -261,9 +261,9 @@ describe('GameGateway', () => {
         });
 
         it('should start the timer', () => {
-            const startTimerSpy = jest.spyOn(timerService, 'startTimer');
+            const startTimerSpy = jest.spyOn(timerService, 'startTimer').mockImplementation();
             gateway.onGameAccepted(socket);
-            expect(startTimerSpy).toBeCalledWith(socket, server, true, otherSocket.id);
+            expect(startTimerSpy).toBeCalledWith({ socket, otherSockerId: otherSocket.id }, server, true);
         });
 
         it('should update the selection page', () => {
@@ -279,7 +279,7 @@ describe('GameGateway', () => {
         });
 
         it('should delete the user from the game map', () => {
-            const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
             gateway.onCancelledWhileWaiting(socket);
             expect(deleteUserFromGameSpy).toBeCalledWith(socket);
         });
@@ -292,7 +292,7 @@ describe('GameGateway', () => {
         });
 
         it('should delete the user and the opponent from the game map', () => {
-            const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
             gateway.onGameRejected(socket);
             expect(deleteUserFromGameSpy).toBeCalledWith(otherSocket);
         });
@@ -321,7 +321,7 @@ describe('GameGateway', () => {
 
         it('should call removeLevel function', () => {
             const levelId = 1;
-            const spy = jest.spyOn(gameService, 'removeLevel');
+            const spy = jest.spyOn(gameService, 'removeLevel').mockImplementation();
             jest.spyOn(gameService, 'getPlayersWaitingForGame').mockReturnValue([]);
             gateway.onDeleteLevel(socket, levelId);
             expect(spy).toBeCalledWith(levelId);
