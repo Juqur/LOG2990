@@ -10,19 +10,15 @@ describe('MainPageService', () => {
     let service: MainPageService;
     let socketHandlerSpy: jasmine.SpyObj<SocketHandler>;
     let routerSpy: jasmine.SpyObj<Router>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let popUpServiceSpy: any;
+    let popUpServiceSpy: jasmine.SpyObj<PopUpService>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<unknown>>;
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
-        dialogRefSpy.afterClosed.and.returnValue(of(true));
-        popUpServiceSpy = {
-            openDialog: jasmine.createSpy('openDialog').and.returnValue(of(undefined)),
-            dialogRef: dialogRefSpy,
-        };
+        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
+        dialogRefSpy.afterClosed.and.returnValue(of({ hasAccepted: true }));
         TestBed.configureTestingModule({
             providers: [
                 { provide: SocketHandler, useValue: socketHandlerSpy },
@@ -46,9 +42,22 @@ describe('MainPageService', () => {
     });
 
     describe('chooseName', () => {
+        let chooseGameTypeSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            chooseGameTypeSpy = spyOn(service, 'chooseGameType' as never);
+        });
+
         it('should open a pop up', () => {
             service.chooseName();
             expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+        });
+
+        it('should call chooseGameType if the player entered a name', () => {
+            const expected = 'name';
+            dialogRefSpy.afterClosed.and.returnValue(of(expected));
+            service.chooseName();
+            expect(chooseGameTypeSpy).toHaveBeenCalledWith(expected);
         });
     });
 
@@ -69,14 +78,16 @@ describe('MainPageService', () => {
     describe('chooseGameType', () => {
         it('should open a pop up', () => {
             service['chooseGameType']('test');
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
         });
+
         it('should emit a socket event to the sever with false if the player does not want to play with another player', () => {
             const name = 'test';
             dialogRefSpy.afterClosed.and.returnValue(of(false));
             service['chooseGameType'](name);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onCreateTimedGame', { multiplayer: false, playerName: name });
         });
+
         it('should emit a socket event to the sever with true if the player wants to play with another player', () => {
             const name = 'test';
             dialogRefSpy.afterClosed.and.returnValue(of(true));
