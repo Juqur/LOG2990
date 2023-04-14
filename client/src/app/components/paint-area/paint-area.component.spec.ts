@@ -45,19 +45,17 @@ describe('PaintAreaComponent', () => {
 
     describe('getter', () => {
         it('width should return the canvas width.', () => {
-            const expected = 100;
-            component['canvasSize'].x = expected;
+            const expected = 640;
             expect(component.width).toEqual(expected);
         });
 
         it('height should return the canvas height.', () => {
-            const expected = 100;
-            component['canvasSize'].y = expected;
+            const expected = 480;
             expect(component.height).toEqual(expected);
         });
 
         it('canvas should return the foreground canvas.', () => {
-            const expected = component.foregroundCanvas.nativeElement;
+            const expected = component['foregroundCanvas'].nativeElement;
             expect(component.canvas).toEqual(expected);
         });
     });
@@ -96,13 +94,13 @@ describe('PaintAreaComponent', () => {
         it('should set foregroundCanvas id to diffDrawCanvas', () => {
             component.isDifferenceCanvas = true;
             component.ngAfterViewInit();
-            expect(component.foregroundCanvas.nativeElement.id).toEqual('diffDrawCanvas');
+            expect(component['foregroundCanvas'].nativeElement.id).toEqual('diffDrawCanvas');
         });
 
         it('should set defaultDrawCanvas id to diffDrawCanvas', () => {
             component.isDifferenceCanvas = false;
             component.ngAfterViewInit();
-            expect(component.foregroundCanvas.nativeElement.id).toEqual('defaultDrawCanvas');
+            expect(component['foregroundCanvas'].nativeElement.id).toEqual('defaultDrawCanvas');
         });
     });
 
@@ -221,7 +219,7 @@ describe('PaintAreaComponent', () => {
             const expected = 'diffImgCanvas';
             component.isDifferenceCanvas = true;
             component.loadBackground('');
-            expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
+            expect(component['backgroundCanvas'].nativeElement.id).toEqual(expected);
             expect(setSpy).toHaveBeenCalledTimes(1);
         });
 
@@ -230,7 +228,7 @@ describe('PaintAreaComponent', () => {
             const expected = 'defaultImgCanvas';
             component.isDifferenceCanvas = false;
             component.loadBackground('');
-            expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
+            expect(component['backgroundCanvas'].nativeElement.id).toEqual(expected);
             expect(setSpy).toHaveBeenCalledTimes(1);
         });
 
@@ -285,8 +283,8 @@ describe('PaintAreaComponent', () => {
             expect(component['tempCanvas']).toBeInstanceOf(HTMLCanvasElement);
             expect(component['tempCanvas'].className).toEqual('draw');
             expect(component['tempCanvas'].style.position).toEqual('absolute');
-            expect(component['tempCanvas'].style.top).toEqual(component.foregroundCanvas.nativeElement.offsetTop + 'px');
-            expect(component['tempCanvas'].style.left).toEqual(component.foregroundCanvas.nativeElement.offsetLeft + 'px');
+            expect(component['tempCanvas'].style.top).toEqual(component['foregroundCanvas'].nativeElement.offsetTop + 'px');
+            expect(component['tempCanvas'].style.left).toEqual(component['foregroundCanvas'].nativeElement.offsetLeft + 'px');
             expect(component['tempCanvas'].width).toEqual(component.width);
             expect(component['tempCanvas'].height).toEqual(component.height);
         });

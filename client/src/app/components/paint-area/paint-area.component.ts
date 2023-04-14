@@ -20,15 +20,14 @@ import { Constants } from '@common/constants';
 export class PaintAreaComponent implements AfterViewInit {
     @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
-    @ViewChild('foregroundCanvas', { static: false }) foregroundCanvas!: ElementRef<HTMLCanvasElement>;
-    @ViewChild('backgroundCanvas', { static: false }) backgroundCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('foregroundCanvas', { static: false }) private foregroundCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('backgroundCanvas', { static: false }) private backgroundCanvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
     isClicked = false;
 
     private isShiftPressed = false;
     private lastMousePosition: Vec2 = { x: -1, y: -1 };
     private tempCanvas: HTMLCanvasElement;
-    private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
 
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService, private mouseService: MouseService) {}
 
@@ -36,14 +35,14 @@ export class PaintAreaComponent implements AfterViewInit {
      * Getter for the canvas width.
      */
     get width(): number {
-        return this.canvasSize.x;
+        return Constants.DEFAULT_WIDTH;
     }
 
     /**
      * Getter for the canvas height.
      */
     get height(): number {
-        return this.canvasSize.y;
+        return Constants.DEFAULT_HEIGHT;
     }
 
     /**
