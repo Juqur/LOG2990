@@ -117,6 +117,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
+            console.log(gameData);
             if (gameData.amountOfDifferencesFoundSecondPlayer !== undefined) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             } else {
@@ -196,11 +197,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
-        if (this.route.snapshot.params.id === '0') {
+        if (this.route.snapshot.queryParams.gameMode === 'timed') {
             this.isClassic = false;
+        }
+        if (this.route.snapshot.params.id === '0') {
             return;
         }
-
         this.settingGameLevel();
         this.settingGameImage();
     }
