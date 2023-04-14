@@ -53,7 +53,7 @@ export class MongodbService {
      * There is a possibility we have no elements in the database and so this query
      * can return null.
      *
-     * @returns Returns all the levels in the db.
+     * @returns All the levels in the db.
      */
     async getAllLevels(): Promise<LevelDto[] | null> {
         return (await this.levelModel.find({}).exec()) as LevelDto[] | null;
@@ -86,7 +86,7 @@ export class MongodbService {
      * This method returns the solo highscores times of the specified level.
      *
      * @param id The id of the level.
-     * @returns level.timesolo The solo highscores times of the specified level.
+     * @returns The solo highscores times of the specified level.
      */
     async getTimeSoloArray(levelId: number): Promise<number[] | null> {
         return (await this.levelModel.findOne({ id: levelId }).exec()).timeSolo as number[] | null;

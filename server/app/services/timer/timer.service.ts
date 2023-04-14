@@ -8,7 +8,7 @@ export class TimerService {
     private timeIntervalMap = new Map<string, NodeJS.Timeout>();
 
     /**
-     * Gets game time
+     * Gets the game time
      */
     getTime(socketId): number {
         return this.timeMap.get(socketId);
