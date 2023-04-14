@@ -311,192 +311,191 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.setMouseCanClick).toHaveBeenCalledWith(true);
             expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
         });
+
+        describe('abandonGame', () => {
+            it('should emit a socket event when abandoning the game', () => {
+                component.abandonGame();
+                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+            });
+        });
     });
 
-        describe('abandonGame', () => {
-            it('should emit a socket event when abandoning the game', () => {
-                component.abandonGame();
-                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
-            });
+    describe('clickedOnOriginal', () => {
+        it('should send mouse position to the server if you click on the original picture', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component.clickedOnOriginal(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
+            expect(component['clickedOriginalImage']).toBe(true);
         });
 
-        describe('clickedOnOriginal', () => {
-            it('should send mouse position to the server if you click on the original picture', () => {
-                const event: MouseEvent = new MouseEvent('click');
-                const mousePositionReturnValue = 1;
-                gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-                component.clickedOnOriginal(event);
-                expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
-                expect(component['clickedOriginalImage']).toBe(true);
-            });
-
-            it('should not send if the mouse position is undefined if clicked on the original image', () => {
-                const invalid = -1;
-                const event: MouseEvent = new MouseEvent('click');
-                gamePageServiceSpy.verifyClick.and.returnValue(invalid);
-                component.clickedOnOriginal(event);
-                expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-                expect(socketHandlerSpy.send).not.toHaveBeenCalled();
-            });
-
-            it('should call removeHintShape if showThirdHint is true', () => {
-                const event: MouseEvent = new MouseEvent('click');
-                const mousePositionReturnValue = 1;
-                gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-                component['showThirdHint'] = true;
-                const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-                component.clickedOnOriginal(event);
-                expect(removeHintShapeSpy).toHaveBeenCalled();
-            });
+        it('should not send if the mouse position is undefined if clicked on the original image', () => {
+            const invalid = -1;
+            const event: MouseEvent = new MouseEvent('click');
+            gamePageServiceSpy.verifyClick.and.returnValue(invalid);
+            component.clickedOnOriginal(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
         });
 
-        describe('clickedOnDiff', () => {
-            it('should not send if the mouse position is undefined if clicked on the difference image', () => {
-                const invalid = -1;
-                const event: MouseEvent = new MouseEvent('click');
-                gamePageServiceSpy.verifyClick.and.returnValue(invalid);
-                component.clickedOnDiff(event);
-                expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-                expect(socketHandlerSpy.send).not.toHaveBeenCalled();
-            });
+        it('should call removeHintShape if showThirdHint is true', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component['showThirdHint'] = true;
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component.clickedOnOriginal(event);
+            expect(removeHintShapeSpy).toHaveBeenCalled();
+        });
+    });
 
-            it('should send mouse position to the server if you click on the difference picture', () => {
-                const event: MouseEvent = new MouseEvent('click');
-                const mousePositionReturnValue = 1;
-                gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-                component.clickedOnDiff(event);
-                expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
-                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
-                expect(component['clickedOriginalImage']).toBe(false);
-            });
-
-            it('should call removeHintShape if showThirdHint is true', () => {
-                const event: MouseEvent = new MouseEvent('click');
-                const mousePositionReturnValue = 1;
-                gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-                component['showThirdHint'] = true;
-                const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-                component.clickedOnDiff(event);
-                expect(removeHintShapeSpy).toHaveBeenCalled();
-            });
+    describe('clickedOnDiff', () => {
+        it('should not send if the mouse position is undefined if clicked on the difference image', () => {
+            const invalid = -1;
+            const event: MouseEvent = new MouseEvent('click');
+            gamePageServiceSpy.verifyClick.and.returnValue(invalid);
+            component.clickedOnDiff(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
         });
 
-        describe('settingGameParameters', () => {
-            it('should set levelId, playerName and secondPlayerName from route', () => {
-                spyOn(component, 'settingGameLevel' as never);
-                spyOn(component, 'settingGameImage' as never);
-                component['settingGameParameters']();
-                expect(component['levelId']).toBe(1);
-                expect(component.playerName).toBe('Alice');
-                expect(component.secondPlayerName).toBe('Bob');
-            });
-
-            it('should call settingGameImage and settingGameLevel when getting the game level', () => {
-                const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
-                const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
-                component['settingGameParameters']();
-                expect(settingGameLevelSpy).toHaveBeenCalledTimes(1);
-                expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
-            });
-
-            it('should not set level and image if levelId is 0', () => {
-                activatedRoute.snapshot.params = { id: '0' };
-                const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
-                const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
-                component['settingGameParameters']();
-                expect(component['isClassic']).toEqual(false);
-                expect(settingGameLevelSpy).not.toHaveBeenCalledTimes(1);
-                expect(settingGameImageSpy).not.toHaveBeenCalledTimes(1);
-            });
+        it('should send mouse position to the server if you click on the difference picture', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component.clickedOnDiff(event);
+            expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
+            expect(component['clickedOriginalImage']).toBe(false);
         });
 
-        describe('settingGameLevel', () => {
-            it('should set the levelId from the route', fakeAsync(() => {
-                const level = { value: { nbDifferences: 1 } } as unknown as Level;
-                spyOn(component['communicationService'], 'getLevel').and.returnValue(of(level));
+        it('should call removeHintShape if showThirdHint is true', () => {
+            const event: MouseEvent = new MouseEvent('click');
+            const mousePositionReturnValue = 1;
+            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+            component['showThirdHint'] = true;
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component.clickedOnDiff(event);
+            expect(removeHintShapeSpy).toHaveBeenCalled();
+        });
+    });
+
+    describe('settingGameParameters', () => {
+        it('should set levelId, playerName and secondPlayerName from route', () => {
+            spyOn(component, 'settingGameLevel' as never);
+            spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
+            expect(component['levelId']).toBe(1);
+            expect(component.playerName).toBe('Alice');
+            expect(component.secondPlayerName).toBe('Bob');
+        });
+
+        it('should call settingGameImage and settingGameLevel when getting the game level', () => {
+            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
+            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
+            expect(settingGameLevelSpy).toHaveBeenCalledTimes(1);
+            expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not set level and image if levelId is 0', () => {
+            activatedRoute.snapshot.params = { id: '0' };
+            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
+            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
+            expect(component['isClassic']).toEqual(false);
+            expect(settingGameLevelSpy).not.toHaveBeenCalledTimes(1);
+            expect(settingGameImageSpy).not.toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('settingGameLevel', () => {
+        it('should set the levelId from the route', fakeAsync(() => {
+            const level = { value: { nbDifferences: 1 } } as unknown as Level;
+            spyOn(component['communicationService'], 'getLevel').and.returnValue(of(level));
+            component['settingGameLevel']();
+            expect(component['currentLevel']).toEqual(level);
+        }));
+
+        it('should throw an error if the level is not found', fakeAsync(() => {
+            spyOn(component['communicationService'], 'getLevel').and.returnValue(undefined as never);
+            try {
                 component['settingGameLevel']();
-                expect(component['currentLevel']).toEqual(level);
-            }));
+            } catch (error) {
+                expect(error).toBeDefined();
+            }
+        }));
+    });
 
-            it('should throw an error if the level is not found', fakeAsync(() => {
-                spyOn(component['communicationService'], 'getLevel').and.returnValue(undefined as never);
-                try {
-                    component['settingGameLevel']();
-                } catch (error) {
-                    expect(error).toBeDefined();
-                }
-            }));
+    describe('settingGameImage', () => {
+        it('should set the url properly for both images', () => {
+            component['levelId'] = 1;
+            component['settingGameImage']();
+            expect(component['originalImageSrc']).toBe('http://localhost:3000/original/1.bmp');
+            expect(component['diffImageSrc']).toBe('http://localhost:3000/modified/1.bmp');
+        });
+    });
+
+    describe('abandonGame', () => {
+        it('should emit a socket event when abandoning the game', () => {
+            component.abandonGame();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+        });
+    });
+
+    describe('handleKeyDownEvent', () => {
+        it('should make appropriate calls to functions if we are not in cheat mode', () => {
+            const key = new KeyboardEvent('keydown', { key: 't' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(key, 'target', 'get').and.returnValue(target);
+
+            component.isInCheatMode = false;
+            component.handleKeyDownEvent(key);
+            expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStartCheatMode');
+            expect(gamePageServiceSpy.setPlayArea).toHaveBeenCalledTimes(1);
+            expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
+            expect(component.isInCheatMode).toBeTrue();
         });
 
-        describe('settingGameImage', () => {
-            it('should set the url properly for both images', () => {
-                component['levelId'] = 1;
-                component['settingGameImage']();
-                expect(component['originalImageSrc']).toBe('http://localhost:3000/original/1.bmp');
-                expect(component['diffImageSrc']).toBe('http://localhost:3000/modified/1.bmp');
-            });
+        it('should make appropriate calls to functions if we are in cheat mode', () => {
+            const key = new KeyboardEvent('keydown', { key: 'T' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(key, 'target', 'get').and.returnValue(target);
+
+            component.isInCheatMode = true;
+            component.handleKeyDownEvent(key);
+            expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStopCheatMode');
+            expect(gamePageServiceSpy.stopCheatMode).toHaveBeenCalledTimes(1);
         });
 
-        describe('abandonGame', () => {
-            it('should emit a socket event when abandoning the game', () => {
-                component.abandonGame();
-                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
-            });
+        it('should call askForHint if the right key is pressed', () => {
+            const hintSpy = spyOn(component, 'askForHint');
+            const keyLowerCase = new KeyboardEvent('keydown', { key: 'i' });
+            const keyUpperCase = new KeyboardEvent('keydown', { key: 'I' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(keyLowerCase, 'target', 'get').and.returnValue(target);
+            spyOnProperty(keyUpperCase, 'target', 'get').and.returnValue(target);
+
+            component.handleKeyDownEvent(keyLowerCase);
+            expect(hintSpy).toHaveBeenCalledTimes(1);
+            component.handleKeyDownEvent(keyUpperCase);
+            expect(hintSpy).toHaveBeenCalledTimes(2);
         });
 
-        describe('handleKeyDownEvent', () => {
-            it('should make appropriate calls to functions if we are not in cheat mode', () => {
-                const key = new KeyboardEvent('keydown', { key: 't' });
-                const target = { tagName: 'BODY' } as HTMLElement;
-                spyOnProperty(key, 'target', 'get').and.returnValue(target);
+        it('should not start cheat mode or ask for hint when a key other than "t" is pressed', () => {
+            const hintSpy = spyOn(component, 'askForHint');
+            const key = new KeyboardEvent('keydown', { key: 'a' });
+            const target = { tagName: 'BODY' } as HTMLElement;
+            spyOnProperty(key, 'target', 'get').and.returnValue(target);
 
-                component.isInCheatMode = false;
-                component.handleKeyDownEvent(key);
-                expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStartCheatMode');
-                expect(gamePageServiceSpy.setPlayArea).toHaveBeenCalledTimes(1);
-                expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
-                expect(component.isInCheatMode).toBeTrue();
-            });
-
-            it('should make appropriate calls to functions if we are in cheat mode', () => {
-                const key = new KeyboardEvent('keydown', { key: 'T' });
-                const target = { tagName: 'BODY' } as HTMLElement;
-                spyOnProperty(key, 'target', 'get').and.returnValue(target);
-
-                component.isInCheatMode = true;
-                component.handleKeyDownEvent(key);
-                expect(socketHandlerSpy.send).toHaveBeenCalledOnceWith('game', 'onStopCheatMode');
-                expect(gamePageServiceSpy.stopCheatMode).toHaveBeenCalledTimes(1);
-            });
-
-            it('should call askForHint if the right key is pressed', () => {
-                const hintSpy = spyOn(component, 'askForHint');
-                const keyLowerCase = new KeyboardEvent('keydown', { key: 'i' });
-                const keyUpperCase = new KeyboardEvent('keydown', { key: 'I' });
-                const target = { tagName: 'BODY' } as HTMLElement;
-                spyOnProperty(keyLowerCase, 'target', 'get').and.returnValue(target);
-                spyOnProperty(keyUpperCase, 'target', 'get').and.returnValue(target);
-
-                component.handleKeyDownEvent(keyLowerCase);
-                expect(hintSpy).toHaveBeenCalledTimes(1);
-                component.handleKeyDownEvent(keyUpperCase);
-                expect(hintSpy).toHaveBeenCalledTimes(2);
-            });
-
-            it('should not start cheat mode or ask for hint when a key other than "t" is pressed', () => {
-                const hintSpy = spyOn(component, 'askForHint');
-                const key = new KeyboardEvent('keydown', { key: 'a' });
-                const target = { tagName: 'BODY' } as HTMLElement;
-                spyOnProperty(key, 'target', 'get').and.returnValue(target);
-
-                component.isInCheatMode = false;
-                expect(hintSpy).not.toHaveBeenCalled();
-                expect(socketHandlerSpy.send).not.toHaveBeenCalled();
-                expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
-                expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();
-                expect(component.isInCheatMode).toBeFalsy();
-            });
+            component.isInCheatMode = false;
+            expect(hintSpy).not.toHaveBeenCalled();
+            expect(socketHandlerSpy.send).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();
+            expect(component.isInCheatMode).toBeFalsy();
         });
     });
 });
