@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * This test file draws inspiration from the following git repository:
  * https://github.com/jmcdo29/testing-nestjs/blob/main/apps/mongo-sample/src/cat/cat.service.spec.ts
@@ -152,7 +151,7 @@ describe('MongodbService', () => {
             const levelId = 1;
             const deleteOneSpy = jest.spyOn(levelModel, 'deleteOne').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             await service.deleteLevel(levelId);
             expect(deleteOneSpy).toHaveBeenCalledWith({ id: levelId });
         });
@@ -162,7 +161,7 @@ describe('MongodbService', () => {
         it('should return all levels', async () => {
             jest.spyOn(levelModel, 'find').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray),
-            } as any);
+            } as never);
             const result = await service.getAllLevels();
             expect(result).toEqual(levelArray);
         });
@@ -173,7 +172,7 @@ describe('MongodbService', () => {
             const levelId = 2;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[1]),
-            } as any);
+            } as never);
             const result = await service.getLevelById(levelId);
             expect(result).toEqual(levelArray[1]);
         });
@@ -188,7 +187,7 @@ describe('MongodbService', () => {
                         exec: jest.fn().mockReturnValue([levelDocArray[2]]),
                     }),
                 }),
-            } as any);
+            } as never);
             const result = await service.getLastLevelId();
             expect(result).toEqual(expectedResult);
         });
@@ -200,7 +199,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].timeSolo;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getTimeSoloArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -212,7 +211,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].playerSolo;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getPlayerSoloArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -224,7 +223,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].timeMulti;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getTimeMultiArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -236,7 +235,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].playerMulti;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getPlayerMultiArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -285,7 +284,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeSoloArray').mockResolvedValue(levelArray[0].timeSolo);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             endTime = TestConstants.NOT_NEW_BEST_TIME;
             gameSate.otherSocketId = undefined;
             await service.updateHighscore(endTime, gameSate);
@@ -297,7 +296,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeMultiArray').mockResolvedValue(levelArray[0].timeMulti);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             endTime = TestConstants.NOT_NEW_BEST_TIME;
             await service.updateHighscore(endTime, gameSate);
             expect(findOneAndUpdateSpy).not.toHaveBeenCalled();
@@ -311,7 +310,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeSoloArray').mockResolvedValue(levelArray[0].timeSolo);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             gameSate.otherSocketId = undefined;
             await service.updateHighscore(endTime, gameSate);
             expect(findOneAndUpdateSpy).toHaveBeenCalledWith({ id: levelId }, { playerSolo: expectedSoloNames, timeSolo: expectedSoloTimes });
@@ -325,7 +324,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeMultiArray').mockResolvedValue(levelArray[0].timeMulti);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             await service.updateHighscore(endTime, gameSate);
             expect(findOneAndUpdateSpy).toHaveBeenCalledWith({ id: levelId }, { playerMulti: expectedMultiNames, timeMulti: expectedMultiTimes });
         });
@@ -349,7 +348,7 @@ describe('MongodbService', () => {
                         exec: jest.fn().mockReturnValue(levelDocArray),
                     }),
                 }),
-            } as any);
+            } as never);
             const result = await service.getLevelsInPage(pageNumber);
             expect(result).toEqual(levelArray);
         });
