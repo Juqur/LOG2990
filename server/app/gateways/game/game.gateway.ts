@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
@@ -48,18 +49,19 @@ export class GameGateway {
         if (gameInformation.multiplayer) {
             const otherSocketId = this.gameService.findAvailableGame(socket.id, 0);
             if (otherSocketId) {
-                this.gameService.bindPlayers(socket.id, otherSocketId);
                 const level = this.gameService.getRandomLevelForTimedGame(socket.id);
+                const otherSocket = this.server.sockets.sockets.get(otherSocketId);
                 socket.emit(GameEvents.StartTimedGameMultiplayer, {
                     levelId: level.id,
                     otherPlayerName: this.gameService.getGameState(otherSocketId).playerName,
                 });
-                this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.StartTimedGameMultiplayer, {
+                otherSocket.emit(GameEvents.StartTimedGameMultiplayer, {
                     levelId: level.id,
                     otherPlayerName: gameInformation.playerName,
                 });
                 this.gameService.setLevelId(socket.id, level.id);
                 this.gameService.setLevelId(otherSocketId, level.id);
+                this.gameService.connectRooms(socket, otherSocket);
                 this.timerService.startTimer({ socket }, this.server, false);
             }
         } else {
@@ -93,7 +95,9 @@ export class GameGateway {
         this.chatService.sendSystemMessage(socket, dataToSend, gameState);
 
         if (otherSocketId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
+            if (!gameState.timedLevelList) {
+                dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
+            }
             if (dataToSend.differencePixels.length > 0) {
                 socket.broadcast.to(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
             }
@@ -127,7 +131,6 @@ export class GameGateway {
             socket.emit(GameEvents.InvalidName);
             return;
         }
-
         this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, true);
         const otherPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
         if (otherPlayerId) {
@@ -337,14 +340,16 @@ export class GameGateway {
      */
     private handleTimedGame(socket: Socket, gameState: GameState): boolean {
         this.timerService.addTime(this.server, socket.id, Constants.FOUND_DIFFERENCE_BONUS);
+        const otherSocketId = this.gameService.getGameState(socket.id).otherSocketId;
         if (gameState.timedLevelList.length === 0) {
-            socket.emit(GameEvents.TimedModeFinished, true);
+            this.server.to(socket.id).emit(GameEvents.TimedModeFinished, true);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
             return true;
         }
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);
         this.gameService.setLevelId(socket.id, level.id);
+        if (otherSocketId) this.gameService.setLevelId(otherSocketId, level.id);
         this.server.to(socket.id).emit(GameEvents.ChangeLevelTimedMode, level);
         return false;
     }
