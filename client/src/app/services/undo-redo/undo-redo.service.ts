@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Constants } from '@common/constants';
 
+/**
+ * This service handles the undo and redo functionality of the creation page.
+ *
+ * @author Galen Hu & Simon Gagné
+ * @class UndoRedoService
+ */
 @Injectable({
     providedIn: 'root',
 })
