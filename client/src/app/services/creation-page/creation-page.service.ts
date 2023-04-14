@@ -422,7 +422,7 @@ export class CreationPageService {
         }
         return new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 const view = new DataView((event.target as FileReader).result as ArrayBuffer);
                 const bitNb = view.getUint16(Constants.BMP_BPP_POS, true);
                 if (bitNb !== Constants.BMP_BPP) {
