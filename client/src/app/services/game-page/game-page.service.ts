@@ -160,7 +160,8 @@ export class GamePageService {
             mustProcess: false,
         };
         this.popUpService.openDialog(timedGameFinishedDialogData, this.closePath);
-        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.play();
     }
 
     /**
@@ -174,7 +175,8 @@ export class GamePageService {
             mustProcess: false,
         };
         this.popUpService.openDialog(opponentAbandonedGameDialogData, this.closePath);
-        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.play();
     }
 
     /**
