@@ -191,9 +191,6 @@ describe('ImageService', () => {
             });
             mockSyncUnlink.mockImplementation();
             spyGetLevel = jest.spyOn(mongodbService, 'getLevelById').mockResolvedValue(returnLevel);
-
-            // mongodbService.getLevelById.resolves(returnLevel);
-            // mongodbService.getAllLevels.resolves(levels);
             fs.promises.writeFile = jest.fn();
         });
 
