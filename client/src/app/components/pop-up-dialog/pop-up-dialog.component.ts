@@ -1,5 +1,5 @@
-import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 
 @Component({
@@ -14,13 +14,11 @@ import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
  * @class PopUpDialogComponent
  */
 export class PopUpDialogComponent {
-    @ViewChild('pop-up-input') elRef: ElementRef;
-    private inputWasValid: boolean | undefined = false;
+    private inputWasValid: boolean | undefined;
     private inputValue: string = '';
+
     constructor(public dialogRef: MatDialogRef<PopUpService>, @Inject(MAT_DIALOG_DATA) public data: DialogData) {
-        if (!data.inputData) {
-            this.inputWasValid = true;
-        }
+        this.inputWasValid = data.inputData ? false : true;
     }
 
     /**
@@ -47,7 +45,7 @@ export class PopUpDialogComponent {
     /**
      * Function in charge of verifying if an input was valid and save the value in inputValue attribute.
      *
-     * @param value the new value of the input.
+     * @param value The new value of the input.
      */
     submitText(value: string): void {
         this.inputValue = value;
