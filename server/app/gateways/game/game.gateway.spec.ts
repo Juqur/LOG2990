@@ -44,6 +44,7 @@ describe('GameGateway', () => {
             isInGame: false,
             isGameFound: false,
             isInCheatMode: false,
+            hintsUsed: 0,
         };
 
         timerService = createStubInstance<TimerService>(TimerService);
@@ -217,6 +218,7 @@ describe('GameGateway', () => {
                 isGameFound: true,
                 isInGame: true,
                 isInCheatMode: false,
+                hintsUsed: 0,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             gateway.onGameAccepted(socket);
@@ -236,6 +238,7 @@ describe('GameGateway', () => {
                 isGameFound: true,
                 isInGame: true,
                 isInCheatMode: false,
+                hintsUsed: 0,
             };
             jest.spyOn(gameService, 'getGameState').mockReturnValueOnce(gameState).mockReturnValueOnce(secondGameState);
             gateway.onGameAccepted(socket);
@@ -358,6 +361,20 @@ describe('GameGateway', () => {
             const stopCheatModeSpy = jest.spyOn(gameService, 'stopCheatMode' as never);
             gateway.onStopCheatMode(socket);
             expect(stopCheatModeSpy).toBeCalledWith(socket.id);
+        });
+    });
+
+    describe('onHintRequest', () => {
+        it('should call chatService, timerService and askHint', async () => {
+            jest.spyOn(timerService, 'getCurrentTime').mockReturnValue(1);
+            const addTimeSpy = jest.spyOn(timerService, 'addTime');
+            const sendMessageSpy = jest.spyOn(chatService, 'sendMessageToPlayer');
+            const askHintSpy = jest.spyOn(gameService, 'askHint').mockReturnValue(Promise.resolve([1, 2]));
+            await gateway.onHintRequest(socket);
+            expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]); // check the emitted event
+            expect(addTimeSpy).toBeCalledTimes(1);
+            expect(sendMessageSpy).toBeCalledWith(socket, 'Indice utilisé');
+            expect(askHintSpy).toBeCalledWith(socket.id);
         });
     });
 

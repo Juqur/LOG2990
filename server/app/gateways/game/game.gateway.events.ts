@@ -14,6 +14,7 @@ export enum GameEvents {
     OnAbandonGame = 'onAbandonGame',
     OnMessageReception = 'onMessageReception',
     OnGameCancelled = 'onGameCancelled',
+    OnHintRequest = 'onHintRequest',
 
     MessageSent = 'messageSent',
     UpdateSelection = 'updateSelection',
@@ -31,4 +32,5 @@ export enum GameEvents {
     OpponentAbandoned = 'opponentAbandoned',
     Victory = 'victory',
     ProcessedClick = 'processedClick',
+    HintRequest = 'hintRequest',
 }

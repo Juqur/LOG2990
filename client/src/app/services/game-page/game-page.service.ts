@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -41,7 +42,6 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
-    private isInCheatMode: boolean = false;
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
@@ -175,17 +175,24 @@ export class GamePageService {
     /**
      * Method that initiates the cheat mode
      *
-     * @param differences the differences to have flash
+     * @param differences The differences to have flash
      */
     startCheatMode(differences: number[]): void {
+        this.resetCanvas();
+        let isVisible = false;
         this.areaNotFound = differences.filter((item) => {
             return !this.imagesData.includes(item);
         });
         this.flashInterval = setInterval(() => {
-            this.diffPlayArea.flashArea(this.areaNotFound);
-            this.originalPlayArea.flashArea(this.areaNotFound);
-            this.resetCanvas();
-        }, Constants.millisecondsQuarterOfSecond);
+            if (isVisible) {
+                this.diffPlayArea.deleteTempCanvas();
+                this.originalPlayArea.deleteTempCanvas();
+            } else {
+                this.diffPlayArea.flashArea(this.areaNotFound);
+                this.originalPlayArea.flashArea(this.areaNotFound);
+            }
+            isVisible = !isVisible;
+        }, Constants.CHEAT_FLASHING_DELAY);
     }
 
     /**
@@ -194,6 +201,10 @@ export class GamePageService {
     stopCheatMode(): void {
         clearInterval(this.flashInterval);
         this.areaNotFound = [];
+        if (this.diffPlayArea && this.originalPlayArea) {
+            this.diffPlayArea.deleteTempCanvas();
+            this.originalPlayArea.deleteTempCanvas();
+        }
     }
 
     /**
@@ -202,6 +213,55 @@ export class GamePageService {
      */
     preventJoining(): void {
         this.router.navigate(['/home']);
+    }
+
+    /**
+     * Method that shows the first and second hint for the player on both canvas.
+     *
+     * @param section The quadrant or sub-quadrant in which the hint is
+     */
+    handleHintRequest(section: number[]): void {
+        this.diffPlayArea.showHintSection(section);
+        this.originalPlayArea.showHintSection(section);
+    }
+
+    /**
+     * Method that shows the third hint for the player on both canvas.
+     *
+     * @param shape An array of pixels that represents the shape of the difference.
+     * Its last two elements are the width and height of the difference.
+     * @param canvas The canvas on which the hint will be shown.
+     */
+    handleHintShapeRequest(shape: number[], canvas: HTMLCanvasElement): void {
+        if (shape.length <= 2) {
+            return;
+        }
+        const height = shape.pop() as number;
+        const width = shape.pop() as number;
+        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        differenceCanvasCtx.canvas.height = height;
+        differenceCanvasCtx.canvas.width = width;
+
+        let x = 0;
+        let y = 0;
+        shape.forEach((pixelData) => {
+            x = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
+            y = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
+            differenceCanvasCtx.fillStyle = 'green';
+            differenceCanvasCtx.fillRect(x, y, 1, 1);
+        });
+        const widthScale = Constants.DEFAULT_WIDTH_SHAPE_CANVAS / width;
+        const heightScale = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS / height;
+        const scale = Math.min(widthScale, heightScale);
+        const scaledWidth = width * scale;
+        const scaledHeight = height * scale;
+        const xOffset = (Constants.DEFAULT_WIDTH_SHAPE_CANVAS - scaledWidth) / 2;
+        const yOffset = (Constants.DEFAULT_HEIGHT_SHAPE_CANVAS - scaledHeight) / 2;
+
+        const shapeCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
+        canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
+        shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
     }
 
     /**
@@ -244,24 +304,27 @@ export class GamePageService {
     /**
      * This method will redraw the canvas with the original image plus the elements that were not found.
      * To avoid flashing issue, it copies to a third temporary canvas.
-     * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
+     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
     private resetCanvas(): void {
+        this.mouseService.canClick = false;
         const delay = 1000; // ms
         this.diffPlayArea
             .timeout(delay)
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-                this.mouseService.canClick = true;
             })
             .then(() => {
                 setTimeout(() => {
                     this.copyArea(this.imagesData);
+                    this.mouseService.canClick = true;
                 }, 0);
             })
             .then(() => {
                 setTimeout(() => {
+                    this.diffPlayArea.deleteTempCanvas();
+                    this.originalPlayArea.deleteTempCanvas();
                     this.copyDiffPlayAreaContext();
                 }, 0);
             });
@@ -292,11 +355,9 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        if (!this.isInCheatMode) {
-            this.diffPlayArea.flashArea(result);
-            this.originalPlayArea.flashArea(result);
-            this.resetCanvas();
-        }
+        this.diffPlayArea.flashArea(result);
+        this.originalPlayArea.flashArea(result);
+        this.resetCanvas();
     }
 
     /**
@@ -307,7 +368,7 @@ export class GamePageService {
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
+        this.drawServiceDiff.drawError(this.mouseService);
         this.resetCanvas();
     }
 
@@ -333,15 +394,11 @@ export class GamePageService {
      * Performs a failed sound and prompts an error in the original canvas.
      */
     private handleAreaNotFoundInOriginal(): void {
-        const delay = 1000;
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.diffPlayArea.timeout(delay).then(() => {
-            this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-            this.mouseService.canClick = true;
-        });
+        this.drawServiceOriginal.drawError({ x: this.mouseService.x, y: this.mouseService.y } as Vec2);
+        this.resetCanvas();
     }
 }
