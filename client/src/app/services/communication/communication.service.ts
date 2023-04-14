@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LevelFormData } from '@app/interfaces/level-form-data';
 import { Level } from '@app/interfaces/levels';
-import { HttpMessage } from '@common/http-message';
+import { HttpMessage } from '@common/interfaces/http-message';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';

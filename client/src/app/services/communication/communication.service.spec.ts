@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { LevelFormData } from '@app/interfaces/level-form-data';
 import { Level } from '@app/interfaces/levels';
 import { CommunicationService } from '@app/services/communication/communication.service';
-import { HttpMessage } from '@common/http-message';
+import { HttpMessage } from '@common/interfaces/http-message';
 import { environment } from 'src/environments/environment';
 
 describe('CommunicationService', () => {
