@@ -40,11 +40,13 @@
                     <span class="info-question">Difficulté : </span
                     ><span class="info-answer">{{ currentLevel.isEasy ? 'Facile' : 'Difficile' }}</span>
                 </div>
-                <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
+                <div>
+                    <span class="info-question">Mode de jeu : </span><span class="info-answer">{{ isClassic ? 'Classique' : 'Temps limité' }}</span>
+                </div>
                 <div>
                     <span class="info-question">Différences totale: </span><span class="info-answer">{{ currentLevel.nbDifferences }}</span>
                 </div>
-                <div>
+                <div *ngIf="isClassic">
                     <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + ' secondes' }}</span>
                 </div>
             </div>
