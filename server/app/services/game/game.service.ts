@@ -154,11 +154,11 @@ export class GameService {
         if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            this.removeLevel(gameState.levelId);
+            this.removeLevel(gameState.levelId, true);
             return true;
         } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
-            this.removeLevel(gameState.levelId);
+            this.removeLevel(gameState.levelId, true);
             return true;
         }
         return false;
@@ -268,7 +268,7 @@ export class GameService {
      *
      * @param levelId The id of the level.
      */
-    removeLevel(levelId: number): void {
+    removeLevel(levelId: number, gameEnded: boolean): void {
         if (!this.verifyIfLevelIsBeingPlayed(levelId)) {
             const index = this.levelDeletionQueue.indexOf(levelId);
             if (index >= 0 && this.levelDeletionQueue.length > 0) {
@@ -276,7 +276,9 @@ export class GameService {
                 this.imageService.deleteLevelData(levelId);
             }
         } else {
-            this.addLevelToDeletionQueue(levelId);
+            if (!gameEnded) {
+                this.addLevelToDeletionQueue(levelId);
+            }
         }
     }
 
