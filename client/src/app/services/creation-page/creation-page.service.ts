@@ -25,6 +25,7 @@ export class CreationPageService {
     private drawServiceDiff: DrawService;
     private defaultUploadFile: File;
     private diffUploadFile: File;
+
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
