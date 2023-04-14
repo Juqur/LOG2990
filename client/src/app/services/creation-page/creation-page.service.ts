@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { MatSlider } from '@angular/material/slider';
-import { LevelFormData } from '@app/classes/level-form-data';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
 import { LevelDifferences } from '@app/interfaces/level-differences';
+import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
