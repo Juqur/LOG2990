@@ -94,13 +94,13 @@ describe('PaintAreaComponent', () => {
         });
 
         it('should set foregroundCanvas id to diffDrawCanvas', () => {
-            component.isDiff = true;
+            component.isDifferenceCanvas = true;
             component.ngAfterViewInit();
             expect(component.foregroundCanvas.nativeElement.id).toEqual('diffDrawCanvas');
         });
 
         it('should set defaultDrawCanvas id to diffDrawCanvas', () => {
-            component.isDiff = false;
+            component.isDifferenceCanvas = false;
             component.ngAfterViewInit();
             expect(component.foregroundCanvas.nativeElement.id).toEqual('defaultDrawCanvas');
         });
@@ -219,7 +219,7 @@ describe('PaintAreaComponent', () => {
         it('should set the background canvas to diffImgCanvas', () => {
             const setSpy = spyOnProperty(component['canvasSharing'], 'diffCanvas', 'set');
             const expected = 'diffImgCanvas';
-            component.isDiff = true;
+            component.isDifferenceCanvas = true;
             component.loadBackground('');
             expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
             expect(setSpy).toHaveBeenCalledTimes(1);
@@ -228,7 +228,7 @@ describe('PaintAreaComponent', () => {
         it('should set the background canvas to defaultImgCanvas', () => {
             const setSpy = spyOnProperty(component['canvasSharing'], 'defaultCanvas', 'set');
             const expected = 'defaultImgCanvas';
-            component.isDiff = false;
+            component.isDifferenceCanvas = false;
             component.loadBackground('');
             expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
             expect(setSpy).toHaveBeenCalledTimes(1);

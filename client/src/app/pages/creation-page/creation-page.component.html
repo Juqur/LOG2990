@@ -33,7 +33,7 @@
                         <button class="button-reset" title="Dupliquer"
                             (click)="duplicateDefaultCanvas()">Dupliquer</button>
                     </div>
-                    <app-paint-area #defaultArea [isDiff]="false"></app-paint-area>
+                    <app-paint-area #defaultArea [isDifferenceCanvas]="false"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="default" class="button-settings">
@@ -76,7 +76,7 @@
                         <button class="button-reset" title="Dupliquer"
                             (click)="duplicateDiffCanvas()">Dupliquer</button>
                     </div>
-                    <app-paint-area #diffArea [isDiff]="true"></app-paint-area>
+                    <app-paint-area #diffArea [isDifferenceCanvas]="true"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">

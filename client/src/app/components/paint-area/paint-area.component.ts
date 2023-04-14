@@ -18,7 +18,7 @@ import { Constants } from '@common/constants';
     providers: [DrawService],
 })
 export class PaintAreaComponent implements AfterViewInit {
-    @Input() isDiff: boolean;
+    @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
     @ViewChild('foregroundCanvas', { static: false }) foregroundCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('backgroundCanvas', { static: false }) backgroundCanvas!: ElementRef<HTMLCanvasElement>;
@@ -82,7 +82,7 @@ export class PaintAreaComponent implements AfterViewInit {
      */
     ngAfterViewInit(): void {
         this.loadBackground(this.image);
-        this.foregroundCanvas.nativeElement.id = this.isDiff ? 'diffDrawCanvas' : 'defaultDrawCanvas';
+        this.foregroundCanvas.nativeElement.id = this.isDifferenceCanvas ? 'diffDrawCanvas' : 'defaultDrawCanvas';
         this.foregroundCanvas.nativeElement.addEventListener('mousedown', this.onCanvasClick.bind(this));
         this.foregroundCanvas.nativeElement.addEventListener('mousemove', this.onCanvasDrag.bind(this));
         this.foregroundCanvas.nativeElement.addEventListener('mouseout', this.onMouseOut.bind(this));
@@ -160,8 +160,8 @@ export class PaintAreaComponent implements AfterViewInit {
      * @param imageSource The imageSource to load on the canvas.
      */
     loadBackground(imageSource: string): void {
-        this.backgroundCanvas.nativeElement.id = this.isDiff ? 'diffImgCanvas' : 'defaultImgCanvas';
-        if (!this.isDiff) {
+        this.backgroundCanvas.nativeElement.id = this.isDifferenceCanvas ? 'diffImgCanvas' : 'defaultImgCanvas';
+        if (!this.isDifferenceCanvas) {
             this.canvasSharing.defaultCanvas = this.backgroundCanvas.nativeElement;
         } else {
             this.canvasSharing.diffCanvas = this.backgroundCanvas.nativeElement;
@@ -187,9 +187,9 @@ export class PaintAreaComponent implements AfterViewInit {
         const resultCanvas = document.createElement('canvas');
         resultCanvas.width = this.width;
         resultCanvas.height = this.height;
-        const canvasCtx = resultCanvas.getContext('2d') as CanvasRenderingContext2D;
-        canvasCtx.drawImage(this.backgroundCanvas.nativeElement, 0, 0);
-        canvasCtx.drawImage(this.foregroundCanvas.nativeElement, 0, 0);
+        const canvasContext = resultCanvas.getContext('2d') as CanvasRenderingContext2D;
+        canvasContext.drawImage(this.backgroundCanvas.nativeElement, 0, 0);
+        canvasContext.drawImage(this.foregroundCanvas.nativeElement, 0, 0);
         return resultCanvas;
     }
 

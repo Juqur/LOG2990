@@ -16,7 +16,7 @@ import { Constants } from '@common/constants';
     providers: [DrawService],
 })
 export class PlayAreaComponent implements AfterViewInit {
-    @Input() isDiff: boolean;
+    @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
@@ -74,9 +74,9 @@ export class PlayAreaComponent implements AfterViewInit {
      */
     drawPlayArea(image: string): void {
         if (this.canvas) {
-            this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
+            this.canvas.nativeElement.id = this.isDifferenceCanvas ? 'diffCanvas0' : 'defaultCanvas0';
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            if (!this.isDiff) {
+            if (!this.isDifferenceCanvas) {
                 // Default canvas (left canvas)
                 this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
