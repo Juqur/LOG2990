@@ -40,10 +40,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
     isInCheatMode: boolean = false;
+    isClassic: boolean = true;
 
     private levelId: number;
     private clickedOriginalImage: boolean = true;
-    private isClassic: boolean = true;
 
     // eslint-disable-next-line max-params
     constructor(
