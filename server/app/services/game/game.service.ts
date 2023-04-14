@@ -81,7 +81,6 @@ export class GameService {
         }
         return listOfLevels;
     }
-
     /**
      * This method sets the attribute of isGameFound.
      *
@@ -124,9 +123,13 @@ export class GameService {
                 gameState.foundDifferences = [];
             }
             this.playerGameMap.set(socketId, gameState);
+
             if (gameState.otherSocketId) {
                 const otherGameState = this.playerGameMap.get(gameState.otherSocketId);
                 otherGameState.foundDifferences = gameState.foundDifferences;
+                if (gameState.timedLevelList) {
+                    otherGameState.amountOfDifferencesFound = gameState.amountOfDifferencesFound;
+                }
                 this.playerGameMap.set(gameState.otherSocketId, otherGameState);
             }
         }
@@ -149,7 +152,7 @@ export class GameService {
      */
     verifyWinCondition(socket: Socket, server: Server, totalDifferences: number): boolean {
         const gameState = this.playerGameMap.get(socket.id);
-        if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
+        if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2) && !gameState.timedLevelList) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
             this.removeLevel(gameState.levelId);
@@ -216,6 +219,8 @@ export class GameService {
     connectRooms(socket: Socket, otherSocket: Socket): void {
         this.playerGameMap.get(socket.id).isInGame = true;
         this.playerGameMap.get(otherSocket.id).isInGame = true;
+        socket.join(otherSocket.id);
+        otherSocket.join(socket.id);
         this.bindPlayers(socket.id, otherSocket.id);
     }
 
@@ -288,6 +293,11 @@ export class GameService {
         const gameState = this.playerGameMap.get(socketId);
         const level = gameState.timedLevelList[Math.floor(Math.random() * gameState.timedLevelList.length)];
         gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
+        if (gameState.otherSocketId) {
+            const otherGameState = this.playerGameMap.get(gameState.otherSocketId);
+            otherGameState.timedLevelList = gameState.timedLevelList;
+            this.playerGameMap.set(gameState.otherSocketId, otherGameState);
+        }
         return level;
     }
 
