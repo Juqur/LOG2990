@@ -40,15 +40,34 @@ export class GameGateway {
      * It also creates a new game state and starts the timer.
      *
      * @param socket The socket of the player.
-     * @param data The data of the player, including whether the game is multiplayer and the playerName.
+     * @param gameInformation The data of the game, including whether the game is multiplayer and the playerName.
      */
     @SubscribeMessage(GameEvents.OnCreateTimedGame)
-    async onCreateTimedGame(socket: Socket, data: { multiplayer: boolean; playerName: string }): Promise<void> {
-        await this.gameService.createGameState(socket.id, { playerName: data.playerName, levelId: 0 }, data.multiplayer);
-        const level = this.gameService.getRandomLevelForTimedGame(socket.id);
-        this.gameService.setLevelId(socket.id, level.id);
-        socket.emit(GameEvents.ChangeLevelTimedMode, level);
-        this.timerService.startTimer({ socket }, this.server, false);
+    async onCreateTimedGame(socket: Socket, gameInformation: { multiplayer: boolean; playerName: string }): Promise<void> {
+        await this.gameService.createGameState(socket.id, { playerName: gameInformation.playerName, levelId: 0 }, gameInformation.multiplayer);
+        if (gameInformation.multiplayer) {
+            const otherSocketId = this.gameService.findAvailableGame(socket.id, 0);
+            if (otherSocketId) {
+                this.gameService.bindPlayers(socket.id, otherSocketId);
+                const level = this.gameService.getRandomLevelForTimedGame(socket.id);
+                socket.emit(GameEvents.StartTimedGameMultiplayer, {
+                    levelId: level.id,
+                    otherPlayerName: this.gameService.getGameState(otherSocketId).playerName,
+                });
+                this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.StartTimedGameMultiplayer, {
+                    levelId: level.id,
+                    otherPlayerName: gameInformation.playerName,
+                });
+                this.gameService.setLevelId(socket.id, level.id);
+                this.gameService.setLevelId(otherSocketId, level.id);
+                this.timerService.startTimer({ socket }, this.server, false);
+            }
+        } else {
+            const level = this.gameService.getRandomLevelForTimedGame(socket.id);
+            this.gameService.setLevelId(socket.id, level.id);
+            socket.emit(GameEvents.ChangeLevelTimedMode, level);
+            this.timerService.startTimer({ socket }, this.server, false);
+        }
     }
 
     /**
@@ -185,6 +204,18 @@ export class GameGateway {
     }
 
     /**
+     * This method is called cancels a timed game while waiting for a second player.
+     *
+     * @param socket The socket of the player.
+     */
+    @SubscribeMessage(GameEvents.OnTimedGameCancelled)
+    onTimedGameCancelled(socket: Socket): void {
+        if (!this.gameService.getGameState(socket.id).isInGame) {
+            this.gameService.deleteUserFromGame(socket);
+        }
+    }
+
+    /**
      * This method is called when a player tries to delete a level.
      * It checks if the level is being played and if it is, it adds it to the deletion queue.
      * It also emits a event to all players to shut down anyone trying to play the level.
@@ -287,9 +318,11 @@ export class GameGateway {
     private cancelGame(socket: Socket): void {
         this.gameService.setIsGameFound(socket.id, false);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        this.gameService.deleteUserFromGame(secondPlayerSocket);
-        secondPlayerSocket.emit(GameEvents.RejectedGame);
+        if (secondPlayerId) {
+            const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+            this.gameService.deleteUserFromGame(secondPlayerSocket);
+            secondPlayerSocket.emit(GameEvents.RejectedGame);
+        }
     }
 
     /**
