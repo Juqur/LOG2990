@@ -41,7 +41,7 @@ export class TimerService {
             if (!isClassic && time === 0) {
                 this.stopTimer(socketId);
                 const levelId = this.gameService.getGameState(socketId).levelId;
-                this.gameService.removeLevel(levelId);
+                this.gameService.removeLevel(levelId, true);
                 this.gameService.deleteUserFromGame(sockets.socket);
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
                 clearInterval(interval);
