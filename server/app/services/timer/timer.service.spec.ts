@@ -94,7 +94,7 @@ describe('TimerService', () => {
             expect(service['timeMap'].get('socket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
         });
 
-        it('should delete user from maps if time is 0', async () => {
+        it('should delete user from maps if time is 0', () => {
             const spy = jest.spyOn(service, 'stopTimer').mockImplementation();
             const timeToAdvance = 1000;
             service.startTimer({ socket }, server, false);
