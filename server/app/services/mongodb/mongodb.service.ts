@@ -1,4 +1,5 @@
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
+import { Message } from '@app/model/schema/message.schema';
 import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
@@ -79,7 +80,17 @@ export class MongodbService {
      * @returns The id of the last inserted level.
      */
     async getLastLevelId(): Promise<number> {
-        return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
+        try {
+            // Verifies that there is at least one level in the database.
+            const test = await this.levelModel.findOneAndDelete({});
+            if (test) {
+                return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
+            } else {
+                return 0;
+            }
+        } catch (error) {
+            this.handleErrors(error);
+        }
     }
 
     /**
@@ -130,7 +141,7 @@ export class MongodbService {
      * @param endTime The duration of the game in seconds.
      * @param gameState The game state associated with the game that just finished.
      */
-    async updateHighscore(endTime: number, gameState: GameState): Promise<void> {
+    async updateHighscore(endTime: number, gameState: GameState): Promise<number> {
         let names: string[] = [];
         let times: number[] = [];
 
@@ -159,6 +170,7 @@ export class MongodbService {
             } else {
                 await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerSolo: names, timeSolo: times }).exec();
             }
+            return names.indexOf(gameState.playerName);
         }
     }
 
@@ -181,5 +193,18 @@ export class MongodbService {
             .skip((pageNumber - 1) * Constants.levelsPerPage)
             .limit(Constants.levelsPerPage)
             .exec()) as Level[];
+    }
+
+    /**
+     * Internal method that handles errors when fetching the previous id in the database.
+     *
+     * @param err The error to be handled
+     * @returns The message that the level was not successfully uploaded
+     */
+    private handleErrors(err: Error): Message {
+        const message: Message = new Message();
+        message.title = 'error';
+        message.body = 'Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: ' + err.message;
+        return message;
     }
 }
