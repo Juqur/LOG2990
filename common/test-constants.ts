@@ -79,4 +79,5 @@ export namespace TestConstants {
     export const NOT_NEW_BEST_TIME = 1000;
     export const NEW_BEST_TIME = 6;
     export const INVALID_PAGE_NUMBER = -10;
+    export const DATE_ARRAY = [new Date(), new Date(), new Date()];
 }

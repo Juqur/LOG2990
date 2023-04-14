@@ -19,6 +19,16 @@ describe('TimerService', () => {
         expect(service).toBeDefined();
     });
 
+    describe('getStartDate', () => {
+        it('should correctly return the start date', () => {
+            const expectedDate = new Date();
+            const expectedTime = 1;
+            service['timeMap'] = new Map([['1', { time: expectedTime, startDate: expectedDate }]]);
+            const result = service.getStartDate('1');
+            expect(result).toEqual(expectedDate);
+        });
+    });
+
     describe('startTimer ', () => {
         let server: Server;
 
@@ -33,14 +43,14 @@ describe('TimerService', () => {
         it('should start the timer for a single player game', () => {
             const expectedTime = 0;
             service.startTimer('socket', server, true);
-            expect(service['timeMap'].get('socket')).toEqual(expectedTime);
+            expect(service['timeMap'].get('socket').time).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
 
         it('should start the timer for a multiplayer game', () => {
             const expectedTime = 120;
             service.startTimer('socket', server, false, 'secondSocket');
-            expect(service['timeMap'].get('socket')).toEqual(expectedTime);
+            expect(service['timeMap'].get('socket').time).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
             expect(service['timeIntervalMap'].get('secondSocket')).toBeDefined();
         });
@@ -58,9 +68,9 @@ describe('TimerService', () => {
 
     describe('stopTimer', () => {
         it('should delete the key map', () => {
-            const currentTime = 9;
+            const currentTime = { time: 9, startDate: new Date() };
             service['timeMap'].set('socket', currentTime);
-            service['timeIntervalMap'].set('socket', setInterval(jest.fn(), currentTime));
+            service['timeIntervalMap'].set('socket', setInterval(jest.fn(), currentTime.time));
             const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation();
 
             service.stopTimer('socket');
@@ -71,21 +81,21 @@ describe('TimerService', () => {
 
     describe('addTime', () => {
         it('should add time to the timer', () => {
-            const currentTime = 4;
+            const currentTime = { time: 4, startDate: new Date() };
             const timeToAdd = 10;
             service['timeMap'].set('socket', currentTime);
             service.addTime('socket', timeToAdd);
-            expect(service['timeMap'].get('socket')).toEqual(currentTime + timeToAdd);
+            expect(service['timeMap'].get('socket').time).toEqual(currentTime.time + timeToAdd);
         });
     });
 
     describe('subtractTime', () => {
         it('should subtract time to the timer', () => {
-            const currentTime = 55;
+            const currentTime = { time: 55, startDate: new Date() };
             const timeToSubtract = 14;
             service['timeMap'].set('socket', currentTime);
             service.subtractTime('socket', timeToSubtract);
-            expect(service['timeMap'].get('socket')).toEqual(currentTime - timeToSubtract);
+            expect(service['timeMap'].get('socket').time).toEqual(currentTime.time - timeToSubtract);
         });
     });
 });

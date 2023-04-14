@@ -67,14 +67,16 @@ export class GameGateway {
             }
         }
 
+        const firstPlayerName = gameState.playerName;
+        const secondPlayerName = gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined;
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
             await this.mongodbService.addGameHistory({
-                startDate: new Date(),
+                startDate: this.timerService.getStartDate(socket.id),
                 lengthGame: this.timerService.getTime(socket.id),
                 isClassic: !gameState.timedLevelList ? true : false,
-                firstPlayerName: gameState.playerName,
-                secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
+                firstPlayerName,
+                secondPlayerName,
                 hasPlayerAbandoned: false,
             });
             this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
@@ -268,14 +270,8 @@ export class GameGateway {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
             this.gameService.removeLevelFromDeletionQueue(gameState.levelId);
-            if (gameState.otherSocketId) {
-                const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
-                this.chatService.abandonMessage(socket, gameState);
-                otherSocket.emit(GameEvents.OpponentAbandoned);
-                this.gameService.deleteUserFromGame(otherSocket);
-            }
             const gameHistory = {
-                startDate: new Date(),
+                startDate: this.timerService.getStartDate(socket.id),
                 lengthGame: this.timerService.getTime(socket.id),
                 isClassic: !gameState.timedLevelList ? true : false,
                 firstPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : gameState.playerName,
@@ -283,6 +279,12 @@ export class GameGateway {
                 hasPlayerAbandoned: true,
             } as GameHistory;
             await this.mongodbService.addGameHistory(gameHistory);
+            if (gameState.otherSocketId) {
+                const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
+                this.chatService.abandonMessage(socket, gameState);
+                otherSocket.emit(GameEvents.OpponentAbandoned);
+                this.gameService.deleteUserFromGame(otherSocket);
+            }
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);
         }

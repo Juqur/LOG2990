@@ -4,14 +4,24 @@ import { Server } from 'socket.io';
 
 @Injectable()
 export class TimerService {
-    private timeMap = new Map<string, number>();
+    private timeMap = new Map<string, { time: number; startDate: Date }>();
     private timeIntervalMap = new Map<string, NodeJS.Timeout>();
 
     /**
      * Gets game time
      */
     getTime(socketId): number {
-        return this.timeMap.get(socketId);
+        return this.timeMap.get(socketId).time;
+    }
+
+    /**
+     * Gets the start date.
+     *
+     * @param socketId the socket id of the associated player.
+     * @returns the start date.
+     */
+    getStartDate(socketId): Date {
+        return this.timeMap.get(socketId).startDate;
     }
 
     /**
@@ -26,14 +36,14 @@ export class TimerService {
      */
     // eslint-disable-next-line max-params
     startTimer(socketId: string, server: Server, isClassic: boolean, otherSocketId?: string): void {
-        this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
+        this.timeMap.set(socketId, { time: isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH, startDate: new Date() });
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
-            server.to(socketId).emit('sendTime', time);
+            server.to(socketId).emit('sendTime', time.time);
             if (otherSocketId) {
                 server.to(otherSocketId).emit('sendTime', time);
             }
-            this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
+            this.timeMap.set(socketId, { time: isClassic ? time.time + 1 : time.time - 1, startDate: time.startDate });
         }, Constants.millisecondsInOneSecond);
 
         this.timeIntervalMap.set(socketId, interval);
@@ -66,7 +76,7 @@ export class TimerService {
     addTime(socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            this.timeMap.set(socketId, currentTime + time);
+            this.timeMap.set(socketId, { time: currentTime.time + time, startDate: currentTime.startDate });
         }
     }
 
@@ -79,7 +89,7 @@ export class TimerService {
     subtractTime(socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            this.timeMap.set(socketId, currentTime - time);
+            this.timeMap.set(socketId, { time: currentTime.time - time, startDate: currentTime.startDate });
         }
     }
 }

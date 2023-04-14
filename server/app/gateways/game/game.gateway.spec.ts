@@ -7,9 +7,10 @@ import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
 import { GameData } from '@common/game-data';
+import { TestConstants } from '@common/test-constants';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SinonStubbedInstance, createStubInstance } from 'sinon';
+import { SinonStubbedInstance, createStubInstance, restore } from 'sinon';
 import { Namespace, Server, Socket } from 'socket.io';
 import { GameGateway } from './game.gateway';
 
@@ -142,6 +143,28 @@ describe('GameGateway', () => {
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(true);
             await gateway.onClick(socket, 1);
             expect(emitOtherSpy).toBeCalledWith('defeat');
+        });
+
+        it('should call mongodb service addGameHistory', async () => {
+            gameState.timedLevelList = [
+                {
+                    id: 1,
+                    name: 'Juan Cena',
+                    playerSolo: TestConstants.PLAYER_ARRAY_SOLO_DATA_BASE,
+                    timeSolo: TestConstants.TIME_ARRAY_SOLO_DATA_BASE,
+                    playerMulti: TestConstants.PLAYER_ARRAY_MULTI_DATA_BASE,
+                    timeMulti: TestConstants.TIME_ARRAY_MULTI_DATA_BASE,
+                    isEasy: false,
+                    nbDifferences: TestConstants.HARD_LEVEL_NB_DIFFERENCES,
+                    canJoin: true,
+                } as Level,
+            ];
+            gameState.otherSocketId = '1';
+            jest.spyOn(socket, 'to').mockImplementation(() => ({ emit: jest.fn() } as never));
+            jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(true);
+            const addGameHistorySpy = jest.spyOn(mongodbService, 'addGameHistory');
+            await gateway.onClick(socket, 1);
+            expect(addGameHistorySpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -414,26 +437,46 @@ describe('GameGateway', () => {
             expect(removeLevelFromDeletionQueueSpy).toBeCalledWith(gameState.levelId);
         });
 
-        it('should call abandonMessage if the other socket id is defined', () => {
+        it('should call abandonMessage if the other socket id is defined', async () => {
             gameState.otherSocketId = '1';
-            gateway['handlePlayerLeavingGame'](socket);
+            await gateway['handlePlayerLeavingGame'](socket);
             expect(abandonMessageSpy).toBeCalledWith(socket, gameState);
         });
 
-        it('should emit an abandon event', () => {
+        it('should emit an abandon event', async () => {
             gameState.otherSocketId = '1';
-            gateway['handlePlayerLeavingGame'](socket);
+            await gateway['handlePlayerLeavingGame'](socket);
             expect(emitOtherSpy).toBeCalledWith('opponentAbandoned');
         });
 
-        it('should delete the user from the game map', () => {
-            gateway['handlePlayerLeavingGame'](socket);
+        it('should delete the user from the game map', async () => {
+            await gateway['handlePlayerLeavingGame'](socket);
             expect(deleteUserFromGameSpy).toBeCalledWith(socket);
         });
 
-        it('should stop the timer', () => {
-            gateway['handlePlayerLeavingGame'](socket);
+        it('should stop the timer', async () => {
+            await gateway['handlePlayerLeavingGame'](socket);
             expect(stopTimerSpy).toBeCalledWith(socket.id);
+        });
+
+        it('should call add game history', async () => {
+            gameState.timedLevelList = [
+                {
+                    id: 1,
+                    name: 'Juan Cena',
+                    playerSolo: TestConstants.PLAYER_ARRAY_SOLO_DATA_BASE,
+                    timeSolo: TestConstants.TIME_ARRAY_SOLO_DATA_BASE,
+                    playerMulti: TestConstants.PLAYER_ARRAY_MULTI_DATA_BASE,
+                    timeMulti: TestConstants.TIME_ARRAY_MULTI_DATA_BASE,
+                    isEasy: false,
+                    nbDifferences: TestConstants.HARD_LEVEL_NB_DIFFERENCES,
+                    canJoin: true,
+                } as Level,
+            ];
+            const addGameHistorySpy = jest.spyOn(mongodbService, 'addGameHistory');
+            await gateway['handlePlayerLeavingGame'](socket);
+            expect(addGameHistorySpy).toHaveBeenCalledTimes(1);
+            restore();
         });
     });
 
