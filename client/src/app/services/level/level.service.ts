@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Level } from '@app/levels';
+import { Level } from '@app/interfaces/levels';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';

@@ -1,7 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Level } from '@app/levels';
+import { Level } from '@app/interfaces/levels';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';

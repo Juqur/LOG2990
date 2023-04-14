@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Level } from '@app/levels';
+import { Level } from '@app/interfaces/levels';
 import { Constants } from '@common/constants';
 
 /**
