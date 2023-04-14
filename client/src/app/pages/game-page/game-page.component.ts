@@ -137,17 +137,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
         });
-        this.socketHandler.on('game', 'timedModeFinished', (data) => {
-            const finishedWithLastLevel = data as boolean;
+        this.socketHandler.on('game', 'timedModeFinished', (finishedWithLastLevel: boolean) => {
             if (finishedWithLastLevel) this.playerDifferencesCount++;
             this.gamePageService.handleTimedModeFinished(finishedWithLastLevel);
         });
-        this.socketHandler.on('game', 'startCheatMode', (data) => {
-            const differences = data as number[];
+        this.socketHandler.on('game', 'startCheatMode', (differences: number[]) => {
             this.gamePageService.startCheatMode(differences);
         });
-        this.socketHandler.on('game', 'changeLevelTimedMode', (data) => {
-            const level = data as Level;
+        this.socketHandler.on('game', 'changeLevelTimedMode', (level: Level) => {
             this.levelId = level.id;
             this.currentLevel = level;
             this.settingGameImage();
