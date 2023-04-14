@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
+import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 
 @Injectable({
     providedIn: 'root',
 })
 export class VideoService {
     static videoStack: { mousePosition: number; clickedOnOriginal: boolean }[] = [];
+    static gamePageStack: { originalCanvas: PlayAreaComponent; diffCanvas: PlayAreaComponent; timestamp: Date; chat; gameEnded; isWinning }[] = [];
     // constructor() {}
 
     /**
@@ -19,6 +21,8 @@ export class VideoService {
         VideoService.videoStack.push({ mousePosition, clickedOnOriginal });
         console.log(VideoService.videoStack);
     }
+
+    static addGamePageToStack() {}
 
     static popStack(): { mousePosition: number; clickedOnOriginal: boolean } | undefined {
         if (!this.isStackEmpty()) {
