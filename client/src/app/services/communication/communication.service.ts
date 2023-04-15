@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LevelFormData } from '@app/classes/level-form-data';
+import { GameConstants } from '@app/interfaces/game-constants';
 import { Level } from '@app/levels';
 import { HttpMessage } from '@common/http-message';
 import { Observable, of } from 'rxjs';
@@ -104,6 +105,43 @@ export class CommunicationService {
      */
     deleteLevel(levelId: number): Observable<boolean> {
         return this.http.delete<boolean>(`${this.baseUrl}api` + '/image/' + levelId);
+    }
+
+    /**
+     * This function is used to obtain the current game constants from the database.
+     *
+     * @returns The game constants.
+     */
+    getGameConstants(): Observable<GameConstants> {
+        return this.http
+            .get<GameConstants>(`${this.baseUrl}api` + '/database/constants')
+            .pipe(catchError(this.handleError<GameConstants>('getGameConstants')));
+    }
+
+    /**
+     * This function resets the game constants to their base values.
+     */
+    resetGameConstants(): Observable<void> {
+        // eslint-disable-next-line no-console
+        console.log('called resetGameConstants in client');
+        return this.http
+            .patch<void>(`${this.baseUrl}api` + '/database/constants/reset', null)
+            .pipe(catchError(this.handleError<void>('getGameConstants')));
+    }
+
+    /**
+     * This method sets the new game constants to the new provided values.
+     *
+     * @param gameConstants The new game constants.
+     */
+    setNewGameConstants(gameConstants: GameConstants): Observable<void> {
+        // eslint-disable-next-line no-console
+        console.log('called setNewGameConstants in client');
+        // eslint-disable-next-line no-console
+        console.log(gameConstants);
+        return this.http
+            .patch<void>(`${this.baseUrl}api` + '/database/constants', { gameConstants })
+            .pipe(catchError(this.handleError<void>('getGameConstants')));
     }
 
     /**
