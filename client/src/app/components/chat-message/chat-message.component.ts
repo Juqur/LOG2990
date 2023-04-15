@@ -43,7 +43,7 @@ export class ChatMessageComponent implements OnInit {
     /**
      * Setter for the textMessage attribute
      *
-     * @param message The message to be displayed
+     * @param message The message to be displayed.
      */
     @Input()
     set message(message: ChatMessage) {
