@@ -75,7 +75,7 @@ export class PlayAreaComponent implements AfterViewInit {
     drawPlayArea(image: string): void {
         if (this.canvas) {
             this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
-            const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const context = this.getCanvasRenderingContext2D();
             if (!this.isDiff) {
                 // Default canvas (left canvas)
                 this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
@@ -150,16 +150,13 @@ export class PlayAreaComponent implements AfterViewInit {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    simulateClick(pixelData: number) {
-        const xPosition = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
-        const yPosition = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
+    setContext(context: CanvasRenderingContext2D): void {
+        const currentCanvas = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        currentCanvas.clearRect(0, 0, this.width, this.height);
+        currentCanvas.drawImage(context.canvas, 0, 0);
+    }
 
-        console.log('x: ' + xPosition + ' y: ' + yPosition);
-        const mouseClick = new MouseEvent('mousedown', {
-            clientX: xPosition,
-            clientY: yPosition,
-        });
-
-        this.canvas.nativeElement.dispatchEvent(mouseClick);
+    getCanvasRenderingContext2D(): CanvasRenderingContext2D {
+        return this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
     }
 }

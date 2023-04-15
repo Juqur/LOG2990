@@ -27,6 +27,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
     @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
+    @ViewChild('tempVideoOriginal') tempVideoOriginal!: PlayAreaComponent;
+    @ViewChild('tempVideoDiff') tempVideoDiff!: PlayAreaComponent;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
@@ -43,7 +45,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     isInCheatMode: boolean = false;
     isReplayMode: boolean = false;
 
-    private showVideo: ReturnType<typeof setInterval>;
     private levelId: number;
     private clickedOriginalImage: boolean = true;
 
@@ -91,9 +92,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
         this.handleSocket();
-
-        console.log(this.gamePageService.getImageData);
-        console.log(this.gamePageService.getAreaNotFound);
     }
 
     /**
@@ -153,10 +151,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
-            VideoService.addGamePageToStack(
-                this.originalPlayArea.canvas.nativeElement.getContext('2d'),
-                this.diffPlayArea.canvas.nativeElement.getContext('2d'),
-            );
+            this.addToVideoStack();
+            this.showToTempCanvas(VideoService.videoStack[VideoService.videoStack.length - 1]);
             this.clickedOriginalImage = true;
         }
     }
@@ -172,12 +168,28 @@ export class GamePageComponent implements OnInit, OnDestroy {
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
             // VideoService.addToStack(mousePosition, false);
-            VideoService.addGamePageToStack(
-                this.originalPlayArea.canvas.nativeElement.getContext('2d'),
-                this.diffPlayArea.canvas.nativeElement.getContext('2d'),
-            );
+            this.addToVideoStack();
             this.clickedOriginalImage = false;
         }
+    }
+
+    addToVideoStack(): void {
+        VideoService.addToVideoStack(
+            this.originalPlayArea.canvas.nativeElement.getContext('2d'),
+            this.diffPlayArea.canvas.nativeElement.getContext('2d'),
+        );
+    }
+
+    showToTempCanvas(videoFrame: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }): void {
+        console.log(videoFrame);
+        const defaultCtx = this.tempVideoOriginal.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffCtx = this.tempVideoDiff.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+
+        defaultCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        diffCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+
+        defaultCtx.drawImage(videoFrame.defaultCanvas, 0, 0);
+        diffCtx.drawImage(videoFrame.diffCanvas, 0, 0);
     }
 
     /**
@@ -185,26 +197,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     abandonGame(): void {
         this.socketHandler.send('game', 'onAbandonGame');
-    }
-
-    putInCanvas(): void {
-        if (VideoService.isStackEmpty()) {
-            clearInterval(this.showVideo);
-            return;
-        }
-        const frame = VideoService.popStack() as unknown as { clickedOnOriginal: boolean; mousePosition: number };
-        console.log(frame);
-        if (frame.clickedOnOriginal) {
-            this.originalPlayArea.simulateClick(frame.mousePosition);
-        } else if (!frame.clickedOnOriginal) {
-            this.diffPlayArea.simulateClick(frame.mousePosition);
-        }
-    }
-
-    startVideo(): void {
-        this.showVideo = setInterval(() => {
-            this.putInCanvas();
-        }, Constants.millisecondsInOneSecond);
     }
 
     /**

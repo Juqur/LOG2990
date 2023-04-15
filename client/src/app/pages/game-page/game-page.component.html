@@ -29,6 +29,9 @@
             </div>
             <app-play-area [isDiff]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
             <app-play-area #tempDiffPlayArea class="tempDiffPlayArea" (click)="clickedOnDiff($event)"></app-play-area>
+
+            <app-play-area #tempVideoOriginal></app-play-area>
+            <app-play-area #tempVideoDiff></app-play-area>
         </section>
         <section id="bottom-area">
             <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat>

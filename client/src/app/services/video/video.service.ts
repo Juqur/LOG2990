@@ -6,8 +6,7 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
     providedIn: 'root',
 })
 export class VideoService {
-    static videoStack: { mousePosition: number; clickedOnOriginal: boolean }[] = [];
-    static videoReplayStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
+    static videoStack: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
     static gamePageStack: {
         originalCanvas: PlayAreaComponent;
         diffCanvas: PlayAreaComponent;
@@ -16,24 +15,12 @@ export class VideoService {
         gameEnded: boolean;
         isWinning: boolean;
     }[] = [];
+    static pointer = 0;
 
     static firstPlayerName: string;
     static secondPlayerName: string;
-    // constructor() {}
 
-    /**
-     * After a click has been perform on the canvas,
-     * this method will add the click position and the canvas that was clicked on to the stack.
-     *
-     * @param mousePosition The position of the mouse when the click was performed.
-     * @param clickedOnOriginal The canvas that was clicked on (true is original and false is different).
-     */
-    static addToStack(mousePosition: number, clickedOnOriginal: boolean): void {
-        VideoService.videoStack.push({ mousePosition, clickedOnOriginal });
-        console.log(VideoService.videoStack);
-    }
-
-    static addGamePageToStack(defaultCanvas: CanvasRenderingContext2D | null, diffCanvas: CanvasRenderingContext2D | null) {
+    static addToVideoStack(defaultCanvas: CanvasRenderingContext2D | null, diffCanvas: CanvasRenderingContext2D | null) {
         if (!defaultCanvas) {
             defaultCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         }
@@ -53,12 +40,13 @@ export class VideoService {
         const tempDiffCtx = tempDiffCanvas.getContext('2d') as CanvasRenderingContext2D;
         tempDiffCtx.drawImage(diffCanvas.canvas, 0, 0);
 
-        this.videoReplayStack.push({ defaultCanvas: defaultCanvas.canvas, diffCanvas: diffCanvas.canvas });
+        this.videoStack.push({ defaultCanvas: defaultCanvas.canvas, diffCanvas: diffCanvas.canvas });
+        console.log(this.videoStack);
     }
 
     static popStack(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         if (!this.isStackEmpty()) {
-            return VideoService.videoReplayStack.pop();
+            return VideoService.videoStack.pop();
         } else {
             return undefined;
         }
@@ -70,7 +58,7 @@ export class VideoService {
 
     static isStackEmpty(): boolean {
         // return VideoService.videoStack.length === 0;
-        return VideoService.videoReplayStack.length === 0;
+        return VideoService.videoStack.length === 0;
     }
 
     static setVariables(firstPlayerName: string, secondPlayerName: string): void {
@@ -79,12 +67,10 @@ export class VideoService {
     }
 
     static getFirstPlayerName(): string {
-        console.log(VideoService.firstPlayerName);
         return VideoService.firstPlayerName;
     }
 
     static getSecondPlayerName(): string {
-        console.log(VideoService.secondPlayerName);
         return VideoService.secondPlayerName;
     }
 }
