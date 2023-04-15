@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { UtilityService } from '@app/services/utility/utility.service';
 import { GameTimerComponent } from './game-timer.component';
 
 describe('GameTimerComponent', () => {
@@ -50,28 +51,19 @@ describe('GameTimerComponent', () => {
     });
 
     describe('updateTimer', () => {
-        it('should format 00:00', () => {
+        it('should call formatTime', () => {
+            const expectedTime = 69;
+            const formatTimeSpy = spyOn(UtilityService, 'formatTime');
+            component.updateTimer(expectedTime);
+            expect(formatTimeSpy).toHaveBeenCalledWith(expectedTime);
+        });
+
+        it('should return the appropriate format', () => {
             const time = 0;
+            const expectedFormat = 'Time: 00:00';
+            spyOn(UtilityService, 'formatTime').and.returnValue('00:00');
             component.updateTimer(time);
-            expect(component.gameTimeFormatted).toEqual('Time: 00:00');
-        });
-
-        it('should format 00:10', () => {
-            const time = 10;
-            component.updateTimer(time);
-            expect(component.gameTimeFormatted).toEqual('Time: 00:10');
-        });
-
-        it('should format 01:00', () => {
-            const time = 60;
-            component.updateTimer(time);
-            expect(component.gameTimeFormatted).toEqual('Time: 01:00');
-        });
-
-        it('should format 10:00', () => {
-            const time = 600;
-            component.updateTimer(time);
-            expect(component.gameTimeFormatted).toEqual('Time: 10:00');
+            expect(component.currentTime).toEqual(expectedFormat);
         });
     });
 
