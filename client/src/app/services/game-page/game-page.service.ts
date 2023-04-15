@@ -327,6 +327,7 @@ export class GamePageService {
         this.diffPlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
         this.resetCanvas();
+        VideoService.addToLog('Area found in difference image');
     }
 
     /**
@@ -339,6 +340,7 @@ export class GamePageService {
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
         this.resetCanvas();
+        VideoService.addToLog('Area not found in difference image');
     }
 
     /**
@@ -357,6 +359,7 @@ export class GamePageService {
         this.originalPlayArea.flashArea(result);
         this.diffPlayArea.flashArea(result);
         this.resetCanvas();
+        VideoService.addToLog('Area found in original image');
     }
 
     /**
@@ -369,5 +372,6 @@ export class GamePageService {
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
         this.resetCanvas();
+        VideoService.addToLog('Area not found in original image');
     }
 }

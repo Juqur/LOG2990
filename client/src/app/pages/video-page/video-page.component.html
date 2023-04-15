@@ -1,33 +1,39 @@
-<div class="container">
-    <section id="top-area">
-        <button mat-button routerLink="/home"></button>
-        <button (click)="startVideo()">Start</button>
-        <app-game-timer></app-game-timer>
-        <div id="diff-counter">
-            <div *ngIf="playerName" class="player-counter">
-                <span class="diff-self">{{ getFirstPlayerName() + ': ' }}</span>
-                <span> {{ playerDifferencesCount }} </span>
-                <span class="diff-self">différences trouvées</span>
+<app-scale-container>
+    <div class="container">
+        <section id="top-area">
+            <button mat-button routerLink="/home"></button>
+            <button (click)="startVideo()">Start</button>
+            <button (click)="pauseVideo()">Pause</button>
+            <button (click)="videoSpeedTime1()">x1</button>
+            <button (click)="videoSpeedTime2()">x2</button>
+            <button (click)="videoSpeedTime4()">x4</button>
+            <button (click)="showLog()">Show Log</button>
+            <app-game-timer></app-game-timer>
+            <div id="diff-counter">
+                <div *ngIf="playerName" class="player-counter">
+                    <span class="diff-self">{{ getFirstPlayerName() + ': ' }}</span>
+                    <span> {{ playerDifferencesCount }} </span>
+                    <span class="diff-self">différences trouvées</span>
+                </div>
+                <div *ngIf="secondPlayerName" class="player-counter">
+                    <span class="diff-friend">{{ getSecondPlayerName() }} :</span>
+                    <span> {{ secondPlayerDifferencesCount }} </span>
+                    <span class="diff-friend">différences trouvées</span>
+                </div>
             </div>
-            <div *ngIf="secondPlayerName" class="player-counter">
-                <span class="diff-friend">{{ getSecondPlayerName() }} :</span>
-                <span> {{ secondPlayerDifferencesCount }} </span>
-                <span class="diff-friend">différences trouvées</span>
+        </section>
+        <section id="play-area-container">
+            <app-play-area [isDiff]="false" [image]="originalImageSrc" #originalPlayArea></app-play-area>
+            <div *ngIf="!secondPlayerName" id="between-images">
+                <button mat-button>
+                    <span> <mat-icon>image_search</mat-icon></span>
+                </button>
+                <p>{{ nbHints }}</p>
+                <span id="nb-hints">indices restants</span>
             </div>
-        </div>
-    </section>
-    <section id="play-area-container">
-        <app-play-area [isDiff]="false" [image]="originalImageSrc" #originalPlayArea1></app-play-area>
-        <div *ngIf="!secondPlayerName" id="between-images">
-            <button mat-button>
-                <span> <mat-icon>image_search</mat-icon></span>
-            </button>
-            <p>{{ nbHints }}</p>
-            <span id="nb-hints">indices restants</span>
-        </div>
-        <app-play-area [isDiff]="true" [image]="diffImageSrc" #diffPlayArea1></app-play-area>
-    </section>
-    <section id="play-area-container">
+            <app-play-area [isDiff]="true" [image]="diffImageSrc" #diffPlayArea></app-play-area>
+        </section>
+        <section id="play-area-container">
         <app-play-area [isDiff]="false" [image]="originalImageSrc" #originalPlayArea2></app-play-area>
         <div *ngIf="!secondPlayerName" id="between-images">
             <button mat-button>
@@ -49,7 +55,7 @@
         </div>
         <app-play-area [isDiff]="true" [image]="diffImageSrc" #diffPlayArea3></app-play-area>
     </section>
-    <section id="play-area-container">
+    <!-- <section id="play-area-container">
         <app-play-area [isDiff]="false" [image]="originalImageSrc" #originalPlayArea4></app-play-area>
         <div *ngIf="!secondPlayerName" id="between-images">
             <button mat-button>
@@ -92,23 +98,25 @@
             <span id="nb-hints">indices restants</span>
         </div>
         <app-play-area [isDiff]="true" [image]="diffImageSrc" #diffPlayArea7></app-play-area>
-    </section>
-    <section id="bottom-area">
-        <!-- <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat> -->
-        <div id="info-game" *ngIf="currentLevel">
-            <div>
-                <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>
+    </section> -->
+        <section id="bottom-area">
+            <!-- <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat> -->
+            <div id="info-game" *ngIf="currentLevel">
+                <div>
+                    <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Difficulté : </span
+                    ><span class="info-answer">{{ currentLevel.isEasy ? 'Facile' : 'Difficile' }}</span>
+                </div>
+                <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
+                <div>
+                    <span class="info-question">Différences totale: </span><span class="info-answer">{{ currentLevel.nbDifferences }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + ' secondes' }}</span>
+                </div>
             </div>
-            <div>
-                <span class="info-question">Difficulté : </span><span class="info-answer">{{ currentLevel.isEasy ? 'Facile' : 'Difficile' }}</span>
-            </div>
-            <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
-            <div>
-                <span class="info-question">Différences totale: </span><span class="info-answer">{{ currentLevel.nbDifferences }}</span>
-            </div>
-            <div>
-                <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + ' secondes' }}</span>
-            </div>
-        </div>
-    </section>
-</div>
+        </section>
+    </div>
+</app-scale-container>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
 import { DrawService } from '@app/services/draw/draw.service';
@@ -17,9 +17,9 @@ import { Constants } from '@common/constants';
     styleUrls: ['./video-page.component.scss'],
     providers: [DrawService],
 })
-export class VideoPageComponent implements OnInit {
-    @ViewChild('originalPlayArea1', { static: false }) originalPlayArea1!: PlayAreaComponent;
-    @ViewChild('diffPlayArea1', { static: false }) diffPlayArea1!: PlayAreaComponent;
+export class VideoPageComponent implements OnInit, AfterViewInit {
+    @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
+    @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
 
     @ViewChild('originalPlayArea2', { static: false }) originalPlayArea2!: PlayAreaComponent;
     @ViewChild('diffPlayArea2', { static: false }) diffPlayArea2!: PlayAreaComponent;
@@ -27,25 +27,25 @@ export class VideoPageComponent implements OnInit {
     @ViewChild('originalPlayArea3', { static: false }) originalPlayArea3!: PlayAreaComponent;
     @ViewChild('diffPlayArea3', { static: false }) diffPlayArea3!: PlayAreaComponent;
 
-    @ViewChild('originalPlayArea4', { static: false }) originalPlayArea4!: PlayAreaComponent;
-    @ViewChild('diffPlayArea4', { static: false }) diffPlayArea4!: PlayAreaComponent;
+    // @ViewChild('originalPlayArea4', { static: false }) originalPlayArea4!: PlayAreaComponent;
+    // @ViewChild('diffPlayArea4', { static: false }) diffPlayArea4!: PlayAreaComponent;
 
-    @ViewChild('originalPlayArea5', { static: false }) originalPlayArea5!: PlayAreaComponent;
-    @ViewChild('diffPlayArea5', { static: false }) diffPlayArea5!: PlayAreaComponent;
+    // @ViewChild('originalPlayArea5', { static: false }) originalPlayArea5!: PlayAreaComponent;
+    // @ViewChild('diffPlayArea5', { static: false }) diffPlayArea5!: PlayAreaComponent;
 
-    @ViewChild('originalPlayArea6', { static: false }) originalPlayArea6!: PlayAreaComponent;
-    @ViewChild('diffPlayArea6', { static: false }) diffPlayArea6!: PlayAreaComponent;
+    // @ViewChild('originalPlayArea6', { static: false }) originalPlayArea6!: PlayAreaComponent;
+    // @ViewChild('diffPlayArea6', { static: false }) diffPlayArea6!: PlayAreaComponent;
 
-    @ViewChild('originalPlayArea7', { static: false }) originalPlayArea7!: PlayAreaComponent;
-    @ViewChild('diffPlayArea7', { static: false }) diffPlayArea7!: PlayAreaComponent;
+    // @ViewChild('originalPlayArea7', { static: false }) originalPlayArea7!: PlayAreaComponent;
+    // @ViewChild('diffPlayArea7', { static: false }) diffPlayArea7!: PlayAreaComponent;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     closePath: string = '/selection';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
-    playerName: string;
-    secondPlayerName: string;
+    playerName: string = '';
+    secondPlayerName: string | null = null;
     playerDifferencesCount: number = 0;
     secondPlayerDifferencesCount: number = 0;
     originalImageSrc: string = '';
@@ -65,21 +65,19 @@ export class VideoPageComponent implements OnInit {
      * It also connects to the the game socket and handles the response.
      */
     ngOnInit(): void {
-        console.log(VideoService.videoStack.length);
-        console.log(VideoService.videoStack);
+        this.settingGameParameters();
     }
 
     ngAfterViewInit(): void {
-        this.settingGameParameters();
-        console.log('ngAfterViewInit');
+        this.settingGameImage();
     }
 
     putInCanvas(): void {
-        if (VideoService.pointer >= VideoService.videoStack.length) {
+        if (VideoService.pointer >= VideoService.getStackLength()) {
             clearInterval(this.showVideo);
             return;
         }
-        const frame = VideoService.videoStack[VideoService.pointer++];
+        const frame = VideoService.getStackElement(VideoService.pointer++);
         console.log(frame);
         this.applyChanges(frame);
     }
@@ -91,15 +89,14 @@ export class VideoPageComponent implements OnInit {
      */
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
-        const defaultContext = this.originalPlayArea1.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffContext = this.diffPlayArea1.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultContext = this.originalPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffContext = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
         defaultContext.drawImage(canvas.defaultCanvas, 0, 0);
         diffContext.drawImage(canvas.diffCanvas, 0, 0);
     }
 
     startVideo(): void {
-        console.log(VideoService.videoStack);
         this.showVideo = setInterval(() => {
             this.putInCanvas();
         }, Constants.millisecondsInOneSecond);
@@ -113,6 +110,35 @@ export class VideoPageComponent implements OnInit {
         return VideoService.getSecondPlayerName();
     }
 
+    showLog(): void {
+        console.log(VideoService.videoLog);
+    }
+
+    videoSpeedTime4(): void {
+        clearInterval(this.showVideo);
+        this.showVideo = setInterval(() => {
+            this.putInCanvas();
+        }, Constants.millisecondsInOneSecond / 4);
+    }
+
+    videoSpeedTime2(): void {
+        clearInterval(this.showVideo);
+        this.showVideo = setInterval(() => {
+            this.putInCanvas();
+        }, Constants.millisecondsInOneSecond / 2);
+    }
+
+    videoSpeedTime1(): void {
+        clearInterval(this.showVideo);
+        this.showVideo = setInterval(() => {
+            this.putInCanvas();
+        }, Constants.millisecondsInOneSecond);
+    }
+
+    pauseVideo(): void {
+        clearInterval(this.showVideo);
+    }
+
     /**
      * Settings the game parameters.
      * It sets the level id and the player names.
@@ -120,31 +146,28 @@ export class VideoPageComponent implements OnInit {
     private settingGameParameters(): void {
         this.playerName = VideoService.getFirstPlayerName();
         this.secondPlayerName = VideoService.getSecondPlayerName();
-
-        this.settingGameImage();
     }
 
     /**
      * This method will set the game images.
      */
     private settingGameImage(): void {
-        console.log(VideoService.videoStack);
-        this.originalPlayArea1.setContext(VideoService.videoStack[0].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
-        this.diffPlayArea1.setContext(VideoService.videoStack[0].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        this.originalPlayArea.setContext(VideoService.getStackElement(0).defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
+        this.diffPlayArea.setContext(VideoService.getStackElement(0).diffCanvas.getContext('2d') as CanvasRenderingContext2D);
 
-        this.originalPlayArea2.setContext(VideoService.videoStack[1].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
-        this.diffPlayArea2.setContext(VideoService.videoStack[1].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        this.originalPlayArea2.setContext(VideoService.getStackElement(1).defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
+        this.diffPlayArea2.setContext(VideoService.getStackElement(1).diffCanvas.getContext('2d') as CanvasRenderingContext2D);
 
-        this.originalPlayArea3.setContext(VideoService.videoStack[2].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
-        this.diffPlayArea3.setContext(VideoService.videoStack[2].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        this.originalPlayArea3.setContext(VideoService.getStackElement(2).defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
+        this.diffPlayArea3.setContext(VideoService.getStackElement(2).diffCanvas.getContext('2d') as CanvasRenderingContext2D);
 
-        this.originalPlayArea4.setContext(VideoService.videoStack[3].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
-        this.diffPlayArea4.setContext(VideoService.videoStack[3].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        // this.originalPlayArea4.setContext(VideoService.videoStack[3].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
+        // this.diffPlayArea4.setContext(VideoService.videoStack[3].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
 
-        this.originalPlayArea5.setContext(VideoService.videoStack[4].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
-        this.diffPlayArea5.setContext(VideoService.videoStack[4].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        // this.originalPlayArea5.setContext(VideoService.videoStack[4].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
+        // this.diffPlayArea5.setContext(VideoService.videoStack[4].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
 
-        this.originalPlayArea6.setContext(VideoService.videoStack[5].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
-        this.diffPlayArea6.setContext(VideoService.videoStack[5].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        // this.originalPlayArea6.setContext(VideoService.videoStack[5].defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
+        // this.diffPlayArea6.setContext(VideoService.videoStack[5].diffCanvas.getContext('2d') as CanvasRenderingContext2D);
     }
 }

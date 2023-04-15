@@ -152,8 +152,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.addToVideoStack();
-            this.showToTempCanvas(VideoService.videoStack[VideoService.videoStack.length - 1]);
             this.clickedOriginalImage = true;
+            VideoService.addToLog('clicked on original image');
         }
     }
 
@@ -170,26 +170,15 @@ export class GamePageComponent implements OnInit, OnDestroy {
             // VideoService.addToStack(mousePosition, false);
             this.addToVideoStack();
             this.clickedOriginalImage = false;
+            VideoService.addToLog('clicked on diff image');
         }
     }
 
     addToVideoStack(): void {
         VideoService.addToVideoStack(
-            this.originalPlayArea.canvas.nativeElement.getContext('2d'),
-            this.diffPlayArea.canvas.nativeElement.getContext('2d'),
+            this.originalPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
+            this.diffPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
         );
-    }
-
-    showToTempCanvas(videoFrame: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }): void {
-        console.log(videoFrame);
-        const defaultCtx = this.tempVideoOriginal.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = this.tempVideoDiff.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-
-        defaultCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        diffCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-
-        defaultCtx.drawImage(videoFrame.defaultCanvas, 0, 0);
-        diffCtx.drawImage(videoFrame.diffCanvas, 0, 0);
     }
 
     /**
