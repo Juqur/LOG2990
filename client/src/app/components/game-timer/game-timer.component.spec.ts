@@ -60,7 +60,7 @@ describe('GameTimerComponent', () => {
 
         it('should return the appropriate format', () => {
             const time = 0;
-            const expectedFormat = 'Time: 00:00';
+            const expectedFormat = 'Temps: 00:00';
             spyOn(UtilityService, 'formatTime').and.returnValue('00:00');
             component.updateTimer(time);
             expect(component.currentTime).toEqual(expectedFormat);
