@@ -91,6 +91,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
         this.handleSocket();
+
         console.log(this.gamePageService.getImageData);
         console.log(this.gamePageService.getAreaNotFound);
     }
@@ -128,7 +129,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
         });
         this.socketHandler.on('game', 'victory', () => {
-            this.gamePageService.handleVictory(this.levelId);
+            this.gamePageService.handleVictory(this.levelId, this.playerName, this.secondPlayerName);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
             this.gamePageService.handleOpponentAbandon();
@@ -152,7 +153,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
-            VideoService.addToStack(mousePosition, true);
+            VideoService.addGamePageToStack(
+                this.originalPlayArea.canvas.nativeElement.getContext('2d'),
+                this.diffPlayArea.canvas.nativeElement.getContext('2d'),
+            );
             this.clickedOriginalImage = true;
         }
     }
@@ -167,7 +171,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
-            VideoService.addToStack(mousePosition, false);
+            // VideoService.addToStack(mousePosition, false);
+            VideoService.addGamePageToStack(
+                this.originalPlayArea.canvas.nativeElement.getContext('2d'),
+                this.diffPlayArea.canvas.nativeElement.getContext('2d'),
+            );
             this.clickedOriginalImage = false;
         }
     }

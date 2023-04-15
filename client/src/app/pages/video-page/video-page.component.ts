@@ -31,8 +31,8 @@ export class VideoPageComponent implements OnInit, OnDestroy {
     closePath: string = '/selection';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
     playerName: string;
-    playerDifferencesCount: number = 0;
     secondPlayerName: string;
+    playerDifferencesCount: number = 0;
     secondPlayerDifferencesCount: number = 0;
     originalImageSrc: string = '';
     diffImageSrc: string = '';
@@ -75,8 +75,6 @@ export class VideoPageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
-        console.log(this.gamePageService.getImageData);
-        console.log(this.gamePageService.getAreaNotFound);
     }
 
     /**
@@ -88,52 +86,55 @@ export class VideoPageComponent implements OnInit, OnDestroy {
         this.gamePageService.stopCheatMode();
     }
 
-    /**
-     * This method handles the case where the user clicks on the original image.
-     * It will send the click to the server.
-     *
-     * @param event The mouse event.
-     */
-    clickedOnOriginal(event: MouseEvent): void {
-        const mousePosition = this.gamePageService.verifyClick(event);
-        if (mousePosition >= 0) {
-            VideoService.addToStack(mousePosition, true);
-            this.clickedOriginalImage = true;
-        }
-    }
-
-    /**
-     * This method handles the case where the user clicks on the difference image.
-     * It will send the click to the server.
-     *
-     * @param event The mouse event.
-     */
-    clickedOnDiff(event: MouseEvent): void {
-        const mousePosition = this.gamePageService.verifyClick(event);
-        if (mousePosition >= 0) {
-            VideoService.addToStack(mousePosition, false);
-            this.clickedOriginalImage = false;
-        }
-    }
-
     putInCanvas(): void {
+        // if (VideoService.isStackEmpty()) {
+        //     clearInterval(this.showVideo);
+        //     return;
+        // }
+        // const frame = VideoService.popStack() as unknown as { clickedOnOriginal: boolean; mousePosition: number };
+        // if (frame.clickedOnOriginal) {
+        //     this.originalPlayArea.simulateClick(frame.mousePosition);
+        // } else if (!frame.clickedOnOriginal) {
+        //     this.diffPlayArea.simulateClick(frame.mousePosition);
+        // }
         if (VideoService.isStackEmpty()) {
             clearInterval(this.showVideo);
             return;
         }
-        const frame = VideoService.popStack() as unknown as { clickedOnOriginal: boolean; mousePosition: number };
-        console.log(frame);
-        if (frame.clickedOnOriginal) {
-            this.originalPlayArea.simulateClick(frame.mousePosition);
-        } else if (!frame.clickedOnOriginal) {
-            this.diffPlayArea.simulateClick(frame.mousePosition);
-        }
+        const frame = VideoService.popStack() as unknown as { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement };
+        this.applyChanges(frame);
     }
+
+    /**
+     * After the undo or redo function has been called, this method will apply the changes to the canvas.
+     *
+     * @param canvas Takes 2 canvas, the default (left) canvas and the diff (right) canvas.
+     */
+    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
+        if (!canvas) return;
+        const defaultContex = this.originalPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffContex = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+
+        defaultContex.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        diffContex.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+
+        defaultContex.drawImage(canvas.defaultCanvas, 0, 0);
+        diffContex.drawImage(canvas.diffCanvas, 0, 0);
+    }
+
 
     startVideo(): void {
         this.showVideo = setInterval(() => {
             this.putInCanvas();
         }, Constants.millisecondsInOneSecond);
+    }
+
+    getFirstPlayerName(): string {
+        return VideoService.getFirstPlayerName();
+    }
+
+    getSecondPlayerName(): string {
+        return VideoService.getSecondPlayerName();
     }
 
     /**
@@ -142,8 +143,8 @@ export class VideoPageComponent implements OnInit, OnDestroy {
      */
     private settingGameParameters(): void {
         this.levelId = this.route.snapshot.params.id;
-        this.playerName = this.route.snapshot.queryParams.playerName;
-        this.secondPlayerName = this.route.snapshot.queryParams.opponent;
+        this.playerName = VideoService.getFirstPlayerName();
+        this.secondPlayerName = VideoService.getSecondPlayerName();
 
         this.settingGameImage();
     }

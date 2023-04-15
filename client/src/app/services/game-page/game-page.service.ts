@@ -7,6 +7,7 @@ import { AudioService } from '@app/services/audio/audio.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/game-data';
 import { environment } from 'src/environments/environment';
@@ -153,11 +154,12 @@ export class GamePageService {
      * This method is called when the player wins.
      * It will open a dialog and play a victory sound.
      */
-    handleVictory(levelId: number): void {
+    handleVictory(levelId: number, firstPlayerName: string, secondPlayerName: string): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.router.navigate(['/video/' + levelId], {});
+                VideoService.setVariables(firstPlayerName, secondPlayerName);
             }
         });
 

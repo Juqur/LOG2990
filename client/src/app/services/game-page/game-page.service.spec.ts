@@ -125,22 +125,22 @@ describe('GamePageService', () => {
 
     describe('handleVictory', () => {
         it('should call create', () => {
-            service.handleVictory();
+            service.handleVictory(1, '', '');
             expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
         });
 
         it('should call reset', () => {
-            service.handleVictory();
+            service.handleVictory(1, '', '');
             expect(audioServiceSpy.reset).toHaveBeenCalled();
         });
 
         it('should call play', () => {
-            service.handleVictory();
+            service.handleVictory(1, '', '');
             expect(audioServiceSpy.play).toHaveBeenCalled();
         });
 
         it('should call openDialog', () => {
-            service.handleVictory();
+            service.handleVictory(1, '', '');
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['winGameDialogData'], service['closePath']);
         });
     });
