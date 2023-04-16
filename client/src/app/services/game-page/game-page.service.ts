@@ -35,6 +35,7 @@ export class GamePageService {
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
+    private hintSection: number[] = [];
 
     // eslint-disable-next-line max-params
     constructor(
@@ -242,14 +243,16 @@ export class GamePageService {
      * @param section The quadrant or sub-quadrant in which the hint is
      */
     handleHintRequest(section: number[]): void {
+        if (section.length < 1 || section.length > 2) { return; }
+        this.hintSection = section;
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawHintSection(section);
-        this.drawServiceDiff.drawHintSection(section);
+        this.drawServiceOriginal.drawHintSection(this.hintSection);
+        this.drawServiceDiff.drawHintSection(this.hintSection);
     }
 
     /**
@@ -353,6 +356,7 @@ export class GamePageService {
                     this.diffPlayArea.deleteTempCanvas();
                     this.originalPlayArea.deleteTempCanvas();
                     this.copyDiffPlayAreaContext();
+                    this.handleHintRequest(this.hintSection);
                 }, 0);
             });
     }
@@ -375,6 +379,7 @@ export class GamePageService {
      * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
+        this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
@@ -405,6 +410,7 @@ export class GamePageService {
      * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
+        this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
