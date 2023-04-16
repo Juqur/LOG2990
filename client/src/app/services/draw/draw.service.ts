@@ -89,6 +89,28 @@ export class DrawService {
         this.context.fillText('ERREUR', coord.x, coord.y);
     }
 
+     /**
+     * Draws a rectangle showing the quadrant or subquadrant of the difference.
+     *
+     * @param Section An array of 1 or two numbers. The first number is the quadrant, the second is the subquadrant.
+     */
+     drawHintSection(section: number[]) {
+        const rectangleZone: number[] = [0, 0, 0, 0];
+        if (section[1] === Constants.TOP_RIGHT_QUADRANT || section[1] === Constants.BOTTOM_RIGHT_QUADRANT)
+            rectangleZone[0] = this.width / Constants.SUBQUADRANT_DIVIDER;
+        if (section[1] === Constants.BOTTOM_LEFT_QUADRANT || section[1] === Constants.BOTTOM_RIGHT_QUADRANT)
+            rectangleZone[1] = this.height / Constants.SUBQUADRANT_DIVIDER;
+        rectangleZone[2] = section[1] ? this.width / Constants.SUBQUADRANT_DIVIDER : this.width / 2;
+        rectangleZone[3] = section[1] ? this.height / Constants.SUBQUADRANT_DIVIDER : this.height / 2;
+        rectangleZone[0] += section[0] === Constants.TOP_RIGHT_QUADRANT || section[0] === Constants.BOTTOM_RIGHT_QUADRANT ? this.width / 2 : 0;
+        rectangleZone[1] += section[0] === Constants.BOTTOM_LEFT_QUADRANT || section[0] === Constants.BOTTOM_RIGHT_QUADRANT ? this.height / 2 : 0;
+        this.context.strokeStyle = 'green';
+        this.context.lineWidth = 5;
+        this.context.beginPath();
+        this.context.rect(rectangleZone[0], rectangleZone[1], rectangleZone[2], rectangleZone[3]);
+        this.context.stroke();
+    }
+
     /**
      * Method used to draw on the canvas at a given coordinate.
      *
