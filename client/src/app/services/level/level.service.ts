@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GameConstants } from '@app/interfaces/game-constants';
+import { GameConstants } from '@common/game-constants';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
@@ -115,8 +115,7 @@ export class LevelService {
                 }
             }
             if (valueChanged) {
-                this.communicationService.setNewGameConstants(this.gameConstants);
-                // this.communicationService.resetGameConstants();
+                this.communicationService.setNewGameConstants(this.gameConstants).subscribe();
             }
         }
     }

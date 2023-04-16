@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LevelFormData } from '@app/classes/level-form-data';
-import { GameConstants } from '@app/interfaces/game-constants';
 import { Level } from '@app/levels';
+import { GameConstants } from '@common/game-constants';
 import { HttpMessage } from '@common/http-message';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -122,8 +122,6 @@ export class CommunicationService {
      * This function resets the game constants to their base values.
      */
     resetGameConstants(): Observable<void> {
-        // eslint-disable-next-line no-console
-        console.log('called resetGameConstants in client');
         return this.http
             .patch<void>(`${this.baseUrl}api` + '/database/constants/reset', null)
             .pipe(catchError(this.handleError<void>('getGameConstants')));
@@ -135,10 +133,6 @@ export class CommunicationService {
      * @param gameConstants The new game constants.
      */
     setNewGameConstants(gameConstants: GameConstants): Observable<void> {
-        // eslint-disable-next-line no-console
-        console.log('called setNewGameConstants in client');
-        // eslint-disable-next-line no-console
-        console.log(gameConstants);
         return this.http
             .patch<void>(`${this.baseUrl}api` + '/database/constants', { gameConstants })
             .pipe(catchError(this.handleError<void>('getGameConstants')));

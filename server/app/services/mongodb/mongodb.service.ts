@@ -3,6 +3,7 @@ import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
+import { GameConstants as GameConstantsDto } from '@common/game-constants';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Level as LevelDto } from 'assets/data/level';
@@ -224,9 +225,9 @@ export class MongodbService {
      *
      * @returns The game constants.
      */
-    async getGameConstants(): Promise<GameConstants> {
+    async getGameConstants(): Promise<GameConstantsDto> {
         const result = await this.gameConstantsModel.find({}).exec();
-        return result[0] as GameConstants;
+        return result[0] as GameConstantsDto;
     }
 
     /**
@@ -238,7 +239,7 @@ export class MongodbService {
             initialTime: Constants.INIT_COUNTDOWN_TIME,
             timePenaltyHint: Constants.HINT_PENALTY,
             timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
-        } as GameConstants);
+        } as GameConstantsDto);
     }
 
     /**
@@ -246,14 +247,13 @@ export class MongodbService {
      *
      * @param gameConstants The new game constants.
      */
-    async setNewGameConstants(gameConstants: GameConstants): Promise<void> {
-        await this.gameConstantsModel.updateMany(
-            {},
-            {
+    async setNewGameConstants(gameConstants: GameConstantsDto): Promise<void> {
+        await this.gameConstantsModel
+            .findOneAndUpdate({}, {
                 initialTime: gameConstants.initialTime,
                 timePenaltyHint: gameConstants.timePenaltyHint,
                 timeGainedDifference: gameConstants.timeGainedDifference,
-            },
-        );
+            } as GameConstants)
+            .exec();
     }
 }
