@@ -187,13 +187,24 @@ describe('GamePageService', () => {
     describe('handleHintRequest', () => {
         const mockCanvas = document.createElement('canvas');
 
+
         it('should call drawHintSection on both canvas', () => {
-            spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
             const mockSection = [1];
             service.handleHintRequest(mockSection);
+            expect(getCanvasSpy).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledWith(mockSection);
         });
+
+        // it('should not make calls if section is empty', () => {
+        //     const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+        //     const mockSection = [] as number[];
+        //     service.handleHintRequest(mockSection);
+        //     expect(getCanvasSpy).not.toHaveBeenCalled();
+        //     expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
+        //     expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
+        // });
     });
 
     describe('handleHintShapeRequest', () => {
@@ -423,9 +434,11 @@ describe('GamePageService', () => {
 
     describe('handleAreaNotFoundInOriginal', () => {
         const mockCanvas = document.createElement('canvas');
+        let resetCanvasSpy: jasmine.Spy;
         let audioSpy: jasmine.Spy;
 
         beforeEach(() => {
+            resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
             spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
@@ -438,6 +451,11 @@ describe('GamePageService', () => {
         it('should call drawError', () => {
             service['handleAreaNotFoundInOriginal']();
             expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call reset canvas', () => {
+            service['handleAreaNotFoundInOriginal']();
+            expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
     });
 
