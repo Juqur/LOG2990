@@ -88,6 +88,7 @@ export namespace Constants {
     export const INIT_COUNTDOWN_TIME = 30;
     export const INIT_HINTS_NB = 3;
     export const HINT_PENALTY = 5;
+    export const FOUND_DIFFERENCE_BONUS = 5;
     export const COUNTDOWN_TIME_WIN = 5;
     export const DEFAULT_TEST_NUMBER = 7;
 

@@ -23,6 +23,35 @@ export class ImageService {
     constructor(private mongodbService: MongodbService) {}
 
     /**
+     * Gets all the levels from the json file.
+     *
+     * @returns All the levels information.
+     */
+    async getLevels(): Promise<Level[]> {
+        try {
+            const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
+            return JSON.parse(promises.toString()) as Level[];
+        } catch (error) {
+            return undefined;
+        }
+    }
+
+    /**
+     * Gets the level from the json file.
+     *
+     * @param id The id of the level.
+     * @returns The level information.
+     */
+    async getLevel(id: number): Promise<Level> {
+        try {
+            const levels = await this.getLevels();
+            return levels.find((level) => level.id === id);
+        } catch (error) {
+            return undefined;
+        }
+    }
+
+    /**
      * Gets the number of differences between the two images.
      *
      * @param fileName The name of the file that has the differences.
@@ -104,7 +133,7 @@ export class ImageService {
         try {
             const newId = (await this.mongodbService.getLastLevelId()) + 1;
             const levelData = newLevel as LevelData;
-            await this.mongodbService.createNewLevel({
+            const level = {
                 id: newId,
                 name: levelData.name,
                 playerSolo: Constants.defaultPlayerSolo,
@@ -113,7 +142,8 @@ export class ImageService {
                 timeMulti: Constants.defaultTimeMulti,
                 isEasy: levelData.isEasy === 'true',
                 nbDifferences: levelData.nbDifferences,
-            } as Level);
+            } as Level;
+            await this.mongodbService.createNewLevel(level);
 
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
                 if (error) throw error;
@@ -125,7 +155,7 @@ export class ImageService {
                 if (error) throw error;
             });
 
-            return this.confirmUpload();
+            return this.confirmUpload(level);
         } catch (error) {
             return this.handleErrors(error);
         }
@@ -165,10 +195,11 @@ export class ImageService {
      *
      * @returns The message that the level was successfully uploaded
      */
-    private confirmUpload(): Message {
+    private confirmUpload(level: Level): Message {
         const message: Message = new Message();
         message.title = 'success';
         message.body = 'Le jeu a été téléchargé avec succès!';
+        message.level = level;
         return message;
     }
 
