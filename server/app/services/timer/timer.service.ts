@@ -101,6 +101,6 @@ export class TimerService {
      * @returns The current time of the timer as a number.
      */
     getCurrentTime(socketId: string): number {
-        return this.timeMap.get(socketId) ?? 0;
+        return this.timeMap.get(socketId) ? this.timeMap.get(socketId).time : 0;
     }
 }

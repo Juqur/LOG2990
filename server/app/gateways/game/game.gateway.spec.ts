@@ -88,6 +88,10 @@ describe('GameGateway', () => {
         jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
     });
 
+    afterEach(() => {
+        restore();
+    });
+
     it('should be defined', () => {
         expect(gateway).toBeDefined();
     });
@@ -493,7 +497,6 @@ describe('GameGateway', () => {
             const addGameHistorySpy = jest.spyOn(mongodbService, 'addGameHistory');
             await gateway['handlePlayerLeavingGame'](socket);
             expect(addGameHistorySpy).toHaveBeenCalledTimes(1);
-            restore();
         });
     });
 

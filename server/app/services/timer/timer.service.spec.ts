@@ -70,7 +70,7 @@ describe('TimerService', () => {
         it('should delete the key map', () => {
             const currentTime = { time: 9, startDate: new Date() };
             service['timeMap'].set('socket', currentTime);
-            service['timeIntervalMap'].set('socket', setInterval(jest.fn(), currentTime.time));
+            service['timeIntervalMap'].set('socket', setInterval(jest.fn().call, currentTime.time));
             const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation();
 
             service.stopTimer('socket');
@@ -101,7 +101,7 @@ describe('TimerService', () => {
 
     describe('getCurrentTime', () => {
         it('should return curent time', () => {
-            const currentTime = 55;
+            const currentTime = { time: 55, startDate: new Date() };
             service['timeMap'].set('socket', currentTime);
             service.getCurrentTime('socket');
             expect(service['timeMap'].get('socket')).toEqual(currentTime);
