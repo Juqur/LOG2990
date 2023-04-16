@@ -1,5 +1,6 @@
 import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history.schema';
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
+import { Message } from '@app/model/schema/message.schema';
 import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
@@ -25,7 +26,7 @@ export class MongodbService {
     /**
      * This method creates a new level object inside the database.
      *
-     * @param level the level DTO with the relevant information to create a new level in the database.
+     * @param level The level DTO with the relevant information to create a new level in the database.
      */
     async createNewLevel(level: LevelDto): Promise<void> {
         await this.levelModel.create({
@@ -44,7 +45,7 @@ export class MongodbService {
     /**
      * This method deletes a level from the database based on it's id.
      *
-     * @param levelId the id of the level we wish to delete.
+     * @param levelId The id of the level we wish to delete.
      */
     async deleteLevel(levelId: number): Promise<void> {
         await this.levelModel.deleteOne({ id: levelId }).exec();
@@ -57,7 +58,7 @@ export class MongodbService {
      * There is a possibility we have no elements in the database and so this query
      * can return null.
      *
-     * @returns returns all the levels in the db.
+     * @returns All the levels in the db.
      */
     async getAllLevels(): Promise<LevelDto[] | null> {
         return (await this.levelModel.find({}).exec()) as LevelDto[] | null;
@@ -70,8 +71,8 @@ export class MongodbService {
      * can return null or simply that the provided id does not match any of the ids
      * inside the database.
      *
-     * @param levelId the id of the level we want to find.
-     * @returns the level associated with the given id.
+     * @param levelId The id of the level we want to find.
+     * @returns The level associated with the given id.
      */
     async getLevelById(levelId: number): Promise<LevelDto | null> {
         return (await this.levelModel.findOne({ id: levelId }).exec()) as LevelDto | null;
@@ -80,17 +81,27 @@ export class MongodbService {
     /**
      * This method returns the id of the last inserted level.
      *
-     * @returns the id of the last inserted level.
+     * @returns The id of the last inserted level.
      */
     async getLastLevelId(): Promise<number> {
-        return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
+        try {
+            // Verifies that there is at least one level in the database.
+            const test = await this.levelModel.findOne({});
+            if (test) {
+                return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
+            } else {
+                return 0;
+            }
+        } catch (error) {
+            this.handleErrors(error);
+        }
     }
 
     /**
      * This method returns the solo highscores times of the specified level.
      *
-     * @param id the id of the level.
-     * @returns level.timesolo the solo highscores times of the specified level.
+     * @param id The id of the level.
+     * @returns The solo highscores times of the specified level.
      */
     async getTimeSoloArray(levelId: number): Promise<number[] | null> {
         return (await this.levelModel.findOne({ id: levelId }).exec()).timeSolo as number[] | null;
@@ -99,8 +110,8 @@ export class MongodbService {
     /**
      * This method returns the solo highscores names of the specified level.
      *
-     * @param id the id of the level.
-     * @returns the solo highscores names of the specified level.
+     * @param id The id of the level.
+     * @returns The solo highscores names of the specified level.
      */
     async getPlayerSoloArray(levelId: number): Promise<string[] | null> {
         return (await this.levelModel.findOne({ id: levelId }).exec()).playerSolo as string[] | null;
@@ -109,8 +120,8 @@ export class MongodbService {
     /**
      * This method returns the multiplayer highscores times of the specified level.
      *
-     * @param id the id of the level.
-     * @returns level.timesolo the multiplayer highscores times of the specified level.
+     * @param id The id of the level.
+     * @returns level.timesolo The multiplayer highscores times of the specified level.
      */
     async getTimeMultiArray(levelId: number): Promise<number[] | null> {
         return (await this.levelModel.findOne({ id: levelId }).exec()).timeMulti as number[] | null;
@@ -135,8 +146,8 @@ export class MongodbService {
     /*
      * This method returns the multiplayer highscores names of the specified level.
      *
-     * @param id the id of the level.
-     * @returns the multiplayer highscores names of the specified level.
+     * @param id The id of the level.
+     * @returns The multiplayer highscores names of the specified level.
      */
     async getPlayerMultiArray(levelId: number): Promise<string[] | null> {
         return (await this.levelModel.findOne({ id: levelId }).exec()).playerMulti as string[] | null;
@@ -147,10 +158,10 @@ export class MongodbService {
      * of a game that has just completed as well as the game state associated with this game
      * and verifies if the time is a new high core, if it is it updates the database accordingly.
      *
-     * @param endTime the duration of the game in seconds.
-     * @param gameState the game state associated with the game that just finished.
+     * @param endTime The duration of the game in seconds.
+     * @param gameState The game state associated with the game that just finished.
      */
-    async updateHighscore(endTime: number, gameState: GameState): Promise<void> {
+    async updateHighscore(endTime: number, gameState: GameState): Promise<number> {
         let names: string[] = [];
         let times: number[] = [];
 
@@ -179,6 +190,7 @@ export class MongodbService {
             } else {
                 await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerSolo: names, timeSolo: times }).exec();
             }
+            return names.indexOf(gameState.playerName);
         }
     }
 
@@ -190,7 +202,7 @@ export class MongodbService {
      * in other words, if the page number is lower than 0 or that it is greater than the amount of
      * pages we can construct with our level count.
      *
-     * @param pageNumber the page number we want to get the levels for.
+     * @param pageNumber The page number we want to get the levels for.
      */
     async getLevelsInPage(pageNumber: number): Promise<Level[] | null> {
         if (pageNumber <= 0) {
@@ -201,5 +213,18 @@ export class MongodbService {
             .skip((pageNumber - 1) * Constants.levelsPerPage)
             .limit(Constants.levelsPerPage)
             .exec()) as Level[];
+    }
+
+    /**
+     * Internal method that handles errors when fetching the previous id in the database.
+     *
+     * @param err The error to be handled
+     * @returns The message that the level was not successfully uploaded
+     */
+    private handleErrors(err: Error): Message {
+        const message: Message = new Message();
+        message.title = 'error';
+        message.body = 'Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: ' + err.message;
+        return message;
     }
 }

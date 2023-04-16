@@ -98,4 +98,16 @@ describe('TimerService', () => {
             expect(service['timeMap'].get('socket').time).toEqual(currentTime.time - timeToSubtract);
         });
     });
+
+    describe('getCurrentTime', () => {
+        it('should return curent time', () => {
+            const currentTime = 55;
+            service['timeMap'].set('socket', currentTime);
+            service.getCurrentTime('socket');
+            expect(service['timeMap'].get('socket')).toEqual(currentTime);
+        });
+        it('should return 0 if no current time', () => {
+            expect(service.getCurrentTime('socket')).toEqual(0);
+        });
+    });
 });

@@ -2,17 +2,18 @@ import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
 import { Constants } from '@common/constants';
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service is used to "draw" on a canvas. This includes drawing words or a grid pattern.
  *
  * @author Nikolay Radoev & Galen Hu
  * @class DrawService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class DrawService {
     context: CanvasRenderingContext2D;
+    isInCanvas = true;
     private paintColor = 'black';
     private brushSize = 1;
 
@@ -91,31 +92,34 @@ export class DrawService {
     /**
      * Method used to draw on the canvas at a given coordinate.
      *
-     * @param prevCoord The previous coordinate.
-     * @param actCoord The current coordinate.
+     * @param previousCoordinate The previous coordinate.
+     * @param activeCoordinate The current coordinate.
      */
-    draw(prevCoord: Vec2, actCoord: Vec2 = { x: -1, y: -1 }): void {
+    draw(previousCoordinate: Vec2, activeCoordinate: Vec2 = { x: Constants.DEFAULT_COORDINATE, y: Constants.DEFAULT_COORDINATE }): void {
         this.context.beginPath();
-        this.context.moveTo(prevCoord.x, prevCoord.y);
-        if (actCoord.x !== Constants.minusOne && actCoord.y !== Constants.minusOne) {
-            this.context.lineTo(actCoord.x, actCoord.y);
+        this.context.moveTo(previousCoordinate.x, previousCoordinate.y);
+        if (activeCoordinate.x !== Constants.DEFAULT_COORDINATE && activeCoordinate.y !== Constants.DEFAULT_COORDINATE) {
+            if (!this.isInCanvas) {
+                this.context.moveTo(activeCoordinate.x, activeCoordinate.y);
+                this.isInCanvas = true;
+            }
+            this.context.lineTo(activeCoordinate.x, activeCoordinate.y);
         } else {
-            this.context.lineTo(prevCoord.x + 1, prevCoord.y);
+            this.context.lineTo(previousCoordinate.x + 1, previousCoordinate.y);
         }
-
         this.context.stroke();
     }
 
     /**
      * This function is called when the user is on rectangle tool and draws a rectangle.
      *
-     * @param coord Starting coordinate of the rectangle.
+     * @param coordinate Starting coordinate of the rectangle.
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    drawRect(coord: Vec2, width: number, height: number): void {
+    drawRectangle(coordinate: Vec2, width: number, height: number): void {
         this.context.beginPath();
-        this.context.rect(coord.x, coord.y, width, height);
+        this.context.rect(coordinate.x, coordinate.y, width, height);
         this.context.fill();
         this.context.stroke();
     }

@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GameEvents } from './game.gateway.events';
+import { Constants } from '@common/constants';
 
 /**
  * This gateway is used to handle to all socket events.
@@ -246,6 +247,23 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnStopCheatMode)
     onStopCheatMode(socket: Socket): void {
         this.gameService.stopCheatMode(socket.id);
+    }
+
+    /**
+     * Method called when the player asks for a hint
+     *
+     * @param socket The socket of the player.
+     */
+    @SubscribeMessage(GameEvents.OnHintRequest)
+    async onHintRequest(socket: Socket): Promise<void> {
+        if (this.timerService.getCurrentTime(socket.id) > 0) {
+            const data = await this.gameService.askHint(socket.id);
+            if (data !== undefined) {
+                this.timerService.addTime(socket.id, Constants.HINT_PENALTY); // À CHANGER LORS DE L'IMPLEMENTATION DES CONSTANTES DE JEU!!!
+                this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
+                socket.emit(GameEvents.HintRequest, data);
+            }
+        }
     }
 
     /**

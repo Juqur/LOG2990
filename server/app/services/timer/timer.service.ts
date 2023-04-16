@@ -8,7 +8,7 @@ export class TimerService {
     private timeIntervalMap = new Map<string, NodeJS.Timeout>();
 
     /**
-     * Gets game time
+     * Gets the game time
      */
     getTime(socketId): number {
         return this.timeMap.get(socketId).time;
@@ -91,5 +91,16 @@ export class TimerService {
         if (currentTime) {
             this.timeMap.set(socketId, { time: currentTime.time - time, startDate: currentTime.startDate });
         }
+    }
+
+    /**
+     * Returns the current time of the timer of a player.
+     * If the player does not have a timer, it returns 0.
+     *
+     * @param socket The socket of the player.
+     * @returns The current time of the timer as a number.
+     */
+    getCurrentTime(socketId: string): number {
+        return this.timeMap.get(socketId) ?? 0;
     }
 }
