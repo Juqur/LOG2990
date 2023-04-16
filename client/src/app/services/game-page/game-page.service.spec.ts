@@ -36,14 +36,14 @@ describe('GamePageService', () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError', 'drawHintSection']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', [
             'getCanvas',
             'drawPlayArea',
             'flashArea',
             'timeout',
             'deleteTempCanvas',
-            'showHintSection',
+            
         ]);
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
@@ -186,11 +186,11 @@ describe('GamePageService', () => {
     });
 
     describe('handleHintRequest', () => {
-        it('should call showHintSection on both canvas', () => {
+        it('should call drawHintSection on both canvas', () => {
             const mockSection = [1];
             service.handleHintRequest(mockSection);
-            expect(playAreaComponentSpy.showHintSection).toHaveBeenCalledTimes(2);
-            expect(playAreaComponentSpy.showHintSection).toHaveBeenCalledWith(mockSection);
+            expect(drawServiceSpy.drawHintSection).toHaveBeenCalledTimes(2);
+            expect(drawServiceSpy.drawHintSection).toHaveBeenCalledWith(mockSection);
         });
     });
 
