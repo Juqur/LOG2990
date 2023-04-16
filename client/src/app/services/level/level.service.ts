@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { GameConstants } from '@common/game-constants';
 import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
+import { GameConstants } from '@common/game-constants';
 import { tap } from 'rxjs';
 
 /**
@@ -91,24 +91,25 @@ export class LevelService {
         if (this.gameConstants) {
             const input = event.target as HTMLInputElement;
             let valueChanged = false;
+            const inputValue = Number(input.value);
             switch (input.id) {
                 case 'mat-input-0': {
-                    if (Number(input.value) !== this.gameConstants.initialTime) {
-                        this.gameConstants.initialTime = Number(input.value);
+                    if (inputValue !== this.gameConstants.initialTime && inputValue <= Constants.MAX_GAME_TIME_LENGTH) {
+                        this.gameConstants.initialTime = inputValue;
                         valueChanged = true;
                     }
                     break;
                 }
                 case 'mat-input-1': {
-                    if (Number(input.value) !== this.gameConstants.timePenaltyHint) {
-                        this.gameConstants.timePenaltyHint = Number(input.value);
+                    if (inputValue !== this.gameConstants.timePenaltyHint) {
+                        this.gameConstants.timePenaltyHint = inputValue;
                         valueChanged = true;
                     }
                     break;
                 }
                 case 'mat-input-2': {
-                    if (Number(input.value) !== this.gameConstants.timeGainedDifference) {
-                        this.gameConstants.timeGainedDifference = Number(input.value);
+                    if (inputValue !== this.gameConstants.timeGainedDifference) {
+                        this.gameConstants.timeGainedDifference = inputValue;
                         valueChanged = true;
                     }
                     break;
