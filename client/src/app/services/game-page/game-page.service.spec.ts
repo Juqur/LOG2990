@@ -186,8 +186,6 @@ describe('GamePageService', () => {
 
     describe('handleHintRequest', () => {
         const mockCanvas = document.createElement('canvas');
-
-
         it('should call drawHintSection on both canvas', () => {
             const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
             const mockSection = [1];
@@ -196,15 +194,14 @@ describe('GamePageService', () => {
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledWith(mockSection);
         });
-
-        // it('should not make calls if section is empty', () => {
-        //     const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
-        //     const mockSection = [] as number[];
-        //     service.handleHintRequest(mockSection);
-        //     expect(getCanvasSpy).not.toHaveBeenCalled();
-        //     expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
-        //     expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
-        // });
+        it('should not make calls if section is empty', () => {
+            const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            const mockSection = [] as number[];
+            service.handleHintRequest(mockSection);
+            expect(getCanvasSpy).not.toHaveBeenCalled();
+            expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
+            expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
+        });
     });
 
     describe('handleHintShapeRequest', () => {
@@ -359,6 +356,20 @@ describe('GamePageService', () => {
             service['handleAreaFoundInDiff']([], false);
             expect(service['hintSection']).toEqual([]);
         });
+    });
+
+    describe('copyDiffPlayAreaContext', () => {
+        it('should call the appropriate functions', () => {
+            const mockCanvas = document.createElement('canvas');
+            const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            const getImgDataSpy = spyOn(CanvasRenderingContext2D.prototype, 'getImageData');
+            const putImgDataSpy = spyOn(CanvasRenderingContext2D.prototype, 'putImageData');
+            service['copyDiffPlayAreaContext']();
+            expect(getCanvasSpy).toHaveBeenCalledTimes(2);
+            expect(getImgDataSpy).toHaveBeenCalledTimes(1);
+            expect(putImgDataSpy).toHaveBeenCalledTimes(1);
+        });
+
     });
 
     describe('handleAreaNotFoundInDiff', () => {
