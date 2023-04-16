@@ -97,10 +97,11 @@ export class GamePageService {
     }
 
     /**
-     * This method reset the images data at the start of a new game.
+     * This method reset the images data and the hintSection at the start of a new game.
      */
     resetImagesData(): void {
         this.imagesData = [];
+        this.hintSection = [];
     }
 
     /**
@@ -250,10 +251,10 @@ export class GamePageService {
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceOriginal.drawHintSection(this.hintSection);
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawHintSection(this.hintSection);
         this.drawServiceDiff.drawHintSection(this.hintSection);
     }
 
