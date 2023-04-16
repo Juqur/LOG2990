@@ -89,12 +89,12 @@ export class DrawService {
         this.context.fillText('ERREUR', coord.x, coord.y);
     }
 
-     /**
+    /**
      * Draws a rectangle showing the quadrant or subquadrant of the difference.
      *
      * @param Section An array of 1 or two numbers. The first number is the quadrant, the second is the subquadrant.
      */
-     drawHintSection(section: number[]) {
+    drawHintSection(section: number[]) {
         const rectangleZone: number[] = [0, 0, 0, 0];
         if (section[1] === Constants.TOP_RIGHT_QUADRANT || section[1] === Constants.BOTTOM_RIGHT_QUADRANT)
             rectangleZone[0] = this.width / Constants.SUBQUADRANT_DIVIDER;

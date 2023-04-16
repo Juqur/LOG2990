@@ -157,5 +157,4 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
-
 }

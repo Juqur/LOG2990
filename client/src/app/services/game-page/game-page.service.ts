@@ -45,7 +45,7 @@ export class GamePageService {
         private audioService: AudioService,
         private drawServiceDiff: DrawService,
         private drawServiceOriginal: DrawService,
-    ) { }
+    ) {}
 
     /**
      * Ensures the difference array is valid and not empty.
@@ -243,7 +243,9 @@ export class GamePageService {
      * @param section The quadrant or sub-quadrant in which the hint is
      */
     handleHintRequest(section: number[]): void {
-        if (section.length < 1 || section.length > 2) { return; }
+        if (section.length < 1 || section.length > 2) {
+            return;
+        }
         this.hintSection = section;
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
