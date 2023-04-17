@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Constants } from '@common/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +15,7 @@ export class TimerService {
         console.log('start timer');
         setInterval(() => {
             TimerService.time++;
-        }, 1);
+        }, Constants.TIMER_INTERVAL);
     }
 
     static stopTimer(): void {
