@@ -322,7 +322,8 @@ export class GameGateway {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(socket, gameState);
                 otherSocket.emit(GameEvents.OpponentAbandoned);
-                this.gameService.deleteUserFromGame(otherSocket);
+                if (!gameState.timedLevelList) this.gameService.deleteUserFromGame(otherSocket);
+                this.gameService.setOtherPlayerAbandoned(otherSocket.id);
             }
             this.gameService.deleteUserFromGame(socket);
             this.timerService.stopTimer(socket.id);
