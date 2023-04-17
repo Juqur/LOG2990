@@ -7,7 +7,6 @@
             <button (click)="videoSpeedTime1()">x1</button>
             <button (click)="videoSpeedTime2()">x2</button>
             <button (click)="videoSpeedTime4()">x4</button>
-            <button (click)="showLog()">Show Log</button>
             <button (click)="replayVideo()">Replay Video</button>
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">
@@ -37,7 +36,7 @@
             <app-play-area [image]="diffImageSrc" #diffPlayArea></app-play-area>
         </section>
         <section id="bottom-area">
-            <app-video-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-video-chat>
+            <app-video-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName" #videoChat></app-video-chat>
             <div id="info-game" *ngIf="currentLevel">
                 <div>
                     <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>

@@ -1,7 +1,9 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { VideoChatComponent } from '@app/components/video-chat/video-chat.component';
 import { Level } from '@app/levels';
 import { VideoService } from '@app/services/video/video.service';
+import { ChatMessage } from '@common/chat-messages';
 import { Constants } from '@common/constants';
 
 /**
@@ -19,6 +21,7 @@ import { Constants } from '@common/constants';
 export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
+    @ViewChild('videoChat', { static: false }) videoChat!: VideoChatComponent;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
@@ -35,6 +38,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     videoSpeed: number = Constants.NORMAL_SPEED;
     timeFrame: number = 0;
     lastTimeFrame: number = 0;
+    messageCount: number = 0;
 
     private showVideo: ReturnType<typeof setInterval>;
     // private levelId: number;
@@ -51,6 +55,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         this.settingGameParameters();
         this.lastTimeFrame = VideoService.getStackElement(VideoService.getStackLength() - 1).time;
+        console.table(VideoService.messageStack);
     }
 
     ngAfterViewInit(): void {
@@ -97,10 +102,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         return VideoService.getSecondPlayerName();
     }
 
-    showLog(): void {
-        console.log(VideoService.videoLog);
-    }
-
     videoSpeedTime4(): void {
         this.videoSpeed = Constants.VERY_FAST_SPEED;
     }
@@ -115,6 +116,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     playVideo(): void {
         let videoFrame = VideoService.getStackElement(VideoService.pointer);
+        let messageFrame = VideoService.getMessagesStackElement(this.messageCount);
         this.showVideo = setInterval(() => {
             // console.table({ timer: this.timeFrame, video: videoFrame.time });
             if (this.timeFrame >= this.lastTimeFrame) {
@@ -125,8 +127,17 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (videoFrame.found) ++this.playerDifferencesCount;
                 videoFrame = VideoService.getStackElement(VideoService.pointer);
             }
+            if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === messageFrame.time) {
+                console.log(messageFrame);
+                this.updateChat(messageFrame.chatMessage);
+                messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
+            }
             this.timeFrame++;
         }, Constants.TIMER_INTERVAL / this.videoSpeed);
+    }
+
+    updateChat(chatMessage: ChatMessage): void {
+        this.videoChat.addMessage(chatMessage);
     }
 
     pauseVideo(): void {

@@ -20,4 +20,17 @@ export class VideoChatComponent {
     get messagesList(): ChatMessage[] {
         return this.messages;
     }
+
+    addMessage(message: ChatMessage): void {
+        this.messages.push(message);
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, 100);
+    }
+
+    scrollToBottom(): void {
+        if (this.messagesContainer) {
+            this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+        }
+    }
 }

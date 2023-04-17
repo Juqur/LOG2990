@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
 
 @Injectable({
@@ -9,7 +10,7 @@ import { ChatMessage } from '@common/chat-messages';
 })
 export class VideoService {
     static videoLog: string[] = [];
-    static messageStack: ChatMessage[] = [];
+    static messageStack: { chatMessage: ChatMessage; time: number }[] = [];
     static gamePageStack: {
         originalCanvas: PlayAreaComponent;
         diffCanvas: PlayAreaComponent;
@@ -80,7 +81,11 @@ export class VideoService {
     }
 
     static getStackElement(index: number): { time: number; found: boolean; defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } {
-        return this.videoStack[index]; //
+        return this.videoStack[index];
+    }
+
+    static getMessagesStackElement(index: number): { chatMessage: ChatMessage; time: number } {
+        return this.messageStack[index];
     }
 
     static getStackLength(): number {
@@ -88,7 +93,7 @@ export class VideoService {
     }
 
     static addMessageToStack(message: ChatMessage): void {
-        this.messageStack.push(message);
+        this.messageStack.push({ chatMessage: message, time: TimerService.timerValue });
         console.table(this.messageStack);
     }
 }
