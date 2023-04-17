@@ -359,7 +359,7 @@ export class GameGateway {
             const gameHistory = {
                 startDate: this.timerService.getStartDate(socket.id),
                 lengthGame: Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
-                isClassic: !gameState.timedLevelList ? true : false,
+                isClassic: false,
                 firstPlayerName: gameState.playerName,
                 secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
                 hasPlayerAbandoned: false,
