@@ -3,6 +3,7 @@ import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { Message } from '@app/model/schema/message.schema';
 import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
+import { GameHistory as GameHistoryDataObject } from '@common/game-history';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Level as LevelDto } from 'assets/data/level';
@@ -137,6 +138,15 @@ export class MongodbService {
             secondPlayerName: gameHistory.secondPlayerName,
             hasPlayerAbandoned: gameHistory.hasPlayerAbandoned,
         });
+    }
+
+    /**
+     * This method query's the server for all game histories stored from inside the database.
+     *
+     * @returns An array containing all game histories.
+     */
+    async getGameHistories(): Promise<GameHistoryDataObject[]> {
+        return (await this.gameHistoryModel.find({}).exec()) as GameHistoryDataObject[] | null;
     }
 
     /*
