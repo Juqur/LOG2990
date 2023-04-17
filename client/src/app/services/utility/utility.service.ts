@@ -5,7 +5,7 @@ import { Constants } from '@common/constants';
  * This service provides general utility methods.
  * All methods must be static.
  *
- * @author Pierre Tran
+ * @author Pierre Tran & Charles Degrandpré
  * @class UtilityService
  */
 @Injectable({
