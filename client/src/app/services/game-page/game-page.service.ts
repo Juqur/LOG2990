@@ -30,7 +30,7 @@ export class GamePageService {
     private diffPlayArea: PlayAreaComponent;
     private tempDiffPlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData = {
-        textToSend: 'Voulez-vous voir la reprise vidéo de la partie?',
+        textToSend: 'Vous avez gagnez. Voulez-vous voir la reprise vidéo de la partie?',
         closeButtonMessage: 'Non',
         isConfirmation: true,
         mustProcess: false,
@@ -201,13 +201,20 @@ export class GamePageService {
      * This method is called when the player loses.
      * It will open a dialog and play a losing sound.
      */
-    handleDefeat(): void {
+    handleDefeat(levelId: number, firstPlayerName: string, secondPlayerName: string): void {
         const loseDialogData: DialogData = {
-            textToSend: 'Vous avez perdu!',
-            closeButtonMessage: 'Retour au menu principal',
+            textToSend: 'Vous avez perdu. Voulez-vous voir la reprise vidéo de la partie?',
+            closeButtonMessage: 'Non',
+            isConfirmation: true,
             mustProcess: false,
         };
         this.popUpService.openDialog(loseDialogData, this.closePath);
+        this.popUpService.dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.router.navigate(['/video/' + levelId], {});
+                VideoService.setVariables(firstPlayerName, secondPlayerName);
+            }
+        });
         AudioService.quickPlay('./assets/audio/LossSound.mp3');
     }
 

@@ -67,7 +67,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
         const frame = VideoService.getStackElement(VideoService.pointer++);
-        console.log(frame);
+        // console.log(frame);
         this.applyChanges(frame);
     }
 
@@ -86,9 +86,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     startVideo(): void {
-        // this.showVideo = setInterval(() => {
-        //     this.putInCanvas();
-        // }, Constants.millisecondsInOneSecond);
         this.playVideo();
     }
 
@@ -117,15 +114,15 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     playVideo(): void {
-        console.log('play');
         let videoFrame = VideoService.getStackElement(VideoService.pointer);
         this.showVideo = setInterval(() => {
-            console.table({ timer: this.timeFrame, video: videoFrame.time });
+            // console.table({ timer: this.timeFrame, video: videoFrame.time });
             if (this.timeFrame >= this.lastTimeFrame) {
                 this.pauseVideo();
             }
             if (this.timeFrame === videoFrame.time) {
                 this.putInCanvas();
+                ++this.nbHints;
                 videoFrame = VideoService.getStackElement(VideoService.pointer);
             }
             this.timeFrame++;
@@ -140,6 +137,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         clearInterval(this.showVideo);
         VideoService.pointer = 0;
         this.timeFrame = -1;
+        this.nbHints = 0;
         this.playVideo();
     }
 

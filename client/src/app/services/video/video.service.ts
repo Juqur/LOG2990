@@ -2,12 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { ChatMessage } from '@common/chat-messages';
 
 @Injectable({
     providedIn: 'root',
 })
 export class VideoService {
     static videoLog: string[] = [];
+    static messageStack: ChatMessage[] = [];
     static gamePageStack: {
         originalCanvas: PlayAreaComponent;
         diffCanvas: PlayAreaComponent;
@@ -81,5 +83,10 @@ export class VideoService {
 
     static getStackLength(): number {
         return this.videoStack.length;
+    }
+
+    static addMessageToStack(message: ChatMessage): void {
+        this.messageStack.push(message);
+        console.table(this.messageStack);
     }
 }

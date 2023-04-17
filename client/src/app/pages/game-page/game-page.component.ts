@@ -102,24 +102,10 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.settingGameParameters();
         this.handleSocket();
         TimerService.startTimer();
+        VideoService.resetStack();
     }
 
     ngAfterViewInit(): void {
-        // const currentImage = new Image();
-        // currentImage.crossOrigin = 'anonymous';
-        // currentImage.src = this.originalImageSrc;
-        // console.log(this.originalImageSrc);
-
-        // const tempDefaultCanvas = document.createElement('canvas');
-        // tempDefaultCanvas.width = Constants.EXPECTED_WIDTH;
-        // tempDefaultCanvas.height = Constants.EXPECTED_HEIGHT;
-        // const tempDefaultContext = tempDefaultCanvas.getContext('2d') as CanvasRenderingContext2D;
-        // // tempDefaultContext.drawImage(this.originalImageSrc, 0, 0);
-
-        // currentImage.onload = () => {
-        //     tempDefaultContext.drawImage(currentImage, 0, 0, Constants.EXPECTED_WIDTH, Constants.EXPECTED_HEIGHT);
-        // };
-
         VideoService.addToVideoStack(
             TimerService.timerValue,
             this.originalPlayArea.getCanvasRenderingContext2D(),
@@ -173,7 +159,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.gamePageService.handleOpponentAbandon();
         });
         this.socketHandler.on('game', 'defeat', () => {
-            this.gamePageService.handleDefeat();
+            this.gamePageService.handleDefeat(this.levelId, this.playerName, this.secondPlayerName);
         });
         this.socketHandler.on('game', 'timedModeFinished', (finishedWithLastLevel: boolean) => {
             if (finishedWithLastLevel) this.playerDifferencesCount++;
