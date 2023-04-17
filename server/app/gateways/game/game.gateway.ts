@@ -93,13 +93,12 @@ export class GameGateway {
         socket.emit(GameEvents.ProcessedClick, dataToSend);
         const otherSocketId = gameState.otherSocketId;
         this.chatService.sendSystemMessage(socket, dataToSend, gameState);
-
         if (otherSocketId) {
             if (!gameState.timedLevelList) {
                 dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
             }
             if (dataToSend.differencePixels.length > 0) {
-                socket.broadcast.to(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
+                this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
             }
         }
 
@@ -192,6 +191,7 @@ export class GameGateway {
     onGameRejected(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).levelId, canJoin: true });
         this.cancelGame(socket);
+        this.gameService.deleteUserFromGame(socket);
     }
 
     /**
@@ -213,7 +213,7 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnTimedGameCancelled)
     onTimedGameCancelled(socket: Socket): void {
-        if (!this.gameService.getGameState(socket.id).isInGame) {
+        if (this.gameService.getGameState(socket.id) && !this.gameService.getGameState(socket.id).isInGame) {
             this.gameService.deleteUserFromGame(socket);
         }
     }
@@ -338,6 +338,7 @@ export class GameGateway {
     private cancelGame(socket: Socket): void {
         this.gameService.setIsGameFound(socket.id, false);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
+        console.log(secondPlayerId);
         if (secondPlayerId) {
             const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
             this.gameService.deleteUserFromGame(secondPlayerSocket);
