@@ -21,7 +21,7 @@ import SpyObj = jasmine.SpyObj;
 
 describe('CreationPageService', () => {
     let service: CreationPageService;
-    let diffServiceSpy: SpyObj<DifferenceDetectorService>;
+    let differenceServiceSpy: SpyObj<DifferenceDetectorService>;
     let communicationSpy: SpyObj<CommunicationService>;
     let popUpServiceSpy: SpyObj<PopUpService>;
     let drawServiceDefaultSpy: SpyObj<DrawService>;
@@ -31,7 +31,7 @@ describe('CreationPageService', () => {
     let errorDialogSpy: jasmine.Spy;
 
     beforeEach(() => {
-        diffServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
+        differenceServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
@@ -53,7 +53,7 @@ describe('CreationPageService', () => {
                 CanvasSharingService,
                 HttpClient,
                 HttpHandler,
-                { provide: DifferenceDetectorService, useValue: diffServiceSpy },
+                { provide: DifferenceDetectorService, useValue: differenceServiceSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: CommunicationService, useValue: communicationSpy },
                 { provide: DrawService, useValue: drawServiceDefaultSpy },
@@ -77,7 +77,7 @@ describe('CreationPageService', () => {
         spyOn(HTMLCanvasElement.prototype, 'getContext').and.returnValue(null);
         const creationService = new CreationPageService(
             new CanvasSharingService(),
-            diffServiceSpy,
+            differenceServiceSpy,
             popUpServiceSpy,
             communicationSpy,
             mouseServiceSpy,
@@ -256,18 +256,18 @@ describe('CreationPageService', () => {
         mockLevelDifference.isHard = false;
         mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
-        diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
+        differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
         service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(errorDialogSpy).not.toHaveBeenCalled();
-        expect(diffServiceSpy.detectDifferences).toHaveBeenCalledTimes(1);
+        expect(differenceServiceSpy.detectDifferences).toHaveBeenCalledTimes(1);
     });
 
     it('detectDifference should call errorDialog if DifferenceService detectDifferences returned no LevelDifference', () => {
         const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        diffServiceSpy.detectDifferences.and.returnValue(undefined);
+        differenceServiceSpy.detectDifferences.and.returnValue(undefined);
 
         service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
@@ -286,7 +286,7 @@ describe('CreationPageService', () => {
         mockLevelDifference.isHard = false;
         mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
-        diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
+        differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
         service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
@@ -302,7 +302,7 @@ describe('CreationPageService', () => {
         mockLevelDifference.isHard = false;
         mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
-        diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
+        differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
         service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
@@ -325,7 +325,7 @@ describe('CreationPageService', () => {
         mockLevelDifference.isHard = false;
         mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
-        diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
+        differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
         service.detectDifference(diffBgCanvasCtx, defaultBgCanvasCtx);
 
@@ -338,7 +338,7 @@ describe('CreationPageService', () => {
         mockLevelDifference.isHard = false;
         mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
-        diffServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
+        differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
         service.detectDifference(mockLevelDifference.canvas, mockLevelDifference.canvas);
 
