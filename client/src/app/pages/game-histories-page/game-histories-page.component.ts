@@ -23,7 +23,7 @@ export class GameHistoriesPageComponent {
         return this.gameHistoriesArray;
     }
 
-    onClearLogs(): void {
+    onClearHistory(): void {
         AudioService.quickPlay('./assets/audio/click.mp3');
     }
 }

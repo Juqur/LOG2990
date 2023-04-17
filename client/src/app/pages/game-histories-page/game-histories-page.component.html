@@ -10,7 +10,7 @@
     <body class="body-container">
         <div class="title-container">
             <h1>Historique des parties</h1>
-            <button mat-button class="menu-button" (click)="onClearLogs()"><span>Tout supprimer</span></button>
+            <button mat-button class="menu-button" (click)="onClearHistory()"><span>Tout supprimer</span></button>
         </div>
         <div class="history" *ngFor="let history of gameHistories">
             <app-game-history [gameHistory]="history"></app-game-history>
