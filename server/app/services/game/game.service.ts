@@ -271,7 +271,7 @@ export class GameService {
      * @param gameEnded A boolean flag indicating whether the game has ended or if the player manually deletes the level.
      */
     removeLevel(levelId: number, gameEnded: boolean): void {
-        if (!this.verifyIfLevelIsBeingPlayed(levelId)) {
+        if (!this.isLevelBeingPlayed(levelId)) {
             if (!gameEnded) {
                 this.imageService.deleteLevelData(levelId);
                 return;
@@ -458,7 +458,7 @@ export class GameService {
      * @param levelId The id of the level.
      * @returns A boolean indicating whether the level is being played.
      */
-    private verifyIfLevelIsBeingPlayed(levelId: number): boolean {
+    private isLevelBeingPlayed(levelId: number): boolean {
         for (const gameState of this.playerGameMap.values()) {
             if (gameState.levelId === levelId && gameState.isInGame) {
                 return true;
