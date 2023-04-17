@@ -23,6 +23,15 @@ export class ImageService {
     constructor(private mongodbService: MongodbService) {}
 
     /**
+     * This method makes a call to the mongo db service in order to obtain all levels.
+     *
+     * @returns The array containing all current levels inside the database.
+     */
+    async getLevels(): Promise<Level[]> {
+        return await this.mongodbService.getAllLevels();
+    }
+
+    /**
      * Gets the number of differences between the two images.
      *
      * @param fileName The name of the file that has the differences.
