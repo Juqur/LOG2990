@@ -72,7 +72,9 @@ export class TimerService {
             this.timeIntervalMap.delete(socketId);
             this.timeMap.delete(socketId);
         } else {
-            const otherSocketId = this.gameService.getGameState(socketId).otherSocketId;
+            const gameState = this.gameService.getGameState(socketId);
+            if (!gameState) return;
+            const otherSocketId = gameState.otherSocketId;
             if (otherSocketId) {
                 const otherInterval = this.timeIntervalMap.get(otherSocketId);
                 if (otherInterval) {
