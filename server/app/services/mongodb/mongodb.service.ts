@@ -103,11 +103,7 @@ export class MongodbService {
         try {
             // Verifies that there is at least one level in the database.
             const test = await this.levelModel.findOne({});
-            if (test) {
-                return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
-            } else {
-                return 0;
-            }
+            return test ? ((await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number) : 0;
         } catch (error) {
             this.handleErrors(error);
         }
