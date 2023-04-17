@@ -383,9 +383,14 @@ describe('GamePageComponent', () => {
     });
 
     describe('settingGameParameters', () => {
+        let settingGameLevelSpy = jasmine.createSpy();
+        let settingGameImageSpy = jasmine.createSpy();
+        beforeEach(() => {
+            settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
+            settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+        });
+
         it('should set levelId, playerName and secondPlayerName from route', () => {
-            spyOn(component, 'settingGameLevel' as never);
-            spyOn(component, 'settingGameImage' as never);
             component['settingGameParameters']();
             expect(component['levelId']).toBe(1);
             expect(component.playerName).toBe('Alice');
@@ -393,8 +398,6 @@ describe('GamePageComponent', () => {
         });
 
         it('should call settingGameImage and settingGameLevel when getting the game level', () => {
-            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
-            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
             component['settingGameParameters']();
             expect(settingGameLevelSpy).toHaveBeenCalledTimes(1);
             expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
@@ -402,12 +405,15 @@ describe('GamePageComponent', () => {
 
         it('should not set level and image if levelId is 0', () => {
             activatedRoute.snapshot.params = { id: '0' };
-            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
-            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
             component['settingGameParameters']();
-            expect(component['isClassic']).toEqual(false);
             expect(settingGameLevelSpy).not.toHaveBeenCalledTimes(1);
             expect(settingGameImageSpy).not.toHaveBeenCalledTimes(1);
+        });
+
+        it('should set the game mode to timed if the level is timed', () => {
+            activatedRoute.snapshot.queryParams = { gameMode: 'timed' };
+            component['settingGameParameters']();
+            expect(component['isClassic']).toBeFalsy();
         });
     });
 

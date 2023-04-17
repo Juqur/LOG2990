@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { of } from 'rxjs';
-import { MainPageService } from './main-page.service';
+import { MainPageService, TimedGameData } from './main-page.service';
 
 describe('MainPageService', () => {
     let service: MainPageService;
@@ -14,7 +14,7 @@ describe('MainPageService', () => {
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<unknown>>;
 
     beforeEach(() => {
-        socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send']);
+        socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send', 'on', 'send']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
@@ -76,6 +76,9 @@ describe('MainPageService', () => {
     });
 
     describe('chooseGameType', () => {
+        beforeEach(() => {
+            spyOn(service, 'waitingForOpponent' as never);
+        });
         it('should open a pop up', () => {
             service['chooseGameType']('test');
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
@@ -93,6 +96,36 @@ describe('MainPageService', () => {
             dialogRefSpy.afterClosed.and.returnValue(of(true));
             service['chooseGameType'](name);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onCreateTimedGame', { multiplayer: true, playerName: name });
+        });
+    });
+
+    describe('waitingForOpponent', () => {
+        it('should open a pop up', () => {
+            service['waitingForOpponent']('');
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
+        });
+
+        it('should emit to server if player cancels while waiting for another player', () => {
+            dialogRefSpy.afterClosed.and.returnValue(of(false));
+            service['waitingForPlayer'] = true;
+            service['waitingForOpponent']('test');
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onTimedGameCancelled');
+        });
+
+        it('should navigate to the game page with correct params if another player joins', () => {
+            const data: TimedGameData = {
+                levelId: 1,
+                otherPlayerName: 'bob',
+            };
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'startTimedGameMultiplayer') {
+                    callback(data as never);
+                }
+            });
+            service['waitingForOpponent']('alice');
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/game/1/'], {
+                queryParams: { playerName: 'alice', opponent: 'bob', gameMode: 'timed' },
+            });
         });
     });
 });

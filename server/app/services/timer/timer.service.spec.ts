@@ -153,6 +153,9 @@ describe('TimerService', () => {
     });
 
     describe('subtractTime', () => {
+        beforeEach(() => {
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ otherSocketId: '' } as unknown as GameState);
+        });
         it('should subtract time to the timer', () => {
             const currentTime = 55;
             const timeToSubtract = 14;
