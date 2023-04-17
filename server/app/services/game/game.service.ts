@@ -271,18 +271,19 @@ export class GameService {
      * @param gameEnded A boolean flag indicating whether the game has ended or if the player manually deletes the level.
      */
     removeLevel(levelId: number, gameEnded: boolean): void {
-        if (!this.isLevelBeingPlayed(levelId)) {
-            if (!gameEnded) {
-                this.imageService.deleteLevelData(levelId);
-                return;
-            }
-            const index = this.levelDeletionQueue.indexOf(levelId);
-            if (index >= 0 && this.levelDeletionQueue.length > 0) {
+        const index = this.levelDeletionQueue.indexOf(levelId);
+        const isBeingPlayed = this.isLevelBeingPlayed(levelId);
+        if (index >= 0 && this.levelDeletionQueue.length > 0) {
+            if (!isBeingPlayed) {
                 this.levelDeletionQueue.splice(index, 1);
                 this.imageService.deleteLevelData(levelId);
             }
-        } else {
-            if (!gameEnded) {
+            return;
+        }
+        if (!gameEnded) {
+            if (!isBeingPlayed) {
+                this.imageService.deleteLevelData(levelId);
+            } else {
                 this.addLevelToDeletionQueue(levelId);
             }
         }
