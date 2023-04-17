@@ -188,7 +188,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     /**
      * Clear the foreground of the diff canvas.
      */
-    clearDiffCanvas(): void {
+    clearDifferenceCanvas(): void {
         const differencePaintAreaContext = this.differencePaintArea.canvas.getContext('2d') as CanvasRenderingContext2D;
         differencePaintAreaContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         this.addToUndoRedoStack();

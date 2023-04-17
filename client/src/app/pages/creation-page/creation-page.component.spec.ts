@@ -313,14 +313,14 @@ describe('CreationPageComponent', () => {
         });
     });
 
-    describe('clearDiffCanvas', () => {
+    describe('clearDifferenceCanvas', () => {
         it('should call clearRect', () => {
-            component.clearDiffCanvas();
+            component.clearDifferenceCanvas();
             expect(clearRectSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call addToUndoRedoStack', () => {
-            component.clearDiffCanvas();
+            component.clearDifferenceCanvas();
             expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
         });
     });
