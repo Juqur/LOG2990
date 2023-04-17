@@ -24,7 +24,7 @@ export class TimerService {
      * @param socketId The socket id of the associated player.
      * @returns The start date.
      */
-    getStartDate(socketId): Date {
+    getStartDate(socketId: string): Date {
         return this.timeMap.get(socketId).startDate;
     }
 
@@ -45,7 +45,7 @@ export class TimerService {
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
             if (sockets.otherSocketId) {
-                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time);
+                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time.time);
             }
             this.timeMap.set(socketId, { time: isClassic ? time.time + 1 : time.time - 1, startDate: time.startDate });
             if (!isClassic && time.time === 0) {
