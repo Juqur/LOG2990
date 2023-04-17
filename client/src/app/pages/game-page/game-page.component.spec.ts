@@ -331,7 +331,6 @@ describe('GamePageComponent', () => {
                 expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
             });
         });
-    });
 
     describe('clickedOnOriginal', () => {
         it('should send mouse position to the server if you click on the original picture', () => {
