@@ -4,23 +4,25 @@ import { Injectable } from '@angular/core';
     providedIn: 'root',
 })
 export class TimerService {
-    timer: number = 0;
+    private static time: number = 0;
 
-    get timerValue(): number {
-        return this.timer;
+    static get timerValue(): number {
+        return TimerService.time;
     }
 
-    startTimer(): void {
+    static startTimer(): void {
+        console.log('start timer');
         setInterval(() => {
-            this.timer++;
+            TimerService.time++;
         }, 1);
     }
 
-    stopTimer(): void {
-        clearInterval(this.timer);
+    static stopTimer(): void {
+        console.log('stop timer');
+        clearInterval(TimerService.time);
     }
 
-    endTimer(): void {
-        this.timer = 0;
+    static endTimer(): void {
+        TimerService.time = 0;
     }
 }

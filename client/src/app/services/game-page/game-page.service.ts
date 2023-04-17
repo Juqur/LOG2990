@@ -7,6 +7,7 @@ import { AudioService } from '@app/services/audio/audio.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/game-data';
@@ -155,6 +156,7 @@ export class GamePageService {
      * It will open a dialog and play a victory sound.
      */
     handleVictory(levelId: number, firstPlayerName: string, secondPlayerName: string): void {
+        TimerService.stopTimer();
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
@@ -173,6 +175,7 @@ export class GamePageService {
      * It will open a dialog and play a victory sound.
      */
     handleOpponentAbandon(): void {
+        TimerService.stopTimer();
         this.popUpService.openDialog(this.opponentAbandonedGameDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
         this.audioService.reset();
@@ -184,6 +187,7 @@ export class GamePageService {
      * It will open a dialog and play a losing sound.
      */
     handleDefeat(): void {
+        TimerService.stopTimer();
         this.popUpService.openDialog(this.loseDialogData, this.closePath);
         this.audioService.create('./assets/audio/LossSound.mp3');
         this.audioService.reset();
@@ -197,20 +201,24 @@ export class GamePageService {
      */
     startCheatMode(differences: number[]): void {
         this.resetCanvas();
-        this.addToVideoStack();
+        this.addToVideoStack(TimerService.timerValue);
         let isVisible = false;
         this.areaNotFound = differences.filter((item) => {
             return !this.imagesData.includes(item);
         });
         this.flashInterval = setInterval(() => {
             if (isVisible) {
-                this.addToVideoStack();
+                this.addToVideoStack(TimerService.timerValue);
                 this.diffPlayArea.deleteTempCanvas();
                 this.originalPlayArea.deleteTempCanvas();
             } else {
                 this.diffPlayArea.flashArea(this.areaNotFound);
                 this.originalPlayArea.flashArea(this.areaNotFound);
-                this.addToVideoStack(this.originalPlayArea.getFlashingCopy().getContext('2d'), this.diffPlayArea.getFlashingCopy().getContext('2d'));
+                this.addToVideoStack(
+                    TimerService.timerValue,
+                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
+                );
             }
             isVisible = !isVisible;
         }, Constants.CHEAT_FLASHING_DELAY);
@@ -236,9 +244,14 @@ export class GamePageService {
         this.router.navigate(['/home']);
     }
 
-    addToVideoStack(original?: CanvasRenderingContext2D | null, diff?: CanvasRenderingContext2D | null): void {
-        if (original && diff) VideoService.addToVideoStack(original, diff);
-        else VideoService.addToVideoStack(this.originalPlayArea.getCanvasRenderingContext2D(), this.diffPlayArea.getCanvasRenderingContext2D());
+    addToVideoStack(time: number, original?: CanvasRenderingContext2D | null, diff?: CanvasRenderingContext2D | null): void {
+        if (original && diff) VideoService.addToVideoStack(TimerService.timerValue, original, diff);
+        else
+            VideoService.addToVideoStack(
+                TimerService.timerValue,
+                this.originalPlayArea.getCanvasRenderingContext2D(),
+                this.diffPlayArea.getCanvasRenderingContext2D(),
+            );
     }
 
     /**
@@ -304,7 +317,7 @@ export class GamePageService {
                     this.diffPlayArea.deleteTempCanvas();
                     this.originalPlayArea.deleteTempCanvas();
                     this.copyDiffPlayAreaContext();
-                    this.addToVideoStack();
+                    this.addToVideoStack(TimerService.timerValue);
                 });
             });
     }
@@ -344,11 +357,14 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.flashBothCanvas(result)
             .then(() => {
-                this.addToVideoStack(this.originalPlayArea.getFlashingCopy().getContext('2d'), this.diffPlayArea.getFlashingCopy().getContext('2d'));
+                this.addToVideoStack(
+                    TimerService.timerValue,
+                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
+                );
             })
             .then(() => {
                 this.resetCanvas();
-                console.log('normal');
             });
     }
 
@@ -361,7 +377,7 @@ export class GamePageService {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.addToVideoStack();
+        this.addToVideoStack(TimerService.timerValue);
         this.resetCanvas();
         VideoService.addToLog('Area not found in difference image');
     }
@@ -381,7 +397,11 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.flashBothCanvas(result)
             .then(() => {
-                this.addToVideoStack(this.originalPlayArea.getFlashingCopy().getContext('2d'), this.diffPlayArea.getFlashingCopy().getContext('2d'));
+                this.addToVideoStack(
+                    TimerService.timerValue,
+                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
+                );
             })
             .then(() => {
                 this.resetCanvas();
@@ -397,7 +417,7 @@ export class GamePageService {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
-        this.addToVideoStack();
+        this.addToVideoStack(TimerService.timerValue);
         this.resetCanvas();
         VideoService.addToLog('Area not found in original image');
     }
