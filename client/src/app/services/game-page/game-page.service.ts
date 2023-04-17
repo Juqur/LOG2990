@@ -35,6 +35,7 @@ export class GamePageService {
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
+    private hintSection: number[] = [];
 
     // eslint-disable-next-line max-params
     constructor(
@@ -80,6 +81,7 @@ export class GamePageService {
      * This method verifies whether the click is valid or not.
      *
      * @param event The mouse event.
+     * @returns The position of the mouse on the canvas.
      */
     verifyClick(event: MouseEvent): number {
         const invalid = -1;
@@ -96,10 +98,11 @@ export class GamePageService {
     }
 
     /**
-     * This method reset the images data at the start of a new game.
+     * This method reset the images data and the hintSection at the start of a new game.
      */
     resetImagesData(): void {
         this.imagesData = [];
+        this.hintSection = [];
     }
 
     /**
@@ -118,8 +121,10 @@ export class GamePageService {
      * @param response The response of validateResponse().
      * @param gameData The game data.
      * @param clickedOriginalImage Boolean that represents if the player clicked on the original image or the difference image.
+     * 
+     * @returns Boolean that represents if the player clicked on a difference pixel or not.
      */
-    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
+    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): boolean {
         const response = this.validateResponse(gameData.differencePixels);
         if (response) {
             if (!clickedOriginalImage) {
@@ -127,12 +132,14 @@ export class GamePageService {
             } else {
                 this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode);
             }
+            return true;
         } else {
             if (!clickedOriginalImage) {
                 this.handleAreaNotFoundInDiff();
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
+            return false;
         }
     }
 
@@ -243,8 +250,18 @@ export class GamePageService {
      * @param section The quadrant or sub-quadrant in which the hint is
      */
     handleHintRequest(section: number[]): void {
-        this.diffPlayArea.showHintSection(section);
-        this.originalPlayArea.showHintSection(section);
+        if (section.length < 1 || section.length > 2) {
+            return;
+        }
+        this.hintSection = section;
+        this.drawServiceOriginal.context = this.originalPlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceOriginal.drawHintSection(this.hintSection);
+        this.drawServiceDiff.context = this.diffPlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.drawServiceDiff.drawHintSection(this.hintSection);
     }
 
     /**
@@ -355,6 +372,7 @@ export class GamePageService {
                     this.diffPlayArea.deleteTempCanvas();
                     this.originalPlayArea.deleteTempCanvas();
                     this.copyDiffPlayAreaContext();
+                    this.handleHintRequest(this.hintSection);
                 }, 0);
             });
     }
@@ -377,6 +395,7 @@ export class GamePageService {
      * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
+        this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
@@ -384,6 +403,7 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
+        console.log(this.imagesData);
         this.diffPlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
         this.resetCanvas();
@@ -407,6 +427,7 @@ export class GamePageService {
      * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
+        this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);

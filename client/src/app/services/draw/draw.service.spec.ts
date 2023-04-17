@@ -92,6 +92,21 @@ describe('DrawService', () => {
         });
     });
 
+    describe('drawHintSection', () => {
+        it('drawHintSection should call rect when showing a quadrant', () => {
+            const quadrants = [1];
+            service.drawHintSection(quadrants);
+            expect(rectSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('drawHintSection should call rect when showing a subquadrant', () => {
+            const quadrantsNumbers = { quadrant: 4, subQuadrant: 4 };
+            const quadrants = [quadrantsNumbers.quadrant, quadrantsNumbers.subQuadrant];
+            service.drawHintSection(quadrants);
+            expect(rectSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('draw', () => {
         beforeEach(() => {
             service.isInCanvas = true;
