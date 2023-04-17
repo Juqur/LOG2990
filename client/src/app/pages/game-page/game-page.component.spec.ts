@@ -42,6 +42,8 @@ describe('GamePageComponent', () => {
             'startCheatMode',
             'stopCheatMode',
             'preventJoining',
+            'setMouseCanClick',
+            'handleTimedModeFinished',
             'handleHintRequest',
             'handleHintShapeRequest',
         ]);
@@ -162,6 +164,20 @@ describe('GamePageComponent', () => {
             expect(component['secondPlayerDifferencesCount']).toEqual(0);
         });
 
+        it('should not set the images if the game mode is not classic', () => {
+            component['isClassic'] = false;
+            const data = { differencePixels: [1] } as unknown as GameData;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'processedClick') {
+                    callback(data as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.setImages).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.setPlayArea).not.toHaveBeenCalled();
+            expect(gamePageServiceSpy.handleResponse).not.toHaveBeenCalled();
+        });
+
         it('should set the amount of difference found by the player', () => {
             const expectedDifferences = 5;
             const data = { amountOfDifferencesFound: expectedDifferences } as unknown as GameData;
@@ -174,14 +190,16 @@ describe('GamePageComponent', () => {
             expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
         });
 
-        it('should handle victory if server sends victory request', () => {
+        it('should set the amount of difference found by the player', () => {
+            const expectedDifferences = 5;
+            const data = { amountOfDifferencesFound: expectedDifferences } as unknown as GameData;
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
-                if (eventName === 'victory') {
-                    callback({} as never);
+                if (eventName === 'processedClick') {
+                    callback(data as never);
                 }
             });
             component.handleSocket();
-            expect(gamePageServiceSpy.handleVictory).toHaveBeenCalledTimes(1);
+            expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
         });
 
         it('should handle abandon if server sends opponent abandoned request', () => {
@@ -202,6 +220,16 @@ describe('GamePageComponent', () => {
             });
             component.handleSocket();
             expect(gamePageServiceSpy.handleDefeat).toHaveBeenCalledTimes(1);
+        });
+
+        it('should handle victory if server sends victory request', () => {
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'victory') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.handleVictory).toHaveBeenCalledTimes(1);
         });
 
         it('should handle cheat mode if server sends startCheatMode request', () => {
@@ -258,12 +286,37 @@ describe('GamePageComponent', () => {
             expect(clearRectSpy).toHaveBeenCalled();
             expect(component['showThirdHint']).toBe(false);
         });
-    });
+        it('should handle the end of a timed game if server sends timedModeFinished request', () => {
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'timedModeFinished') {
+                    callback(true as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.handleTimedModeFinished).toHaveBeenCalledWith(true);
+        });
 
-    describe('abandonGame', () => {
-        it('should emit a socket event when abandoning the game', () => {
-            component.abandonGame();
-            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+        it('should handle changing the pictures if server sends changeLevelTimedMode request', () => {
+            const level = { id: 1 } as unknown as Level;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'changeLevelTimedMode') {
+                    callback(level as never);
+                }
+            });
+            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            component.handleSocket();
+            expect(component['levelId']).toEqual(1);
+            expect(component['currentLevel']).toEqual(level);
+            expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
+            expect(gamePageServiceSpy.setMouseCanClick).toHaveBeenCalledWith(true);
+            expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
+        });
+
+        describe('abandonGame', () => {
+            it('should emit a socket event when abandoning the game', () => {
+                component.abandonGame();
+                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
+            });
         });
     });
 
@@ -345,6 +398,16 @@ describe('GamePageComponent', () => {
             component['settingGameParameters']();
             expect(settingGameLevelSpy).toHaveBeenCalledTimes(1);
             expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not set level and image if levelId is 0', () => {
+            activatedRoute.snapshot.params = { id: '0' };
+            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
+            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            component['settingGameParameters']();
+            expect(component['isClassic']).toEqual(false);
+            expect(settingGameLevelSpy).not.toHaveBeenCalledTimes(1);
+            expect(settingGameImageSpy).not.toHaveBeenCalledTimes(1);
         });
     });
 

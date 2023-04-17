@@ -242,7 +242,7 @@ describe('ImageService', () => {
 
     describe('confirmUpload', () => {
         it('should return the correct message', () => {
-            expect(service['confirmUpload']().title).toStrictEqual('success');
+            expect(service['confirmUpload']({} as Level).title).toStrictEqual('success');
         });
     });
 
