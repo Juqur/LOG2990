@@ -135,6 +135,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
                 this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
             }
+            if (!this.isClassic && gameData.differencePixels.length > 0) {
+                this.gamePageService.playSuccessSound();
+            }
         });
         this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
