@@ -274,7 +274,7 @@ export class GameService {
         const index = this.levelDeletionQueue.indexOf(levelId);
         const isBeingPlayed = this.isLevelBeingPlayed(levelId);
         if (index >= 0 && this.levelDeletionQueue.length > 0) {
-            if (!isBeingPlayed) {
+            if (!isBeingPlayed && gameEnded) {
                 this.levelDeletionQueue.splice(index, 1);
                 this.imageService.deleteLevelData(levelId);
             }
