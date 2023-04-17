@@ -395,6 +395,7 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
+        console.log(this.imagesData);
         this.diffPlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
         this.resetCanvas();

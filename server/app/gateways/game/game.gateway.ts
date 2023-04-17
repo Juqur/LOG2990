@@ -19,7 +19,7 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
+    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) { }
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -255,12 +255,15 @@ export class GameGateway {
         if (this.timerService.getCurrentTime(socket.id) > 0) {
             const data = await this.gameService.askHint(socket.id);
             if (data !== undefined) {
-                this.timerService.addTime(this.server, socket.id, Constants.HINT_PENALTY);
                 this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
+                const gameState = this.gameService.getGameState(socket.id);
+                const hintPenalty = gameState.timedLevelList ? -Constants.HINT_PENALTY : Constants.HINT_PENALTY;
+                this.timerService.addTime(this.server, socket.id, hintPenalty);
                 socket.emit(GameEvents.HintRequest, data);
             }
         }
     }
+
 
     /**
      * This method is called when a player disconnects.
