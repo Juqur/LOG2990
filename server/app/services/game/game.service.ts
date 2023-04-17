@@ -116,6 +116,7 @@ export class GameService {
     setOtherPlayerAbandoned(socketId: string): void {
         const gameState = this.playerGameMap.get(socketId);
         gameState.otherPlayerAbandoned = true;
+        gameState.otherSocketId = undefined;
         this.playerGameMap.set(socketId, gameState);
     }
 
