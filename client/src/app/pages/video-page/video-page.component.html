@@ -1,7 +1,7 @@
 <app-scale-container>
     <div class="container">
         <section id="top-area">
-            <button mat-button routerLink="/home"></button>
+            <button mat-button routerLink="/home" (click)="returnHome()">Retour au Menu</button>
             <button (click)="startVideo()">Start</button>
             <button (click)="pauseVideo()">Pause</button>
             <button (click)="videoSpeedTime1()">x1</button>
@@ -37,7 +37,7 @@
             <app-play-area [image]="diffImageSrc" #diffPlayArea></app-play-area>
         </section>
         <section id="bottom-area">
-            <!-- <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat> -->
+            <app-video-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-video-chat>
             <div id="info-game" *ngIf="currentLevel">
                 <div>
                     <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>

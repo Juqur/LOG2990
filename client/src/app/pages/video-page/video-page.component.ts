@@ -122,7 +122,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             if (this.timeFrame === videoFrame.time) {
                 this.putInCanvas();
-                ++this.nbHints;
+                if (videoFrame.found) ++this.playerDifferencesCount;
                 videoFrame = VideoService.getStackElement(VideoService.pointer);
             }
             this.timeFrame++;
@@ -137,8 +137,13 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         clearInterval(this.showVideo);
         VideoService.pointer = 0;
         this.timeFrame = -1;
-        this.nbHints = 0;
+        this.playerDifferencesCount = 0;
         this.playVideo();
+    }
+
+    returnHome(): void {
+        clearInterval(this.showVideo);
+        VideoService.resetStack();
     }
 
     /**

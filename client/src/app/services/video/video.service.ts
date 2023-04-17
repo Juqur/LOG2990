@@ -25,9 +25,10 @@ export class VideoService {
 
     static stackCounter = 0;
 
-    private static videoStack: { time: number; defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
+    private static videoStack: { time: number; found: boolean; defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
 
-    static addToVideoStack(time: number, defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D) {
+    // eslint-disable-next-line max-params
+    static addToVideoStack(time: number, found: boolean = false, defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D) {
         const tempDefaultCanvas = document.createElement('canvas');
         tempDefaultCanvas.width = defaultCanvas.canvas.width;
         tempDefaultCanvas.height = defaultCanvas.canvas.height;
@@ -40,7 +41,7 @@ export class VideoService {
         const tempDiffContext = tempDiffCanvas.getContext('2d') as CanvasRenderingContext2D;
         tempDiffContext.drawImage(diffCanvas.canvas, 0, 0);
 
-        this.videoStack.push({ time, defaultCanvas: tempDefaultCanvas, diffCanvas: tempDiffCanvas });
+        this.videoStack.push({ time, found, defaultCanvas: tempDefaultCanvas, diffCanvas: tempDiffCanvas });
         console.table(this.videoStack);
     }
 
@@ -53,7 +54,8 @@ export class VideoService {
     }
 
     static resetStack(): void {
-        VideoService.videoStack = []; //
+        VideoService.videoStack = [];
+        VideoService.messageStack = [];
     }
 
     static isStackEmpty(): boolean {
@@ -77,7 +79,7 @@ export class VideoService {
         this.videoLog.push(message);
     }
 
-    static getStackElement(index: number): { time: number; defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } {
+    static getStackElement(index: number): { time: number; found: boolean; defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } {
         return this.videoStack[index]; //
     }
 

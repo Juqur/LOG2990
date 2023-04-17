@@ -238,7 +238,11 @@ export class GamePageService {
             } else {
                 this.diffPlayArea.flashArea(this.areaNotFound);
                 this.originalPlayArea.flashArea(this.areaNotFound);
-                this.addToVideoStack(this.originalPlayArea.getFlashingCopy().getContext('2d'), this.diffPlayArea.getFlashingCopy().getContext('2d'));
+                this.addToVideoStack(
+                    false,
+                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
+                );
             }
             isVisible = !isVisible;
         }, Constants.CHEAT_FLASHING_DELAY);
@@ -264,11 +268,12 @@ export class GamePageService {
         this.router.navigate(['/home']);
     }
 
-    addToVideoStack(original?: CanvasRenderingContext2D | null, diff?: CanvasRenderingContext2D | null): void {
-        if (original && diff) VideoService.addToVideoStack(TimerService.timerValue, original, diff);
+    addToVideoStack(found: boolean = false, original?: CanvasRenderingContext2D | null, diff?: CanvasRenderingContext2D | null): void {
+        if (original && diff) VideoService.addToVideoStack(TimerService.timerValue, found, original, diff);
         else
             VideoService.addToVideoStack(
                 TimerService.timerValue,
+                found,
                 this.originalPlayArea.getCanvasRenderingContext2D(),
                 this.diffPlayArea.getCanvasRenderingContext2D(),
             );
@@ -425,7 +430,11 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.flashBothCanvas(result)
             .then(() => {
-                this.addToVideoStack(this.originalPlayArea.getFlashingCopy().getContext('2d'), this.diffPlayArea.getFlashingCopy().getContext('2d'));
+                this.addToVideoStack(
+                    true,
+                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
+                );
             })
             .then(() => {
                 this.resetCanvas();
@@ -461,7 +470,11 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.flashBothCanvas(result)
             .then(() => {
-                this.addToVideoStack(this.originalPlayArea.getFlashingCopy().getContext('2d'), this.diffPlayArea.getFlashingCopy().getContext('2d'));
+                this.addToVideoStack(
+                    true,
+                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
+                );
             })
             .then(() => {
                 this.resetCanvas();

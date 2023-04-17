@@ -86,6 +86,7 @@ export class ChatService {
             sender: 'Système',
             senderId: SenderType.System,
             text: message,
+            timestamp: new Date(),
         };
     }
 }
