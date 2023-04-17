@@ -1,6 +1,7 @@
 import { Message } from '@app/model/schema/message.schema';
 import { GameService } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Level } from 'assets/data/level';
@@ -19,7 +20,7 @@ enum HttpCodes {
  */
 @Controller('image')
 export class ImageController {
-    constructor(private readonly imageService: ImageService, private readonly gameService: GameService) {}
+    constructor(private readonly imageService: ImageService, private readonly gameService: GameService, private mongodbService: MongodbService) {}
 
     /**
      * Gets all the level information.
@@ -34,7 +35,7 @@ export class ImageController {
         description: 'Returns data for all levels',
     })
     async getLevels(): Promise<Level[]> {
-        const levels = await this.imageService.getLevels();
+        const levels = await this.mongodbService.getAllLevels();
         for (const levelId of this.gameService.getLevelDeletionQueue()) {
             for (let i = 0; i < levels.length; i++) {
                 if (levels[i].id === levelId) {
@@ -66,7 +67,7 @@ export class ImageController {
     @Get('/:id')
     @HttpCode(HttpCodes.OK)
     async getLevel(@Param('id') id: string): Promise<Level> {
-        return await this.imageService.getLevel(parseInt(id, 10));
+        return await this.mongodbService.getLevelById(parseInt(id, 10));
     }
 
     /**
@@ -82,6 +83,10 @@ export class ImageController {
     @HttpCode(HttpCodes.CREATED)
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {
-        return await this.imageService.writeLevelData(formData);
+        const returnMessage = await this.imageService.writeLevelData(formData);
+        if (returnMessage.level) {
+            this.gameService.addLevelToTimedGame(returnMessage.level);
+        }
+        return returnMessage;
     }
 }

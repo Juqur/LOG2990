@@ -35,17 +35,6 @@ export class GamePageService {
         isConfirmation: true,
         mustProcess: false,
     };
-    private opponentAbandonedGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
-    private loseDialogData: DialogData = {
-        textToSend: 'Vous avez perdu!',
-        closeButtonMessage: 'Retour au menu principal',
-        isConfirmation: true,
-        mustProcess: false,
-    };
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
@@ -89,6 +78,13 @@ export class GamePageService {
         this.originalPlayArea = originalPlayArea;
         this.diffPlayArea = diffPlayArea;
         this.tempDiffPlayArea = tempDiffPlayArea;
+    }
+
+    /**
+     * This methods sets the canClick property of the mouse service to a certain value.
+     */
+    setMouseCanClick(canClick: boolean): void {
+        this.mouseService.canClick = canClick;
     }
 
     /**
@@ -164,8 +160,25 @@ export class GamePageService {
             }
         });
 
+        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+    }
+
+    /**
+     * This method is called when the timed game is finished.
+     * It will open a dialog and play a victory sound.
+     *
+     * @param finishedWithLastLevel Boolean that represents if the player finished the last level of the timed mode.
+     */
+    handleTimedModeFinished(finishedWithLastLevel: boolean): void {
+        const timedGameFinishedDialogData: DialogData = {
+            textToSend: finishedWithLastLevel
+                ? 'La partie est terminée! Vous avez terminé le dernier niveau du mode à temps limité.'
+                : 'La partie est terminée! Le temps est écoulé.',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(timedGameFinishedDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        this.audioService.reset();
         this.audioService.play();
     }
 
@@ -174,9 +187,13 @@ export class GamePageService {
      * It will open a dialog and play a victory sound.
      */
     handleOpponentAbandon(): void {
-        this.popUpService.openDialog(this.opponentAbandonedGameDialogData, this.closePath);
+        const opponentAbandonedGameDialogData: DialogData = {
+            textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(opponentAbandonedGameDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        this.audioService.reset();
         this.audioService.play();
     }
 
@@ -185,16 +202,19 @@ export class GamePageService {
      * It will open a dialog and play a losing sound.
      */
     handleDefeat(): void {
-        this.popUpService.openDialog(this.loseDialogData, this.closePath);
-        this.audioService.create('./assets/audio/LossSound.mp3');
-        this.audioService.reset();
-        this.audioService.play();
+        const loseDialogData: DialogData = {
+            textToSend: 'Vous avez perdu!',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(loseDialogData, this.closePath);
+        AudioService.quickPlay('./assets/audio/LossSound.mp3');
     }
 
     /**
      * Method that initiates the cheat mode
      *
-     * @param differences the differences to have flash
+     * @param differences The differences to have flash
      */
     startCheatMode(differences: number[]): void {
         this.resetCanvas();
@@ -248,6 +268,55 @@ export class GamePageService {
     }
 
     /**
+     * Method that shows the first and second hint for the player on both canvas.
+     *
+     * @param section The quadrant or sub-quadrant in which the hint is
+     */
+    handleHintRequest(section: number[]): void {
+        this.diffPlayArea.showHintSection(section);
+        this.originalPlayArea.showHintSection(section);
+    }
+
+    /**
+     * Method that shows the third hint for the player on both canvas.
+     *
+     * @param shape An array of pixels that represents the shape of the difference.
+     * Its last two elements are the width and height of the difference.
+     * @param canvas The canvas on which the hint will be shown.
+     */
+    handleHintShapeRequest(shape: number[], canvas: HTMLCanvasElement): void {
+        if (shape.length <= 2) {
+            return;
+        }
+        const height = shape.pop() as number;
+        const width = shape.pop() as number;
+        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        differenceCanvasCtx.canvas.height = height;
+        differenceCanvasCtx.canvas.width = width;
+
+        let x = 0;
+        let y = 0;
+        shape.forEach((pixelData) => {
+            x = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
+            y = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
+            differenceCanvasCtx.fillStyle = 'green';
+            differenceCanvasCtx.fillRect(x, y, 1, 1);
+        });
+        const widthScale = Constants.DEFAULT_WIDTH_SHAPE_CANVAS / width;
+        const heightScale = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS / height;
+        const scale = Math.min(widthScale, heightScale);
+        const scaledWidth = width * scale;
+        const scaledHeight = height * scale;
+        const xOffset = (Constants.DEFAULT_WIDTH_SHAPE_CANVAS - scaledWidth) / 2;
+        const yOffset = (Constants.DEFAULT_HEIGHT_SHAPE_CANVAS - scaledHeight) / 2;
+
+        const shapeCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
+        canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
+        shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+    }
+
+    /**
      * The equivalent of eyedropper tool.
      * This method finds the rgba value of a pixel on the original image.
      *
@@ -287,7 +356,7 @@ export class GamePageService {
     /**
      * This method will redraw the canvas with the original image plus the elements that were not found.
      * To avoid flashing issue, it copies to a third temporary canvas.
-     * which later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
+     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
      */
     private resetCanvas(): void {
         this.mouseService.canClick = false;
@@ -364,7 +433,7 @@ export class GamePageService {
         this.drawServiceDiff.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
+        this.drawServiceDiff.drawError(this.mouseService);
         this.addToVideoStack();
         this.resetCanvas();
         VideoService.addToLog('Area not found in difference image');
@@ -391,7 +460,6 @@ export class GamePageService {
                 this.resetCanvas();
             });
     }
-
     /**
      * Performs a failed sound and prompts an error in the original canvas.
      */
@@ -400,7 +468,7 @@ export class GamePageService {
         this.drawServiceOriginal.context = this.originalPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawError({ x: this.mouseService.getX(), y: this.mouseService.getY() } as Vec2);
+        this.drawServiceOriginal.drawError({ x: this.mouseService.x, y: this.mouseService.y } as Vec2);
         this.addToVideoStack();
         this.resetCanvas();
     }

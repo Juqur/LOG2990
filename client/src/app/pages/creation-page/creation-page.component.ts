@@ -25,8 +25,8 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     constructor(public creationService: CreationPageService) {}
 
     /**
-     * When the user press ctrl z it calls the handleUndo method.
-     * When the user press ctrl shift z it calls the handleRedo method.
+     * When the user presses ctrl z it calls the handleUndo method.
+     * When the user presses ctrl shift z it calls the handleRedo method.
      *
      * @param $event The event that is triggered when the user press a key.
      */
@@ -36,6 +36,22 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
             this.handleRedo();
         } else if ($event.ctrlKey && ($event.key === 'Z' || $event.key === 'z')) {
             this.handleUndo();
+        }
+    }
+
+    /**
+     * This method listens for a global mouse release.
+     */
+    @HostListener('window:mouseup', ['$event'])
+    mouseUp(): void {
+        if (this.defaultPaintArea.isClicked) {
+            this.defaultPaintArea.onCanvasRelease();
+            this.addToUndoRedoStack();
+        }
+
+        if (this.diffPaintArea.isClicked) {
+            this.diffPaintArea.onCanvasRelease();
+            this.addToUndoRedoStack();
         }
     }
 

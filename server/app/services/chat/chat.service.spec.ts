@@ -95,6 +95,15 @@ describe('ChatService', () => {
         });
     });
 
+    describe('sendMessageToPlayer', () => {
+        const message = 'This is a message';
+
+        it('should call emit', () => {
+            service.sendMessageToPlayer(socket, message);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('getSystemChatMessage', () => {
         it('should send the correct message form', () => {
             const expectedMessage = 'This should be the message';

@@ -9,14 +9,15 @@ import SpyObj = jasmine.SpyObj;
 describe('PaintAreaComponent', () => {
     const mouseEvent = {} as unknown as MouseEvent;
     let loadBackgroundSpy: jasmine.Spy;
+    let addEventListenerSpy: jasmine.Spy;
     let mouseServiceSpy: SpyObj<MouseService>;
     let drawServiceSpy: SpyObj<DrawService>;
     let component: PaintAreaComponent;
     let fixture: ComponentFixture<PaintAreaComponent>;
 
     beforeEach(() => {
-        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'getX', 'getY', 'changeClickState', 'mouseDrag']);
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw', 'drawRect', 'setPaintColor', 'paintBrush']);
+        mouseServiceSpy = jasmine.createSpyObj('MouseService', ['mouseHitDetect', 'getCanClick', 'changeClickState', 'mouseDrag'], { x: 0, y: 0 });
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['draw', 'drawRectangle', 'setPaintColor', 'paintBrush']);
     });
 
     beforeEach(async () => {
@@ -31,7 +32,11 @@ describe('PaintAreaComponent', () => {
         fixture = TestBed.createComponent(PaintAreaComponent);
         component = fixture.componentInstance;
         loadBackgroundSpy = spyOn(component, 'loadBackground');
+        addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
         fixture.detectChanges();
+
+        loadBackgroundSpy.calls.reset();
+        addEventListenerSpy.calls.reset();
     });
 
     it('should create', () => {
@@ -40,19 +45,17 @@ describe('PaintAreaComponent', () => {
 
     describe('getter', () => {
         it('width should return the canvas width.', () => {
-            const expected = 100;
-            component['canvasSize'].x = expected;
+            const expected = 640;
             expect(component.width).toEqual(expected);
         });
 
         it('height should return the canvas height.', () => {
-            const expected = 100;
-            component['canvasSize'].y = expected;
+            const expected = 480;
             expect(component.height).toEqual(expected);
         });
 
         it('canvas should return the foreground canvas.', () => {
-            const expected = component.foregroundCanvas.nativeElement;
+            const expected = component['foregroundCanvas'].nativeElement;
             expect(component.canvas).toEqual(expected);
         });
     });
@@ -78,33 +81,33 @@ describe('PaintAreaComponent', () => {
     });
 
     describe('ngAfterViewInit', () => {
-        let addEventListenerSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            loadBackgroundSpy.calls.reset();
-            addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
-        });
-
         it('should call loadBackground', () => {
             component.ngAfterViewInit();
             expect(loadBackgroundSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should call addEventListenerSpy trice', () => {
+        it('should call addEventListenerSpy thrice', () => {
             component.ngAfterViewInit();
             expect(addEventListenerSpy).toHaveBeenCalledTimes(3);
         });
 
         it('should set foregroundCanvas id to diffDrawCanvas', () => {
-            component.isDiff = true;
+            component.isDifferenceCanvas = true;
             component.ngAfterViewInit();
-            expect(component.foregroundCanvas.nativeElement.id).toEqual('diffDrawCanvas');
+            expect(component['foregroundCanvas'].nativeElement.id).toEqual('diffDrawCanvas');
         });
 
         it('should set defaultDrawCanvas id to diffDrawCanvas', () => {
-            component.isDiff = false;
+            component.isDifferenceCanvas = false;
             component.ngAfterViewInit();
-            expect(component.foregroundCanvas.nativeElement.id).toEqual('defaultDrawCanvas');
+            expect(component['foregroundCanvas'].nativeElement.id).toEqual('defaultDrawCanvas');
+        });
+    });
+
+    describe('onMouseOut', () => {
+        it('should set isInCanvas to false', () => {
+            component.onMouseOut();
+            expect(drawServiceSpy.isInCanvas).toBeFalse();
         });
     });
 
@@ -129,8 +132,8 @@ describe('PaintAreaComponent', () => {
 
         it('should set lastMousePosition to the appropriate expected mouse position', () => {
             const expected = { x: 100, y: 200 };
-            mouseServiceSpy.getX.and.returnValue(expected.x);
-            mouseServiceSpy.getY.and.returnValue(expected.y);
+            Object.defineProperty(mouseServiceSpy, 'x', { value: expected.x });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: expected.y });
             component.onCanvasClick(mouseEvent);
             expect(component['lastMousePosition']).toEqual(expected);
         });
@@ -156,15 +159,16 @@ describe('PaintAreaComponent', () => {
             drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
             removeChildSpy = spyOn(HTMLElement.prototype, 'removeChild' as never);
         });
+
         it('should set isDragging to false', () => {
             component.onCanvasRelease();
-            expect(component['isDragging']).toBeFalse();
+            expect(component['isClicked']).toBeFalse();
         });
 
         it('should set lastMousePosition to the appropriate expected mouse position', () => {
             const expected = { x: -1, y: -1 };
-            mouseServiceSpy.getX.and.returnValue(expected.x);
-            mouseServiceSpy.getY.and.returnValue(expected.y);
+            Object.defineProperty(mouseServiceSpy, 'x', { value: expected.x });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: expected.y });
             component.onCanvasRelease();
             expect(component['lastMousePosition']).toEqual(expected);
         });
@@ -187,7 +191,7 @@ describe('PaintAreaComponent', () => {
         let paintCanvasSpy: jasmine.Spy;
 
         beforeEach(() => {
-            component['isDragging'] = true;
+            component['isClicked'] = true;
             canvasRectangularDragSpy = spyOn(component, 'canvasRectangularDrag');
             paintCanvasSpy = spyOn(component, 'paintCanvas');
         });
@@ -213,18 +217,18 @@ describe('PaintAreaComponent', () => {
         it('should set the background canvas to diffImgCanvas', () => {
             const setSpy = spyOnProperty(component['canvasSharing'], 'diffCanvas', 'set');
             const expected = 'diffImgCanvas';
-            component.isDiff = true;
+            component.isDifferenceCanvas = true;
             component.loadBackground('');
-            expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
+            expect(component['backgroundCanvas'].nativeElement.id).toEqual(expected);
             expect(setSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should set the background canvas to defaultImgCanvas', () => {
             const setSpy = spyOnProperty(component['canvasSharing'], 'defaultCanvas', 'set');
             const expected = 'defaultImgCanvas';
-            component.isDiff = false;
+            component.isDifferenceCanvas = false;
             component.loadBackground('');
-            expect(component.backgroundCanvas.nativeElement.id).toEqual(expected);
+            expect(component['backgroundCanvas'].nativeElement.id).toEqual(expected);
             expect(setSpy).toHaveBeenCalledTimes(1);
         });
 
@@ -238,7 +242,6 @@ describe('PaintAreaComponent', () => {
         });
     });
 
-    // May need to recheck the mock.
     describe('mergeCanvas', () => {
         it('should call drawImage twice', () => {
             const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
@@ -257,12 +260,6 @@ describe('PaintAreaComponent', () => {
     });
 
     describe('createTemporaryCanvas', () => {
-        let addEventListenerSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            addEventListenerSpy = spyOn(HTMLCanvasElement.prototype, 'addEventListener');
-        });
-
         it('should call paintBrush', () => {
             component.createTemporaryCanvas();
             expect(drawServiceSpy.paintBrush).toHaveBeenCalledTimes(1);
@@ -277,8 +274,8 @@ describe('PaintAreaComponent', () => {
             component.createTemporaryCanvas();
             expect(addEventListenerSpy).toHaveBeenCalledTimes(3);
             expect(addEventListenerSpy).toHaveBeenCalledWith('mousedown', jasmine.any(Function));
-            expect(addEventListenerSpy).toHaveBeenCalledWith('mouseup', jasmine.any(Function));
             expect(addEventListenerSpy).toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+            expect(addEventListenerSpy).toHaveBeenCalledWith('mouseout', jasmine.any(Function));
         });
 
         it('should set the temporary canvas with the appropriate attributes', () => {
@@ -286,8 +283,8 @@ describe('PaintAreaComponent', () => {
             expect(component['tempCanvas']).toBeInstanceOf(HTMLCanvasElement);
             expect(component['tempCanvas'].className).toEqual('draw');
             expect(component['tempCanvas'].style.position).toEqual('absolute');
-            expect(component['tempCanvas'].style.top).toEqual(component.foregroundCanvas.nativeElement.offsetTop + 'px');
-            expect(component['tempCanvas'].style.left).toEqual(component.foregroundCanvas.nativeElement.offsetLeft + 'px');
+            expect(component['tempCanvas'].style.top).toEqual(component['foregroundCanvas'].nativeElement.offsetTop + 'px');
+            expect(component['tempCanvas'].style.left).toEqual(component['foregroundCanvas'].nativeElement.offsetLeft + 'px');
             expect(component['tempCanvas'].width).toEqual(component.width);
             expect(component['tempCanvas'].height).toEqual(component.height);
         });
@@ -308,19 +305,13 @@ describe('PaintAreaComponent', () => {
             component.paintCanvas(mouseEvent);
             expect(drawServiceSpy.draw).toHaveBeenCalledTimes(1);
         });
-
-        it('should call onCanvasRelease if mouse button is not pressed', () => {
-            const outsideValue = -1;
-            const releaseSpy = spyOn(component, 'onCanvasRelease');
-            mouseServiceSpy.getX.and.returnValue(outsideValue);
-            mouseServiceSpy.getY.and.returnValue(outsideValue);
-            component.paintCanvas(mouseEvent);
-            expect(releaseSpy).toHaveBeenCalledTimes(1);
-        });
     });
 
     describe('canvasRectangularDrag', () => {
+        let clearRectSpy: jasmine.Spy;
+
         beforeEach(() => {
+            clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
             component['tempCanvas'] = document.createElement('canvas');
         });
 
@@ -329,37 +320,31 @@ describe('PaintAreaComponent', () => {
             expect(mouseServiceSpy.mouseDrag).toHaveBeenCalledTimes(1);
         });
 
-        it('should call onCanvasRelease if mouse button is not pressed', () => {
-            const outsideValue = -1;
-            const releaseSpy = spyOn(component, 'onCanvasRelease');
-            mouseServiceSpy.getX.and.returnValue(outsideValue);
-            mouseServiceSpy.getY.and.returnValue(outsideValue);
+        it('should call clearRect', () => {
             component.canvasRectangularDrag(mouseEvent);
-            expect(releaseSpy).toHaveBeenCalledTimes(1);
+            expect(clearRectSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should correctly call drawRect if shift x < y', () => {
-            const { x, y } = { x: 100, y: 120 };
-            mouseServiceSpy.getX.and.returnValue(x);
-            mouseServiceSpy.getY.and.returnValue(y);
+        it('should correctly call drawRectangle if shift x < y', () => {
+            Object.defineProperty(mouseServiceSpy, 'x', { value: 100 });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: 120 });
             component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
-            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+            expect(drawServiceSpy.drawRectangle).toHaveBeenCalledTimes(1);
         });
 
-        it('should correctly call drawRect if shift x > y', () => {
-            const { x, y } = { x: 120, y: 100 };
-            mouseServiceSpy.getX.and.returnValue(x);
-            mouseServiceSpy.getY.and.returnValue(y);
+        it('should correctly call drawRectangle if shift x > y', () => {
+            Object.defineProperty(mouseServiceSpy, 'x', { value: 120 });
+            Object.defineProperty(mouseServiceSpy, 'y', { value: 100 });
             component['isShiftPressed'] = true;
             component.canvasRectangularDrag(mouseEvent);
-            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+            expect(drawServiceSpy.drawRectangle).toHaveBeenCalledTimes(1);
         });
 
-        it('should call drawRect if shift is not pressed', () => {
+        it('should call drawRectangle if shift is not pressed', () => {
             component['isShiftPressed'] = false;
             component.canvasRectangularDrag(mouseEvent);
-            expect(drawServiceSpy.drawRect).toHaveBeenCalledTimes(1);
+            expect(drawServiceSpy.drawRectangle).toHaveBeenCalledTimes(1);
         });
     });
 
