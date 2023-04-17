@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'app-scale-container',
@@ -14,6 +14,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 export class ScaleContainerComponent implements OnInit {
     @ViewChild('screen', { static: true }) screen: ElementRef;
     @ViewChild('container', { static: true }) container: ElementRef;
+    @Input() isScalable: boolean = false;
     private scaleRatio: number = 1;
 
     /**

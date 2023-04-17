@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AudioService } from '@app/services/audio/audio.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GameHistory } from '@common/game-history';
 
@@ -20,5 +21,9 @@ export class GameHistoriesPageComponent {
      */
     get gameHistories(): GameHistory[] {
         return this.gameHistoriesArray;
+    }
+
+    onClearHistory(): void {
+        AudioService.quickPlay('./assets/audio/click.mp3');
     }
 }
