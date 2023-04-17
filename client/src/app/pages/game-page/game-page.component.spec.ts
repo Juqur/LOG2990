@@ -9,7 +9,7 @@ import { GameTimerComponent } from '@app/components/game-timer/game-timer.compon
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
-import { Level } from '@app/interfaces/levels';
+import { Level } from '@common/interfaces/level';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communication/communication.service';

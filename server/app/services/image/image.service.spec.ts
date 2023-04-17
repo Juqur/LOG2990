@@ -1,6 +1,6 @@
+import { Level } from '@common/interfaces/level';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Level } from 'assets/data/level';
 import * as fs from 'fs';
 import { ImageService } from './image.service';
 

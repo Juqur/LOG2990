@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
+import { Level } from '@common/interfaces/level';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Level } from 'assets/data/level';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { Server, Socket } from 'socket.io';
 import { GameService, GameState } from './game.service';

@@ -1,8 +1,8 @@
 import { Message } from '@app/model/schema/message.schema';
 import { GameService } from '@app/services/game/game.service';
+import { Level } from '@common/interfaces/level';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Level } from 'assets/data/level';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { ImageService } from './../../../app/services/image/image.service';
 import { ImageController } from './image.controller';

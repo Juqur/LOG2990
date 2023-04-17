@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Level } from '@app/interfaces/levels';
+import { Level } from '@common/interfaces/level';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LevelService } from '@app/services/level/level.service';

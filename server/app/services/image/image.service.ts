@@ -1,6 +1,7 @@
 import { Message } from '@app/model/schema/message.schema';
+import { Level } from '@common/interfaces/level';
 import { Injectable } from '@nestjs/common';
-import { Level, LevelData } from 'assets/data/level';
+import { LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
 import { DEFAULT_TIME_VALUES } from './image.service.constants';
