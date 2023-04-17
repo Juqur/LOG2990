@@ -82,6 +82,10 @@ export class ImageController {
     @HttpCode(HttpCodes.CREATED)
     @FormDataRequest({ storage: FileSystemStoredFile, autoDeleteFile: false, fileSystemStoragePath: '../server/assets/images' })
     async writeLevelData(@Body() formData: unknown): Promise<Message> {
-        return await this.imageService.writeLevelData(formData);
+        const returnMessage = await this.imageService.writeLevelData(formData);
+        if (returnMessage.level) {
+            this.gameService.addLevelToTimedGame(returnMessage.level);
+        }
+        return returnMessage;
     }
 }

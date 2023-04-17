@@ -127,9 +127,8 @@ export class ImageService {
      * @returns The message that the level was successfully uploaded
      */
     async writeLevelData(newLevel: unknown): Promise<Message> {
-        const levels = await this.getLevels();
         try {
-            const allDifferences = await this.getLevels();
+            const levels = await this.getLevels();
             const newId = levels[levels.length - 1].id + 1;
             const levelData = newLevel as LevelData;
             const level: Level = {
@@ -142,9 +141,7 @@ export class ImageService {
                 isEasy: levelData.isEasy === 'true',
                 nbDifferences: levelData.nbDifferences,
             };
-
-            // Updated list of levels
-            allDifferences.push(level);
+            levels.push(level);
 
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
                 if (error) throw error;
@@ -155,9 +152,9 @@ export class ImageService {
             fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
                 if (error) throw error;
             });
-            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(allDifferences));
+            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(levels));
 
-            return this.confirmUpload();
+            return this.confirmUpload(level);
         } catch (error) {
             return this.handleErrors(error);
         }
@@ -200,10 +197,11 @@ export class ImageService {
      *
      * @returns The message that the level was successfully uploaded
      */
-    private confirmUpload(): Message {
+    private confirmUpload(level: Level): Message {
         const message: Message = new Message();
         message.title = 'success';
         message.body = 'Le jeu a été téléchargé avec succès!';
+        message.level = level;
         return message;
     }
 

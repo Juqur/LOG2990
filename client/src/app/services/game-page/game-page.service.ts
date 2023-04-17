@@ -32,16 +32,6 @@ export class GamePageService {
         closeButtonMessage: 'Retour au menu principal',
         mustProcess: false,
     };
-    private opponentAbandonedGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
-    private loseDialogData: DialogData = {
-        textToSend: 'Vous avez perdu!',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
@@ -77,6 +67,13 @@ export class GamePageService {
         this.originalPlayArea = originalPlayArea;
         this.diffPlayArea = diffPlayArea;
         this.tempDiffPlayArea = tempDiffPlayArea;
+    }
+
+    /**
+     * This methods sets the canClick property of the mouse service to a certain value.
+     */
+    setMouseCanClick(canClick: boolean): void {
+        this.mouseService.canClick = canClick;
     }
 
     /**
@@ -145,8 +142,25 @@ export class GamePageService {
      */
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+    }
+
+    /**
+     * This method is called when the timed game is finished.
+     * It will open a dialog and play a victory sound.
+     *
+     * @param finishedWithLastLevel Boolean that represents if the player finished the last level of the timed mode.
+     */
+    handleTimedModeFinished(finishedWithLastLevel: boolean): void {
+        const timedGameFinishedDialogData: DialogData = {
+            textToSend: finishedWithLastLevel
+                ? 'La partie est terminée! Vous avez terminé le dernier niveau du mode à temps limité.'
+                : 'La partie est terminée! Le temps est écoulé.',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(timedGameFinishedDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        this.audioService.reset();
         this.audioService.play();
     }
 
@@ -155,9 +169,13 @@ export class GamePageService {
      * It will open a dialog and play a victory sound.
      */
     handleOpponentAbandon(): void {
-        this.popUpService.openDialog(this.opponentAbandonedGameDialogData, this.closePath);
+        const opponentAbandonedGameDialogData: DialogData = {
+            textToSend: 'Vous avez gagné! Votre adversaire a abandonné la partie.',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(opponentAbandonedGameDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        this.audioService.reset();
         this.audioService.play();
     }
 
@@ -166,10 +184,13 @@ export class GamePageService {
      * It will open a dialog and play a losing sound.
      */
     handleDefeat(): void {
-        this.popUpService.openDialog(this.loseDialogData, this.closePath);
-        this.audioService.create('./assets/audio/LossSound.mp3');
-        this.audioService.reset();
-        this.audioService.play();
+        const loseDialogData: DialogData = {
+            textToSend: 'Vous avez perdu!',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(loseDialogData, this.closePath);
+        AudioService.quickPlay('./assets/audio/LossSound.mp3');
     }
 
     /**
@@ -389,7 +410,6 @@ export class GamePageService {
         this.diffPlayArea.flashArea(result);
         this.resetCanvas();
     }
-
     /**
      * Performs a failed sound and prompts an error in the original canvas.
      */

@@ -41,6 +41,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
     isInCheatMode: boolean = false;
+    isClassic: boolean = true;
     showThirdHint: boolean = false;
 
     private levelId: number;
@@ -92,6 +93,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         }
 
         this.gamePageService.resetImagesData();
+        this.gamePageService.setMouseCanClick(true);
         this.settingGameParameters();
         this.handleSocket();
     }
@@ -106,6 +108,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.removeListener('game', 'victory');
         this.socketHandler.removeListener('game', 'defeat');
         this.socketHandler.removeListener('game', 'startCheatMode');
+        this.socketHandler.removeListener('game', 'timedModeFinished');
+        this.socketHandler.removeListener('game', 'opponentAbandoned');
+        this.socketHandler.removeListener('game', 'changeLevelTimedMode');
         this.socketHandler.removeListener('game', 'hintRequest');
         this.gamePageService.stopCheatMode();
     }
@@ -125,9 +130,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.gamePageService.setImages(this.levelId);
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-            this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+            if (this.isClassic || gameData.differencePixels.length === 0) {
+                this.gamePageService.setImages(this.levelId);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+            }
         });
         this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
@@ -138,8 +145,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
         });
-        this.socketHandler.on('game', 'startCheatMode', (data) => {
-            const differences = data as number[];
+        this.socketHandler.on('game', 'timedModeFinished', (finishedWithLastLevel: boolean) => {
+            if (finishedWithLastLevel) this.playerDifferencesCount++;
+            this.gamePageService.handleTimedModeFinished(finishedWithLastLevel);
+        });
+        this.socketHandler.on('game', 'startCheatMode', (differences: number[]) => {
             this.gamePageService.startCheatMode(differences);
         });
         this.socketHandler.on('game', 'hintRequest', (data) => {
@@ -152,6 +162,13 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.nbHints--;
                 this.showThirdHint = true;
             }
+        });
+        this.socketHandler.on('game', 'changeLevelTimedMode', (level: Level) => {
+            this.levelId = level.id;
+            this.currentLevel = level;
+            this.settingGameImage();
+            this.gamePageService.setMouseCanClick(true);
+            this.gamePageService.setImages(this.levelId);
         });
     }
 
@@ -224,6 +241,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
+        if (this.route.snapshot.params.id === '0') {
+            this.isClassic = false;
+            return;
+        }
 
         this.settingGameLevel();
         this.settingGameImage();
