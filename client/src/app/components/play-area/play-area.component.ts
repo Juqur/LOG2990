@@ -115,6 +115,16 @@ export class PlayAreaComponent implements AfterViewInit {
         });
     }
 
+    getFlashingCopy(): HTMLCanvasElement {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        context.drawImage(this.canvas.nativeElement, 0, 0, this.width, this.height);
+        context.drawImage(this.tempCanvas, 0, 0, this.width, this.height);
+        return canvas;
+    }
+
     /**
      * Creates a temporary canvas that will be used to flash the differences between the two images.
      * The temporary canvas is over the play canvas and lets click events pass through it.

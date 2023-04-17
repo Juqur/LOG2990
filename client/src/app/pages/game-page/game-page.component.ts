@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
@@ -23,7 +23,7 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./game-page.component.scss'],
     providers: [DrawService, CommunicationService],
 })
-export class GamePageComponent implements OnInit, OnDestroy {
+export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
     @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
@@ -94,6 +94,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.handleSocket();
     }
 
+    ngAfterViewInit(): void {
+        VideoService.addToVideoStack(this.originalPlayArea.getCanvasRenderingContext2D(), this.diffPlayArea.getCanvasRenderingContext2D());
+    }
     /**
      * This method is called when the component is destroyed.
      * It removes the listeners from the socket.
@@ -151,7 +154,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
-            this.addToVideoStack();
             this.clickedOriginalImage = true;
             VideoService.addToLog('clicked on original image');
         }
@@ -167,18 +169,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         const mousePosition = this.gamePageService.verifyClick(event);
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
-            // VideoService.addToStack(mousePosition, false);
-            this.addToVideoStack();
             this.clickedOriginalImage = false;
             VideoService.addToLog('clicked on diff image');
         }
-    }
-
-    addToVideoStack(): void {
-        VideoService.addToVideoStack(
-            this.originalPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
-            this.diffPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
-        );
     }
 
     /**
