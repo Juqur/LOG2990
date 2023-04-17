@@ -125,7 +125,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
-            console.log(gameData);
             if (gameData.amountOfDifferencesFoundSecondPlayer !== undefined) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             } else {
