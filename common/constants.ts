@@ -106,7 +106,7 @@ export namespace Constants {
     export const FASTEST_SPEED = 4;
 
     // Timer Service
-    export const TIMER_INTERVAL = 16; // 60 fps (1000 ms / 60 fps = 16.666 ms)
+    export const TIMER_INTERVAL = 32; // 30 FPS (1000 / 30 = 33.3333)
 }
 
 export enum MouseButton {
