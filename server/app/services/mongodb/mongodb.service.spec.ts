@@ -4,10 +4,12 @@
  * https://github.com/jmcdo29/testing-nestjs/blob/main/apps/mongo-sample/src/cat/cat.service.spec.ts
  */
 
+import { GameConstants, GameConstantsDocument } from '@app/model/schema/game-constants.schema';
 import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history.schema';
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -54,6 +56,16 @@ const mockLevel = (
 //     hasPlayerAbandoned,
 // });
 
+const mockGameConstants = (
+    initialTime = Constants.INIT_COUNTDOWN_TIME,
+    timePenaltyHint = Constants.HINT_PENALTY,
+    timeGainedDifference = Constants.COUNTDOWN_TIME_WIN,
+): GameConstants => ({
+    initialTime,
+    timePenaltyHint,
+    timeGainedDifference,
+});
+
 const mockLevelDoc = (mock?: Partial<Level>): Partial<LevelDocument> => ({
     id: mock?.id || 1,
     name: mock?.name || 'juan cena',
@@ -74,6 +86,12 @@ const mockLevelDoc = (mock?: Partial<Level>): Partial<LevelDocument> => ({
 //     secondPlayerName: mock?.secondPlayerName || 'Roronoa Zoro',
 //     hasPlayerAbandoned: typeof mock?.hasPlayerAbandoned !== 'undefined' ? mock?.hasPlayerAbandoned : false,
 // });
+
+const mockGameConstantsDoc = (mock?: Partial<GameConstants>): Partial<GameConstants> => ({
+    initialTime: mock?.initialTime || Constants.INIT_COUNTDOWN_TIME,
+    timePenaltyHint: mock?.timePenaltyHint || Constants.HINT_PENALTY,
+    timeGainedDifference: mock?.timeGainedDifference || Constants.COUNTDOWN_TIME_WIN,
+});
 
 const levelArray = [
     mockLevel(),
@@ -106,6 +124,8 @@ const levelArray = [
 //     mockGameHistory(TestConstants.DATE_ARRAY[1], TestConstants.NOT_NEW_BEST_TIME, false, 'Nami', 'God Usopp', false),
 //     mockGameHistory(TestConstants.DATE_ARRAY[2], TestConstants.NEW_BEST_TIME, true, 'Vinsmoke Sanji', 'Tony Tony Chopper', true),
 // ];
+
+const gameConstantsArray = [mockGameConstants()];
 
 const levelDocArray = [
     mockLevelDoc(),
@@ -153,10 +173,13 @@ const levelDocArray = [
 //     }),
 // ];
 
+const gameConstantsDocArray = [mockGameConstantsDoc()];
+
 describe('MongodbService', () => {
     let service: MongodbService;
     let levelModel: Model<LevelDocument>;
     let gameHistoryModel: Model<GameHistoryDocument>;
+    let gameConstantsModel: Model<GameConstantsDocument>;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -192,12 +215,30 @@ describe('MongodbService', () => {
                         exec: jest.fn(),
                     },
                 },
+                {
+                    provide: getModelToken(GameConstants.name),
+                    useValue: {
+                        new: jest.fn().mockResolvedValue(mockLevel()),
+                        constructor: jest.fn().mockResolvedValue(mockLevel()),
+                        find: jest.fn().mockReturnValue({
+                            exec: jest.fn().mockResolvedValue([]),
+                        }),
+                        findOne: jest.fn(),
+                        deleteOne: jest.fn(),
+                        findOneAndUpdate: jest.fn(),
+                        update: jest.fn(),
+                        create: jest.fn(),
+                        remove: jest.fn(),
+                        exec: jest.fn(),
+                    },
+                },
             ],
         }).compile();
 
         service = module.get<MongodbService>(MongodbService);
         levelModel = module.get<Model<LevelDocument>>(getModelToken(Level.name));
         gameHistoryModel = module.get<Model<GameHistoryDocument>>(getModelToken(GameHistory.name));
+        gameConstantsModel = module.get<Model<GameConstantsDocument>>(getModelToken(GameConstants.name));
     });
 
     afterEach(() => {
@@ -459,6 +500,36 @@ describe('MongodbService', () => {
             } as never);
             const result = await service.getLevelsInPage(pageNumber);
             expect(result).toEqual(levelArray);
+        });
+    });
+
+    describe('getGameConstants', () => {
+        it('should return game constants', async () => {
+            jest.spyOn(gameConstantsModel, 'find').mockReturnValue({ exec: jest.fn().mockResolvedValue(gameConstantsDocArray) } as never);
+            const result = await service.getGameConstants();
+            expect(result).toEqual(gameConstantsArray[0]);
+        });
+    });
+
+    describe('resetGameConstants', () => {
+        it('should call setNewGameConstants with default constants', async () => {
+            const spy = jest.spyOn(service, 'setNewGameConstants').mockImplementation(jest.fn());
+            await service.resetGameConstants();
+            expect(spy).toHaveBeenCalledWith({
+                initialTime: Constants.INIT_COUNTDOWN_TIME,
+                timePenaltyHint: Constants.HINT_PENALTY,
+                timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+            });
+        });
+    });
+
+    describe('setNewGameConstants', () => {
+        it('should call findOneAndUpdate', async () => {
+            const findOneAndUpdateSpy = jest.spyOn(gameConstantsModel, 'findOneAndUpdate').mockReturnValue({
+                exec: jest.fn(),
+            } as never);
+            await service.setNewGameConstants(gameConstantsArray[0]);
+            expect(findOneAndUpdateSpy).toHaveBeenCalledTimes(1);
         });
     });
 
