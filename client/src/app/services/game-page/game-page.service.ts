@@ -142,7 +142,8 @@ export class GamePageService {
      */
     handleVictory(): void {
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.play();
     }
 
     /**
@@ -283,6 +284,13 @@ export class GamePageService {
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
         shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+    }
+
+    /**
+     * This method is called when a player clicks on a difference.
+     */
+    playSuccessSound(): void {
+        AudioService.quickPlay('./assets/audio/success.mp3');
     }
 
     /**
