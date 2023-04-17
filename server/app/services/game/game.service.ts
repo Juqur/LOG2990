@@ -272,20 +272,20 @@ export class GameService {
      */
     removeLevel(levelId: number, gameEnded: boolean): void {
         const index = this.levelDeletionQueue.indexOf(levelId);
-        const isBeingPlayed = this.isLevelBeingPlayed(levelId);
-        if (index >= 0 && this.levelDeletionQueue.length > 0) {
-            if (!isBeingPlayed && gameEnded) {
-                this.levelDeletionQueue.splice(index, 1);
-                this.imageService.deleteLevelData(levelId);
-            }
-            return;
-        }
-        if (!gameEnded) {
-            if (!isBeingPlayed) {
-                this.imageService.deleteLevelData(levelId);
-            } else {
+        const isLevelBeingPlayed = this.isLevelBeingPlayed(levelId);
+
+        // If it was a request and the level is not in the deletion queue.
+        if (!gameEnded && index < 0) {
+            if (isLevelBeingPlayed) {
                 this.addLevelToDeletionQueue(levelId);
+            } else {
+                this.imageService.deleteLevelData(levelId);
             }
+        }
+
+        if (gameEnded && !isLevelBeingPlayed && index >= 0) {
+            this.levelDeletionQueue.splice(index, 1);
+            this.imageService.deleteLevelData(levelId);
         }
     }
 
@@ -460,6 +460,7 @@ export class GameService {
      * @returns A boolean indicating whether the level is being played.
      */
     private isLevelBeingPlayed(levelId: number): boolean {
+        console.log('length of: ' + this.playerGameMap.size);
         for (const gameState of this.playerGameMap.values()) {
             if (gameState.levelId === levelId && gameState.isInGame) {
                 return true;
