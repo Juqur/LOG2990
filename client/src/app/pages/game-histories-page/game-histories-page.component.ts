@@ -1,15 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommunicationService } from '@app/services/communication/communication.service';
+import { GameHistory } from '@common/game-history';
 
 @Component({
     selector: 'app-game-histories-page',
     templateUrl: './game-histories-page.component.html',
     styleUrls: ['./game-histories-page.component.scss'],
 })
-export class GameHistoriesPageComponent implements OnInit {
-    constructor(private communicationService: CommunicationService) {}
+export class GameHistoriesPageComponent {
+    private gameHistoriesArray: GameHistory[];
+    constructor(private communicationService: CommunicationService) {
+        this.communicationService.getGameHistories().subscribe((value) => {
+            this.gameHistoriesArray = value;
+        });
+    }
 
-    ngOnInit(): void {
-      this.communicationService.
+    /**
+     * Getter for the games histories.
+     */
+    get gameHistories(): GameHistory[] {
+        return this.gameHistoriesArray;
     }
 }

@@ -6,4 +6,7 @@
             </button>
         </span>
     </header>
+    <span *ngFor="let history of gameHistories">
+        <app-game-history [gameHistory]="history"></app-game-history>
+    </span>
 </app-scale-container>

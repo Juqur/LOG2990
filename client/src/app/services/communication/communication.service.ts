@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { LevelFormData } from '@app/classes/level-form-data';
 import { Level } from '@app/levels';
 import { GameConstants } from '@common/game-constants';
+import { GameHistory } from '@common/game-history';
 import { HttpMessage } from '@common/http-message';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -136,6 +137,14 @@ export class CommunicationService {
         return this.http
             .patch<void>(`${this.baseUrl}api` + '/database/constants', { gameConstants })
             .pipe(catchError(this.handleError<void>('getGameConstants')));
+    }
+
+    getGameHistories(): Observable<GameHistory[]> {
+        // eslint-disable-next-line no-console
+        console.log('tried to get game histories');
+        return this.http
+            .get<GameHistory[]>(`${this.baseUrl}api` + '/database/gameHistories')
+            .pipe(catchError(this.handleError<GameHistory[]>('getGameHistories')));
     }
 
     /**

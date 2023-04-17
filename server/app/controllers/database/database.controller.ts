@@ -1,5 +1,6 @@
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { GameConstants } from '@common/game-constants';
+import { GameHistory } from '@common/game-history';
 import { Body, Controller, Get, HttpCode, Patch } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
@@ -50,5 +51,22 @@ export class DatabaseController {
     @HttpCode(HttpCodes.CREATED)
     async resetGameConstants(): Promise<void> {
         await this.mongodbService.resetGameConstants();
+    }
+
+    /**
+     * Gets the game constants.
+     *
+     * @returns The game constants
+     */
+    @ApiOkResponse({
+        description: 'Returns data for all gameHistories',
+    })
+    @Get('/gameHistories')
+    @HttpCode(HttpCodes.OK)
+    async getGameHistories(): Promise<GameHistory[]> {
+        const result = await this.mongodbService.getGameHistories();
+        // eslint-disable-next-line no-console
+        console.table(result);
+        return result;
     }
 }
