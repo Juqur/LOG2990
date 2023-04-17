@@ -23,32 +23,12 @@ export class ImageService {
     constructor(private mongodbService: MongodbService) {}
 
     /**
-     * Gets all the levels from the json file.
+     * This method makes a call to the mongo db service in order to obtain all levels.
      *
-     * @returns All the levels information.
+     * @returns The array containing all current levels inside the database.
      */
     async getLevels(): Promise<Level[]> {
-        try {
-            const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
-            return JSON.parse(promises.toString()) as Level[];
-        } catch (error) {
-            return undefined;
-        }
-    }
-
-    /**
-     * Gets the level from the json file.
-     *
-     * @param id The id of the level.
-     * @returns The level information.
-     */
-    async getLevel(id: number): Promise<Level> {
-        try {
-            const levels = await this.getLevels();
-            return levels.find((level) => level.id === id);
-        } catch (error) {
-            return undefined;
-        }
+        return await this.mongodbService.getAllLevels();
     }
 
     /**

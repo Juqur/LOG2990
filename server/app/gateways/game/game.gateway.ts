@@ -4,8 +4,8 @@ import { GameService, GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
-import { GameHistory } from '@common/game-history';
 import { Constants } from '@common/constants';
+import { GameHistory } from '@common/game-history';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -79,7 +79,6 @@ export class GameGateway {
             if (this.handleTimedGame(socket, gameState)) return;
         }
         socket.emit(GameEvents.ProcessedClick, dataToSend);
-        // const gameState = this.gameService.getGameState(socket.id);
         const otherSocketId = gameState.otherSocketId;
         this.chatService.sendSystemMessage(socket, dataToSend, gameState);
 
@@ -305,9 +304,12 @@ export class GameGateway {
     private async handlePlayerLeavingGame(socket: Socket): Promise<void> {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
+            const endDate = new Date();
             const gameHistory = {
                 startDate: this.timerService.getStartDate(socket.id),
-                lengthGame: this.timerService.getTime(socket.id),
+                lengthGame: !gameState.timedLevelList
+                    ? this.timerService.getTime(socket.id)
+                    : Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
                 isClassic: !gameState.timedLevelList ? true : false,
                 firstPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : gameState.playerName,
                 secondPlayerName: gameState.otherSocketId ? gameState.playerName : undefined,
@@ -353,6 +355,16 @@ export class GameGateway {
     private handleTimedGame(socket: Socket, gameState: GameState): boolean {
         this.timerService.addTime(this.server, socket.id, Constants.FOUND_DIFFERENCE_BONUS);
         if (gameState.timedLevelList.length === 0) {
+            const endDate = new Date();
+            const gameHistory = {
+                startDate: this.timerService.getStartDate(socket.id),
+                lengthGame: Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
+                isClassic: !gameState.timedLevelList ? true : false,
+                firstPlayerName: gameState.playerName,
+                secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
+                hasPlayerAbandoned: false,
+            } as GameHistory;
+            this.mongodbService.addGameHistory(gameHistory);
             socket.emit(GameEvents.TimedModeFinished, true);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);

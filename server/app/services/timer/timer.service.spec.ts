@@ -52,7 +52,7 @@ describe('TimerService', () => {
         it('should return the time of the player', () => {
             const expectedTime = { time: 10, startDate: new Date() };
             service['timeMap'].set('socket', expectedTime);
-            expect(service.getTime('socket')).toEqual(expectedTime);
+            expect(service.getTime('socket')).toEqual(expectedTime.time);
         });
     });
 
@@ -69,7 +69,7 @@ describe('TimerService', () => {
         it('should start the timer for a single player game', () => {
             const expectedTime = 0;
             service.startTimer({ socket }, server, true);
-            expect(service['timeMap'].get('socket')).toEqual(expectedTime);
+            expect(service['timeMap'].get('socket').time).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
 
@@ -93,7 +93,7 @@ describe('TimerService', () => {
 
         it('should set the time to the the timed game mode time', () => {
             service.startTimer({ socket }, server, false);
-            expect(service['timeMap'].get('socket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
+            expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
 
@@ -101,7 +101,7 @@ describe('TimerService', () => {
             const timeToAdvance = 1000;
             service.startTimer({ socket }, server, false);
             jest.advanceTimersByTime(timeToAdvance);
-            expect(service['timeMap'].get('socket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
+            expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
         });
 
         it('should delete user from maps if time is 0', () => {
