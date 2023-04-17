@@ -1,4 +1,5 @@
 import { FileSystemStoredFile } from 'nestjs-form-data';
+
 export interface LevelData {
     name: string;
     imageOriginal: FileSystemStoredFile;
