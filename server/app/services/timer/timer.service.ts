@@ -19,13 +19,6 @@ export class TimerService {
     }
 
     /**
-     * Gets the game time
-     */
-    getTime(socketId): number {
-        return this.timeMap.get(socketId);
-    }
-
-    /**
      * Starts a timer for both single player and multiplayer games.
      * It starts the the timer at 0 for classic games and at 120 for timed games.
      * Creates an interval that emits the time to the player every second.
