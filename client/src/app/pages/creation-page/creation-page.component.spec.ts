@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -69,18 +70,52 @@ describe('CreationPageComponent', () => {
             handleRedoSpy = spyOn(component, 'handleRedo');
         });
 
-        it('should call handleUndo when ctrl+z is pressed', () => {
+        it('should call handleUndo when ctrl + z is pressed', () => {
             const event = new KeyboardEvent('keydown', { ctrlKey: true, key: 'z' });
             component.onKeyPress(event);
             expect(handleUndoSpy).toHaveBeenCalledTimes(1);
             expect(handleRedoSpy).not.toHaveBeenCalled();
         });
 
-        it('should call handleRedo when ctrl+shift+z is pressed', () => {
+        it('should call handleRedo when ctrl + shift + z is pressed', () => {
             const event = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'z' });
             component.onKeyPress(event);
             expect(handleRedoSpy).toHaveBeenCalledTimes(1);
             expect(handleUndoSpy).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('mouseUp', () => {
+        let onCanvasReleaseDefaultSpy: jasmine.Spy;
+        let onCanvasReleaseDiffSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            onCanvasReleaseDefaultSpy = spyOn(component.defaultPaintArea, 'onCanvasRelease');
+            onCanvasReleaseDiffSpy = spyOn(component.diffPaintArea, 'onCanvasRelease');
+        });
+
+        it('should call onCanvasRelease for defaultPaintArea if it is being clicked', () => {
+            component.defaultPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(onCanvasReleaseDefaultSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call addToUndoRedoStack for defaultPaintArea if it is being clicked', () => {
+            component.defaultPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call onCanvasRelease for defaultPaintArea if it is being clicked', () => {
+            component.diffPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(onCanvasReleaseDiffSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call addToUndoRedoStack for defaultPaintArea if it is being clicked', () => {
+            component.diffPaintArea.isClicked = true;
+            component.mouseUp();
+            expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
         });
     });
 

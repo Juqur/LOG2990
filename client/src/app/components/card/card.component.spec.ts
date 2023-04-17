@@ -58,20 +58,6 @@ describe('CardComponent', () => {
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should provide a method to check if the name is valid and should at least invalidate very long names', () => {
-        /**
-         * What defines a very long name is left to the user of the component and we store in server. This could change as
-         * time goes on but it seems appropriate to forbid people from using the entire works of Shakespeare for a name.
-         */
-        expect(component['saveDialogData'].inputData?.submitFunction).toBeDefined();
-        const longName =
-            // eslint-disable-next-line max-len
-            "My mistress' eyes are nothing like the sun; Coral is far more red than her lips' red; If snow be white, why then her breasts are dun; If hairs be wires, black wires grow on her head. I have seen roses damasked, red and white, But no such roses see I in her cheeks; And in some perfumes is there more delight Than in the breath that from my mistress reeks. I love to hear her speak, yet well I know That music hath a far more pleasing sound; I grant I never saw a goddess go; My mistress when she walks treads on the ground. And yet, by heaven, I think my love as rare As any she belied with false compare.'";
-        expect(component['saveDialogData'].inputData?.submitFunction(longName)).toEqual(false);
-        const smallName = 'Small name';
-        expect(component['saveDialogData'].inputData?.submitFunction(smallName)).toEqual(true);
-    });
-
     it('deleteLevel should emit deleteLevelEvent', () => {
         const spy = spyOn(component.deleteLevelEvent, 'emit');
         component.level.id = 1;

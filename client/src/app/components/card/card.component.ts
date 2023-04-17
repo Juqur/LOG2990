@@ -4,6 +4,7 @@ import { Level } from '@app/levels';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
+import { Dialogs } from '@common/dialogs';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -24,18 +25,6 @@ export class CardComponent {
     @Output() deleteLevelEvent = new EventEmitter<number>();
 
     readonly imagePath: string = environment.serverUrl + 'original/';
-
-    private saveDialogData: DialogData = {
-        textToSend: 'Veuillez entrer votre nom',
-        inputData: {
-            inputLabel: 'Nom du joueur',
-            submitFunction: (value) => {
-                return value.length >= 1 && value.length <= Constants.MAX_NAME_LENGTH;
-            },
-        },
-        closeButtonMessage: 'Débuter la partie',
-        mustProcess: false,
-    };
 
     private deleteDialogData: DialogData = {
         textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
@@ -60,7 +49,7 @@ export class CardComponent {
      * game page with the right level id, and puts the player name as a query parameter.
      */
     playSolo(): void {
-        this.popUpService.openDialog(this.saveDialogData);
+        this.popUpService.openDialog(Dialogs.inputNameDialogData);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.socketHandler.send('game', 'onJoinNewGame', { levelId: this.level.id, playerName: result });

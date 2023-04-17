@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
@@ -26,6 +26,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
     @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
+    @ViewChild('hintShapeCanvas', { static: false }) hintShapeCanvas!: ElementRef<HTMLCanvasElement>;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
@@ -40,6 +41,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
     isInCheatMode: boolean = false;
+    isClassic: boolean = true;
+    showThirdHint: boolean = false;
 
     private levelId: number;
     private clickedOriginalImage: boolean = true;
@@ -54,13 +57,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     /**
      * Listener for the key press event. It is called when ever we press on a key inside the game page.
-     * In this specific case, we check if the key 't' was pressed and if to we toggle on and off the cheat mode.
+     * In this specific case, we check if the key 't' was pressed and if to we toggle on and off the cheat mode,
+     * if the key 'i' was pressed we ask for a hint.
      *
      * @param event The key up event.
      */
     @HostListener('document:keydown', ['$event'])
     handleKeyDownEvent(event: KeyboardEvent): void {
-        if (event.key === 't' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
+        if ((event.key === 't' || event.key === 'T') && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
@@ -71,6 +75,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.isInCheatMode = !this.isInCheatMode;
             this.socketHandler.send('game', 'onStopCheatMode');
             this.gamePageService.stopCheatMode();
+        }
+        if (event.key === 'i' || event.key === 'I') {
+            this.askForHint();
         }
     }
 
@@ -86,6 +93,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         }
 
         this.gamePageService.resetImagesData();
+        this.gamePageService.setMouseCanClick(true);
         this.settingGameParameters();
         this.handleSocket();
     }
@@ -100,6 +108,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.removeListener('game', 'victory');
         this.socketHandler.removeListener('game', 'defeat');
         this.socketHandler.removeListener('game', 'startCheatMode');
+        this.socketHandler.removeListener('game', 'timedModeFinished');
+        this.socketHandler.removeListener('game', 'opponentAbandoned');
+        this.socketHandler.removeListener('game', 'changeLevelTimedMode');
+        this.socketHandler.removeListener('game', 'hintRequest');
         this.gamePageService.stopCheatMode();
     }
 
@@ -118,9 +130,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
-            this.gamePageService.setImages(this.levelId);
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-            this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+            if (this.isClassic || gameData.differencePixels.length === 0) {
+                this.gamePageService.setImages(this.levelId);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+            }
         });
         this.socketHandler.on('game', 'victory', () => {
             this.gamePageService.handleVictory();
@@ -131,9 +145,30 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
         });
-        this.socketHandler.on('game', 'startCheatMode', (data) => {
-            const differences = data as number[];
+        this.socketHandler.on('game', 'timedModeFinished', (finishedWithLastLevel: boolean) => {
+            if (finishedWithLastLevel) this.playerDifferencesCount++;
+            this.gamePageService.handleTimedModeFinished(finishedWithLastLevel);
+        });
+        this.socketHandler.on('game', 'startCheatMode', (differences: number[]) => {
             this.gamePageService.startCheatMode(differences);
+        });
+        this.socketHandler.on('game', 'hintRequest', (data) => {
+            const section = data as number[];
+            if (section.length < 3 && this.nbHints > 1) {
+                this.gamePageService.handleHintRequest(section);
+                this.nbHints--;
+            } else if (this.nbHints === 1) {
+                this.gamePageService.handleHintShapeRequest(section, this.hintShapeCanvas.nativeElement);
+                this.nbHints--;
+                this.showThirdHint = true;
+            }
+        });
+        this.socketHandler.on('game', 'changeLevelTimedMode', (level: Level) => {
+            this.levelId = level.id;
+            this.currentLevel = level;
+            this.settingGameImage();
+            this.gamePageService.setMouseCanClick(true);
+            this.gamePageService.setImages(this.levelId);
         });
     }
 
@@ -149,6 +184,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = true;
         }
+        if (this.showThirdHint) {
+            this.removeHintShape();
+        }
     }
 
     /**
@@ -163,6 +201,29 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = false;
         }
+        if (this.showThirdHint) {
+            this.removeHintShape();
+        }
+    }
+
+    /**
+     * This method emits a socket event to request a hint to the server.
+     */
+    askForHint(): void {
+        if (!this.secondPlayerName) {
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+            this.socketHandler.send('game', 'onHintRequest');
+        }
+    }
+
+    /**
+     * This method clears the hint shape canvas.
+     */
+    removeHintShape(): void {
+        const shapeCanvas = this.hintShapeCanvas.nativeElement as HTMLCanvasElement;
+        const shapeCtx = shapeCanvas.getContext('2d') as CanvasRenderingContext2D;
+        shapeCtx.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
+        this.showThirdHint = false;
     }
 
     /**
@@ -180,6 +241,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
+        if (this.route.snapshot.params.id === '0') {
+            this.isClassic = false;
+            return;
+        }
 
         this.settingGameLevel();
         this.settingGameImage();

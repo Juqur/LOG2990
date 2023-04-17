@@ -92,7 +92,7 @@ describe('ImageController', () => {
 
     describe('writeLevelData', () => {
         it('should call writeLevelData', () => {
-            const spy = jest.spyOn(imageService, 'writeLevelData').mockImplementation(jest.fn());
+            const spy = jest.spyOn(imageService, 'writeLevelData').mockReturnValue({} as Promise<Message>);
             controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
             expect(spy).toHaveBeenCalledTimes(1);
         });
@@ -105,6 +105,12 @@ describe('ImageController', () => {
             imageService.writeLevelData = jest.fn().mockResolvedValue(expectedMessage);
             const result = await controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
             expect(result).toStrictEqual(expectedMessage);
+        });
+
+        it('should add the level to the timed game list', () => {
+            const spy = jest.spyOn(imageService, 'writeLevelData').mockReturnValue({ level: {} as Level } as unknown as Promise<Message>);
+            controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(spy).toHaveBeenCalledTimes(1);
         });
     });
 });
