@@ -108,18 +108,6 @@ export class GameService {
     }
 
     /**
-     * This method sets the attribute of levelId.
-     *
-     * @param socketId the socket id of the player.
-     * @param levelId the level id of the level.
-     */
-    setLevelId(socketId: string, levelId: number): void {
-        const gameState = this.playerGameMap.get(socketId);
-        gameState.levelId = levelId;
-        this.playerGameMap.set(socketId, gameState);
-    }
-
-    /**
      * This method is called when a player clicks on a pixel.
      * It uses imageService to detect whether the pixel is a difference pixel.
      *
@@ -173,7 +161,6 @@ export class GameService {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
             this.removeLevel(gameState.levelId, true);
-            this.removeLevel(gameState.levelId, true);
             return true;
         } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
@@ -193,7 +180,6 @@ export class GameService {
      * @param data The data containing the level id, the player name.
      * @param isMultiplayer A boolean flag indicating whether the game is multiplayer.
      */
-    async createGameState(socketId: string, data: { levelId: number; playerName: string }, isMultiplayer: boolean): Promise<void> {
     async createGameState(socketId: string, data: { levelId: number; playerName: string }, isMultiplayer: boolean): Promise<void> {
         const playerGameState: GameState = {
             levelId: data.levelId,
@@ -270,21 +256,6 @@ export class GameService {
      */
     addLevelToDeletionQueue(levelId: number): void {
         this.levelDeletionQueue.push(levelId);
-    }
-
-    /**
-     * This method adds the level to the timed level list of all players who are currently in game.
-     * This method is called when a level is created.
-     *
-     * @param level The level that has to be added to the timed level list.
-     */
-    addLevelToTimedGame(level: Level): void {
-        for (const [socketId, gameState] of this.playerGameMap.entries()) {
-            if (gameState.timedLevelList) {
-                gameState.timedLevelList.push(level);
-                this.playerGameMap.set(socketId, gameState);
-            }
-        }
     }
 
     /**
