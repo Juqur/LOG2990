@@ -170,6 +170,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.levelId = level.id;
             this.currentLevel = level;
             this.settingGameImage();
+            this.gamePageService.resetImagesData();
             this.gamePageService.setMouseCanClick(true);
             this.gamePageService.setImages(this.levelId);
             if (this.showThirdHint) this.removeHintShape();

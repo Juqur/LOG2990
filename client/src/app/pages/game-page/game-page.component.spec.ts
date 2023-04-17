@@ -312,6 +312,7 @@ describe('GamePageComponent', () => {
             expect(component['levelId']).toEqual(1);
             expect(component['currentLevel']).toEqual(level);
             expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
+            expect(gamePageServiceSpy.resetImagesData).toHaveBeenCalledTimes(1);
             expect(gamePageServiceSpy.setMouseCanClick).toHaveBeenCalledWith(true);
             expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
             expect(removeHintShapeSpy).toHaveBeenCalledTimes(1);
