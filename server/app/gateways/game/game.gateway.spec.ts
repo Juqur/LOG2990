@@ -10,7 +10,7 @@ import { GameData } from '@common/game-data';
 import { TestConstants } from '@common/test-constants';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Level as LevelDto } from 'assets/data/level';
+import { Level as LevelDataObject } from 'assets/data/level';
 import { SinonStubbedInstance, createStubInstance, restore } from 'sinon';
 import { Namespace, Server, Socket } from 'socket.io';
 import { GameGateway } from './game.gateway';
@@ -140,7 +140,7 @@ describe('GameGateway', () => {
         });
 
         it('should handle timed game mode if player does not win', async () => {
-            gameState.timedLevelList = [{} as LevelDto];
+            gameState.timedLevelList = [{} as LevelDataObject];
             gameData.differencePixels = [1, 2, 3];
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(gameService, 'getImageInfoOnClick').mockReturnValue(Promise.resolve(gameData));
@@ -188,7 +188,7 @@ describe('GameGateway', () => {
                     isEasy: false,
                     nbDifferences: TestConstants.HARD_LEVEL_NB_DIFFERENCES,
                     canJoin: true,
-                } as LevelDto,
+                } as LevelDataObject,
             ];
             jest.spyOn(gateway, 'handleTimedGame' as never).mockReturnValue(false as never);
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(true);
@@ -516,7 +516,7 @@ describe('GameGateway', () => {
                     isEasy: false,
                     nbDifferences: TestConstants.HARD_LEVEL_NB_DIFFERENCES,
                     canJoin: true,
-                } as LevelDto,
+                } as LevelDataObject,
             ];
             const addGameHistorySpy = jest.spyOn(mongodbService, 'addGameHistory');
             await gateway['handlePlayerLeavingGame'](socket);
@@ -534,7 +534,7 @@ describe('GameGateway', () => {
 
     describe('onCreateTimedGame', () => {
         it('should start the timer', async () => {
-            const level = { id: 1 } as LevelDto;
+            const level = { id: 1 } as LevelDataObject;
             jest.spyOn(gameService, 'createGameState').mockImplementation();
             jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue(level);
             jest.spyOn(gameService, 'setLevelId').mockImplementation();
@@ -544,7 +544,7 @@ describe('GameGateway', () => {
         });
 
         it('should emit a random level to the user', async () => {
-            const level = { id: 1 } as LevelDto;
+            const level = { id: 1 } as LevelDataObject;
             jest.spyOn(gameService, 'createGameState').mockImplementation();
             jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue(level);
             jest.spyOn(gameService, 'setLevelId').mockImplementation();
@@ -562,9 +562,9 @@ describe('GameGateway', () => {
         });
 
         it('should add time', () => {
-            gameState.timedLevelList = [{} as LevelDto];
+            gameState.timedLevelList = [{} as LevelDataObject];
             const addTimeSpy = jest.spyOn(timerService, 'addTime').mockImplementation();
-            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDto);
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDataObject);
             jest.spyOn(gameService, 'setLevelId').mockImplementation();
             gateway['handleTimedGame'](socket, gameState);
             expect(addTimeSpy).toBeCalled();
@@ -586,22 +586,22 @@ describe('GameGateway', () => {
         });
 
         it('should return false of game is not won', () => {
-            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDto);
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDataObject);
             jest.spyOn(gameService, 'setLevelId').mockImplementation();
-            gameState.timedLevelList = [{} as LevelDto];
+            gameState.timedLevelList = [{} as LevelDataObject];
             expect(gateway['handleTimedGame'](socket, gameState)).toBeFalsy();
         });
 
         it('should set a new level if the game is not finished', () => {
-            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDto);
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDataObject);
             const setLevelSpy = jest.spyOn(gameService, 'setLevelId').mockImplementation();
-            gameState.timedLevelList = [{} as LevelDto];
+            gameState.timedLevelList = [{} as LevelDataObject];
             gateway['handleTimedGame'](socket, gameState);
             expect(setLevelSpy).toBeCalledWith(socket.id, 1);
         });
 
         it('should call addGameHistory from mongodb service', () => {
-            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDto);
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDataObject);
             jest.spyOn(gameService, 'setLevelId').mockImplementation();
             gameState.timedLevelList = [];
             gameState.otherSocketId = 'socket2';

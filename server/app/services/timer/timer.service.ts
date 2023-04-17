@@ -21,8 +21,8 @@ export class TimerService {
     /**
      * Gets the start date.
      *
-     * @param socketId the socket id of the associated player.
-     * @returns the start date.
+     * @param socketId The socket id of the associated player.
+     * @returns The start date.
      */
     getStartDate(socketId): Date {
         return this.timeMap.get(socketId).startDate;

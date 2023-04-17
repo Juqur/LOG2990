@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+/* Documentation adds extra lines, otherwise we are bellow the lint max line. */
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
