@@ -337,7 +337,7 @@ describe('GameGateway', () => {
             const spy = jest.spyOn(gameService, 'removeLevel').mockImplementation();
             jest.spyOn(gameService, 'getPlayersWaitingForGame').mockReturnValue([]);
             gateway.onDeleteLevel(socket, levelId);
-            expect(spy).toBeCalledWith(levelId, false);
+            expect(spy).toBeCalledWith(levelId, true);
         });
     });
 
@@ -451,7 +451,7 @@ describe('GameGateway', () => {
 
         it('should call removeLevelFromDeletionQueue if gameState is defined', () => {
             gateway['handlePlayerLeavingGame'](socket);
-            expect(removeLevelFromDeletionQueueSpy).toBeCalledWith(gameState.levelId, true);
+            expect(removeLevelFromDeletionQueueSpy).toBeCalledWith(gameState.levelId, false);
         });
 
         it('should call abandonMessage if the other socket id is defined', () => {
