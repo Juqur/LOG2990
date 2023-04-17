@@ -16,6 +16,7 @@ export interface GameState {
     isInCheatMode: boolean;
     otherSocketId?: string;
     timedLevelList?: Level[];
+    otherPlayerAbandoned?: boolean;
     hintsUsed: number;
 }
 
@@ -104,6 +105,17 @@ export class GameService {
     setLevelId(socketId: string, levelId: number): void {
         const gameState = this.playerGameMap.get(socketId);
         gameState.levelId = levelId;
+        this.playerGameMap.set(socketId, gameState);
+    }
+
+    /**
+     * This method sets the attribute of otherPlayerAbandoned to true.
+     *
+     * @param socketId The socket id of the player.
+     */
+    setOtherPlayerAbandoned(socketId: string): void {
+        const gameState = this.playerGameMap.get(socketId);
+        gameState.otherPlayerAbandoned = true;
         this.playerGameMap.set(socketId, gameState);
     }
 
