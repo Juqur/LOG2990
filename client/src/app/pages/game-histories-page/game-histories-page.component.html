@@ -1,10 +1,11 @@
 <app-scale-container>
-    <header>
+    <header class="top-bar-container">
         <span class="cornerButton">
             <button mat-fab color="darkblue" routerLink="/config">
                 <mat-icon>arrow_back</mat-icon>
             </button>
         </span>
+        <button mat-button color="darkblue" routerLink="/config">Tout supprimer</button>
     </header>
     <span *ngFor="let history of gameHistories">
         <app-game-history [gameHistory]="history"></app-game-history>
