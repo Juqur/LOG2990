@@ -99,10 +99,11 @@ export class TimerService {
             if (this.gameService.getGameState(socketId).timedLevelList && currentTime + time > Constants.TIMED_GAME_MODE_LENGTH) {
                 time = Constants.TIMED_GAME_MODE_LENGTH - currentTime;
             }
-            server.to(socketId).emit('sendTime', currentTime + time);
+            server.sockets.sockets.get(socketId).emit('sendExtraTime', currentTime + time);
             this.timeMap.set(socketId, currentTime + time);
             const otherSocketId = this.gameService.getGameState(socketId).otherSocketId;
             if (otherSocketId) {
+                server.sockets.sockets.get(otherSocketId).emit('sendExtraTime', currentTime + time);
                 this.timeMap.set(otherSocketId, currentTime + time);
             }
         }
