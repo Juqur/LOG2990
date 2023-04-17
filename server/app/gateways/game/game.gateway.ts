@@ -339,7 +339,6 @@ export class GameGateway {
     private cancelGame(socket: Socket): void {
         this.gameService.setIsGameFound(socket.id, false);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
-        console.log(secondPlayerId);
         if (secondPlayerId) {
             const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
             this.gameService.deleteUserFromGame(secondPlayerSocket);
