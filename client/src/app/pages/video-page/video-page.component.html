@@ -26,7 +26,7 @@
             <app-game-timer></app-game-timer>
         </section>
         <section id="play-area-container">
-            <app-play-area [isDiff]="false" [image]="originalImageSrc" #originalPlayArea></app-play-area>
+            <app-play-area [image]="originalImageSrc" #originalPlayArea></app-play-area>
             <div *ngIf="!secondPlayerName" id="between-images">
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
@@ -34,7 +34,7 @@
                 <p>{{ nbHints }}</p>
                 <span id="nb-hints">indices restants</span>
             </div>
-            <app-play-area [isDiff]="true" [image]="diffImageSrc" #diffPlayArea></app-play-area>
+            <app-play-area [image]="diffImageSrc" #diffPlayArea></app-play-area>
         </section>
         <section id="bottom-area">
             <!-- <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat> -->
