@@ -364,7 +364,7 @@ describe('GameGateway', () => {
             const spy = jest.spyOn(gameService, 'removeLevel').mockImplementation();
             jest.spyOn(gameService, 'getPlayersWaitingForGame').mockReturnValue([]);
             gateway.onDeleteLevel(socket, levelId);
-            expect(spy).toBeCalledWith(levelId, false);
+            expect(spy).toBeCalledWith(levelId, true);
         });
     });
 
@@ -456,20 +456,21 @@ describe('GameGateway', () => {
     });
 
     describe('handlePlayerLeavingGame', () => {
-        let removeLevel: jest.SpyInstance;
+        let removeLevelFromDeletionQueueSpy: jest.SpyInstance;
         let deleteUserFromGameSpy: jest.SpyInstance;
         let stopTimerSpy: jest.SpyInstance;
         let abandonMessageSpy: jest.SpyInstance;
         let getGameStateSpy: jest.SpyInstance;
 
         beforeEach(() => {
-            removeLevel = jest.spyOn(gameService, 'removeLevel');
+            removeLevelFromDeletionQueueSpy = jest.spyOn(gameService, 'removeLevel');
             deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
             stopTimerSpy = jest.spyOn(timerService, 'stopTimer');
             abandonMessageSpy = jest.spyOn(chatService, 'abandonMessage');
             getGameStateSpy = jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(timerService, 'getStartDate').mockReturnValue(new Date());
             jest.spyOn(gateway['server'].sockets.sockets, 'get').mockReturnValue(otherSocket);
+            jest.spyOn(mongodbService, 'addGameHistory').mockImplementation(jest.fn());
         });
 
         it('should call getGameState', () => {
@@ -477,9 +478,9 @@ describe('GameGateway', () => {
             expect(getGameStateSpy).toBeCalledWith(socket.id);
         });
 
-        it('should call removeLevel if gameState is defined', async () => {
+        it('should call removeLevelFromDeletionQueue if gameState is defined', async () => {
             await gateway['handlePlayerLeavingGame'](socket);
-            expect(removeLevel).toBeCalledWith(gameState.levelId, true);
+            expect(removeLevelFromDeletionQueueSpy).toBeCalledWith(gameState.levelId, false);
         });
 
         it('should call abandonMessage if the other socket id is defined', async () => {
