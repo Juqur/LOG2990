@@ -199,7 +199,7 @@ export class GameGateway {
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(levelId, false);
+        this.gameService.removeLevel(levelId, true);
     }
 
     /**
@@ -290,7 +290,7 @@ export class GameGateway {
                 this.gameService.deleteUserFromGame(otherSocket);
             }
             this.gameService.deleteUserFromGame(socket);
-            this.gameService.removeLevel(gameState.levelId, true);
+            this.gameService.removeLevel(gameState.levelId, false);
             this.timerService.stopTimer(socket.id);
         }
     }

@@ -397,27 +397,27 @@ describe('GameService', () => {
 
         it('should add the level to deletion queue if the level is being played', () => {
             jest.spyOn(service, 'isLevelBeingPlayed' as never).mockReturnValue(true as never);
-            service.removeLevel(1, false);
+            service.removeLevel(1, true);
             expect(addLevelSpy).toBeCalledWith(1);
         });
 
         it('should call deleteLevelData if the level is not being played', () => {
             jest.spyOn(service, 'isLevelBeingPlayed' as never).mockReturnValue(false as never);
-            service.removeLevel(1, false);
+            service.removeLevel(1, true);
             expect(deleteLevelSpy).toBeCalledWith(1);
         });
 
         it('should remove the level from deletion queue if the level is to be deleted', () => {
             jest.spyOn(service, 'isLevelBeingPlayed' as never).mockReturnValue(false as never);
             service['levelDeletionQueue'] = [1, 2];
-            service.removeLevel(1, true);
+            service.removeLevel(1, false);
             expect(service['levelDeletionQueue']).toEqual([2]);
         });
 
         it('should delete the level', () => {
             jest.spyOn(service, 'isLevelBeingPlayed' as never).mockReturnValue(false as never);
             service['levelDeletionQueue'] = [1, 2];
-            service.removeLevel(1, true);
+            service.removeLevel(1, false);
             expect(deleteLevelSpy).toBeCalledWith(1);
         });
     });

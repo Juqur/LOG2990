@@ -154,11 +154,11 @@ export class GameService {
         if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            this.removeLevel(gameState.levelId, true);
+            this.removeLevel(gameState.levelId, false);
             return true;
         } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
-            this.removeLevel(gameState.levelId, true);
+            this.removeLevel(gameState.levelId, false);
             return true;
         }
         return false;
@@ -268,14 +268,14 @@ export class GameService {
      * If a user is trying to delete a level that is currently being played, the level is added to the levelDeletionQueue.
      *
      * @param levelId The id of the level.
-     * @param gameEnded A boolean flag indicating whether the game has ended or if the player manually deletes the level.
+     * @param isRequestedByUser A boolean flag indicating if it was a request from the user or from the game.
      */
-    removeLevel(levelId: number, gameEnded: boolean): void {
+    removeLevel(levelId: number, isRequestedByUser: boolean): void {
         const index = this.levelDeletionQueue.indexOf(levelId);
         const isLevelBeingPlayed = this.isLevelBeingPlayed(levelId);
 
         // If it was a request and the level is not in the deletion queue.
-        if (!gameEnded && index < 0) {
+        if (isRequestedByUser && index < 0) {
             if (isLevelBeingPlayed) {
                 this.addLevelToDeletionQueue(levelId);
             } else {
@@ -283,7 +283,7 @@ export class GameService {
             }
         }
 
-        if (gameEnded && !isLevelBeingPlayed && index >= 0) {
+        if (!isRequestedByUser && !isLevelBeingPlayed && index >= 0) {
             this.levelDeletionQueue.splice(index, 1);
             this.imageService.deleteLevelData(levelId);
         }
@@ -460,7 +460,6 @@ export class GameService {
      * @returns A boolean indicating whether the level is being played.
      */
     private isLevelBeingPlayed(levelId: number): boolean {
-        console.log('length of: ' + this.playerGameMap.size);
         for (const gameState of this.playerGameMap.values()) {
             if (gameState.levelId === levelId && gameState.isInGame) {
                 return true;
