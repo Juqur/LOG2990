@@ -210,7 +210,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     /**
      * Copy the foreground of the diff canvas to the default canvas.
      */
-    duplicateDiffCanvas(): void {
+    duplicateDifferenceCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.canvas;
         const diffCanvas = this.differencePaintArea.canvas;

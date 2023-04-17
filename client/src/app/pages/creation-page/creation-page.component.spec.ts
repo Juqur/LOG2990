@@ -347,24 +347,24 @@ describe('CreationPageComponent', () => {
         });
     });
 
-    describe('duplicateDiffCanvas', () => {
+    describe('duplicateDifferenceCanvas', () => {
         it('should call addToUndoRedoStack', () => {
-            component.duplicateDiffCanvas();
+            component.duplicateDifferenceCanvas();
             expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call clearRect', () => {
-            component.duplicateDiffCanvas();
+            component.duplicateDifferenceCanvas();
             expect(clearRectSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call drawImage', () => {
-            component.duplicateDiffCanvas();
+            component.duplicateDifferenceCanvas();
             expect(drawImageSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call addToUndoRedoStack', () => {
-            component.duplicateDiffCanvas();
+            component.duplicateDifferenceCanvas();
             expect(addToUndoRedoStackSpy).toHaveBeenCalledTimes(1);
         });
     });
