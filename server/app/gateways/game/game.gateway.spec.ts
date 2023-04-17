@@ -470,6 +470,7 @@ describe('GameGateway', () => {
             getGameStateSpy = jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(timerService, 'getStartDate').mockReturnValue(new Date());
             jest.spyOn(gateway['server'].sockets.sockets, 'get').mockReturnValue(otherSocket);
+            jest.spyOn(mongodbService, 'addGameHistory').mockImplementation(jest.fn());
         });
 
         it('should call getGameState', () => {
@@ -477,8 +478,8 @@ describe('GameGateway', () => {
             expect(getGameStateSpy).toBeCalledWith(socket.id);
         });
 
-        it('should call removeLevelFromDeletionQueue if gameState is defined', () => {
-            gateway['handlePlayerLeavingGame'](socket);
+        it('should call removeLevelFromDeletionQueue if gameState is defined', async () => {
+            await gateway['handlePlayerLeavingGame'](socket);
             expect(removeLevelFromDeletionQueueSpy).toBeCalledWith(gameState.levelId, false);
         });
 
