@@ -6,6 +6,7 @@ import { CommunicationService } from '@app/services/communication/communication.
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/game-data';
@@ -21,7 +22,7 @@ import { environment } from 'src/environments/environment';
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
-    providers: [DrawService, CommunicationService],
+    providers: [DrawService, CommunicationService, TimerService],
 })
 export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
@@ -92,10 +93,30 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.gamePageService.resetImagesData();
         this.settingGameParameters();
         this.handleSocket();
+        TimerService.startTimer();
     }
 
     ngAfterViewInit(): void {
-        VideoService.addToVideoStack(this.originalPlayArea.getCanvasRenderingContext2D(), this.diffPlayArea.getCanvasRenderingContext2D());
+        // const currentImage = new Image();
+        // currentImage.crossOrigin = 'anonymous';
+        // currentImage.src = this.originalImageSrc;
+        // console.log(this.originalImageSrc);
+
+        // const tempDefaultCanvas = document.createElement('canvas');
+        // tempDefaultCanvas.width = Constants.EXPECTED_WIDTH;
+        // tempDefaultCanvas.height = Constants.EXPECTED_HEIGHT;
+        // const tempDefaultContext = tempDefaultCanvas.getContext('2d') as CanvasRenderingContext2D;
+        // // tempDefaultContext.drawImage(this.originalImageSrc, 0, 0);
+
+        // currentImage.onload = () => {
+        //     tempDefaultContext.drawImage(currentImage, 0, 0, Constants.EXPECTED_WIDTH, Constants.EXPECTED_HEIGHT);
+        // };
+
+        VideoService.addToVideoStack(
+            TimerService.timerValue,
+            this.originalPlayArea.getCanvasRenderingContext2D(),
+            this.diffPlayArea.getCanvasRenderingContext2D(),
+        );
     }
     /**
      * This method is called when the component is destroyed.
@@ -108,6 +129,8 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.socketHandler.removeListener('game', 'defeat');
         this.socketHandler.removeListener('game', 'startCheatMode');
         this.gamePageService.stopCheatMode();
+        TimerService.stopTimer();
+        TimerService.resetTimer();
     }
 
     /**

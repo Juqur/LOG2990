@@ -99,6 +99,13 @@ export namespace Constants {
 
     // Game Chat
     export const scrollDelay = 1;
+
+    // Timer Service
+    export const TIMER_START = 0;
+    export const TIMER_INTERVAL = 40; // 40 ms = 25 fps
+    export const NORMAL_SPEED = 1;
+    export const FAST_SPEED = 2;
+    export const VERY_FAST_SPEED = 4;
 }
 
 export enum MouseButton {

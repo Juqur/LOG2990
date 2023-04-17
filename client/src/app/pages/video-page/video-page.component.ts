@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Level } from '@app/levels';
-import { DrawService } from '@app/services/draw/draw.service';
 import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 
@@ -15,7 +14,7 @@ import { Constants } from '@common/constants';
     selector: 'app-video-page',
     templateUrl: './video-page.component.html',
     styleUrls: ['./video-page.component.scss'],
-    providers: [DrawService],
+    providers: [],
 })
 export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
@@ -33,6 +32,9 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     originalImageSrc: string = '';
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
+    videoSpeed: number = Constants.NORMAL_SPEED;
+    timeFrame: number = 0;
+    lastTimeFrame: number = 0;
 
     private showVideo: ReturnType<typeof setInterval>;
     // private levelId: number;
@@ -48,6 +50,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnInit(): void {
         this.settingGameParameters();
+        this.lastTimeFrame = VideoService.getStackElement(VideoService.getStackLength() - 1).time;
     }
 
     ngAfterViewInit(): void {
@@ -83,9 +86,10 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     startVideo(): void {
-        this.showVideo = setInterval(() => {
-            this.putInCanvas();
-        }, Constants.millisecondsInOneSecond);
+        // this.showVideo = setInterval(() => {
+        //     this.putInCanvas();
+        // }, Constants.millisecondsInOneSecond);
+        this.playVideo();
     }
 
     getFirstPlayerName(): string {
@@ -101,24 +105,31 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     videoSpeedTime4(): void {
-        clearInterval(this.showVideo);
-        this.showVideo = setInterval(() => {
-            this.putInCanvas();
-        }, Constants.millisecondsInOneSecond / 4);
+        this.videoSpeed = Constants.VERY_FAST_SPEED;
     }
 
     videoSpeedTime2(): void {
-        clearInterval(this.showVideo);
-        this.showVideo = setInterval(() => {
-            this.putInCanvas();
-        }, Constants.millisecondsInOneSecond / 2);
+        this.videoSpeed = Constants.FAST_SPEED;
     }
 
     videoSpeedTime1(): void {
-        clearInterval(this.showVideo);
+        this.videoSpeed = Constants.NORMAL_SPEED;
+    }
+
+    playVideo(): void {
+        console.log('play');
+        let videoFrame = VideoService.getStackElement(VideoService.pointer);
         this.showVideo = setInterval(() => {
-            this.putInCanvas();
-        }, Constants.millisecondsInOneSecond);
+            console.table({ timer: this.timeFrame, video: videoFrame.time });
+            if (this.timeFrame >= this.lastTimeFrame) {
+                this.pauseVideo();
+            }
+            if (this.timeFrame === videoFrame.time) {
+                this.putInCanvas();
+                videoFrame = VideoService.getStackElement(VideoService.pointer);
+            }
+            this.timeFrame++;
+        }, Constants.TIMER_INTERVAL / this.videoSpeed);
     }
 
     pauseVideo(): void {
@@ -128,9 +139,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     replayVideo(): void {
         clearInterval(this.showVideo);
         VideoService.pointer = 0;
-        this.showVideo = setInterval(() => {
-            this.putInCanvas();
-        }, Constants.millisecondsInOneSecond);
+        this.timeFrame = -1;
+        this.playVideo();
     }
 
     /**
