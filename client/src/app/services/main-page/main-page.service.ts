@@ -4,7 +4,7 @@ import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Dialogs } from '@common/dialogs';
 
-interface TimedGameData {
+export interface TimedGameData {
     levelId: number;
     otherPlayerName: string;
 }
@@ -92,8 +92,8 @@ export class MainPageService {
         this.popUpService.dialogRef.afterClosed().subscribe(() => {
             if (this.waitingForPlayer) {
                 this.socketHandler.send('game', 'onTimedGameCancelled');
-                this.waitingForPlayer = true;
             }
+            this.waitingForPlayer = true;
         });
         this.socketHandler.on('game', 'startTimedGameMultiplayer', (data: TimedGameData) => {
             this.waitingForPlayer = false;
