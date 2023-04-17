@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * This test file draws inspiration from the following git repository:
  * https://github.com/jmcdo29/testing-nestjs/blob/main/apps/mongo-sample/src/cat/cat.service.spec.ts
@@ -15,7 +14,7 @@ import { TestConstants } from '@common/test-constants';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Level as LevelDto } from 'assets/data/level';
-import { Model } from 'mongoose';
+import { Model, Query } from 'mongoose';
 
 const mockLevel = (
     id = 1,
@@ -263,7 +262,7 @@ describe('MongodbService', () => {
             const levelId = 1;
             const deleteOneSpy = jest.spyOn(levelModel, 'deleteOne').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             await service.deleteLevel(levelId);
             expect(deleteOneSpy).toHaveBeenCalledWith({ id: levelId });
         });
@@ -273,7 +272,7 @@ describe('MongodbService', () => {
         it('should return all levels', async () => {
             jest.spyOn(levelModel, 'find').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray),
-            } as any);
+            } as never);
             const result = await service.getAllLevels();
             expect(result).toEqual(levelArray);
         });
@@ -284,7 +283,7 @@ describe('MongodbService', () => {
             const levelId = 2;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[1]),
-            } as any);
+            } as never);
             const result = await service.getLevelById(levelId);
             expect(result).toEqual(levelArray[1]);
         });
@@ -293,13 +292,43 @@ describe('MongodbService', () => {
     describe('getLastLevelId', () => {
         it('should correctly return the last level id', async () => {
             const expectedResult = levelArray[2].id;
+            jest.spyOn(levelModel, 'findOne').mockReturnValue({} as unknown as Query<LevelDocument[], LevelDocument>);
             jest.spyOn(levelModel, 'find').mockReturnValue({
                 limit: jest.fn().mockReturnValue({
                     sort: jest.fn().mockReturnValue({
                         exec: jest.fn().mockReturnValue([levelDocArray[2]]),
                     }),
                 }),
-            } as any);
+            } as never);
+            const result = await service.getLastLevelId();
+            expect(result).toEqual(expectedResult);
+        });
+
+        it('should correctly catch the error if findOne fails', async () => {
+            const error = new Error('Failed to find a level');
+            jest.spyOn(levelModel, 'findOne').mockRejectedValue(error);
+            jest.spyOn(service, 'handleErrors' as never).mockReturnValue(false as never);
+            jest.spyOn(levelModel, 'find').mockReturnValue({
+                limit: jest.fn().mockReturnValue({
+                    sort: jest.fn().mockReturnValue({
+                        exec: jest.fn().mockReturnValue([levelDocArray[2]]),
+                    }),
+                }),
+            } as never);
+            const result = await service.getLastLevelId();
+            expect(result).toBeFalsy();
+        });
+
+        it('should correctly return 0 if there are no level in the db', async () => {
+            const expectedResult = 0;
+            jest.spyOn(levelModel, 'findOne').mockReturnValue(null);
+            jest.spyOn(levelModel, 'find').mockReturnValue({
+                limit: jest.fn().mockReturnValue({
+                    sort: jest.fn().mockReturnValue({
+                        exec: jest.fn().mockReturnValue([levelDocArray[2]]),
+                    }),
+                }),
+            } as never);
             const result = await service.getLastLevelId();
             expect(result).toEqual(expectedResult);
         });
@@ -311,7 +340,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].timeSolo;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getTimeSoloArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -323,7 +352,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].playerSolo;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getPlayerSoloArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -335,7 +364,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].timeMulti;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getTimeMultiArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -347,7 +376,7 @@ describe('MongodbService', () => {
             const expectedResult = levelArray[0].playerMulti;
             jest.spyOn(levelModel, 'findOne').mockReturnValue({
                 exec: jest.fn().mockReturnValue(levelDocArray[0]),
-            } as any);
+            } as never);
             const result = await service.getPlayerMultiArray(levelId);
             expect(result).toEqual(expectedResult);
         });
@@ -404,7 +433,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeSoloArray').mockResolvedValue(levelArray[0].timeSolo);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             endTime = TestConstants.NOT_NEW_BEST_TIME;
             gameSate.otherSocketId = undefined;
             await service.updateHighscore(endTime, gameSate);
@@ -416,7 +445,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeMultiArray').mockResolvedValue(levelArray[0].timeMulti);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             endTime = TestConstants.NOT_NEW_BEST_TIME;
             await service.updateHighscore(endTime, gameSate);
             expect(findOneAndUpdateSpy).not.toHaveBeenCalled();
@@ -430,7 +459,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeSoloArray').mockResolvedValue(levelArray[0].timeSolo);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             gameSate.otherSocketId = undefined;
             await service.updateHighscore(endTime, gameSate);
             expect(findOneAndUpdateSpy).toHaveBeenCalledWith({ id: levelId }, { playerSolo: expectedSoloNames, timeSolo: expectedSoloTimes });
@@ -444,7 +473,7 @@ describe('MongodbService', () => {
             jest.spyOn(service, 'getTimeMultiArray').mockResolvedValue(levelArray[0].timeMulti);
             const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             await service.updateHighscore(endTime, gameSate);
             expect(findOneAndUpdateSpy).toHaveBeenCalledWith({ id: levelId }, { playerMulti: expectedMultiNames, timeMulti: expectedMultiTimes });
         });
@@ -468,7 +497,7 @@ describe('MongodbService', () => {
                         exec: jest.fn().mockReturnValue(levelDocArray),
                     }),
                 }),
-            } as any);
+            } as never);
             const result = await service.getLevelsInPage(pageNumber);
             expect(result).toEqual(levelArray);
         });
@@ -476,7 +505,7 @@ describe('MongodbService', () => {
 
     describe('getGameConstants', () => {
         it('should return game constants', async () => {
-            jest.spyOn(gameConstantsModel, 'find').mockReturnValue({ exec: jest.fn().mockResolvedValue(gameConstantsDocArray) } as any);
+            jest.spyOn(gameConstantsModel, 'find').mockReturnValue({ exec: jest.fn().mockResolvedValue(gameConstantsDocArray) } as never);
             const result = await service.getGameConstants();
             expect(result).toEqual(gameConstantsArray[0]);
         });
@@ -498,9 +527,18 @@ describe('MongodbService', () => {
         it('should call findOneAndUpdate', async () => {
             const findOneAndUpdateSpy = jest.spyOn(gameConstantsModel, 'findOneAndUpdate').mockReturnValue({
                 exec: jest.fn(),
-            } as any);
+            } as never);
             await service.setNewGameConstants(gameConstantsArray[0]);
             expect(findOneAndUpdateSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('handleErrors()', () => {
+        it('should return the correct error message', () => {
+            const error = new Error('skill issue');
+            const message = service['handleErrors'](error);
+            expect(message.title).toEqual('error');
+            expect(message.body).toEqual('Échec du téléchargement du jeu. Veuillez réessayer plus tard. \nErreur: ' + error.message);
         });
     });
 });

@@ -19,16 +19,23 @@
             </div>
         </section>
         <section id="play-area-container">
-            <app-play-area [isDiff]="false" [image]="originalImageSrc" (click)="clickedOnOriginal($event)" #originalPlayArea></app-play-area>
+            <app-play-area
+                [isDifferenceCanvas]="false"
+                [image]="originalImageSrc"
+                (click)="clickedOnOriginal($event)"
+                #originalPlayArea
+            ></app-play-area>
             <div *ngIf="!secondPlayerName" id="between-images">
-                <button mat-button>
+                <button mat-button (click)="askForHint()">
                     <span> <mat-icon>image_search</mat-icon></span>
                 </button>
                 <p>{{ nbHints }}</p>
                 <span id="nb-hints">indices restants</span>
+                <p class="hint-text" [ngClass]="{'visible': showThirdHint}">Forme de l'indice:</p>
+                <canvas [ngClass]="{'use-canvas': showThirdHint}" #hintShapeCanvas></canvas>
             </div>
-            <app-play-area [isDiff]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
-            <app-play-area #tempDiffPlayArea class="tempDiffPlayArea"></app-play-area>
+            <app-play-area [isDifferenceCanvas]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)" #diffPlayArea></app-play-area>
+            <app-play-area #tempDiffPlayArea class="tempDiffPlayArea" (click)="clickedOnDiff($event)"></app-play-area>
         </section>
         <section id="bottom-area">
             <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat>
@@ -40,11 +47,13 @@
                     <span class="info-question">Difficulté : </span
                     ><span class="info-answer">{{ currentLevel.isEasy ? 'Facile' : 'Difficile' }}</span>
                 </div>
-                <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
                 <div>
-                    <span class="info-question">Différences totale: </span><span class="info-answer">{{ currentLevel.nbDifferences }}</span>
+                    <span class="info-question">Mode de jeu : </span><span class="info-answer">{{ isClassic ? 'Classique' : 'Temps limité' }}</span>
                 </div>
                 <div>
+                    <span class="info-question">Différences totale : </span><span class="info-answer">{{ currentLevel.nbDifferences }}</span>
+                </div>
+                <div *ngIf="isClassic">
                     <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + ' secondes' }}</span>
                 </div>
             </div>

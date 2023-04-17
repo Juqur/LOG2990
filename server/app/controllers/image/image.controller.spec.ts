@@ -1,12 +1,12 @@
 import { Message } from '@app/model/schema/message.schema';
 import { GameService } from '@app/services/game/game.service';
+import { ImageService } from '@app/services/image/image.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TestConstants } from '@common/test-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Level } from 'assets/data/level';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
-import { ImageService } from './../../../app/services/image/image.service';
 import { ImageController } from './image.controller';
 
 describe('ImageController', () => {
@@ -96,7 +96,7 @@ describe('ImageController', () => {
 
     describe('writeLevelData', () => {
         it('should call writeLevelData', () => {
-            const spy = jest.spyOn(imageService, 'writeLevelData').mockImplementation(jest.fn());
+            const spy = jest.spyOn(imageService, 'writeLevelData').mockReturnValue({} as Promise<Message>);
             controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
             expect(spy).toHaveBeenCalledTimes(1);
         });
@@ -109,6 +109,12 @@ describe('ImageController', () => {
             imageService.writeLevelData = jest.fn().mockResolvedValue(expectedMessage);
             const result = await controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
             expect(result).toStrictEqual(expectedMessage);
+        });
+
+        it('should add the level to the timed game list', () => {
+            const spy = jest.spyOn(imageService, 'writeLevelData').mockReturnValue({ level: {} as Level } as unknown as Promise<Message>);
+            controller.writeLevelData(TestConstants.MOCK_LEVEL_DATA_1);
+            expect(spy).toHaveBeenCalledTimes(1);
         });
     });
 });

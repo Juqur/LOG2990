@@ -39,6 +39,14 @@ describe('ImageService', () => {
         expect(result).toBe('../server/assets/test/');
     });
 
+    describe('getLevels', () => {
+        it('should call mongodb service getAllLevels', async () => {
+            const spy = jest.spyOn(mongodbService, 'getAllLevels').mockImplementation(jest.fn());
+            await service.getLevels();
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('differencesCount', () => {
         it('should call fsp.readFile', async () => {
             const spy = jest.spyOn(fs.promises, 'readFile').mockResolvedValue(Buffer.from(JSON.stringify(TestConstants.CLUSTERS_TEST1)));
@@ -191,9 +199,6 @@ describe('ImageService', () => {
             });
             mockSyncUnlink.mockImplementation();
             spyGetLevel = jest.spyOn(mongodbService, 'getLevelById').mockResolvedValue(returnLevel);
-
-            // mongodbService.getLevelById.resolves(returnLevel);
-            // mongodbService.getAllLevels.resolves(levels);
             fs.promises.writeFile = jest.fn();
         });
 
@@ -245,7 +250,7 @@ describe('ImageService', () => {
 
     describe('confirmUpload', () => {
         it('should return the correct message', () => {
-            expect(service['confirmUpload']().title).toStrictEqual('success');
+            expect(service['confirmUpload']({} as Level).title).toStrictEqual('success');
         });
     });
 

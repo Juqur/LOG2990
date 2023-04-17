@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Level } from 'assets/data/level';
 
 export class Message {
     @ApiProperty()
@@ -6,4 +7,5 @@ export class Message {
 
     @ApiProperty()
     body: string;
+    level?: Level;
 }

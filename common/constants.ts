@@ -15,19 +15,22 @@ export namespace Constants {
     export const ninety: number = 90;
     export const hundred: number = 100;
     export const thousand: number = 1000;
-    export const millisecondsQuarterOfSecond: number = 250;
 
     // Global time constants
     export const SECONDS_PER_MINUTE: number = 60;
+    export const CHEAT_FLASHING_DELAY: number = 125;
 
     // Page display
     export const levelsPerPage: number = 4;
 
-    // Default
+    // Default highscore values
     export const defaultPlayerSolo: string[] = ['Gontrand G.Marcotte', 'primexlbr123', 'Escargot mobile'];
     export const defaultTimeSolo: number[] = [60, 65, 70];
     export const defaultPlayerMulti: string[] = ['Jean-Pierre Laflèche', 'GAYSHIM IMPACT', 'someone'];
     export const defaultTimeMulti: number[] = [80, 83, 90];
+
+    // Draw Service
+    export const DEFAULT_COORDINATE = -1;
 
     // Level mock values
     export const testXposition: number = 96;
@@ -61,6 +64,13 @@ export namespace Constants {
     // Canvas for game
     export const DEFAULT_WIDTH = 640;
     export const DEFAULT_HEIGHT = 480;
+    export const DEFAULT_WIDTH_SHAPE_CANVAS = 300;
+    export const DEFAULT_HEIGHT_SHAPE_CANVAS = 150;
+    export const TOP_LEFT_QUADRANT: number = 1;
+    export const TOP_RIGHT_QUADRANT: number = 2;
+    export const BOTTOM_LEFT_QUADRANT: number = 3;
+    export const BOTTOM_RIGHT_QUADRANT: number = 4;
+    export const SUBQUADRANT_DIVIDER: number = 4;
 
     // Radius values and Creation Component constants
     export const RADIUS_DEFAULT = 3;
@@ -78,6 +88,7 @@ export namespace Constants {
     export const INIT_COUNTDOWN_TIME = 30;
     export const INIT_HINTS_NB = 3;
     export const HINT_PENALTY = 5;
+    export const FOUND_DIFFERENCE_BONUS = 5;
     export const COUNTDOWN_TIME_WIN = 5;
     export const DEFAULT_TEST_NUMBER = 7;
 

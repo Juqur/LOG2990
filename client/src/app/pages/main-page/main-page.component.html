@@ -16,9 +16,9 @@
             </div>
         </div>
         <div class="button-container justified">
-            <button mat-button class="menu-button" (click)="classicPageOnClick()"><span>Classique</span></button>
-            <button mat-button class="menu-button"><span>Temps limité</span></button>
-            <button mat-button class="menu-button" (click)="configPageOnClick()"><span>Configurations</span></button>
+            <button mat-button class="menu-button" (click)="navigateTo('/selection')"><span>Classique</span></button>
+            <button mat-button class="menu-button" (click)="onLimitedTimeClick()"><span>Temps limité</span></button>
+            <button mat-button class="menu-button" (click)="navigateTo('/config')"><span>Configurations</span></button>
         </div>
     </body>
 
