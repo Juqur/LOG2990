@@ -340,15 +340,15 @@ describe('GamePageComponent', () => {
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
         });
 
-        it('should call removeHintShape if showThirdHint is true', () => {
-            const event: MouseEvent = new MouseEvent('click');
-            const mousePositionReturnValue = 1;
-            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-            component['showThirdHint'] = true;
-            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-            component.clickedOnOriginal(event);
-            expect(removeHintShapeSpy).toHaveBeenCalled();
-        });
+        // it('should call removeHintShape if showThirdHint is true', () => {
+        //     const event: MouseEvent = new MouseEvent('click');
+        //     const mousePositionReturnValue = 1;
+        //     gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+        //     component['showThirdHint'] = true;
+        //     const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+        //     component.clickedOnOriginal(event);
+        //     expect(removeHintShapeSpy).toHaveBeenCalled();
+        // });
     });
 
     describe('clickedOnDiff', () => {
@@ -371,15 +371,15 @@ describe('GamePageComponent', () => {
             expect(component['clickedOriginalImage']).toBe(false);
         });
 
-        it('should call removeHintShape if showThirdHint is true', () => {
-            const event: MouseEvent = new MouseEvent('click');
-            const mousePositionReturnValue = 1;
-            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-            component['showThirdHint'] = true;
-            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-            component.clickedOnDiff(event);
-            expect(removeHintShapeSpy).toHaveBeenCalled();
-        });
+        // it('should call removeHintShape if showThirdHint is true', () => {
+        //     const event: MouseEvent = new MouseEvent('click');
+        //     const mousePositionReturnValue = 1;
+        //     gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
+        //     component['showThirdHint'] = true;
+        //     const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+        //     component.clickedOnDiff(event);
+        //     expect(removeHintShapeSpy).toHaveBeenCalled();
+        // });
     });
 
     describe('settingGameParameters', () => {

@@ -133,7 +133,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-                this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+                const isFound = this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+                if (isFound && this.showThirdHint) {
+                    this.removeHintShape();
+                }
             }
         });
         this.socketHandler.on('game', 'victory', () => {
@@ -184,9 +187,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = true;
         }
-        if (this.showThirdHint) {
-            this.removeHintShape();
-        }
     }
 
     /**
@@ -200,9 +200,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = false;
-        }
-        if (this.showThirdHint) {
-            this.removeHintShape();
         }
     }
 

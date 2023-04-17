@@ -81,6 +81,7 @@ export class GamePageService {
      * This method verifies whether the click is valid or not.
      *
      * @param event The mouse event.
+     * @returns The position of the mouse on the canvas.
      */
     verifyClick(event: MouseEvent): number {
         const invalid = -1;
@@ -120,8 +121,10 @@ export class GamePageService {
      * @param response The response of validateResponse().
      * @param gameData The game data.
      * @param clickedOriginalImage Boolean that represents if the player clicked on the original image or the difference image.
+     * 
+     * @returns Boolean that represents if the player clicked on a difference pixel or not.
      */
-    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
+    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): boolean {
         const response = this.validateResponse(gameData.differencePixels);
         if (response) {
             if (!clickedOriginalImage) {
@@ -129,12 +132,14 @@ export class GamePageService {
             } else {
                 this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode);
             }
+            return true;
         } else {
             if (!clickedOriginalImage) {
                 this.handleAreaNotFoundInDiff();
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
+            return false;
         }
     }
 
