@@ -3,18 +3,18 @@
     <ul class="sub-info">
         <li>
             <span>Temps:</span>
-            <span>{{ this.parseTime(this.gameHistory.lengthGame) }}</span>
+            <span>{{ this.gameHistory.lengthGame }}</span>
         </li>
         <li>
             <span>Mode:</span>
             <span>{{ this.gameHistory.isClassic ? 'Classique' : 'Temps Limité' }}</span>
         </li>
         <li>
-            <span>Joueur:</span>
+            <span>{{ this.gameHistory.isClassic ? 'Gagnant:' : 'Joueur 1:' }}</span>
             <span>{{ this.gameHistory.firstPlayerName }}</span>
         </li>
-        <li>
-            <span>Perdant:</span>
+        <li *ngIf="this.gameHistory.secondPlayerName">
+            <span>{{ this.gameHistory.isClassic ? 'Perdant:' : 'Joueur 2:' }}</span>
             <span>{{ this.gameHistory.secondPlayerName }}</span>
         </li>
     </ul>
