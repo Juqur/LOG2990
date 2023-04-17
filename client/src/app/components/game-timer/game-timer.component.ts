@@ -15,6 +15,7 @@ import { Constants } from '@common/constants';
 })
 export class GameTimerComponent implements OnInit, OnDestroy {
     gameTimeFormatted: string;
+    bonusTimeAdded: boolean;
 
     constructor(private socketHandler: SocketHandler) {}
 
@@ -27,6 +28,13 @@ export class GameTimerComponent implements OnInit, OnDestroy {
         this.updateTimer(0);
         this.socketHandler.on('game', 'sendTime', (data: number) => {
             this.updateTimer(data);
+        });
+        this.socketHandler.on('game', 'sendExtraTime', (data: number) => {
+            this.updateTimer(data);
+            this.bonusTimeAdded = true;
+            setTimeout(() => {
+                this.bonusTimeAdded = false;
+            }, Constants.millisecondsInOneSecond);
         });
     }
 
@@ -50,5 +58,6 @@ export class GameTimerComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.socketHandler.removeListener('game', 'sendTime');
+        this.socketHandler.removeListener('game', 'sendExtraTime');
     }
 }
