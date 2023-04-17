@@ -40,7 +40,7 @@ export class CreationPageService {
             radius: Constants.RADIUS_DEFAULT,
             brushSize: 1,
             nbDifferences: Constants.INIT_DIFF_NB,
-            differences: {} as unknown as LevelDifferences,
+            differences: {} as LevelDifferences,
             defaultBgCanvasCtx: document.createElement('canvas').getContext('2d'),
             diffBgCanvasCtx: document.createElement('canvas').getContext('2d'),
         } as CreationSpecs;
