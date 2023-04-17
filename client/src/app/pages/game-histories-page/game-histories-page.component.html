@@ -1,13 +1,20 @@
-<app-scale-container>
+<app-scale-container [isScalable]="true">
     <header class="top-bar-container">
-        <span class="cornerButton">
+        <span class="corner-button">
             <button mat-fab color="darkblue" routerLink="/config">
                 <mat-icon>arrow_back</mat-icon>
             </button>
         </span>
-        <button mat-button color="darkblue" routerLink="/config">Tout supprimer</button>
     </header>
-    <span *ngFor="let history of gameHistories">
-        <app-game-history [gameHistory]="history"></app-game-history>
-    </span>
+
+    <body class="body-container">
+        <div class="title-container">
+            <h1>Historique des parties</h1>
+            <button mat-button>Tout supprimer</button>
+        </div>
+        <div class="history" *ngFor="let history of gameHistories">
+            <app-game-history [gameHistory]="history"></app-game-history>
+        </div>
+    </body>
+
 </app-scale-container>

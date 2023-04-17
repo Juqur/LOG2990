@@ -1,3 +1,10 @@
+h1 {
+    font-weight: 500;
+    font-size: 50px;
+    color: #eaac8b;
+    padding-bottom: 20px;
+}
+
 button {
     background-color: white;
 }
@@ -12,7 +19,14 @@ button {
     margin-left: 20px;
 }
 
-.cornerButton {
+.body-container {
+    width: 1620px;
+    align-self: center;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.corner-button {
     position: absolute;
     top: 0;
     left: 0;
@@ -21,4 +35,13 @@ button {
     border-radius: 50%;
     background-color: #3b7ff6;
     font-size: 1.5rem;
+}
+
+.history {
+    padding-bottom: 40px;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
 }

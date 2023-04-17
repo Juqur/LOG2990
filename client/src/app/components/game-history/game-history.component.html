@@ -1,20 +1,22 @@
-<span>
-    <p>
-        {{ this.gameHistory.startDate }}
-    </p>
-    <p>
-        {{ this.gameHistory.lengthGame }}
-    </p>
-    <p>
-        {{ this.gameHistory.isClassic }}
-    </p>
-    <p>
-        {{ this.gameHistory.firstPlayerName }}
-    </p>
-    <p>
-        {{ this.gameHistory.secondPlayerName }}
-    </p>
-    <p>
-        {{ this.gameHistory.hasPlayerAbandoned }}
-    </p>
-</span>
+<div class="history-container">
+    <h1>{{this.parseDate(this.gameHistory.startDate)}}</h1>
+    <ul class="sub-info">
+        <li>
+            <span>Temps:</span>
+            <span>{{ this.parseTime(this.gameHistory.lengthGame) }}</span>
+        </li>
+        <li>
+            <span>Mode:</span>
+            <span>{{ this.gameHistory.isClassic ? 'Classique' : 'Temps Limité' }}</span>
+        </li>
+        <li>
+            <span>Joueur:</span>
+            <span>{{ this.gameHistory.firstPlayerName }}</span>
+        </li>
+        <li>
+            <span>Perdant:</span>
+            <span>{{ this.gameHistory.secondPlayerName }}</span>
+        </li>
+    </ul>
+    <p *ngIf="this.gameHistory.hasPlayerAbandoned">Le joueur a abandonné la partie.</p>
+</div>
