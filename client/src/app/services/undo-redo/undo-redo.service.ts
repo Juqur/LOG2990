@@ -38,14 +38,14 @@ export class UndoRedoService {
         const tempDefaultCanvas = document.createElement('canvas');
         tempDefaultCanvas.width = defaultCanvas.canvas.width;
         tempDefaultCanvas.height = defaultCanvas.canvas.height;
-        const tempDefaultCtx = tempDefaultCanvas.getContext('2d') as CanvasRenderingContext2D;
-        tempDefaultCtx.drawImage(defaultCanvas.canvas, 0, 0);
+        const tempDefaultContext = tempDefaultCanvas.getContext('2d') as CanvasRenderingContext2D;
+        tempDefaultContext.drawImage(defaultCanvas.canvas, 0, 0);
 
         const tempDifferenceCanvas = document.createElement('canvas');
         tempDifferenceCanvas.width = differenceCanvas.canvas.width;
         tempDifferenceCanvas.height = differenceCanvas.canvas.height;
-        const tempDiffCtx = tempDifferenceCanvas.getContext('2d') as CanvasRenderingContext2D;
-        tempDiffCtx.drawImage(differenceCanvas.canvas, 0, 0);
+        const tempDifferenceContext = tempDifferenceCanvas.getContext('2d') as CanvasRenderingContext2D;
+        tempDifferenceContext.drawImage(differenceCanvas.canvas, 0, 0);
 
         this.canvasStack.push({ defaultCanvas: tempDefaultCanvas, differenceCanvas: tempDifferenceCanvas });
         this.undoPointer++;

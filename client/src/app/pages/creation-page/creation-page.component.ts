@@ -79,36 +79,36 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
      * @param event The event that is triggered when the user changes the value of the slider.
      */
     setBrushSize(event: MatSliderChange): void {
-        const defaultCtx = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.creationService.brushSliderChange(event as unknown as MatSlider, defaultCtx, diffCtx);
+        const defaultContext = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const differenceContext = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.creationService.brushSliderChange(event as unknown as MatSlider, defaultContext, differenceContext);
     }
 
     /**
      * Sets the drawing mode to paint brush.
      */
     setPaintBrushMode(): void {
-        const defaultCtx = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.creationService.paintBrushMode(defaultCtx, diffCtx);
+        const defaultContext = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const differenceContext = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.creationService.paintBrushMode(defaultContext, differenceContext);
     }
 
     /**
      * Sets the drawing mode to erase brush.
      */
     setEraseBrushMode(): void {
-        const defaultCtx = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.creationService.eraseBrushMode(defaultCtx, diffCtx);
+        const defaultContext = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const differenceContext = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.creationService.eraseBrushMode(defaultContext, differenceContext);
     }
 
     /**
      * Merges the layers of the canvas and calls the detectDifference function.
      */
     findDifference(): void {
-        const defaultCtx = this.defaultPaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;
-        const diffCtx = this.differencePaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;
-        this.creationService.detectDifference(defaultCtx, diffCtx);
+        const defaultContext = this.defaultPaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;
+        const differenceContext = this.differencePaintArea.mergeCanvas().getContext('2d') as CanvasRenderingContext2D;
+        this.creationService.detectDifference(defaultContext, differenceContext);
     }
 
     /**
@@ -147,14 +147,14 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
         if (!canvas) return;
         this.setPaintBrushMode();
         this.creationService.saveFalse();
-        const defaultCtx = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffCtx = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultContext = this.defaultPaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const differenceContext = this.differencePaintArea.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
-        defaultCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        diffCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        defaultContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+        differenceContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
 
-        defaultCtx.drawImage(canvas.defaultCanvas, 0, 0);
-        diffCtx.drawImage(canvas.differenceCanvas, 0, 0);
+        defaultContext.drawImage(canvas.defaultCanvas, 0, 0);
+        differenceContext.drawImage(canvas.differenceCanvas, 0, 0);
     }
 
     /**

@@ -51,9 +51,9 @@ describe('UndoRedoService', () => {
         });
 
         it('should draw image', () => {
-            const defaultCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+            const defaultContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
             const differenceCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-            UndoRedoService.addToStack(defaultCtx, differenceCanvas);
+            UndoRedoService.addToStack(defaultContext, differenceCanvas);
             expect(drawImageSpy).toHaveBeenCalledTimes(2);
         });
     });

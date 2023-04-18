@@ -194,12 +194,12 @@ export class CreationPageService {
      * Sets the brush size to the value given by the slider.
      *
      * @param event The mat slider.
-     * @param defaultCtx The default canvas context.
-     * @param diffCtx The different canvas context.
+     * @param defaultContext The default canvas context.
+     * @param differenceContext The different canvas context.
      */
-    brushSliderChange(event: MatSlider, defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
-        this.drawServiceDefault.context = defaultCtx;
-        this.drawServiceDiff.context = diffCtx;
+    brushSliderChange(event: MatSlider, defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
+        this.drawServiceDefault.context = defaultContext;
+        this.drawServiceDiff.context = differenceContext;
         this.drawServiceDefault.setBrushSize(event.value);
         this.drawServiceDiff.setBrushSize(event.value);
     }
@@ -295,14 +295,14 @@ export class CreationPageService {
      * When the user press on the paint brush button, this method is called.
      * It sets the mouse service to Paint mode.
      *
-     * @param defaultCtx The default canvas context.
-     * @param diffCtx The diff canvas context.
+     * @param defaultContext The default canvas context.
+     * @param differenceContext The diff canvas context.
      */
-    paintBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
+    paintBrushMode(defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = defaultCtx;
-        this.drawServiceDiff.context = diffCtx;
+        this.drawServiceDefault.context = defaultContext;
+        this.drawServiceDiff.context = differenceContext;
         this.drawServiceDefault.paintBrush();
         this.drawServiceDiff.paintBrush();
     }
@@ -311,14 +311,14 @@ export class CreationPageService {
      * When the user press on the erase brush button, this method is called.
      * It sets the mouse service to Erase mode.
      *
-     * @param defaultCtx The default canvas context.
-     * @param diffCtx The diff canvas context.
+     * @param defaultContext The default canvas context.
+     * @param differenceContext The diff canvas context.
      */
-    eraseBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
+    eraseBrushMode(defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = defaultCtx;
-        this.drawServiceDiff.context = diffCtx;
+        this.drawServiceDefault.context = defaultContext;
+        this.drawServiceDiff.context = differenceContext;
         this.drawServiceDefault.eraseBrush();
         this.drawServiceDiff.eraseBrush();
     }

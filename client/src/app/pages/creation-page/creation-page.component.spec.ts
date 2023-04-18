@@ -154,39 +154,51 @@ describe('CreationPageComponent', () => {
 
     describe('setBrushSize', () => {
         it('should call setBrushSize', () => {
-            const defaultCtx = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component['differencePaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultContext = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const differenceContext = component['differencePaintArea'].canvas.getContext('2d', {
+                willReadFrequently: true,
+            }) as CanvasRenderingContext2D;
             const matSlider = {} as unknown as MatSliderChange;
             component.setBrushSize(matSlider);
-            expect(creationPageServiceSpy.brushSliderChange).toHaveBeenCalledWith(matSlider as unknown as MatSlider, defaultCtx, diffCtx);
+            expect(creationPageServiceSpy.brushSliderChange).toHaveBeenCalledWith(
+                matSlider as unknown as MatSlider,
+                defaultContext,
+                differenceContext,
+            );
         });
     });
 
     describe('setPaintBrushMode', () => {
         it('should call paintBrushMode', () => {
             setPaintBrushModeSpy.and.callThrough();
-            const defaultCtx = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component['differencePaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultContext = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const differenceContext = component['differencePaintArea'].canvas.getContext('2d', {
+                willReadFrequently: true,
+            }) as CanvasRenderingContext2D;
             component.setPaintBrushMode();
-            expect(creationPageServiceSpy.paintBrushMode).toHaveBeenCalledWith(defaultCtx, diffCtx);
+            expect(creationPageServiceSpy.paintBrushMode).toHaveBeenCalledWith(defaultContext, differenceContext);
         });
     });
 
     describe('setEraseBrushMode', () => {
         it('should call eraseBrushMode', () => {
-            const defaultCtx = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component['differencePaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultContext = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const differenceContext = component['differencePaintArea'].canvas.getContext('2d', {
+                willReadFrequently: true,
+            }) as CanvasRenderingContext2D;
             component.setEraseBrushMode();
-            expect(creationPageServiceSpy.eraseBrushMode).toHaveBeenCalledWith(defaultCtx, diffCtx);
+            expect(creationPageServiceSpy.eraseBrushMode).toHaveBeenCalledWith(defaultContext, differenceContext);
         });
     });
 
     describe('findDifference', () => {
         it('should call detectDifference', () => {
-            const defaultCtx = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            const diffCtx = component['differencePaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const defaultContext = component['defaultPaintArea'].canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            const differenceContext = component['differencePaintArea'].canvas.getContext('2d', {
+                willReadFrequently: true,
+            }) as CanvasRenderingContext2D;
             component.findDifference();
-            expect(creationPageServiceSpy.detectDifference).toHaveBeenCalledWith(defaultCtx, diffCtx);
+            expect(creationPageServiceSpy.detectDifference).toHaveBeenCalledWith(defaultContext, differenceContext);
         });
     });
 
