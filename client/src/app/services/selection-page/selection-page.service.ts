@@ -1,7 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { DialogData } from '@app/interfaces/dialogs';
 import { LevelService } from '@app/services/level/level.service';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 
 export interface SelectionData {
