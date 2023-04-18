@@ -28,7 +28,10 @@ import { Level, levelSchema } from './model/schema/level.schema';
                 uri: config.get<string>('DATABASE_CONNECTION_STRING'),
             }),
         }),
-        MongooseModule.forFeature([{ name: Level.name, schema: levelSchema }]),
+        MongooseModule.forFeature([
+            { name: Level.name, schema: levelSchema },
+            { name: GameHistory.name, schema: gameHistorySchema },
+        ]),
     ],
     controllers: [ImageController],
     providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],

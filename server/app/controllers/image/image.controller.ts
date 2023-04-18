@@ -67,11 +67,7 @@ export class ImageController {
     @Get('/:id')
     @HttpCode(HttpCodes.OK)
     async getLevel(@Param('id') id: string): Promise<Level> {
-<<<<<<< HEAD
         return await this.mongodbService.getLevelById(Number(id));
-=======
-        return await this.mongodbService.getLevelById(parseInt(id, 10));
->>>>>>> 8a5a61e4d0f50c0fe67064e52af62a911c93aa11
     }
 
     /**

@@ -5,6 +5,7 @@ import { GameService, GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Constants } from '@common/constants';
+import { GameHistory } from '@common/game-history';
 import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -91,19 +92,18 @@ export class GameGateway {
 
         const firstPlayerName = gameState.playerName;
         const secondPlayerName = gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined;
+        const startDate = new Date(this.timerService.getStartDate(socket.id));
+        const lengthGame = this.timerService.getTime(socket.id);
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
-<<<<<<< HEAD
             await this.mongodbService.addGameHistory({
-                startDate: this.timerService.getStartDate(socket.id),
-                lengthGame: this.timerService.getTime(socket.id),
+                startDate,
+                lengthGame,
                 isClassic: !gameState.timedLevelList ? true : false,
                 firstPlayerName,
                 secondPlayerName,
                 hasPlayerAbandoned: false,
             });
-=======
->>>>>>> 8a5a61e4d0f50c0fe67064e52af62a911c93aa11
             this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);

@@ -77,6 +77,16 @@ describe('TimerService', () => {
             const expectedTime = 120;
             service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, false);
             expect(service['timeMap'].get('socket').time).toEqual(expectedTime);
+            expect(service['timeMap'].get('secondSocket').time).toEqual(expectedTime);
+            expect(service['timeIntervalMap'].get('socket')).toBeDefined();
+            expect(service['timeIntervalMap'].get('secondSocket')).toBeDefined();
+        });
+
+        it('should start the timer for a multiplayer game in classic', () => {
+            const expectedTime = 0;
+            service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, true);
+            expect(service['timeMap'].get('socket').time).toEqual(expectedTime);
+            expect(service['timeMap'].get('secondSocket').time).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
             expect(service['timeIntervalMap'].get('secondSocket')).toBeDefined();
         });

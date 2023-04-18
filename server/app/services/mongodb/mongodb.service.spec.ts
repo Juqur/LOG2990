@@ -4,14 +4,15 @@
  * https://github.com/jmcdo29/testing-nestjs/blob/main/apps/mongo-sample/src/cat/cat.service.spec.ts
  */
 
+import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history.schema';
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { GameState } from '@app/services/game/game.service';
-import { Level as LevelDto } from '@common/interfaces/level';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { Level as LevelDataObject } from '@common/interfaces/level';
 import { TestConstants } from '@common/test-constants';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Model, Query } from 'mongoose';
-import { MongodbService } from './mongodb.service';
 
 const mockLevel = (
     id = 1,
@@ -36,6 +37,23 @@ const mockLevel = (
     canJoin,
 });
 
+// const mockGameHistory = (
+//     startDate = TestConstants.DATE_ARRAY[0],
+//     lengthGame = TestConstants.NEW_BEST_TIME,
+//     isClassic = true,
+//     firstPlayerName = 'Mugiwara no Luffy',
+//     secondPlayerName = 'Roronoa Zoro',
+//     hasPlayerAbandoned = false,
+//     // eslint-disable-next-line max-params
+// ): GameHistory => ({
+//     startDate,
+//     lengthGame,
+//     isClassic,
+//     firstPlayerName,
+//     secondPlayerName,
+//     hasPlayerAbandoned,
+// });
+
 const mockLevelDoc = (mock?: Partial<Level>): Partial<LevelDocument> => ({
     id: mock?.id || 1,
     name: mock?.name || 'juan cena',
@@ -47,6 +65,15 @@ const mockLevelDoc = (mock?: Partial<Level>): Partial<LevelDocument> => ({
     nbDifferences: mock?.nbDifferences || TestConstants.EXPECTED_DIFFERENCES,
     canJoin: typeof mock?.canJoin !== 'undefined' ? mock?.canJoin : true,
 });
+
+// const mockGameHistoryDoc = (mock?: Partial<GameHistory>): Partial<GameHistoryDocument> => ({
+//     startDate: mock?.startDate || TestConstants.DATE_ARRAY[0],
+//     lengthGame: mock?.lengthGame || TestConstants.NEW_BEST_TIME,
+//     isClassic: typeof mock?.isClassic !== 'undefined' ? mock?.isClassic : true,
+//     firstPlayerName: mock?.firstPlayerName || 'Mugiwara no Luffy',
+//     secondPlayerName: mock?.secondPlayerName || 'Roronoa Zoro',
+//     hasPlayerAbandoned: typeof mock?.hasPlayerAbandoned !== 'undefined' ? mock?.hasPlayerAbandoned : false,
+// });
 
 const levelArray = [
     mockLevel(),
@@ -74,6 +101,12 @@ const levelArray = [
     ),
 ];
 
+// const gameHistoryArray = [
+//     mockGameHistory(),
+//     mockGameHistory(TestConstants.DATE_ARRAY[1], TestConstants.NOT_NEW_BEST_TIME, false, 'Nami', 'God Usopp', false),
+//     mockGameHistory(TestConstants.DATE_ARRAY[2], TestConstants.NEW_BEST_TIME, true, 'Vinsmoke Sanji', 'Tony Tony Chopper', true),
+// ];
+
 const levelDocArray = [
     mockLevelDoc(),
     mockLevelDoc({
@@ -100,9 +133,30 @@ const levelDocArray = [
     }),
 ];
 
+// const gameHistoryDocArray = [
+//     mockGameHistoryDoc(),
+//     mockGameHistoryDoc({
+//         startDate: TestConstants.DATE_ARRAY[1],
+//         lengthGame: TestConstants.NOT_NEW_BEST_TIME,
+//         isClassic: false,
+//         firstPlayerName: 'Nami',
+//         secondPlayerName: 'God Usopp',
+//         hasPlayerAbandoned: false,
+//     }),
+//     mockGameHistoryDoc({
+//         startDate: TestConstants.DATE_ARRAY[2],
+//         lengthGame: TestConstants.NEW_BEST_TIME,
+//         isClassic: true,
+//         firstPlayerName: 'Vinsmoke Sanji',
+//         secondPlayerName: 'Tony Tony Chopper',
+//         hasPlayerAbandoned: true,
+//     }),
+// ];
+
 describe('MongodbService', () => {
     let service: MongodbService;
     let levelModel: Model<LevelDocument>;
+    let gameHistoryModel: Model<GameHistoryDocument>;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -123,11 +177,27 @@ describe('MongodbService', () => {
                         exec: jest.fn(),
                     },
                 },
+                {
+                    provide: getModelToken(GameHistory.name),
+                    useValue: {
+                        new: jest.fn().mockResolvedValue(mockLevel()),
+                        constructor: jest.fn().mockResolvedValue(mockLevel()),
+                        find: jest.fn(),
+                        findOne: jest.fn(),
+                        deleteOne: jest.fn(),
+                        findOneAndUpdate: jest.fn(),
+                        update: jest.fn(),
+                        create: jest.fn(),
+                        remove: jest.fn(),
+                        exec: jest.fn(),
+                    },
+                },
             ],
         }).compile();
 
         service = module.get<MongodbService>(MongodbService);
         levelModel = module.get<Model<LevelDocument>>(getModelToken(Level.name));
+        gameHistoryModel = module.get<Model<GameHistoryDocument>>(getModelToken(GameHistory.name));
     });
 
     afterEach(() => {
@@ -141,7 +211,7 @@ describe('MongodbService', () => {
     describe('createNewLevel', () => {
         it('should create a new level', async () => {
             const createSpy = jest.spyOn(levelModel, 'create' as never);
-            await service.createNewLevel({} as unknown as LevelDto);
+            await service.createNewLevel({} as unknown as LevelDataObject);
             expect(createSpy).toHaveBeenCalledTimes(1);
         });
     });
@@ -271,9 +341,18 @@ describe('MongodbService', () => {
         });
     });
 
+    describe('addGameHistory', () => {
+        it('should call create', async () => {
+            const createSpy = jest.spyOn(gameHistoryModel, 'create' as never);
+            await service.addGameHistory({} as unknown as GameHistory);
+            expect(createSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('updateHighScores', () => {
         let gameSate: GameState;
         let endTime: number;
+
         beforeEach(() => {
             gameSate = {
                 levelId: 1,
