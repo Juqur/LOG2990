@@ -94,7 +94,7 @@ export namespace Constants {
 
     // Undo/Redo Service
     export const EMPTY_STACK = -1;
-    export const TIMED_GAME_MODE_LENGTH = 120;
+    export const TIMED_GAME_MODE_LENGTH = 5;
     export const DEFAULT_LEVEL = {
         id: 0,
         name: 'no name',
@@ -111,6 +111,8 @@ export namespace Constants {
 
     // Level Service
     export const MAX_GAME_TIME_LENGTH = 120;
+    export const MAX_TIME_PENALTY_HINT = 10;
+    export const MAX_TIME_GAINED_DIFFERENCE = 10;
 }
 
 export enum MouseButton {
