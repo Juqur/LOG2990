@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LevelDifferences } from '@app/classes/difference';
+import { LevelDifferences } from '@app/interfaces/level-differences';
 import { Constants } from '@common/constants';
 
 /**
@@ -43,17 +43,20 @@ export class DifferenceDetectorService {
         this.comparePixels();
         this.addRadius();
 
-        const differences = new LevelDifferences();
         const differenceCanvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         differenceCanvas.canvas.width = defaultImage.canvas.width;
         differenceCanvas.canvas.height = defaultImage.canvas.height;
         differenceCanvas.putImageData(this.comparisonImage, 0, 0);
 
-        differences.canvas = differenceCanvas;
-        differences.clusters = this.listDifferences();
-        differences.isHard = this.isHard(differences.clusters.length);
+        const canvas = differenceCanvas;
+        const clusters = this.listDifferences();
+        const isHard = this.isHard(clusters.length);
 
-        return differences;
+        return {
+            canvas,
+            clusters,
+            isHard,
+        } as LevelDifferences;
     }
 
     /**

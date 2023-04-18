@@ -8,10 +8,10 @@ import { AudioService } from '@app/services/audio/audio.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
-import { PopUpService } from '@app/services/pop-up/pop-up.service';
+import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { environment } from 'src/environments/environment';
 
 describe('GamePageService', () => {
@@ -132,18 +132,9 @@ describe('GamePageService', () => {
 
     describe('handleVictory', () => {
         it('should call create', () => {
+            const audioSpy = spyOn(AudioService, 'quickPlay');
             service.handleVictory();
-            expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        });
-
-        it('should call reset', () => {
-            service.handleVictory();
-            expect(audioServiceSpy.reset).toHaveBeenCalled();
-        });
-
-        it('should call play', () => {
-            service.handleVictory();
-            expect(audioServiceSpy.play).toHaveBeenCalled();
+            expect(audioSpy).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
         });
 
         it('should call openDialog', () => {
@@ -152,47 +143,38 @@ describe('GamePageService', () => {
         });
     });
 
+    describe('setMouseCanClick', () => {
+        it('should set mouseCanClick', () => {
+            service.setMouseCanClick(true);
+            expect(service['mouseService'].canClick).toEqual(true);
+            service.setMouseCanClick(false);
+            expect(service['mouseService'].canClick).toEqual(false);
+        });
+    });
+
     describe('handleOpponentAbandon', () => {
         it('should call create', () => {
             service.handleOpponentAbandon();
-            expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
-        });
-
-        it('should call reset', () => {
-            service.handleOpponentAbandon();
-            expect(audioServiceSpy.reset).toHaveBeenCalled();
-        });
-
-        it('should call play', () => {
-            service.handleOpponentAbandon();
-            expect(audioServiceSpy.play).toHaveBeenCalled();
+            expect(audioServiceSpy.create).toHaveBeenCalledOnceWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.play).toHaveBeenCalledOnceWith();
         });
 
         it('should call openDialog', () => {
             service.handleOpponentAbandon();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['opponentAbandonedGameDialogData'], service['closePath']);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
         });
     });
 
     describe('handleDefeat', () => {
         it('should call create', () => {
+            const audioSpy = spyOn(AudioService, 'quickPlay');
             service.handleDefeat();
-            expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/LossSound.mp3');
-        });
-
-        it('should call reset', () => {
-            service.handleDefeat();
-            expect(audioServiceSpy.reset).toHaveBeenCalled();
-        });
-
-        it('should call play', () => {
-            service.handleDefeat();
-            expect(audioServiceSpy.play).toHaveBeenCalled();
+            expect(audioSpy).toHaveBeenCalledWith('./assets/audio/LossSound.mp3');
         });
 
         it('should call openDialog', () => {
             service.handleDefeat();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['loseDialogData'], service['closePath']);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
         });
     });
 
@@ -438,4 +420,27 @@ describe('GamePageService', () => {
         expect(spy).toHaveBeenCalledTimes(1);
         expect(service['areaNotFound']).toEqual([]);
     }));
+
+    describe('handleTimedModeFinished', () => {
+        const timedGameFinishedDialogData: DialogData = {
+            textToSend: '',
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
+        it('should play the appropriate sound', () => {
+            service.handleTimedModeFinished(true);
+            expect(audioServiceSpy.create).toHaveBeenCalledOnceWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.play).toHaveBeenCalledOnceWith();
+        });
+        it('should open specific dialog if finishedWithLastLevel is true', () => {
+            timedGameFinishedDialogData.textToSend = 'La partie est terminée! Vous avez terminé le dernier niveau du mode à temps limité.';
+            service.handleTimedModeFinished(true);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(timedGameFinishedDialogData, '/home');
+        });
+        it('should open specific dialog if finishedWithLastLevel is false', () => {
+            timedGameFinishedDialogData.textToSend = 'La partie est terminée! Le temps est écoulé.';
+            service.handleTimedModeFinished(false);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(timedGameFinishedDialogData, '/home');
+        });
+    });
 });

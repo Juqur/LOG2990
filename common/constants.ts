@@ -1,7 +1,3 @@
-/**
- * @author Louis Félix St-Amour
- */
-
 export namespace Constants {
     // Global constants
     export const minusOne: number = -1;
@@ -24,12 +20,16 @@ export namespace Constants {
     // Page display
     export const levelsPerPage: number = 4;
 
+    // Default highscore values
+    export const defaultPlayerSolo: string[] = ['Gontrand G.Marcotte', 'primexlbr123', 'Escargot mobile'];
+    export const defaultTimeSolo: number[] = [60, 65, 70];
+    export const defaultPlayerMulti: string[] = ['Jean-Pierre Laflèche', 'GAYSHIM IMPACT', 'someone'];
+    export const defaultTimeMulti: number[] = [80, 83, 90];
+
     // Draw Service
     export const DEFAULT_COORDINATE = -1;
 
     // Level mock values
-    export const timeSolo: number[] = [60, 65, 70];
-    export const timeMulti: number[] = [80, 83, 90];
     export const testXposition: number = 96;
     export const testYposition: number = 74;
 
@@ -85,6 +85,7 @@ export namespace Constants {
     export const INIT_COUNTDOWN_TIME = 30;
     export const INIT_HINTS_NB = 3;
     export const HINT_PENALTY = 5;
+    export const FOUND_DIFFERENCE_BONUS = 5;
     export const COUNTDOWN_TIME_WIN = 5;
     export const DEFAULT_TEST_NUMBER = 7;
 

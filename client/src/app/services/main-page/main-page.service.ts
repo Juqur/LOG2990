@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
-import { Dialogs } from '@common/dialogs';
+import { Dialogs } from '@app/interfaces/dialogs';
 
 /**
  * Service that handles the main page.
@@ -64,7 +64,7 @@ export class MainPageService {
     private chooseGameType(playerName: string): void {
         this.popUpService.openDialog(this.multiplayerDialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
-            this.socketHandler.send('game', 'createTimedGame', { multiplayer: result, playerName });
+            this.socketHandler.send('game', 'onCreateTimedGame', { multiplayer: result, playerName });
             this.router.navigate([`/game/${0}/`], {
                 queryParams: { playerName },
             });
