@@ -23,19 +23,19 @@ describe('UndoRedoService', () => {
 
         it('should add canvas to stack', () => {
             const defaultCanvas = document.createElement('canvas');
-            const defaultCanvasCtx = defaultCanvas.getContext('2d');
+            const defaultCanvasContext = defaultCanvas.getContext('2d');
             const tempDifferenceCanvas = document.createElement('canvas');
-            const tempDifferenceCanvasCtx = tempDifferenceCanvas.getContext('2d');
-            UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDifferenceCanvasCtx as CanvasRenderingContext2D);
+            const tempDifferenceCanvasContext = tempDifferenceCanvas.getContext('2d');
+            UndoRedoService.addToStack(defaultCanvasContext as CanvasRenderingContext2D, tempDifferenceCanvasContext as CanvasRenderingContext2D);
             expect(UndoRedoService.canvasStack.length).toBeGreaterThanOrEqual(1);
         });
 
         it('should still add to stack the previous canvas if it has no context parameters', () => {
             const defaultCanvas = document.createElement('canvas');
-            const defaultCanvasCtx = defaultCanvas.getContext('2d');
+            const defaultCanvasContext = defaultCanvas.getContext('2d');
             const tempDifferenceCanvas = document.createElement('canvas');
-            const tempDifferenceCanvasCtx = tempDifferenceCanvas.getContext('2d');
-            UndoRedoService.addToStack(defaultCanvasCtx as CanvasRenderingContext2D, tempDifferenceCanvasCtx as CanvasRenderingContext2D);
+            const tempDifferenceCanvasContext = tempDifferenceCanvas.getContext('2d');
+            UndoRedoService.addToStack(defaultCanvasContext as CanvasRenderingContext2D, tempDifferenceCanvasContext as CanvasRenderingContext2D);
             expect(UndoRedoService.canvasStack.length).toEqual(1);
             UndoRedoService.addToStack(null, null);
             expect(UndoRedoService.canvasStack.length).toEqual(2);

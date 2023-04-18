@@ -42,12 +42,12 @@ export class CreationPageService {
             brushSize: 1,
             nbDifferences: Constants.INIT_DIFF_NB,
             differences: new LevelDifferences(),
-            defaultBgCanvasCtx: document.createElement('canvas').getContext('2d'),
-            diffBgCanvasCtx: document.createElement('canvas').getContext('2d'),
+            defaultBgCanvasContext: document.createElement('canvas').getContext('2d'),
+            diffBgCanvasContext: document.createElement('canvas').getContext('2d'),
         } as CreationSpecs;
 
-        this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasCtx?.canvas as HTMLCanvasElement;
-        this.canvasShare.differenceCanvas = this.creationSpecs.diffBgCanvasCtx?.canvas as HTMLCanvasElement;
+        this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasContext?.canvas as HTMLCanvasElement;
+        this.canvasShare.differenceCanvas = this.creationSpecs.diffBgCanvasContext?.canvas as HTMLCanvasElement;
         this.getEmptyBMPFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.creationSpecs.diffImageFile = res;
@@ -209,11 +209,11 @@ export class CreationPageService {
      * launches a popUp display the result as a white and black image where the black
      * sections are differences while the white are regions shared between images.
      *
-     * @param defaultMergedCtx The default canvas context.
-     * @param diffMergedCtx The different canvas context.
+     * @param defaultMergedContext The default canvas context.
+     * @param diffMergedContext The different canvas context.
      */
-    detectDifference(defaultMergedCtx: CanvasRenderingContext2D, diffMergedCtx: CanvasRenderingContext2D): void {
-        this.creationSpecs.differences = this.differenceService.detectDifferences(defaultMergedCtx, diffMergedCtx, this.creationSpecs.radius);
+    detectDifference(defaultMergedContext: CanvasRenderingContext2D, diffMergedContext: CanvasRenderingContext2D): void {
+        this.creationSpecs.differences = this.differenceService.detectDifferences(defaultMergedContext, diffMergedContext, this.creationSpecs.radius);
         if (!this.creationSpecs.differences) {
             this.errorDialog('Veuillez fournir des images non vides');
             return;
@@ -239,10 +239,10 @@ export class CreationPageService {
             mustProcess: false,
         });
         if (this.isSaveable) {
-            this.toImgFile(defaultMergedCtx).then((res) => {
+            this.toImgFile(defaultMergedContext).then((res) => {
                 this.defaultUploadFile = new File([res], 'default.bmp', { type: 'image/bmp' });
             });
-            this.toImgFile(diffMergedCtx).then((res) => {
+            this.toImgFile(diffMergedContext).then((res) => {
                 this.diffUploadFile = new File([res], 'diff.bmp', { type: 'image/bmp' });
             });
         }
@@ -349,12 +349,12 @@ export class CreationPageService {
      * This method is used to convert a canvas to a file.
      * It uses the canvas.toBlob() method to convert the canvas to a Blob object.
      *
-     * @param currentCtx the context of the canvas we want to convert to a file.
+     * @param currentContext the context of the canvas we want to convert to a file.
      * @returns a Promise<Blob> which when resolved gives the Blob object associated with the canvas.
      */
-    async toImgFile(currentCtx: CanvasRenderingContext2D): Promise<Blob> {
+    async toImgFile(currentContext: CanvasRenderingContext2D): Promise<Blob> {
         return new Promise((resolve) => {
-            currentCtx.canvas.toBlob((blob) => resolve(blob as Blob));
+            currentContext.canvas.toBlob((blob) => resolve(blob as Blob));
         });
     }
 
@@ -379,7 +379,7 @@ export class CreationPageService {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
         image.onload = async () => {
-            if (!this.creationSpecs.defaultBgCanvasCtx) {
+            if (!this.creationSpecs.defaultBgCanvasContext) {
                 this.errorDialog('Aucun canvas de base.');
                 return;
             }
@@ -390,7 +390,7 @@ export class CreationPageService {
             this.canvasShare.defaultCanvas.width = image.width;
             this.canvasShare.defaultCanvas.height = image.height;
             (this.canvasShare.defaultCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.defaultBgCanvasCtx = this.canvasShare.defaultCanvas.getContext('2d');
+            this.creationSpecs.defaultBgCanvasContext = this.canvasShare.defaultCanvas.getContext('2d');
         };
     }
 
@@ -401,7 +401,7 @@ export class CreationPageService {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
         image.onload = async () => {
-            if (!this.creationSpecs.diffBgCanvasCtx) {
+            if (!this.creationSpecs.diffBgCanvasContext) {
                 this.errorDialog('Aucun canvas de différence.');
                 return;
             }
@@ -412,7 +412,7 @@ export class CreationPageService {
             this.canvasShare.differenceCanvas.width = image.width;
             this.canvasShare.differenceCanvas.height = image.height;
             (this.canvasShare.differenceCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.diffBgCanvasCtx = this.canvasShare.differenceCanvas.getContext('2d');
+            this.creationSpecs.diffBgCanvasContext = this.canvasShare.differenceCanvas.getContext('2d');
         };
     }
 

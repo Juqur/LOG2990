@@ -236,16 +236,16 @@ describe('CreationPageService', () => {
 
     it('brushSlider change should correctly update the value of both draw services', () => {
         const mockEvent = { value: 1 } as MatSlider;
-        const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        service.brushSliderChange(mockEvent, defaultCanvasCtx, differenceCanvasCtx);
+        const defaultCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        service.brushSliderChange(mockEvent, defaultCanvasContext, differenceCanvasContext);
         expect(drawServiceDefaultSpy.setBrushSize).toHaveBeenCalledOnceWith(1);
         expect(drawServiceDiffSpy.setBrushSize).toHaveBeenCalledWith(1);
     });
 
     it('detectDifference should not call errorDialog if none of the canvases are null and call DifferenceService detectDifferences', () => {
-        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
         const mockLevelDifference = new LevelDifferences();
         mockLevelDifference.clusters = [
@@ -258,25 +258,25 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
+        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
 
         expect(errorDialogSpy).not.toHaveBeenCalled();
         expect(differenceServiceSpy.detectDifferences).toHaveBeenCalledTimes(1);
     });
 
     it('detectDifference should call errorDialog if DifferenceService detectDifferences returned no LevelDifference', () => {
-        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         differenceServiceSpy.detectDifferences.and.returnValue(undefined);
 
-        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
+        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
 
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     });
 
     it('detectDifference correctly set the number of differences and isSaveable', () => {
-        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const mockLevelDifference = new LevelDifferences();
         mockLevelDifference.clusters = [
             [1, 1, 1],
@@ -288,15 +288,15 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
+        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
 
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).toBeTrue();
     });
 
     it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
-        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const mockLevelDifference = new LevelDifferences();
         mockLevelDifference.clusters = [[1, 1, 1]];
         mockLevelDifference.isHard = false;
@@ -304,22 +304,22 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
+        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
 
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
         expect(service['differenceAmountMsg']).toEqual(' (Attention, le nombre de différences est trop bas)');
 
         mockLevelDifference.clusters = [[1], [1], [1], [1], [1], [1], [1], [1], [1], [1]];
-        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
+        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
         expect(service['differenceAmountMsg']).toEqual(' (Attention, le nombre de différences est trop élevé)');
     });
 
     it('detectDifference should call openDialog if the game is not saveable', () => {
-        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const mockLevelDifference = new LevelDifferences();
         mockLevelDifference.clusters = [[1]];
         mockLevelDifference.isHard = false;
@@ -327,7 +327,7 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(diffBgCanvasCtx, defaultBgCanvasCtx);
+        service.detectDifference(diffBgCanvasContext, defaultBgCanvasContext);
 
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     });
@@ -375,9 +375,9 @@ describe('CreationPageService', () => {
     });
 
     it('paintBrushMode should should call the correct draw functions', () => {
-        const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        service.paintBrushMode(defaultCanvasCtx, differenceCanvasCtx);
+        const defaultCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        service.paintBrushMode(defaultCanvasContext, differenceCanvasContext);
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
         expect(drawServiceDefaultSpy.paintBrush).toHaveBeenCalledTimes(1);
@@ -385,9 +385,9 @@ describe('CreationPageService', () => {
     });
 
     it('eraseBrushMode should call the correct draw functions', () => {
-        const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        service.eraseBrushMode(defaultCanvasCtx, differenceCanvasCtx);
+        const defaultCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        service.eraseBrushMode(defaultCanvasContext, differenceCanvasContext);
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
         expect(drawServiceDefaultSpy.eraseBrush).toHaveBeenCalledTimes(1);
@@ -462,11 +462,11 @@ describe('CreationPageService', () => {
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
 
-    it('showDefaultImage showDefaultImage should call errorDialog if defaultCanvasCtx is undefined', fakeAsync(() => {
+    it('showDefaultImage showDefaultImage should call errorDialog if defaultCanvasContext is undefined', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
-        service['creationSpecs'].defaultBgCanvasCtx = null;
+        service['creationSpecs'].defaultBgCanvasContext = null;
         service['showDefaultImage']();
 
         imageSpy.onload();
@@ -502,11 +502,11 @@ describe('CreationPageService', () => {
         expect(service['canvasShare'].defaultCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
     }));
 
-    it('showDiffImage should call errorDialog if differenceCanvasCtx is undefined', fakeAsync(() => {
+    it('showDiffImage should call errorDialog if differenceCanvasContext is undefined', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
-        service['creationSpecs'].diffBgCanvasCtx = null;
+        service['creationSpecs'].diffBgCanvasContext = null;
         service['showDiffImage']();
 
         imageSpy.onload();

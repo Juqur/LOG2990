@@ -259,17 +259,17 @@ export class GamePageService {
         }
         const height = shape.pop() as number;
         const width = shape.pop() as number;
-        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        differenceCanvasCtx.canvas.height = height;
-        differenceCanvasCtx.canvas.width = width;
+        const differenceCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        differenceCanvasContext.canvas.height = height;
+        differenceCanvasContext.canvas.width = width;
 
         let x = 0;
         let y = 0;
         shape.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
             y = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
-            differenceCanvasCtx.fillStyle = 'green';
-            differenceCanvasCtx.fillRect(x, y, 1, 1);
+            differenceCanvasContext.fillStyle = 'green';
+            differenceCanvasContext.fillRect(x, y, 1, 1);
         });
         const widthScale = Constants.DEFAULT_WIDTH_SHAPE_CANVAS / width;
         const heightScale = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS / height;
@@ -279,10 +279,10 @@ export class GamePageService {
         const xOffset = (Constants.DEFAULT_WIDTH_SHAPE_CANVAS - scaledWidth) / 2;
         const yOffset = (Constants.DEFAULT_HEIGHT_SHAPE_CANVAS - scaledHeight) / 2;
 
-        const shapeCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        const shapeContext = canvas.getContext('2d') as CanvasRenderingContext2D;
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
-        shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+        shapeContext.drawImage(differenceCanvasContext.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
     }
 
     /**

@@ -32,7 +32,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     hintPenalty: number = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     closePath: string = '/selection';
-    differenceCanvasCtx: CanvasRenderingContext2D | null = null;
+    differenceCanvasContext: CanvasRenderingContext2D | null = null;
     playerName: string;
     playerDifferencesCount: number = 0;
     secondPlayerName: string;
@@ -221,8 +221,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     removeHintShape(): void {
         const shapeCanvas = this.hintShapeCanvas.nativeElement as HTMLCanvasElement;
-        const shapeCtx = shapeCanvas.getContext('2d') as CanvasRenderingContext2D;
-        shapeCtx.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
+        const shapeContext = shapeCanvas.getContext('2d') as CanvasRenderingContext2D;
+        shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
         this.showThirdHint = false;
     }
 
