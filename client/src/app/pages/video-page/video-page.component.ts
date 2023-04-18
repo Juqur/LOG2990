@@ -24,7 +24,7 @@ import { ChatMessage } from '@common/interfaces/chat-messages';
 })
 export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
-    @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
+    @ViewChild('differencePlayArea', { static: false }) private differencePlayArea!: PlayAreaComponent;
     @ViewChild('videoChat', { static: false }) private videoChat!: VideoChatComponent;
     @ViewChild('videoTimer', { static: false }) private videoTimer!: VideoTimerComponent;
 
@@ -101,7 +101,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
         const defaultContext = this.originalPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffContext = this.diffPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffContext = this.differencePlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
         defaultContext.drawImage(canvas.defaultCanvas, 0, 0);
         diffContext.drawImage(canvas.diffCanvas, 0, 0);
@@ -143,13 +143,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         return VideoService.getSecondPlayerName();
     }
 
-    handleSpeed(): void {
-        this.pauseVideo();
-        if (this.timeFrame < this.lastTimeFrame) {
-            this.playVideo();
-        }
-    }
-
     /**
      * This method is called when the user clicks on the times 4 button.
      */
@@ -175,55 +168,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     /**
-     * This method will handle every frame in the video stack.
-     */
-    handleVideoFrame(): void {
-        if (this.timeFrame >= this.videoFrame.time) {
-            this.putInCanvas();
-            if (this.videoFrame.found) {
-                AudioService.quickPlay('./assets/audio/success.mp3', this.videoSpeed);
-                this.playerDifferencesCount = this.videoFrame.playerDifferencesCount;
-                this.secondPlayerDifferencesCount = this.videoFrame.secondPlayerDifferencesCount;
-            }
-            this.videoFrame = VideoService.getStackElement(VideoService.pointer);
-        }
-    }
-
-    /**
-     * This method will handle the last frame of the video.
-     */
-    handleLastFrame(): void {
-        if (this.timeFrame >= this.lastTimeFrame) {
-            this.pauseVideo();
-            if (VideoService.isWinning) {
-                const videoDialogData: DialogData = {
-                    textToSend: 'Vous avez gagné.',
-                    closeButtonMessage: 'Fermé',
-                    mustProcess: false,
-                };
-                this.popUpService.openDialog(videoDialogData);
-            } else {
-                const videoDialogData: DialogData = {
-                    textToSend: 'Vous avez perdu.',
-                    closeButtonMessage: 'Fermé',
-                    mustProcess: false,
-                };
-                this.popUpService.openDialog(videoDialogData);
-            }
-        }
-    }
-
-    /**
-     * This method will handle the chat stored in the message stack.
-     */
-    handleChat(): void {
-        if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === this.messageFrame.time) {
-            this.addToChat(this.messageFrame.chatMessage);
-            this.messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
-        }
-    }
-
-    /**
      * This method is called when we have to play the video.
      */
     playVideo(): void {
@@ -233,15 +177,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
             this.handleChat();
             this.timeFrame++;
         }, Constants.TIMER_INTERVAL / this.videoSpeed);
-    }
-
-    /**
-     * This method will add the next text to the chat.
-     *
-     * @param chatMessage the next text to be added to the chat.
-     */
-    addToChat(chatMessage: ChatMessage): void {
-        this.videoChat.addMessage(chatMessage);
     }
 
     /**
@@ -271,18 +206,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     /**
-     * This method will reset the video and the timer.
-     */
-    resetVideoAndTimer(): void {
-        clearInterval(this.showVideo);
-        VideoService.pointer = 0;
-        this.timeFrame = -1;
-        this.playerDifferencesCount = 0;
-        this.messageCount = 0;
-        this.videoTimer.resetTimer();
-    }
-
-    /**
      * After returning to the home page, the game stack will be reset.
      */
     returnHome(): void {
@@ -292,6 +215,82 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         this.resetVideoAndTimer();
     }
 
+    private handleSpeed(): void {
+        this.pauseVideo();
+        if (this.timeFrame < this.lastTimeFrame) {
+            this.playVideo();
+        }
+    }
+
+    /**
+     * This method will handle every frame in the video stack.
+     */
+    private handleVideoFrame(): void {
+        if (this.timeFrame >= this.videoFrame.time) {
+            this.putInCanvas();
+            if (this.videoFrame.found) {
+                AudioService.quickPlay('./assets/audio/success.mp3', this.videoSpeed);
+                this.playerDifferencesCount = this.videoFrame.playerDifferencesCount;
+                this.secondPlayerDifferencesCount = this.videoFrame.secondPlayerDifferencesCount;
+            }
+            this.videoFrame = VideoService.getStackElement(VideoService.pointer);
+        }
+    }
+
+    /**
+     * This method will handle the last frame of the video.
+     */
+    private handleLastFrame(): void {
+        if (this.timeFrame >= this.lastTimeFrame) {
+            this.pauseVideo();
+            if (VideoService.isWinning) {
+                const videoDialogData: DialogData = {
+                    textToSend: 'Vous avez gagné.',
+                    closeButtonMessage: 'Fermé',
+                    mustProcess: false,
+                };
+                this.popUpService.openDialog(videoDialogData);
+            } else {
+                const videoDialogData: DialogData = {
+                    textToSend: 'Vous avez perdu.',
+                    closeButtonMessage: 'Fermé',
+                    mustProcess: false,
+                };
+                this.popUpService.openDialog(videoDialogData);
+            }
+        }
+    }
+
+    /**
+     * This method will handle the chat stored in the message stack.
+     */
+    private handleChat(): void {
+        if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === this.messageFrame.time) {
+            this.addToChat(this.messageFrame.chatMessage);
+            this.messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
+        }
+    }
+
+    /**
+     * This method will add the next text to the chat.
+     *
+     * @param chatMessage the next text to be added to the chat.
+     */
+    private addToChat(chatMessage: ChatMessage): void {
+        this.videoChat.addMessage(chatMessage);
+    }
+
+    /**
+     * This method will reset the video and the timer.
+     */
+    private resetVideoAndTimer(): void {
+        clearInterval(this.showVideo);
+        VideoService.pointer = 0;
+        this.timeFrame = -1;
+        this.playerDifferencesCount = 0;
+        this.messageCount = 0;
+        this.videoTimer.resetTimer();
+    }
     /**
      * Settings the game parameters.
      * It sets the level id and the player names.
@@ -306,6 +305,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     private settingGameImage(): void {
         this.originalPlayArea.setContext(VideoService.getStackElement(0).defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
-        this.diffPlayArea.setContext(VideoService.getStackElement(0).diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+        this.differencePlayArea.setContext(VideoService.getStackElement(0).diffCanvas.getContext('2d') as CanvasRenderingContext2D);
     }
 }

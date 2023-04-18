@@ -80,7 +80,7 @@ describe('GamePageComponent', () => {
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         component['hintShapeCanvas'] = nativeElementMock;
-        component['diffPlayArea'] = playAreaComponentSpy;
+        component['differencePlayArea'] = playAreaComponentSpy;
         component['originalPlayArea'] = playAreaComponentSpy;
     });
 

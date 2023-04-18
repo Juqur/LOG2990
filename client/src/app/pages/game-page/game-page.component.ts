@@ -26,7 +26,7 @@ import { environment } from 'src/environments/environment';
 })
 export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
-    @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
+    @ViewChild('differencePlayArea', { static: false }) differencePlayArea!: PlayAreaComponent;
     @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
     @ViewChild('tempVideoOriginal') tempVideoOriginal!: PlayAreaComponent;
     @ViewChild('tempVideoDiff') tempVideoDiff!: PlayAreaComponent;
@@ -72,7 +72,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         if ((event.key === 't' || event.key === 'T') && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
                 this.gamePageService.setImages(this.levelId);
                 this.isInCheatMode = !this.isInCheatMode;
                 return;
@@ -112,7 +112,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.playerDifferencesCount,
             this.secondPlayerDifferencesCount,
             this.originalPlayArea.getCanvasRenderingContext2D(),
-            this.diffPlayArea.getCanvasRenderingContext2D(),
+            this.differencePlayArea.getCanvasRenderingContext2D(),
         );
     }
     /**
@@ -151,7 +151,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
                 this.gamePageService.handleResponse(
                     this.isInCheatMode,
                     gameData,
@@ -238,7 +238,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     askForHint(): void {
         if (!this.secondPlayerName) {
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
             this.socketHandler.send('game', 'onHintRequest');
         }
     }
