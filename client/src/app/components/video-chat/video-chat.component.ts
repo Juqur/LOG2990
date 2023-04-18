@@ -25,7 +25,7 @@ export class VideoChatComponent {
         this.messages.push(message);
         setTimeout(() => {
             this.scrollToBottom();
-        }, 100);
+        }, 0);
     }
 
     scrollToBottom(): void {
