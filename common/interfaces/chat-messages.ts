@@ -7,7 +7,6 @@ export interface ChatMessage {
     sender: string;
     senderId: string;
     text: string;
-    timestamp: Date;
 }
 
 /**
