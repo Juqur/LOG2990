@@ -1,11 +1,10 @@
 <div *ngIf="level" class="card">
     <div class="title-container">
         <h2 class="level-name">{{ level.name }}</h2>
+        <p>{{ this.level.isEasy ? 'Facile' : 'Difficile' }}</p>
     </div>
     <div class="image-container">
         <img src="{{ this.imagePath + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
-        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon"
-            alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
     </div>
     <div class="card-content">
         <div class="carousel-container">
