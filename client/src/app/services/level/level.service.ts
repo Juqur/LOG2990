@@ -19,10 +19,10 @@ export class LevelService {
     private currentShownPage: number = 0;
     private shownLevels: Level[];
 
-    constructor(communicationService: CommunicationService, private socketHandler: SocketHandler) {
-        communicationService.getLevels().subscribe((value) => {
-            this.levels = value;
-            this.shownLevels = this.levels.slice(0, Constants.levelsPerPage);
+    constructor(private communicationService: CommunicationService, private socketHandler: SocketHandler) {
+        this.refreshLevels();
+        this.socketHandler.on('game', 'refreshLevels', () => {
+            this.refreshLevels();
         });
     }
 
@@ -61,6 +61,16 @@ export class LevelService {
     nextPage(): void {
         if (this.currentPage < this.lastPage) this.currentShownPage++;
         this.updatePageLevels();
+    }
+
+    /**
+     * This function is used to refreshes and retrieves levels from the server.
+     */
+    refreshLevels(): void {
+        this.communicationService.getLevels().subscribe((value) => {
+            this.levels = value;
+            this.shownLevels = this.levels.slice(0, Constants.levelsPerPage);
+        });
     }
 
     /**
