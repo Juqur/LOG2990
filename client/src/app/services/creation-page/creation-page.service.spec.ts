@@ -220,13 +220,13 @@ describe('CreationPageService', () => {
     });
 
     it('diffSlider change should correctly update the value of the radius', () => {
-        service.diffSliderChange(0);
+        service.differenceSliderChange(0);
         expect(service['creationSpecs'].radius).toEqual(Constants.RADIUS_TABLE[0]);
-        service.diffSliderChange(1);
+        service.differenceSliderChange(1);
         expect(service['creationSpecs'].radius).toEqual(Constants.RADIUS_TABLE[1]);
-        service.diffSliderChange(2);
+        service.differenceSliderChange(2);
         expect(service['creationSpecs'].radius).toEqual(Constants.RADIUS_TABLE[2]);
-        service.diffSliderChange(3);
+        service.differenceSliderChange(3);
         expect(service['creationSpecs'].radius).toEqual(Constants.RADIUS_TABLE[3]);
     });
 
