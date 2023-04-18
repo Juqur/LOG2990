@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { UtilityService } from '@app/services/utility/utility.service';
 import { CarouselComponent } from './carousel.component';
 
 describe('CarouselComponent', () => {
@@ -20,24 +21,11 @@ describe('CarouselComponent', () => {
     });
 
     describe('formatTime', () => {
-        it('should format 00:00', () => {
-            const time = 0;
-            expect(component.formatTime(time)).toEqual('00:00');
-        });
-
-        it('should format 00:10', () => {
-            const time = 10;
-            expect(component.formatTime(time)).toEqual('00:10');
-        });
-
-        it('should format 01:00', () => {
-            const time = 60;
-            expect(component.formatTime(time)).toEqual('01:00');
-        });
-
-        it('should format 10:00', () => {
-            const time = 600;
-            expect(component.formatTime(time)).toEqual('10:00');
+        it('should call formatTime', () => {
+            const expectedTime = 69;
+            const formatTimeSpy = spyOn(UtilityService, 'formatTime');
+            component.formatTime(expectedTime);
+            expect(formatTimeSpy).toHaveBeenCalledWith(expectedTime);
         });
     });
 

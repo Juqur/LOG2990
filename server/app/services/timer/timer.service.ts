@@ -56,7 +56,7 @@ export class TimerService {
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
                 clearInterval(interval);
             }
-            server.to(socketId).emit(GameEvents.SendTime, time);
+            server.to(socketId).emit(GameEvents.SendTime, time.time);
         }, Constants.millisecondsInOneSecond);
 
         this.timeIntervalMap.set(socketId, interval);
