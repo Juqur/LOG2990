@@ -114,7 +114,7 @@ export class ImageService {
         try {
             const newId = (await this.mongodbService.getLastLevelId()) + 1;
             const levelData = newLevel as LevelData;
-            const level: Level = {
+            const level = {
                 id: newId,
                 name: levelData.name,
                 playerSolo: Constants.defaultPlayerSolo,

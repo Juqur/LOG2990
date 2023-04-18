@@ -38,11 +38,21 @@ describe('TimerService', () => {
         expect(service).toBeDefined();
     });
 
+    describe('getStartDate', () => {
+        it('should correctly return the start date', () => {
+            const expectedDate = new Date();
+            const expectedTime = 1;
+            service['timeMap'] = new Map([['1', { time: expectedTime, startDate: expectedDate }]]);
+            const result = service.getStartDate('1');
+            expect(result).toEqual(expectedDate);
+        });
+    });
+
     describe('getTime', () => {
         it('should return the time of the player', () => {
-            const expectedTime = 10;
+            const expectedTime = { time: 10, startDate: new Date() };
             service['timeMap'].set('socket', expectedTime);
-            expect(service.getTime('socket')).toEqual(expectedTime);
+            expect(service.getTime('socket')).toEqual(expectedTime.time);
         });
     });
 
@@ -59,14 +69,14 @@ describe('TimerService', () => {
         it('should start the timer for a single player game', () => {
             const expectedTime = 0;
             service.startTimer({ socket }, server, true);
-            expect(service['timeMap'].get('socket')).toEqual(expectedTime);
+            expect(service['timeMap'].get('socket').time).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
 
         it('should start the timer for a multiplayer game', () => {
             const expectedTime = 120;
             service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, false);
-            expect(service['timeMap'].get('socket')).toEqual(expectedTime);
+            expect(service['timeMap'].get('socket').time).toEqual(expectedTime);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
             expect(service['timeIntervalMap'].get('secondSocket')).toBeDefined();
         });
@@ -83,7 +93,7 @@ describe('TimerService', () => {
 
         it('should set the time to the the timed game mode time', () => {
             service.startTimer({ socket }, server, false);
-            expect(service['timeMap'].get('socket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
+            expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
 
@@ -91,7 +101,7 @@ describe('TimerService', () => {
             const timeToAdvance = 1000;
             service.startTimer({ socket }, server, false);
             jest.advanceTimersByTime(timeToAdvance);
-            expect(service['timeMap'].get('socket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
+            expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
         });
 
         it('should delete user from maps if time is 0', () => {
@@ -114,7 +124,7 @@ describe('TimerService', () => {
 
     describe('stopTimer', () => {
         it('should delete the key map', () => {
-            const currentTime = 9;
+            const currentTime = { time: 9, startDate: new Date() };
             service['timeMap'].set('socket', currentTime);
             service['timeIntervalMap'].set(
                 'socket',
@@ -136,42 +146,42 @@ describe('TimerService', () => {
         });
 
         it('should add time to the timer', () => {
-            const currentTime = 4;
+            const currentTime = { time: 4, startDate: new Date() };
             const timeToAdd = 10;
             service['timeMap'].set('socket', currentTime);
             service.addTime(server, 'socket', timeToAdd);
-            expect(service['timeMap'].get('socket')).toEqual(currentTime + timeToAdd);
+            expect(service['timeMap'].get('socket').time).toEqual(currentTime.time + timeToAdd);
         });
 
         it('should not add more time than the max time', () => {
-            const currentTime = 100;
+            const currentTime = { time: 100, startDate: new Date() };
             const timeToAdd = 100;
             service['timeMap'].set('socket', currentTime);
             service.addTime(server, 'socket', timeToAdd);
-            expect(service['timeMap'].get('socket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
+            expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
         });
     });
 
     describe('subtractTime', () => {
         it('should subtract time to the timer', () => {
-            const currentTime = 55;
+            const currentTime = { time: 55, startDate: new Date() };
             const timeToSubtract = 14;
             service['timeMap'].set('socket', currentTime);
             service.subtractTime(server, 'socket', timeToSubtract);
-            expect(service['timeMap'].get('socket')).toEqual(currentTime - timeToSubtract);
+            expect(service['timeMap'].get('socket').time).toEqual(currentTime.time - timeToSubtract);
         });
         it('should not remove more time than the min time', () => {
-            const currentTime = 20;
+            const currentTime = { time: 20, startDate: new Date() };
             const timeToSubtract = 100;
             service['timeMap'].set('socket', currentTime);
             service.subtractTime(server, 'socket', timeToSubtract);
-            expect(service['timeMap'].get('socket')).toEqual(0);
+            expect(service['timeMap'].get('socket').time).toEqual(0);
         });
     });
 
     describe('getCurrentTime', () => {
         it('should return curent time', () => {
-            const currentTime = 55;
+            const currentTime = { time: 55, startDate: new Date() };
             service['timeMap'].set('socket', currentTime);
             service.getCurrentTime('socket');
             expect(service['timeMap'].get('socket')).toEqual(currentTime);

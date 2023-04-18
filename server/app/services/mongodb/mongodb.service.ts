@@ -1,3 +1,4 @@
+import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history.schema';
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { Message } from '@app/model/schema/message.schema';
 import { GameState } from '@app/services/game/game.service';
@@ -17,7 +18,10 @@ mongoose.set('strictQuery', false);
  */
 @Injectable()
 export class MongodbService {
-    constructor(@InjectModel(Level.name) public levelModel: Model<LevelDocument>) {}
+    constructor(
+        @InjectModel(Level.name) public levelModel: Model<LevelDocument>,
+        @InjectModel(GameHistory.name) public gameHistoryModel: Model<GameHistoryDocument>,
+    ) {}
 
     /**
      * This method creates a new level object inside the database.
@@ -83,11 +87,7 @@ export class MongodbService {
         try {
             // Verifies that there is at least one level in the database.
             const test = await this.levelModel.findOne({});
-            if (test) {
-                return (await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number;
-            } else {
-                return 0;
-            }
+            return test ? ((await this.levelModel.find().limit(1).sort({ $natural: -1 }).exec())[0].id as number) : 0;
         } catch (error) {
             this.handleErrors(error);
         }
@@ -124,6 +124,22 @@ export class MongodbService {
     }
 
     /**
+     * This method adds a GameHistory instance to the database.
+     *
+     * @param gameHistory The game history containing the pertinent information to create a GameHistory in the database.
+     */
+    async addGameHistory(gameHistory: GameHistory): Promise<void> {
+        await this.gameHistoryModel.create({
+            startDate: gameHistory.startDate,
+            lengthGame: gameHistory.lengthGame,
+            isClassic: gameHistory.isClassic,
+            firstPlayerName: gameHistory.firstPlayerName,
+            secondPlayerName: gameHistory.secondPlayerName,
+            hasPlayerAbandoned: gameHistory.hasPlayerAbandoned,
+        });
+    }
+
+    /*
      * This method returns the multiplayer highscores names of the specified level.
      *
      * @param id The id of the level.
