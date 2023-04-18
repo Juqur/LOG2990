@@ -80,7 +80,7 @@ export class CreationPageService {
     /**
      * Getter for the difference amount message.
      */
-    get differenceMsg(): string {
+    get differenceMessage(): string {
         return this.differenceAmountMsg;
     }
 

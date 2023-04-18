@@ -568,9 +568,9 @@ describe('CreationPageService', () => {
         expect(result).toEqual(3);
     }));
 
-    it('get differenceMsg should return the correct value', fakeAsync(() => {
+    it('get differenceMessage should return the correct value', fakeAsync(() => {
         service['differenceAmountMsg'] = '3 differences';
-        const result = service.differenceMsg;
+        const result = service.differenceMessage;
         expect(result).toEqual('3 differences');
     }));
 
