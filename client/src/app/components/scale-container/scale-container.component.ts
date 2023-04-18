@@ -12,9 +12,9 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
  * @class ScaleContainerComponent
  */
 export class ScaleContainerComponent implements OnInit {
+    @Input() isScalable: boolean = false;
     @ViewChild('screen', { static: true }) private screen: ElementRef;
     @ViewChild('container', { static: true }) private container: ElementRef;
-    @Input() isScalable: boolean = false;
     private scaleRatio: number = 1;
 
     /**
