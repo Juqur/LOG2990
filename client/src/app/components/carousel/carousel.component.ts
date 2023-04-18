@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Level } from '@app/levels';
 import { UtilityService } from '@app/services/utility/utility.service';
 import { Constants } from '@common/constants';
+import { Level } from '@common/interfaces/level';
 
 /**
  * Component that allows to display top 3 times

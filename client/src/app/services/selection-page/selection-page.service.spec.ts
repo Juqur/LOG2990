@@ -2,12 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialog.component';
-import { Level } from '@app/levels';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LevelService } from '@app/services/level/level.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { Level } from '@common/interfaces/level';
 import { of } from 'rxjs';
 import { SelectionData, SelectionPageService, StartGameData } from './selection-page.service';
 
