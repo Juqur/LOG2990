@@ -92,8 +92,6 @@ export class LevelService {
             const input = event.target as HTMLInputElement;
             let valueChanged = false;
             const inputValue = Number(input.value);
-            // eslint-disable-next-line no-console
-            console.log(input.id);
             switch (input.id) {
                 case 'initial-time-input': {
                     if (inputValue !== this.gameConstants.initialTime && inputValue <= Constants.MAX_GAME_TIME_LENGTH) {

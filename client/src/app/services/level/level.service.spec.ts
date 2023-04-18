@@ -1,10 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameConstants } from '@common/game-constants';
+import { Level } from '@common/interfaces/level';
 import { TestConstants } from '@common/test-constants';
 import { of } from 'rxjs';
 import { LevelService } from './level.service';
@@ -197,7 +197,7 @@ describe('LevelService', () => {
         let mockEvent: Event;
         beforeEach(() => {
             inputElement = document.createElement('input');
-            inputElement.id = 'mat-input-0';
+            inputElement.id = 'initial-time-input';
             inputElement.value = '10';
             mockEvent = {
                 target: inputElement,
@@ -230,13 +230,13 @@ describe('LevelService', () => {
 
         it('should not call communicationService.setNewGameConstants if inputValue has not changed for timePenaltyHint', () => {
             (mockEvent.target as HTMLInputElement).value = '5';
-            (mockEvent.target as HTMLInputElement).id = 'mat-input-1';
+            (mockEvent.target as HTMLInputElement).id = 'time-penalty-hint-input';
             service.setNewGameConstants(mockEvent);
             expect(communicationServiceMock.setNewGameConstants).not.toHaveBeenCalled();
         });
 
         it('should call communicationService.setNewGameConstants if inputValue has changed for timePenaltyHint', () => {
-            (mockEvent.target as HTMLInputElement).id = 'mat-input-1';
+            (mockEvent.target as HTMLInputElement).id = 'time-penalty-hint-input';
             service.setNewGameConstants(mockEvent);
             expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
             expect(service['gameConstants']?.timePenaltyHint).toEqual(Number((mockEvent.target as HTMLInputElement).value));
@@ -244,13 +244,13 @@ describe('LevelService', () => {
 
         it('should not call communicationService.setNewGameConstants if inputValue has not changed for timeGainedDifference', () => {
             (mockEvent.target as HTMLInputElement).value = '5';
-            (mockEvent.target as HTMLInputElement).id = 'mat-input-2';
+            (mockEvent.target as HTMLInputElement).id = 'time-gained-difference-input';
             service.setNewGameConstants(mockEvent);
             expect(communicationServiceMock.setNewGameConstants).not.toHaveBeenCalled();
         });
 
         it('should call communicationService.setNewGameConstants if inputValue has changed for timeGainedDifference', () => {
-            (mockEvent.target as HTMLInputElement).id = 'mat-input-2';
+            (mockEvent.target as HTMLInputElement).id = 'time-gained-difference-input';
             service.setNewGameConstants(mockEvent);
             expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
             expect(service['gameConstants']?.timeGainedDifference).toEqual(Number((mockEvent.target as HTMLInputElement).value));
