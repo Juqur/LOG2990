@@ -11,8 +11,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { join } from 'path';
+import { GameConstants, gameConstantsSchema } from './model/schema/game-constants.schema';
 import { GameHistory, gameHistorySchema } from './model/schema/game-history.schema';
 import { Level, levelSchema } from './model/schema/level.schema';
+import { DatabaseController } from './controllers/database/database.controller';
 
 @Module({
     imports: [
@@ -31,9 +33,10 @@ import { Level, levelSchema } from './model/schema/level.schema';
         MongooseModule.forFeature([
             { name: Level.name, schema: levelSchema },
             { name: GameHistory.name, schema: gameHistorySchema },
+            { name: GameConstants.name, schema: gameConstantsSchema },
         ]),
     ],
-    controllers: [ImageController],
+    controllers: [ImageController, DatabaseController],
     providers: [GameGateway, ImageService, GameService, ChatService, MongodbService, TimerService, Logger],
 })
 export class AppModule {}

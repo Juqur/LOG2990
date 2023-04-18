@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
+import { GameConstants } from '@common/game-constants';
+import { Level } from '@common/interfaces/level';
+import { tap } from 'rxjs';
 
 /**
  * This service is in charge of keeping track of the levels to display and update them
@@ -15,15 +17,46 @@ import { Constants } from '@common/constants';
     providedIn: 'root',
 })
 export class LevelService {
+    private gameConstants: GameConstants | null = null;
     private levels: Level[] = [];
     private currentShownPage: number = 0;
     private shownLevels: Level[];
 
-    constructor(communicationService: CommunicationService, private socketHandler: SocketHandler) {
-        communicationService.getLevels().subscribe((value) => {
+    constructor(public communicationService: CommunicationService, private socketHandler: SocketHandler) {
+        this.communicationService.getLevels().subscribe((value) => {
             this.levels = value;
             this.shownLevels = this.levels.slice(0, Constants.levelsPerPage);
         });
+
+        this.communicationService
+            .getGameConstants()
+            .pipe(
+                tap((value) => {
+                    this.gameConstants = value;
+                }),
+            )
+            .subscribe();
+    }
+
+    /**
+     * Getter for the initial time.
+     */
+    get initialTime(): number {
+        return this.gameConstants ? this.gameConstants.initialTime : Constants.INIT_COUNTDOWN_TIME;
+    }
+
+    /**
+     * Getter for the time penalty on using hints value.
+     */
+    get timePenaltyHint(): number {
+        return this.gameConstants ? this.gameConstants.timePenaltyHint : Constants.HINT_PENALTY;
+    }
+
+    /**
+     * Getter for the time gained on finding a difference value.
+     */
+    get timeGainedDifference(): number {
+        return this.gameConstants ? this.gameConstants.timeGainedDifference : Constants.COUNTDOWN_TIME_WIN;
     }
 
     /**
@@ -52,6 +85,40 @@ export class LevelService {
      */
     get lastPage(): number {
         return Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
+    }
+
+    setNewGameConstants(event: Event) {
+        if (this.gameConstants) {
+            const input = event.target as HTMLInputElement;
+            let valueChanged = false;
+            const inputValue = Number(input.value);
+            switch (input.id) {
+                case 'initial-time-input': {
+                    if (inputValue !== this.gameConstants.initialTime && inputValue <= Constants.MAX_GAME_TIME_LENGTH) {
+                        this.gameConstants.initialTime = inputValue;
+                        valueChanged = true;
+                    }
+                    break;
+                }
+                case 'time-penalty-hint-input': {
+                    if (inputValue !== this.gameConstants.timePenaltyHint) {
+                        this.gameConstants.timePenaltyHint = inputValue;
+                        valueChanged = true;
+                    }
+                    break;
+                }
+                case 'time-gained-difference-input': {
+                    if (inputValue !== this.gameConstants.timeGainedDifference) {
+                        this.gameConstants.timeGainedDifference = inputValue;
+                        valueChanged = true;
+                    }
+                    break;
+                }
+            }
+            if (valueChanged) {
+                this.communicationService.setNewGameConstants(this.gameConstants).subscribe();
+            }
+        }
     }
 
     /**

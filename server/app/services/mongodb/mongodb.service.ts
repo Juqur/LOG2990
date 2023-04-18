@@ -1,8 +1,10 @@
+import { GameConstants, GameConstantsDocument } from '@app/model/schema/game-constants.schema';
 import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history.schema';
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { Message } from '@app/model/schema/message.schema';
 import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
+import { GameConstants as GameConstantsDto } from '@common/game-constants';
 import { Level as LevelDataObject } from '@common/interfaces/level';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,7 +23,21 @@ export class MongodbService {
     constructor(
         @InjectModel(Level.name) public levelModel: Model<LevelDocument>,
         @InjectModel(GameHistory.name) public gameHistoryModel: Model<GameHistoryDocument>,
-    ) {}
+        @InjectModel(GameConstants.name) public gameConstantsModel: Model<GameConstantsDocument>,
+    ) {
+        this.gameConstantsModel
+            .find({})
+            .exec()
+            .then(async (result) => {
+                if (!result[0]) {
+                    await this.gameConstantsModel.create({
+                        initialTime: Constants.INIT_COUNTDOWN_TIME,
+                        timePenaltyHint: Constants.HINT_PENALTY,
+                        timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+                    } as GameConstants);
+                }
+            });
+    }
 
     /**
      * This method creates a new level object inside the database.
@@ -211,6 +227,44 @@ export class MongodbService {
             .skip((pageNumber - 1) * Constants.levelsPerPage)
             .limit(Constants.levelsPerPage)
             .exec()) as Level[];
+    }
+
+    /**
+     * This method is used to get the game constants from the database. It returns an object
+     * containing all three constants.
+     *
+     * @returns The game constants.
+     */
+    async getGameConstants(): Promise<GameConstantsDto> {
+        const result = await this.gameConstantsModel.find({}).exec();
+        return result[0] as GameConstantsDto;
+    }
+
+    /**
+     * This method is used to reset the base constants to their original values.
+     * These values are contained inside the Constants file in common.
+     */
+    async resetGameConstants(): Promise<void> {
+        await this.setNewGameConstants({
+            initialTime: Constants.INIT_COUNTDOWN_TIME,
+            timePenaltyHint: Constants.HINT_PENALTY,
+            timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+        } as GameConstantsDto);
+    }
+
+    /**
+     * This method is used to set the new game constants stored inside the database.
+     *
+     * @param gameConstants The new game constants.
+     */
+    async setNewGameConstants(gameConstants: GameConstantsDto): Promise<void> {
+        await this.gameConstantsModel
+            .findOneAndUpdate({}, {
+                initialTime: gameConstants.initialTime,
+                timePenaltyHint: gameConstants.timePenaltyHint,
+                timeGainedDifference: gameConstants.timeGainedDifference,
+            } as GameConstants)
+            .exec();
     }
 
     /**
