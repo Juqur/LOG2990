@@ -20,9 +20,10 @@ export class AudioService {
      *
      * @param path The source file path as a string.
      */
-    static async quickPlay(path: string): Promise<void> {
+    static async quickPlay(path: string, playbackRate: number = 1): Promise<void> {
         try {
             const audio = new Audio(path);
+            audio.playbackRate = playbackRate;
             await audio.play();
         } catch (error) {
             // Autoplay was prevented.

@@ -3,6 +3,8 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { VideoChatComponent } from '@app/components/video-chat/video-chat.component';
 import { VideoTimerComponent } from '@app/components/video-timer/video-timer.component';
 import { Level } from '@app/levels';
+import { AudioService } from '@app/services/audio/audio.service';
+import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
@@ -29,7 +31,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
-    closePath: string = '/selection';
+    // closePath: string = '/selection';
     diffCanvasCtx: CanvasRenderingContext2D | null = null;
     playerName: string = '';
     secondPlayerName: string | null = null;
@@ -53,6 +55,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     } = VideoService.getStackElement(VideoService.pointer);
     messageFrame: { chatMessage: ChatMessage; time: number } = VideoService.getMessagesStackElement(this.messageCount);
 
+    // private popUpService: PopUpService;
     private showVideo: ReturnType<typeof setInterval>;
 
     /**
@@ -61,6 +64,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      * It also handles the pausing of any audio playing if the player decides to leave the page.
      * It also connects to the the game socket and handles the response.
      */
+
+    constructor(private popUpService: PopUpService) {}
     ngOnInit(): void {
         this.settingGameParameters();
     }
@@ -134,13 +139,19 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         return VideoService.getSecondPlayerName();
     }
 
+    handleSpeed(): void {
+        this.pauseVideo();
+        if (this.timeFrame < this.lastTimeFrame) {
+            this.playVideo();
+        }
+    }
+
     /**
      * This method is called when the user clicks on the times 4 button.
      */
     videoSpeedTime4(): void {
         this.videoSpeed = Constants.VERY_FAST_SPEED;
-        this.pauseVideo();
-        this.playVideo();
+        this.handleSpeed();
     }
 
     /**
@@ -148,8 +159,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     videoSpeedTime2(): void {
         this.videoSpeed = Constants.FAST_SPEED;
-        this.pauseVideo();
-        this.playVideo();
+        this.handleSpeed();
     }
 
     /**
@@ -157,25 +167,38 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     videoSpeedTime1(): void {
         this.videoSpeed = Constants.NORMAL_SPEED;
-        this.pauseVideo();
-        this.playVideo();
+        this.handleSpeed();
     }
 
     /**
      * This method is called when we have to play the video.
      */
     playVideo(): void {
-        // let videoFrame = VideoService.getStackElement(VideoService.pointer);
-        // let messageFrame = VideoService.getMessagesStackElement(this.messageCount);
         this.showVideo = setInterval(() => {
             if (this.timeFrame >= this.lastTimeFrame) {
                 this.pauseVideo();
+                if (VideoService.isWinning) {
+                    const videoDialogData: DialogData = {
+                        textToSend: 'Vous avez gagné.',
+                        closeButtonMessage: 'Fermé',
+                        mustProcess: false,
+                    };
+                    this.popUpService.openDialog(videoDialogData);
+                } else {
+                    const videoDialogData: DialogData = {
+                        textToSend: 'Vous avez perdu.',
+                        closeButtonMessage: 'Fermé',
+                        mustProcess: false,
+                    };
+                    this.popUpService.openDialog(videoDialogData);
+                }
             }
             // console.log(this.timeFrame, videoFrame);
             if (this.timeFrame >= this.videoFrame.time) {
                 this.putInCanvas();
                 console.log(this.videoFrame.time);
                 if (this.videoFrame.found) {
+                    AudioService.quickPlay('./assets/audio/success.mp3', this.videoSpeed);
                     this.playerDifferencesCount = this.videoFrame.playerDifferencesCount;
                     this.secondPlayerDifferencesCount = this.videoFrame.secondPlayerDifferencesCount;
                 }

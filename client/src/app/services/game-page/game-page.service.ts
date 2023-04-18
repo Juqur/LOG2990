@@ -163,7 +163,7 @@ export class GamePageService {
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.router.navigate(['/video/' + levelId], {});
-                VideoService.setVariables(firstPlayerName, secondPlayerName);
+                VideoService.setVariables(firstPlayerName, secondPlayerName, true);
             }
         });
 
@@ -219,7 +219,7 @@ export class GamePageService {
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.router.navigate(['/video/' + levelId], {});
-                VideoService.setVariables(firstPlayerName, secondPlayerName);
+                VideoService.setVariables(firstPlayerName, secondPlayerName, false);
             }
         });
         AudioService.quickPlay('./assets/audio/LossSound.mp3');

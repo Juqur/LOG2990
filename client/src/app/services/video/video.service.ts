@@ -13,6 +13,7 @@ export class VideoService {
     static pointer = 0;
     static firstPlayerName: string;
     static secondPlayerName: string;
+    static isWinning: boolean;
 
     static stackCounter = 0;
 
@@ -74,9 +75,10 @@ export class VideoService {
         return VideoService.videoStack.length === 0; //
     }
 
-    static setVariables(firstPlayerName: string, secondPlayerName: string): void {
+    static setVariables(firstPlayerName: string, secondPlayerName: string, isWinning: boolean): void {
         this.firstPlayerName = firstPlayerName;
         this.secondPlayerName = secondPlayerName;
+        this.isWinning = isWinning;
     }
 
     static getFirstPlayerName(): string {
