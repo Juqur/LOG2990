@@ -180,14 +180,16 @@ describe('GamePageService', () => {
 
     describe('handleHintRequest', () => {
         const mockCanvas = document.createElement('canvas');
-        it('should call drawHintSection on both canvas', () => {
+        it('should call drawHintSection on both canvas', fakeAsync(() => {
             const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
             const mockSection = [1];
             service.handleHintRequest(mockSection);
+            tick();
             expect(getCanvasSpy).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledWith(mockSection);
-        });
+            expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
+        }));
         it('should not make calls if section is empty', () => {
             const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
             const mockSection = [] as number[];

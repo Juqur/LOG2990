@@ -252,15 +252,19 @@ export class GamePageService {
         if (section.length < 1 || section.length > 2) {
             return;
         }
-        this.hintSection = section;
-        this.drawServiceOriginal.context = this.originalPlayArea
-            .getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawHintSection(this.hintSection);
-        this.drawServiceDiff.context = this.diffPlayArea
-            .getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawHintSection(this.hintSection);
+        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+        this.diffPlayArea.drawPlayArea(this.diffImageSrc);
+        setTimeout(() => {
+            this.hintSection = section;
+            this.drawServiceOriginal.context = this.originalPlayArea
+                .getCanvas()
+                .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawServiceOriginal.drawHintSection(this.hintSection);
+            this.drawServiceDiff.context = this.diffPlayArea
+                .getCanvas()
+                .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawServiceDiff.drawHintSection(this.hintSection);
+        }, 0);
     }
 
     /**
