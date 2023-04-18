@@ -267,7 +267,7 @@ describe('GamePageService', () => {
     describe('resetCanvas', () => {
         it('should call drawPlayArea twice', fakeAsync(() => {
             const delay = 1000;
-            service['resetCanvas']();
+            service['resetCanvas'](true);
             tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));

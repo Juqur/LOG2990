@@ -199,7 +199,7 @@ export class GamePageService {
      * @param differences The differences to have flash
      */
     startCheatMode(differences: number[]): void {
-        this.resetCanvas();
+        this.resetCanvas(false);
         let isVisible = false;
         this.areaNotFound = differences.filter((item) => {
             return !this.imagesData.includes(item);
@@ -326,9 +326,11 @@ export class GamePageService {
      * This method will redraw the canvas with the original image plus the elements that were not found.
      * To avoid flashing issue, it copies to a third temporary canvas.
      * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
+     * 
+     * @param cooldown If true, the player will not be able to click on the canvas during the cooldown.
      */
-    private resetCanvas(): void {
-        this.mouseService.canClick = false;
+    private resetCanvas(cooldown : boolean): void {
+        this.mouseService.canClick = !cooldown;
         const delay = 1000; // ms
         this.diffPlayArea
             .timeout(delay)
@@ -378,7 +380,7 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.diffPlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
-        this.resetCanvas();
+        this.resetCanvas(false);
     }
 
     /**
@@ -390,7 +392,7 @@ export class GamePageService {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.drawError(this.mouseService);
-        this.resetCanvas();
+        this.resetCanvas(true);
     }
 
     /**
@@ -408,7 +410,7 @@ export class GamePageService {
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);
         this.diffPlayArea.flashArea(result);
-        this.resetCanvas();
+        this.resetCanvas(false);
     }
     /**
      * Performs a failed sound and prompts an error in the original canvas.
@@ -419,6 +421,6 @@ export class GamePageService {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.x, y: this.mouseService.y } as Vec2);
-        this.resetCanvas();
+        this.resetCanvas(true);
     }
 }
