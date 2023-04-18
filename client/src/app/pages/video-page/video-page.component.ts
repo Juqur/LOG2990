@@ -113,10 +113,14 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     startStopVideo(): void {
         if (this.isStart) {
             this.videoTimer.startTimer();
-            this.playVideo();
+            if (this.timeFrame < this.lastTimeFrame) {
+                this.playVideo();
+            }
         } else {
-            this.pauseVideo();
-            this.videoTimer.stopTimer();
+            if (this.timeFrame < this.lastTimeFrame) {
+                this.pauseVideo();
+                this.videoTimer.stopTimer();
+            }
         }
         this.isStart = !this.isStart;
     }
@@ -171,43 +175,62 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     /**
+     * This method will handle every frame in the video stack.
+     */
+    handleVideoFrame(): void {
+        if (this.timeFrame >= this.videoFrame.time) {
+            this.putInCanvas();
+            if (this.videoFrame.found) {
+                AudioService.quickPlay('./assets/audio/success.mp3', this.videoSpeed);
+                this.playerDifferencesCount = this.videoFrame.playerDifferencesCount;
+                this.secondPlayerDifferencesCount = this.videoFrame.secondPlayerDifferencesCount;
+            }
+            this.videoFrame = VideoService.getStackElement(VideoService.pointer);
+        }
+    }
+
+    /**
+     * This method will handle the last frame of the video.
+     */
+    handleLastFrame(): void {
+        if (this.timeFrame >= this.lastTimeFrame) {
+            this.pauseVideo();
+            if (VideoService.isWinning) {
+                const videoDialogData: DialogData = {
+                    textToSend: 'Vous avez gagné.',
+                    closeButtonMessage: 'Fermé',
+                    mustProcess: false,
+                };
+                this.popUpService.openDialog(videoDialogData);
+            } else {
+                const videoDialogData: DialogData = {
+                    textToSend: 'Vous avez perdu.',
+                    closeButtonMessage: 'Fermé',
+                    mustProcess: false,
+                };
+                this.popUpService.openDialog(videoDialogData);
+            }
+        }
+    }
+
+    /**
+     * This method will handle the chat stored in the message stack.
+     */
+    handleChat(): void {
+        if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === this.messageFrame.time) {
+            this.addToChat(this.messageFrame.chatMessage);
+            this.messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
+        }
+    }
+
+    /**
      * This method is called when we have to play the video.
      */
     playVideo(): void {
         this.showVideo = setInterval(() => {
-            if (this.timeFrame >= this.lastTimeFrame) {
-                this.pauseVideo();
-                if (VideoService.isWinning) {
-                    const videoDialogData: DialogData = {
-                        textToSend: 'Vous avez gagné.',
-                        closeButtonMessage: 'Fermé',
-                        mustProcess: false,
-                    };
-                    this.popUpService.openDialog(videoDialogData);
-                } else {
-                    const videoDialogData: DialogData = {
-                        textToSend: 'Vous avez perdu.',
-                        closeButtonMessage: 'Fermé',
-                        mustProcess: false,
-                    };
-                    this.popUpService.openDialog(videoDialogData);
-                }
-            }
-            // console.log(this.timeFrame, videoFrame);
-            if (this.timeFrame >= this.videoFrame.time) {
-                this.putInCanvas();
-                console.log(this.videoFrame.time);
-                if (this.videoFrame.found) {
-                    AudioService.quickPlay('./assets/audio/success.mp3', this.videoSpeed);
-                    this.playerDifferencesCount = this.videoFrame.playerDifferencesCount;
-                    this.secondPlayerDifferencesCount = this.videoFrame.secondPlayerDifferencesCount;
-                }
-                this.videoFrame = VideoService.getStackElement(VideoService.pointer);
-            }
-            if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === this.messageFrame.time) {
-                this.addToChat(this.messageFrame.chatMessage);
-                this.messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
-            }
+            this.handleLastFrame();
+            this.handleVideoFrame();
+            this.handleChat();
             this.timeFrame++;
         }, Constants.TIMER_INTERVAL / this.videoSpeed);
     }
@@ -247,6 +270,9 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         this.playVideo();
     }
 
+    /**
+     * This method will reset the video and the timer.
+     */
     resetVideoAndTimer(): void {
         clearInterval(this.showVideo);
         VideoService.pointer = 0;
