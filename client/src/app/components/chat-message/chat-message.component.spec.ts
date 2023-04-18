@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SenderType } from '@common/chat-messages';
+import { SenderType } from '@common/interfaces/chat-messages';
 import { ChatMessageComponent } from './chat-message.component';
 
 describe('ChatMessageComponent', () => {

@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { MatSlider } from '@angular/material/slider';
-import { LevelDifferences } from '@app/classes/difference';
-import { LevelFormData } from '@app/classes/level-form-data';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
+import { LevelDifferences } from '@app/interfaces/level-differences';
+import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
@@ -45,7 +45,7 @@ export class CreationPageService {
             radius: Constants.RADIUS_DEFAULT,
             brushSize: 1,
             nbDifferences: Constants.INIT_DIFF_NB,
-            differences: new LevelDifferences(),
+            differences: {} as LevelDifferences,
             defaultBgCanvasContext: document.createElement('canvas').getContext('2d'),
             diffBgCanvasContext: document.createElement('canvas').getContext('2d'),
         } as CreationSpecs;
