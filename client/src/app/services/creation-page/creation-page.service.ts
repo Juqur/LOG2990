@@ -114,9 +114,7 @@ export class CreationPageService {
         if (target.files) {
             this.creationSpecs.defaultImageFile = target.files[0];
             this.verifyImageFormat(this.creationSpecs.defaultImageFile).then((result) => {
-                if (result) {
-                    this.showDefaultImage();
-                }
+                if (result) this.showDefaultImage();
             });
         }
     }
@@ -224,9 +222,8 @@ export class CreationPageService {
         }
         this.creationSpecs.nbDifferences = this.creationSpecs.differences.clusters.length;
         this.isSaveable =
-            this.creationSpecs.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT && this.creationSpecs.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT
-                ? true
-                : false;
+            this.creationSpecs.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT &&
+            this.creationSpecs.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT;
         if (this.creationSpecs.nbDifferences > Constants.MAX_DIFFERENCES_LIMIT)
             this.differenceAmountMessage = ' (Attention, le nombre de différences est trop élevé)';
         else if (this.creationSpecs.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT)
@@ -429,7 +426,7 @@ export class CreationPageService {
      */
     private async verifyImageFormat(imageFile: File): Promise<boolean> {
         if (imageFile.type !== 'image/bmp') {
-            this.errorDialog('Les images doivent être au format bmp');
+            this.errorDialog('Les images doivent être au format bmp.');
             return Promise.resolve(false);
         }
         return new Promise((resolve) => {
