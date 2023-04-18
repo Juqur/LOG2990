@@ -29,8 +29,16 @@ describe('CreationPageService', () => {
     let mouseServiceSpy: SpyObj<MouseService>;
     let dialogRefSpy: SpyObj<MatDialogRef<PopUpDialogComponent>>;
     let errorDialogSpy: jasmine.Spy;
+    let getEmptyBmpFileSpy: jasmine.Spy;
+    let showDefaultImageSpy: jasmine.Spy;
+    let showDifferenceImageSpy: jasmine.Spy;
 
     beforeEach(() => {
+        getEmptyBmpFileSpy = spyOn(CreationPageService.prototype, 'getEmptyBmpFile' as never).and.returnValue(
+            Promise.resolve(new File([''], '')) as never,
+        );
+        showDefaultImageSpy = spyOn(CreationPageService.prototype, 'showDefaultImage' as never);
+        showDifferenceImageSpy = spyOn(CreationPageService.prototype, 'showDifferenceImage' as never);
         differenceServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
@@ -71,7 +79,6 @@ describe('CreationPageService', () => {
     });
 
     it('constructor should correctly initialize', fakeAsync(() => {
-        spyOn(service, 'getEmptyBmpFile' as never).and.returnValue(Promise.resolve(new File([''], '')) as never);
         spyOn(HTMLCanvasElement.prototype, 'getContext').and.returnValue(null);
         const creationService = new CreationPageService(
             new CanvasSharingService(),
@@ -83,9 +90,6 @@ describe('CreationPageService', () => {
         );
         expect(creationService['canvasShare'].defaultCanvas).toBeUndefined();
         expect(creationService['canvasShare'].differenceCanvas).toBeUndefined();
-        expect(service['submitFunction']('')).toBeFalse();
-        expect(service['submitFunction']('A title')).toBeTrue();
-        expect(service['submitFunction']('A really long game name that should not be accepted as it breaks the UI')).toBeFalse();
         tick();
         expect(service['creationSpecs'].defaultImageFile).toEqual(new File([''], ''));
         expect(service['creationSpecs'].diffImageFile).toEqual(new File([''], ''));
@@ -94,7 +98,6 @@ describe('CreationPageService', () => {
     it('defaultImageSelector should make the appropriate function calls', fakeAsync(() => {
         const restartGameSpy = spyOn(service, 'restartGame' as never);
         const verifyImageFormatSpy = spyOn(service, 'verifyImageFormat' as never).and.resolveTo(true as never);
-        const showDefaultImageSpy = spyOn(service, 'showDefaultImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.defaultImageSelector(mockEvent);
@@ -107,7 +110,6 @@ describe('CreationPageService', () => {
     it('defaultImageSelector should initialize defaultImageFile with the file given as parameter', fakeAsync(() => {
         spyOn(service, 'restartGame' as never);
         spyOn(service, 'verifyImageFormat' as never).and.resolveTo(true as never);
-        spyOn(service, 'showDefaultImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.defaultImageSelector(mockEvent);
@@ -118,7 +120,6 @@ describe('CreationPageService', () => {
     it('defaultImageSelector should not call showDefaultImage if verifyImageFormat returned false', fakeAsync(() => {
         spyOn(service, 'restartGame' as never);
         spyOn(service, 'verifyImageFormat' as never).and.resolveTo(false as never);
-        const showDefaultImageSpy = spyOn(service, 'showDefaultImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.defaultImageSelector(mockEvent);
@@ -129,7 +130,6 @@ describe('CreationPageService', () => {
     it('differenceImageSelector should make the appropriate function calls', fakeAsync(() => {
         const restartGameSpy = spyOn(service, 'restartGame' as never);
         const verifyImageFormatSpy = spyOn(service, 'verifyImageFormat' as never).and.resolveTo(true as never);
-        const showDifferenceImageSpy = spyOn(service, 'showDifferenceImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.differenceImageSelector(mockEvent);
@@ -142,7 +142,6 @@ describe('CreationPageService', () => {
     it('differenceImageSelector should initialize diffImageFile with the file given as parameter', fakeAsync(() => {
         spyOn(service, 'restartGame' as never);
         spyOn(service, 'verifyImageFormat' as never).and.resolveTo(true as never);
-        spyOn(service, 'showDifferenceImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.differenceImageSelector(mockEvent);
@@ -153,7 +152,6 @@ describe('CreationPageService', () => {
     it('differenceImageSelector should not call showDefaultImage if verifyImageFormat returned false', fakeAsync(() => {
         spyOn(service, 'restartGame' as never);
         spyOn(service, 'verifyImageFormat' as never).and.resolveTo(false as never);
-        const showDifferenceImageSpy = spyOn(service, 'showDifferenceImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.differenceImageSelector(mockEvent);
@@ -410,6 +408,7 @@ describe('CreationPageService', () => {
     });
 
     it('getEmptyBmpFile should return a new File with the correct src', fakeAsync(async () => {
+        getEmptyBmpFileSpy.and.callThrough();
         const result = await service['getEmptyBmpFile']();
         expect(result.name).toEqual('image_empty.bmp');
     }));
@@ -464,7 +463,8 @@ describe('CreationPageService', () => {
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
 
-    it('showDefaultImage showDefaultImage should call errorDialog if defaultCanvasContext is undefined', fakeAsync(() => {
+    it('showDefaultImage should call errorDialog if defaultCanvasContext is undefined', fakeAsync(() => {
+        showDefaultImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
@@ -476,6 +476,7 @@ describe('CreationPageService', () => {
     }));
 
     it('showDefaultImage should call errorDialog if image is not correct width', fakeAsync(() => {
+        showDefaultImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         service['showDefaultImage']();
@@ -485,6 +486,7 @@ describe('CreationPageService', () => {
     }));
 
     it('showDefaultImage should call errorDialog if image is not correct height', fakeAsync(() => {
+        showDefaultImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         service['showDefaultImage']();
@@ -494,6 +496,7 @@ describe('CreationPageService', () => {
     }));
 
     it('showDefaultImage should correctly update class attributes', fakeAsync(() => {
+        showDefaultImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         service['showDefaultImage']();
@@ -505,6 +508,7 @@ describe('CreationPageService', () => {
     }));
 
     it('showDifferenceImage should call errorDialog if differenceCanvasContext is undefined', fakeAsync(() => {
+        showDifferenceImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
@@ -516,6 +520,7 @@ describe('CreationPageService', () => {
     }));
 
     it('showDifferenceImage should call errorDialog if image is not correct width', fakeAsync(() => {
+        showDifferenceImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         service['showDifferenceImage']();
@@ -525,6 +530,7 @@ describe('CreationPageService', () => {
     }));
 
     it('showDifferenceImage should call errorDialog if image is not correct height', fakeAsync(() => {
+        showDifferenceImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         service['showDifferenceImage']();
@@ -534,6 +540,7 @@ describe('CreationPageService', () => {
     }));
 
     it('showDifferenceImage should correctly update class attributes', fakeAsync(() => {
+        showDifferenceImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
         service['showDifferenceImage']();

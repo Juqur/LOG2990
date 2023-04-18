@@ -51,12 +51,12 @@ export class CreationPageService {
     ) {
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasContext?.canvas as HTMLCanvasElement;
         this.canvasShare.differenceCanvas = this.creationSpecs.differenceBgCanvasContext?.canvas as HTMLCanvasElement;
-        this.getEmptyBmpFile().then((res) => {
-            this.creationSpecs.defaultImageFile = res;
-            this.creationSpecs.diffImageFile = res;
-            this.showDefaultImage();
-            this.showDifferenceImage();
-        });
+        // this.getEmptyBmpFile().then((res) => {
+        //     this.creationSpecs.defaultImageFile = res;
+        //     this.creationSpecs.diffImageFile = res;
+        //     this.showDefaultImage();
+        //     this.showDifferenceImage();
+        // });
     }
 
     /**
