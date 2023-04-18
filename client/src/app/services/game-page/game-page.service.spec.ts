@@ -66,7 +66,7 @@ describe('GamePageService', () => {
         });
         service = TestBed.inject(GamePageService);
         service.setPlayArea(playAreaComponentSpy, playAreaComponentSpy, playAreaComponentSpy);
-        service['drawServiceDiff'] = drawServiceSpy;
+        service['drawServiceDifference'] = drawServiceSpy;
         service['drawServiceOriginal'] = drawServiceSpy;
     });
 

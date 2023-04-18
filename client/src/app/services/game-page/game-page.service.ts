@@ -42,7 +42,7 @@ export class GamePageService {
         private mouseService: MouseService,
         private popUpService: PopUpService,
         private audioService: AudioService,
-        private drawServiceDiff: DrawService,
+        private drawServiceDifference: DrawService,
         private drawServiceOriginal: DrawService,
     ) {}
 
@@ -386,10 +386,10 @@ export class GamePageService {
      */
     private handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
-        this.drawServiceDiff.context = this.diffPlayArea
+        this.drawServiceDifference.context = this.diffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError(this.mouseService);
+        this.drawServiceDifference.drawError(this.mouseService);
         this.resetCanvas();
     }
 

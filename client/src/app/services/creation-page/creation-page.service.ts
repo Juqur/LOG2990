@@ -22,7 +22,7 @@ export class CreationPageService {
     private differenceAmountMessage = '';
     private submitFunction: (value: string) => boolean;
     private drawServiceDefault: DrawService;
-    private drawServiceDiff: DrawService;
+    private drawServiceDifference: DrawService;
     private defaultUploadFile: File;
     private differenceUploadFile: File;
 
@@ -56,7 +56,7 @@ export class CreationPageService {
         });
 
         this.drawServiceDefault = new DrawService();
-        this.drawServiceDiff = new DrawService();
+        this.drawServiceDifference = new DrawService();
 
         this.submitFunction = (value) => {
             return value.length !== 0 && value.length < Constants.MAX_GAME_NAME_LENGTH;
@@ -199,9 +199,9 @@ export class CreationPageService {
      */
     brushSliderChange(event: MatSlider, defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
         this.drawServiceDefault.context = defaultContext;
-        this.drawServiceDiff.context = differenceContext;
+        this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.setBrushSize(event.value);
-        this.drawServiceDiff.setBrushSize(event.value);
+        this.drawServiceDifference.setBrushSize(event.value);
     }
 
     /**
@@ -302,9 +302,9 @@ export class CreationPageService {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = defaultContext;
-        this.drawServiceDiff.context = differenceContext;
+        this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.paintBrush();
-        this.drawServiceDiff.paintBrush();
+        this.drawServiceDifference.paintBrush();
     }
 
     /**
@@ -318,9 +318,9 @@ export class CreationPageService {
         this.mouseServiceDefault.isRectangleMode = false;
         this.mouseServiceDiff.isRectangleMode = false;
         this.drawServiceDefault.context = defaultContext;
-        this.drawServiceDiff.context = differenceContext;
+        this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.eraseBrush();
-        this.drawServiceDiff.eraseBrush();
+        this.drawServiceDifference.eraseBrush();
     }
 
     /**
@@ -329,7 +329,7 @@ export class CreationPageService {
      */
     rectangleMode(): void {
         this.drawServiceDefault.paintBrush();
-        this.drawServiceDiff.paintBrush();
+        this.drawServiceDifference.paintBrush();
         this.mouseServiceDefault.isRectangleMode = true;
         this.mouseServiceDiff.isRectangleMode = true;
     }
@@ -342,7 +342,7 @@ export class CreationPageService {
         this.mouseServiceDefault.mouseDrawColor = this.color;
         this.mouseServiceDiff.mouseDrawColor = this.color;
         this.drawServiceDefault.setPaintColor(this.color);
-        this.drawServiceDiff.setPaintColor(this.color);
+        this.drawServiceDifference.setPaintColor(this.color);
     }
 
     /**

@@ -25,7 +25,7 @@ describe('CreationPageService', () => {
     let communicationSpy: SpyObj<CommunicationService>;
     let popUpServiceSpy: SpyObj<PopUpService>;
     let drawServiceDefaultSpy: SpyObj<DrawService>;
-    let drawServiceDiffSpy: SpyObj<DrawService>;
+    let drawServiceDifferenceSpy: SpyObj<DrawService>;
     let mouseServiceSpy: SpyObj<MouseService>;
     let dialogRefSpy: SpyObj<MatDialogRef<PopUpDialogComponent>>;
     let errorDialogSpy: jasmine.Spy;
@@ -37,7 +37,7 @@ describe('CreationPageService', () => {
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
         dialogRefSpy.afterClosed.and.returnValue(of({ hasAccepted: true }));
         drawServiceDefaultSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
-        drawServiceDiffSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
+        drawServiceDifferenceSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
         mouseServiceSpy = jasmine.createSpyObj('MouseService', [
             'mouseHitDetect',
             'processClick',
@@ -57,14 +57,14 @@ describe('CreationPageService', () => {
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: CommunicationService, useValue: communicationSpy },
                 { provide: DrawService, useValue: drawServiceDefaultSpy },
-                { provide: DrawService, useValue: drawServiceDiffSpy },
+                { provide: DrawService, useValue: drawServiceDifferenceSpy },
                 { provide: MouseService, useValue: mouseServiceSpy },
             ],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
         });
         service = TestBed.inject(CreationPageService);
         service['drawServiceDefault'] = drawServiceDefaultSpy;
-        service['drawServiceDiff'] = drawServiceDiffSpy;
+        service['drawServiceDifference'] = drawServiceDifferenceSpy;
         errorDialogSpy = spyOn(service, 'errorDialog' as never);
     });
 
@@ -240,7 +240,7 @@ describe('CreationPageService', () => {
         const differenceCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         service.brushSliderChange(mockEvent, defaultCanvasContext, differenceCanvasContext);
         expect(drawServiceDefaultSpy.setBrushSize).toHaveBeenCalledOnceWith(1);
-        expect(drawServiceDiffSpy.setBrushSize).toHaveBeenCalledWith(1);
+        expect(drawServiceDifferenceSpy.setBrushSize).toHaveBeenCalledWith(1);
     });
 
     it('detectDifference should not call errorDialog if none of the canvases are null and call DifferenceService detectDifferences', () => {
@@ -381,7 +381,7 @@ describe('CreationPageService', () => {
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
         expect(drawServiceDefaultSpy.paintBrush).toHaveBeenCalledTimes(1);
-        expect(drawServiceDiffSpy.paintBrush).toHaveBeenCalledTimes(1);
+        expect(drawServiceDifferenceSpy.paintBrush).toHaveBeenCalledTimes(1);
     });
 
     it('eraseBrushMode should call the correct draw functions', () => {
@@ -391,20 +391,20 @@ describe('CreationPageService', () => {
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
         expect(drawServiceDefaultSpy.eraseBrush).toHaveBeenCalledTimes(1);
-        expect(drawServiceDiffSpy.eraseBrush).toHaveBeenCalledTimes(1);
+        expect(drawServiceDifferenceSpy.eraseBrush).toHaveBeenCalledTimes(1);
     });
 
     it('rectangleMode should set isRectangleMode to true', () => {
         service.rectangleMode();
         expect(drawServiceDefaultSpy.paintBrush).toHaveBeenCalledTimes(1);
-        expect(drawServiceDiffSpy.paintBrush).toHaveBeenCalledTimes(1);
+        expect(drawServiceDifferenceSpy.paintBrush).toHaveBeenCalledTimes(1);
         expect(mouseServiceSpy.isRectangleMode).toBeTrue();
     });
 
     it('colorPickerMode should call the correct draw functions', () => {
         service.colorPickerMode();
         expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledTimes(1);
-        expect(drawServiceDiffSpy.setPaintColor).toHaveBeenCalledTimes(1);
+        expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledTimes(1);
     });
 
     it('getEmptyBMPFile should return a new File with the correct src', fakeAsync(async () => {
