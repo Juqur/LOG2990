@@ -39,22 +39,22 @@ const mockLevel = (
     canJoin,
 });
 
-// const mockGameHistory = (
-//     startDate = TestConstants.DATE_ARRAY[0],
-//     lengthGame = TestConstants.NEW_BEST_TIME,
-//     isClassic = true,
-//     firstPlayerName = 'Mugiwara no Luffy',
-//     secondPlayerName = 'Roronoa Zoro',
-//     hasPlayerAbandoned = false,
-//     // eslint-disable-next-line max-params
-// ): GameHistory => ({
-//     startDate,
-//     lengthGame,
-//     isClassic,
-//     firstPlayerName,
-//     secondPlayerName,
-//     hasPlayerAbandoned,
-// });
+const mockGameHistory = (
+    startDate = TestConstants.DATE_ARRAY[0],
+    lengthGame = TestConstants.NEW_BEST_TIME,
+    isClassic = true,
+    firstPlayerName = 'Mugiwara no Luffy',
+    secondPlayerName = 'Roronoa Zoro',
+    hasPlayerAbandoned = false,
+    // eslint-disable-next-line max-params
+): GameHistory => ({
+    startDate,
+    lengthGame,
+    isClassic,
+    firstPlayerName,
+    secondPlayerName,
+    hasPlayerAbandoned,
+});
 
 const mockGameConstants = (
     initialTime = Constants.INIT_COUNTDOWN_TIME,
@@ -78,14 +78,14 @@ const mockLevelDoc = (mock?: Partial<Level>): Partial<LevelDocument> => ({
     canJoin: typeof mock?.canJoin !== 'undefined' ? mock?.canJoin : true,
 });
 
-// const mockGameHistoryDoc = (mock?: Partial<GameHistory>): Partial<GameHistoryDocument> => ({
-//     startDate: mock?.startDate || TestConstants.DATE_ARRAY[0],
-//     lengthGame: mock?.lengthGame || TestConstants.NEW_BEST_TIME,
-//     isClassic: typeof mock?.isClassic !== 'undefined' ? mock?.isClassic : true,
-//     firstPlayerName: mock?.firstPlayerName || 'Mugiwara no Luffy',
-//     secondPlayerName: mock?.secondPlayerName || 'Roronoa Zoro',
-//     hasPlayerAbandoned: typeof mock?.hasPlayerAbandoned !== 'undefined' ? mock?.hasPlayerAbandoned : false,
-// });
+const mockGameHistoryDoc = (mock?: Partial<GameHistory>): Partial<GameHistoryDocument> => ({
+    startDate: mock?.startDate || TestConstants.DATE_ARRAY[0],
+    lengthGame: mock?.lengthGame || TestConstants.NEW_BEST_TIME,
+    isClassic: typeof mock?.isClassic !== 'undefined' ? mock?.isClassic : true,
+    firstPlayerName: mock?.firstPlayerName || 'Mugiwara no Luffy',
+    secondPlayerName: mock?.secondPlayerName || 'Roronoa Zoro',
+    hasPlayerAbandoned: typeof mock?.hasPlayerAbandoned !== 'undefined' ? mock?.hasPlayerAbandoned : false,
+});
 
 const mockGameConstantsDoc = (mock?: Partial<GameConstants>): Partial<GameConstants> => ({
     initialTime: mock?.initialTime || Constants.INIT_COUNTDOWN_TIME,
@@ -119,11 +119,11 @@ const levelArray = [
     ),
 ];
 
-// const gameHistoryArray = [
-//     mockGameHistory(),
-//     mockGameHistory(TestConstants.DATE_ARRAY[1], TestConstants.NOT_NEW_BEST_TIME, false, 'Nami', 'God Usopp', false),
-//     mockGameHistory(TestConstants.DATE_ARRAY[2], TestConstants.NEW_BEST_TIME, true, 'Vinsmoke Sanji', 'Tony Tony Chopper', true),
-// ];
+const gameHistoryArray = [
+    mockGameHistory(),
+    mockGameHistory(TestConstants.DATE_ARRAY[1], TestConstants.NOT_NEW_BEST_TIME, false, 'Nami', 'God Usopp', false),
+    mockGameHistory(TestConstants.DATE_ARRAY[2], TestConstants.NEW_BEST_TIME, true, 'Vinsmoke Sanji', 'Tony Tony Chopper', true),
+];
 
 const gameConstantsArray = [mockGameConstants()];
 
@@ -153,25 +153,25 @@ const levelDocArray = [
     }),
 ];
 
-// const gameHistoryDocArray = [
-//     mockGameHistoryDoc(),
-//     mockGameHistoryDoc({
-//         startDate: TestConstants.DATE_ARRAY[1],
-//         lengthGame: TestConstants.NOT_NEW_BEST_TIME,
-//         isClassic: false,
-//         firstPlayerName: 'Nami',
-//         secondPlayerName: 'God Usopp',
-//         hasPlayerAbandoned: false,
-//     }),
-//     mockGameHistoryDoc({
-//         startDate: TestConstants.DATE_ARRAY[2],
-//         lengthGame: TestConstants.NEW_BEST_TIME,
-//         isClassic: true,
-//         firstPlayerName: 'Vinsmoke Sanji',
-//         secondPlayerName: 'Tony Tony Chopper',
-//         hasPlayerAbandoned: true,
-//     }),
-// ];
+const gameHistoryDocArray = [
+    mockGameHistoryDoc(),
+    mockGameHistoryDoc({
+        startDate: TestConstants.DATE_ARRAY[1],
+        lengthGame: TestConstants.NOT_NEW_BEST_TIME,
+        isClassic: false,
+        firstPlayerName: 'Nami',
+        secondPlayerName: 'God Usopp',
+        hasPlayerAbandoned: false,
+    }),
+    mockGameHistoryDoc({
+        startDate: TestConstants.DATE_ARRAY[2],
+        lengthGame: TestConstants.NEW_BEST_TIME,
+        isClassic: true,
+        firstPlayerName: 'Vinsmoke Sanji',
+        secondPlayerName: 'Tony Tony Chopper',
+        hasPlayerAbandoned: true,
+    }),
+];
 
 const gameConstantsDocArray = [mockGameConstantsDoc()];
 
@@ -208,6 +208,7 @@ describe('MongodbService', () => {
                         find: jest.fn(),
                         findOne: jest.fn(),
                         deleteOne: jest.fn(),
+                        deleteMany: jest.fn(),
                         findOneAndUpdate: jest.fn(),
                         update: jest.fn(),
                         create: jest.fn(),
@@ -387,6 +388,26 @@ describe('MongodbService', () => {
             const createSpy = jest.spyOn(gameHistoryModel, 'create' as never);
             await service.addGameHistory({} as unknown as GameHistory);
             expect(createSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('getGameHistories', () => {
+        it('should correctly return the levels', async () => {
+            jest.spyOn(gameHistoryModel, 'find' as never).mockReturnValue({
+                exec: jest.fn().mockResolvedValue(gameHistoryDocArray),
+            } as never);
+            const result = await service.getGameHistories();
+            expect(result).toEqual(gameHistoryArray);
+        });
+    });
+
+    describe('deleteAllGameHistories', () => {
+        it('should call delete many', async () => {
+            const deleteManySpy = jest.spyOn(gameHistoryModel, 'deleteMany' as never).mockReturnValue({
+                exec: jest.fn(),
+            } as never);
+            await service.deleteAllGameHistories();
+            expect(deleteManySpy).toHaveBeenCalledWith({});
         });
     });
 

@@ -139,12 +139,24 @@ export class CommunicationService {
             .pipe(catchError(this.handleError<void>('getGameConstants')));
     }
 
+    /**
+     * This methods is used to obtain all the game histories from the database.
+     *
+     * @returns An array containing all the game histories.
+     */
     getGameHistories(): Observable<GameHistory[]> {
-        // eslint-disable-next-line no-console
-        console.log('tried to get game histories');
         return this.http
             .get<GameHistory[]>(`${this.baseUrl}api` + '/database/gameHistories')
             .pipe(catchError(this.handleError<GameHistory[]>('getGameHistories')));
+    }
+
+    /**
+     * This method makes a call to the server to delete all game histories.
+     */
+    deleteGameHistories(): Observable<void> {
+        return this.http
+            .delete<void>(`${this.baseUrl}api` + '/database/gameHistories')
+            .pipe(catchError(this.handleError<void>('deleteGameHistories')));
     }
 
     /**

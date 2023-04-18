@@ -3,6 +3,7 @@ import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
+import { UrlSerializer } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PaintAreaComponent } from '@app/components/paint-area/paint-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
@@ -42,7 +43,7 @@ describe('CreationPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationPageComponent, ScaleContainerComponent, PaintAreaComponent],
-            providers: [{ provide: CreationPageService, useValue: creationPageServiceSpy }, HttpClient, HttpHandler],
+            providers: [{ provide: CreationPageService, useValue: creationPageServiceSpy }, HttpClient, HttpHandler, UrlSerializer],
             imports: [AppMaterialModule, FormsModule, RouterTestingModule],
         }).compileComponents();
 

@@ -165,6 +165,13 @@ export class MongodbService {
         return (await this.gameHistoryModel.find({}).exec()) as GameHistoryDataObject[] | null;
     }
 
+    /**
+     * This method removes all games histories from the database.
+     */
+    async deleteAllGameHistories(): Promise<void> {
+        await this.gameHistoryModel.deleteMany({}).exec();
+    }
+
     /*
      * This method returns the multiplayer highscores names of the specified level.
      *

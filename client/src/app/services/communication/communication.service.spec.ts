@@ -178,6 +178,22 @@ describe('CommunicationService', () => {
         req.flush(null);
     });
 
+    it('should make an http GET request for getGameHistories', () => {
+        const path = '/database/gameHistories';
+        service.getGameHistories().subscribe();
+        const req = httpMock.expectOne(`${service['baseUrl']}api${path}`);
+        expect(req.request.method).toEqual('GET');
+        req.flush(null);
+    });
+
+    it('should make an http DELETE request for deleteGameHistories', () => {
+        const path = '/database/gameHistories';
+        service.deleteGameHistories().subscribe();
+        const req = httpMock.expectOne(`${service['baseUrl']}api${path}`);
+        expect(req.request.method).toEqual('DELETE');
+        req.flush(null);
+    });
+
     it('handleError should handle error', () => {
         const request = 'GET /api/data';
         const result = { data: 'test' };

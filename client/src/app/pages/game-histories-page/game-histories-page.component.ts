@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AudioService } from '@app/services/audio/audio.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GameHistory } from '@common/game-history';
 
@@ -23,7 +22,12 @@ export class GameHistoriesPageComponent {
         return this.gameHistoriesArray;
     }
 
+    /**
+     * Method called when the button to delete the game history is called.
+     */
     onClearHistory(): void {
-        AudioService.quickPlay('./assets/audio/click.mp3');
+        this.communicationService.deleteGameHistories().subscribe(() => {
+            this.gameHistoriesArray = [];
+        });
     }
 }
