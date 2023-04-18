@@ -51,7 +51,7 @@ describe('PlayAreaComponent', () => {
 
     it('getCanvas should return the canvas element', () => {
         const canvas = component.getCanvas();
-        expect(canvas).toEqual(component.canvas);
+        expect(canvas).toEqual(component['canvas']);
     });
 
     it('drawPlayArea should call context.drawImage', fakeAsync(() => {
@@ -95,8 +95,8 @@ describe('PlayAreaComponent', () => {
     it('createTempCanvas should create a new canvas with the right properties', () => {
         component.createTempCanvas();
         expect(component['tempCanvas']).toBeDefined();
-        expect(component['tempCanvas'].width).toEqual(component.canvas.nativeElement.width);
-        expect(component['tempCanvas'].height).toEqual(component.canvas.nativeElement.height);
+        expect(component['tempCanvas'].width).toEqual(component['canvas'].nativeElement.width);
+        expect(component['tempCanvas'].height).toEqual(component['canvas'].nativeElement.height);
         expect(component['tempCanvas'].style.position).toEqual('absolute');
         expect(component['tempCanvas'].style.pointerEvents).toEqual('none');
     });

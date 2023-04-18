@@ -18,7 +18,7 @@ import { Constants } from '@common/constants';
 export class PlayAreaComponent implements AfterViewInit, OnChanges {
     @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
-    @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
 
     buttonPressed = '';
