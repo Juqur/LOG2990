@@ -24,7 +24,7 @@ export class CreationPageService {
     private drawServiceDefault: DrawService;
     private drawServiceDiff: DrawService;
     private defaultUploadFile: File;
-    private diffUploadFile: File;
+    private differenceUploadFile: File;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -243,7 +243,7 @@ export class CreationPageService {
                 this.defaultUploadFile = new File([res], 'default.bmp', { type: 'image/bmp' });
             });
             this.toImgFile(diffMergedContext).then((res) => {
-                this.diffUploadFile = new File([res], 'diff.bmp', { type: 'image/bmp' });
+                this.differenceUploadFile = new File([res], 'diff.bmp', { type: 'image/bmp' });
             });
         }
     }
@@ -253,7 +253,7 @@ export class CreationPageService {
      * It opens a popUp asking the user to give a name to their new game and saves it.
      */
     saveGame(): void {
-        if (this.isSaveable && this.defaultUploadFile && this.diffUploadFile) {
+        if (this.isSaveable && this.defaultUploadFile && this.differenceUploadFile) {
             this.popUpService.openDialog({
                 textToSend: 'Veuillez entrer le nom du jeu',
                 inputData: {
@@ -268,7 +268,7 @@ export class CreationPageService {
                     this.communicationService
                         .postLevel({
                             imageOriginal: this.defaultUploadFile,
-                            imageDiff: this.diffUploadFile,
+                            imageDiff: this.differenceUploadFile,
                             name: result,
                             isEasy: (!this.creationSpecs.differences.isHard).toString(),
                             clusters: JSON.stringify(this.creationSpecs.differences.clusters),

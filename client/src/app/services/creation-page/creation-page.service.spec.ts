@@ -348,7 +348,7 @@ describe('CreationPageService', () => {
     it('save game should call open dialog twice if we can save and post level was successful', () => {
         service['isSaveable'] = true;
         service['defaultUploadFile'] = new File([], 'test1');
-        service['diffUploadFile'] = new File([], 'test2');
+        service['differenceUploadFile'] = new File([], 'test2');
         communicationSpy.postLevel.and.returnValue(
             of({
                 title: 'success',
@@ -362,7 +362,7 @@ describe('CreationPageService', () => {
     it('save game should call open dialog once if we can save and post level was not successful', () => {
         service['isSaveable'] = true;
         service['defaultUploadFile'] = new File([], 'test1');
-        service['diffUploadFile'] = new File([], 'test2');
+        service['differenceUploadFile'] = new File([], 'test2');
         communicationSpy.postLevel.and.returnValue(
             of({
                 title: 'error',
