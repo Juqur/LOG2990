@@ -45,15 +45,8 @@ export class TimerService {
         this.timeMap.set(socketId, { time: isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH, startDate });
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
-<<<<<<< HEAD
-
-=======
-            if (sockets.otherSocketId){
-                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time.time);
-            }
             this.timeMap.set(socketId, { time: isClassic ? time.time + 1 : time.time - 1, startDate: time.startDate });
             if (!isClassic && time.time === 0) {
->>>>>>> bdef5d19333f6f6f243a50de0c93884eddcea8cb
                 this.stopTimer(socketId);
                 const levelId = this.gameService.getGameState(socketId).levelId;
                 this.gameService.removeLevel(levelId, false);
@@ -61,10 +54,10 @@ export class TimerService {
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
                 clearInterval(interval);
             }
-<<<<<<< HEAD
-=======
-            server.to(socketId).emit(GameEvents.SendTime, time.time);
->>>>>>> bdef5d19333f6f6f243a50de0c93884eddcea8cb
+            sockets.socket.emit(GameEvents.SendTime, time.time);
+            if (sockets.otherSocketId) {
+                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time.time);
+            }
         }, Constants.millisecondsInOneSecond);
         this.timeIntervalMap.set(socketId, interval);
         if (sockets.otherSocketId) {
@@ -110,21 +103,19 @@ export class TimerService {
     addTime(server: Server, socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            if (this.gameService.getGameState(socketId).timedLevelList && currentTime.time + time > Constants.TIMED_GAME_MODE_LENGTH) {
+            const newTime = currentTime.time + time;
+            if (this.gameService.getGameState(socketId).timedLevelList && newTime > Constants.TIMED_GAME_MODE_LENGTH) {
                 time = Constants.TIMED_GAME_MODE_LENGTH - currentTime.time;
             }
-<<<<<<< HEAD
-            server.sockets.sockets.get(socketId).emit('sendExtraTime', currentTime.time + time);
-            this.timeMap.set(socketId, currentTime.time + time);
+            server.sockets.sockets.get(socketId).emit('sendExtraTime', newTime);
+            this.timeMap.set(socketId, { time: newTime, startDate: currentTime.startDate });
             const otherSocketId = this.gameService.getGameState(socketId).otherSocketId;
             if (otherSocketId) {
-                server.sockets.sockets.get(otherSocketId).emit('sendExtraTime', currentTime.time + time);
-                this.timeMap.set(otherSocketId, currentTime.time + time);
+                server.sockets.sockets.get(otherSocketId).emit('sendExtraTime', newTime);
+                this.timeMap.set(socketId, { time: newTime, startDate: currentTime.startDate });
             }
-=======
-            server.to(socketId).emit('sendTime', currentTime.time + time);
-            this.timeMap.set(socketId, { time: currentTime.time + time, startDate: currentTime.startDate });
->>>>>>> bdef5d19333f6f6f243a50de0c93884eddcea8cb
+            server.to(socketId).emit('sendTime', newTime);
+            this.timeMap.set(socketId, { time: newTime, startDate: currentTime.startDate });
         }
     }
 
@@ -138,20 +129,18 @@ export class TimerService {
     subtractTime(server: Server, socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            if (currentTime.time - time < 0) {
+            const newTime = currentTime.time - time;
+            if (newTime < 0) {
                 time = currentTime.time;
             }
-<<<<<<< HEAD
-            server.to(socketId).emit('sendTime', currentTime.time - time);
-            this.timeMap.set(socketId, currentTime.time - time);
+            server.to(socketId).emit('sendTime', newTime);
+            this.timeMap.set(socketId, { time: newTime, startDate: currentTime.startDate });
             const otherSocketId = this.gameService.getGameState(socketId).otherSocketId;
             if (otherSocketId) {
-                this.timeMap.set(otherSocketId, currentTime.time - time);
+                this.timeMap.set(otherSocketId, { time: newTime, startDate: currentTime.startDate });
             }
-=======
-            server.to(socketId).emit('sendTime', currentTime.time - time);
-            this.timeMap.set(socketId, { time: currentTime.time - time, startDate: currentTime.startDate });
->>>>>>> bdef5d19333f6f6f243a50de0c93884eddcea8cb
+            server.to(socketId).emit('sendTime', newTime);
+            this.timeMap.set(socketId, { time: newTime, startDate: currentTime.startDate });
         }
     }
 

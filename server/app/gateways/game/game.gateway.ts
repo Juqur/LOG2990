@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
