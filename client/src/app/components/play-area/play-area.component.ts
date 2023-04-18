@@ -157,9 +157,9 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     /**
-     * Fills a given area of the canvas in red.
+     * Shows the hint section.
      *
-     * @param area The area to flash.
+     * @param section The area to prompt.
      */
     showHintSection(section: number[]) {
         const rectangleZone: number[] = [0, 0, 0, 0];
