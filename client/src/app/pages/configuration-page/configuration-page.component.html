@@ -9,17 +9,19 @@
             <div class="global-variable-container prevent-select" id="credits">
                 <h2 class="team-name">Variables Globales</h2>
                 <mat-form-field>
-                    <input matInput placeholder="temps initial du compte à rebours (secondes)"
+                    <input matInput id="initial-time-input" placeholder="temps initial du compte à rebours (secondes)"
                         (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.initialTime" />
                 </mat-form-field>
                 <mat-form-field>
-                    <input matInput placeholder="temps de pénalité pour l’utilisation d’un indice (secondes)"
+                    <input matInput id="time-penalty-hint-input"
+                        placeholder="temps de pénalité pour l'utilisation d'un indice (secondes)"
                         (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.timePenaltyHint" />
                 </mat-form-field>
                 <mat-form-field>
-                    <input matInput placeholder="temps gagné avec la découverte d’une différence (secondes)"
+                    <input matInput id="time-gained-difference-input"
+                        placeholder="temps gagné avec la découverte d'une différence (secondes)"
                         (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.timeGainedDifference" />
                 </mat-form-field>
