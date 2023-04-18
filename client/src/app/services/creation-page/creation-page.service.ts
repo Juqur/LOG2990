@@ -18,9 +18,9 @@ import { Constants } from '@common/constants';
     providedIn: 'root',
 })
 export class CreationPageService {
-    color = Constants.BLACK;
-    private isSaveable = false;
-    private differenceAmountMessage = '';
+    color: string = Constants.BLACK;
+    private isSaveable: boolean = false;
+    private differenceAmountMessage: string = '';
     private drawServiceDefault: DrawService = new DrawService();
     private drawServiceDifference: DrawService = new DrawService();
     private defaultUploadFile: File;
