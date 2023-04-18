@@ -143,7 +143,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
      *
      * @param canvas Takes 2 canvas, the default (left) canvas and the diff (right) canvas.
      */
-    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
+    applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; differenceCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
         this.setPaintBrushMode();
         this.creationService.saveFalse();
@@ -154,7 +154,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
         diffCtx.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
 
         defaultCtx.drawImage(canvas.defaultCanvas, 0, 0);
-        diffCtx.drawImage(canvas.diffCanvas, 0, 0);
+        diffCtx.drawImage(canvas.differenceCanvas, 0, 0);
     }
 
     /**
@@ -163,14 +163,14 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     onSwapCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.canvas;
-        const diffCanvas = this.differencePaintArea.canvas;
+        const differenceCanvas = this.differencePaintArea.canvas;
         const tempCanvas = defaultCanvas.cloneNode() as HTMLCanvasElement;
         const tempCanvasContext = tempCanvas.getContext('2d') as CanvasRenderingContext2D;
         const defaultCanvasContext = defaultCanvas.getContext('2d') as CanvasRenderingContext2D;
-        const differenceCanvasContext = diffCanvas.getContext('2d') as CanvasRenderingContext2D;
+        const differenceCanvasContext = differenceCanvas.getContext('2d') as CanvasRenderingContext2D;
         tempCanvasContext.drawImage(defaultCanvas, 0, 0);
         defaultCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        defaultCanvasContext.drawImage(diffCanvas, 0, 0);
+        defaultCanvasContext.drawImage(differenceCanvas, 0, 0);
         differenceCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         differenceCanvasContext.drawImage(tempCanvas, 0, 0);
         this.addToUndoRedoStack();
@@ -200,8 +200,8 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     duplicateDefaultCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.canvas;
-        const diffCanvas = this.differencePaintArea.canvas;
-        const differenceCanvasContext = diffCanvas.getContext('2d') as CanvasRenderingContext2D;
+        const differenceCanvas = this.differencePaintArea.canvas;
+        const differenceCanvasContext = differenceCanvas.getContext('2d') as CanvasRenderingContext2D;
         differenceCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         differenceCanvasContext.drawImage(defaultCanvas, 0, 0);
         this.addToUndoRedoStack();
@@ -213,10 +213,10 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
     duplicateDifferenceCanvas(): void {
         this.setPaintBrushMode();
         const defaultCanvas = this.defaultPaintArea.canvas;
-        const diffCanvas = this.differencePaintArea.canvas;
+        const differenceCanvas = this.differencePaintArea.canvas;
         const defaultCanvasContext = defaultCanvas.getContext('2d') as CanvasRenderingContext2D;
         defaultCanvasContext.clearRect(0, 0, Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
-        defaultCanvasContext.drawImage(diffCanvas, 0, 0);
+        defaultCanvasContext.drawImage(differenceCanvas, 0, 0);
         this.addToUndoRedoStack();
     }
 }

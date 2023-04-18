@@ -237,7 +237,7 @@ describe('CreationPageComponent', () => {
     });
 
     describe('applyChanges', () => {
-        const canvas = { defaultCanvas: {} as unknown as HTMLCanvasElement, diffCanvas: {} as unknown as HTMLCanvasElement };
+        const canvas = { defaultCanvas: {} as unknown as HTMLCanvasElement, differenceCanvas: {} as unknown as HTMLCanvasElement };
 
         beforeEach(() => {
             setPaintBrushModeSpy.calls.reset();

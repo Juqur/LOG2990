@@ -32,7 +32,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     hintPenalty: number = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     closePath: string = '/selection';
-    diffCanvasCtx: CanvasRenderingContext2D | null = null;
+    differenceCanvasCtx: CanvasRenderingContext2D | null = null;
     playerName: string;
     playerDifferencesCount: number = 0;
     secondPlayerName: string;

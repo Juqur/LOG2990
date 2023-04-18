@@ -84,7 +84,7 @@ describe('CreationPageService', () => {
             mouseServiceSpy,
         );
         expect(creationService['canvasShare'].defaultCanvas).toBeUndefined();
-        expect(creationService['canvasShare'].diffCanvas).toBeUndefined();
+        expect(creationService['canvasShare'].differenceCanvas).toBeUndefined();
         expect(service['submitFunction']('')).toBeFalse();
         expect(service['submitFunction']('A title')).toBeTrue();
         expect(service['submitFunction']('A really long game name that should not be accepted as it breaks the UI')).toBeFalse();
@@ -203,20 +203,20 @@ describe('CreationPageService', () => {
         expect(getContextSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('resetDiff should call restartGame and clearRect from diffCanvas', () => {
+    it('resetDiff should call restartGame and clearRect from differenceCanvas', () => {
         const restartGameSpy = spyOn(service, 'restartGame' as never);
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
-        const defaultCanvasSpy = spyOnProperty(service['canvasShare'], 'diffCanvas').and.callThrough();
+        const defaultCanvasSpy = spyOnProperty(service['canvasShare'], 'differenceCanvas').and.callThrough();
         service.resetDiffBackground();
         expect(restartGameSpy).toHaveBeenCalledTimes(1);
         expect(clearRectSpy).toHaveBeenCalledTimes(1);
         expect(defaultCanvasSpy).toHaveBeenCalledTimes(3);
     });
 
-    it('resetDiff should call restartGame and not clearRect from diffCanvas is the canvas is undefined', () => {
+    it('resetDiff should call restartGame and not clearRect from differenceCanvas is the canvas is undefined', () => {
         const restartGameSpy = spyOn(service, 'restartGame' as never);
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
-        const getContextSpy = spyOn(service['canvasShare'].diffCanvas, 'getContext').and.returnValue(null);
+        const getContextSpy = spyOn(service['canvasShare'].differenceCanvas, 'getContext').and.returnValue(null);
         service.resetDiffBackground();
         expect(restartGameSpy).toHaveBeenCalledTimes(1);
         expect(clearRectSpy).not.toHaveBeenCalled();
@@ -237,8 +237,8 @@ describe('CreationPageService', () => {
     it('brushSlider change should correctly update the value of both draw services', () => {
         const mockEvent = { value: 1 } as MatSlider;
         const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        service.brushSliderChange(mockEvent, defaultCanvasCtx, diffCanvasCtx);
+        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        service.brushSliderChange(mockEvent, defaultCanvasCtx, differenceCanvasCtx);
         expect(drawServiceDefaultSpy.setBrushSize).toHaveBeenCalledOnceWith(1);
         expect(drawServiceDiffSpy.setBrushSize).toHaveBeenCalledWith(1);
     });
@@ -376,8 +376,8 @@ describe('CreationPageService', () => {
 
     it('paintBrushMode should should call the correct draw functions', () => {
         const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        service.paintBrushMode(defaultCanvasCtx, diffCanvasCtx);
+        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        service.paintBrushMode(defaultCanvasCtx, differenceCanvasCtx);
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
         expect(drawServiceDefaultSpy.paintBrush).toHaveBeenCalledTimes(1);
@@ -386,8 +386,8 @@ describe('CreationPageService', () => {
 
     it('eraseBrushMode should call the correct draw functions', () => {
         const defaultCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        service.eraseBrushMode(defaultCanvasCtx, diffCanvasCtx);
+        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        service.eraseBrushMode(defaultCanvasCtx, differenceCanvasCtx);
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
         expect(drawServiceDefaultSpy.eraseBrush).toHaveBeenCalledTimes(1);
@@ -502,7 +502,7 @@ describe('CreationPageService', () => {
         expect(service['canvasShare'].defaultCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
     }));
 
-    it('showDiffImage should call errorDialog if diffCanvasCtx is undefined', fakeAsync(() => {
+    it('showDiffImage should call errorDialog if differenceCanvasCtx is undefined', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
@@ -538,8 +538,8 @@ describe('CreationPageService', () => {
         spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
 
         imageSpy.onload();
-        expect(service['canvasShare'].diffCanvas.width).toEqual(Constants.DEFAULT_WIDTH);
-        expect(service['canvasShare'].diffCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
+        expect(service['canvasShare'].differenceCanvas.width).toEqual(Constants.DEFAULT_WIDTH);
+        expect(service['canvasShare'].differenceCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
     }));
 
     it('getImg should return a blob of the canvas', async () => {

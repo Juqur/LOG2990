@@ -163,7 +163,7 @@ export class PaintAreaComponent implements AfterViewInit {
         if (!this.isDifferenceCanvas) {
             this.canvasSharing.defaultCanvas = this.backgroundCanvas.nativeElement;
         } else {
-            this.canvasSharing.diffCanvas = this.backgroundCanvas.nativeElement;
+            this.canvasSharing.differenceCanvas = this.backgroundCanvas.nativeElement;
         }
 
         const context = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;

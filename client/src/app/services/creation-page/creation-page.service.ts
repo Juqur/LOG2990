@@ -47,7 +47,7 @@ export class CreationPageService {
         } as CreationSpecs;
 
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasCtx?.canvas as HTMLCanvasElement;
-        this.canvasShare.diffCanvas = this.creationSpecs.diffBgCanvasCtx?.canvas as HTMLCanvasElement;
+        this.canvasShare.differenceCanvas = this.creationSpecs.diffBgCanvasCtx?.canvas as HTMLCanvasElement;
         this.getEmptyBMPFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.creationSpecs.diffImageFile = res;
@@ -171,7 +171,9 @@ export class CreationPageService {
      */
     resetDiffBackground(): void {
         this.restartGame();
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
+        this.canvasShare.differenceCanvas
+            .getContext('2d')
+            ?.clearRect(0, 0, this.canvasShare.differenceCanvas.width, this.canvasShare.differenceCanvas.height);
         this.getEmptyBMPFile().then((res) => {
             this.creationSpecs.diffImageFile = res;
             this.showDiffImage();
@@ -407,10 +409,10 @@ export class CreationPageService {
                 this.errorDialog('Les images doivent être de taille 640x480.');
                 return;
             }
-            this.canvasShare.diffCanvas.width = image.width;
-            this.canvasShare.diffCanvas.height = image.height;
-            (this.canvasShare.diffCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.diffBgCanvasCtx = this.canvasShare.diffCanvas.getContext('2d');
+            this.canvasShare.differenceCanvas.width = image.width;
+            this.canvasShare.differenceCanvas.height = image.height;
+            (this.canvasShare.differenceCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
+            this.creationSpecs.diffBgCanvasCtx = this.canvasShare.differenceCanvas.getContext('2d');
         };
     }
 
