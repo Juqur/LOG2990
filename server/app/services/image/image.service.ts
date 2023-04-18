@@ -1,9 +1,11 @@
 import { Message } from '@app/model/schema/message.schema';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Level, LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
-import { DEFAULT_TIME_VALUES } from './image.service.constants';
+import { mkdir } from 'fs/promises';
 
 /**
  * This service is used to get the amount of differences left between the two images.
@@ -19,33 +21,15 @@ export class ImageService {
     readonly pathOriginal: string = '../server/assets/images/original/';
     readonly pathData: string = '../server/assets/data/';
 
-    /**
-     * Gets all the levels from the json file.
-     *
-     * @returns All the levels information.
-     */
-    async getLevels(): Promise<Level[]> {
-        try {
-            const promises = await fsp.readFile(this.pathData + 'levels.json', 'utf8');
-            return JSON.parse(promises.toString()) as Level[];
-        } catch (error) {
-            return undefined;
-        }
-    }
+    constructor(private mongodbService: MongodbService) {}
 
     /**
-     * Gets the level from the json file.
+     * This method makes a call to the mongo db service in order to obtain all levels.
      *
-     * @param id The id of the level.
-     * @returns The level information.
+     * @returns The array containing all current levels inside the database.
      */
-    async getLevel(id: number): Promise<Level> {
-        try {
-            const levels = await this.getLevels();
-            return levels.find((level) => level.id === id);
-        } catch (error) {
-            return undefined;
-        }
+    async getLevels(): Promise<Level[]> {
+        return await this.mongodbService.getAllLevels();
     }
 
     /**
@@ -128,31 +112,34 @@ export class ImageService {
      */
     async writeLevelData(newLevel: unknown): Promise<Message> {
         try {
-            const levels = await this.getLevels();
-            const newId = levels[levels.length - 1].id + 1;
+            const newId = (await this.mongodbService.getLastLevelId()) + 1;
             const levelData = newLevel as LevelData;
             const level: Level = {
                 id: newId,
                 name: levelData.name,
-                playerSolo: ['Bot1', 'Bot2', 'Bot3'],
-                timeSolo: DEFAULT_TIME_VALUES,
-                playerMulti: ['Bot1', 'Bot2', 'Bot3'],
-                timeMulti: DEFAULT_TIME_VALUES,
+                playerSolo: Constants.defaultPlayerSolo,
+                timeSolo: Constants.defaultTimeSolo,
+                playerMulti: Constants.defaultPlayerMulti,
+                timeMulti: Constants.defaultTimeMulti,
                 isEasy: levelData.isEasy === 'true',
                 nbDifferences: levelData.nbDifferences,
-            };
-            levels.push(level);
+            } as Level;
+            await this.mongodbService.createNewLevel(level);
 
+            await mkdir(this.pathDifference, { recursive: true });
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
                 if (error) throw error;
             });
+
+            await mkdir(this.pathOriginal, { recursive: true });
             fs.rename(levelData.imageOriginal.path, this.pathOriginal + newId + '.bmp', (error) => {
                 if (error) throw error;
             });
+
+            await mkdir(this.pathModified, { recursive: true });
             fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
                 if (error) throw error;
             });
-            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(levels));
 
             return this.confirmUpload(level);
         } catch (error) {
@@ -168,13 +155,11 @@ export class ImageService {
      */
     async deleteLevelData(id: number): Promise<boolean> {
         try {
-            const level = await this.getLevel(id);
-            if (level === undefined) {
+            const level = await this.mongodbService.getLevelById(id);
+            if (!level) {
                 return false;
             }
-
-            const allDifferences = await this.getLevels();
-            const updatedDifferences = allDifferences.filter((difference) => difference.id !== level.id);
+            await this.mongodbService.deleteLevel(id);
 
             fs.unlink(this.pathDifference + id + '.json', (error) => {
                 if (error) throw error;
@@ -185,7 +170,6 @@ export class ImageService {
             fs.unlink(this.pathModified + id + '.bmp', (error) => {
                 if (error) throw error;
             });
-            await fsp.writeFile(this.pathData + 'levels.json', JSON.stringify(updatedDifferences));
             return true;
         } catch (error) {
             return false;
