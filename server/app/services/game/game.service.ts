@@ -154,11 +154,11 @@ export class GameService {
         if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
-            this.removeLevel(gameState.levelId, true);
+            this.removeLevel(gameState.levelId, false);
             return true;
         } else if (gameState.amountOfDifferencesFound === totalDifferences) {
             this.deleteUserFromGame(socket);
-            this.removeLevel(gameState.levelId, true);
+            this.removeLevel(gameState.levelId, false);
             return true;
         }
         return false;
@@ -265,20 +265,27 @@ export class GameService {
     /**
      * This method removes the level id from the levelDeletionQueue if it is found in it.
      * It also deletes the level from the server.
+     * If a user is trying to delete a level that is currently being played, the level is added to the levelDeletionQueue.
      *
      * @param levelId The id of the level.
+     * @param isRequestedByUser A boolean flag indicating if it was a request from the user or from the game.
      */
-    removeLevel(levelId: number, gameEnded: boolean): void {
-        if (!this.verifyIfLevelIsBeingPlayed(levelId)) {
-            const index = this.levelDeletionQueue.indexOf(levelId);
-            if (index >= 0 && this.levelDeletionQueue.length > 0) {
-                this.levelDeletionQueue.splice(index, 1);
+    removeLevel(levelId: number, isRequestedByUser: boolean): void {
+        const index = this.levelDeletionQueue.indexOf(levelId);
+        const isLevelBeingPlayed = this.isLevelBeingPlayed(levelId);
+
+        // If it was a request and the level is not in the deletion queue.
+        if (isRequestedByUser && index < 0) {
+            if (isLevelBeingPlayed) {
+                this.addLevelToDeletionQueue(levelId);
+            } else {
                 this.imageService.deleteLevelData(levelId);
             }
-        } else {
-            if (!gameEnded) {
-                this.addLevelToDeletionQueue(levelId);
-            }
+        }
+
+        if (!isRequestedByUser && !isLevelBeingPlayed && index >= 0) {
+            this.levelDeletionQueue.splice(index, 1);
+            this.imageService.deleteLevelData(levelId);
         }
     }
 
@@ -390,7 +397,7 @@ export class GameService {
      * @param diff The difference for which the shape should be determined.
      * @returns The translated difference array. The last two objects correspond to the maximum x and y values.
      */
-    askShape(diff: number[]) {
+    askShape(diff: number[]): number[] {
         let maxX = 0;
         let maxY = 0;
         let minX = Constants.DEFAULT_WIDTH;
@@ -452,7 +459,7 @@ export class GameService {
      * @param levelId The id of the level.
      * @returns A boolean indicating whether the level is being played.
      */
-    private verifyIfLevelIsBeingPlayed(levelId: number): boolean {
+    private isLevelBeingPlayed(levelId: number): boolean {
         for (const gameState of this.playerGameMap.values()) {
             if (gameState.levelId === levelId && gameState.isInGame) {
                 return true;
@@ -468,7 +475,7 @@ export class GameService {
      * @param gameState The gameState of a player.
      * @param levelId The level to be removed.
      */
-    private removeLevelFromTimedList(gameState: GameState, levelId: number) {
+    private removeLevelFromTimedList(gameState: GameState, levelId: number): void {
         if (gameState.timedLevelList) {
             let level: Level;
             for (level of gameState.timedLevelList) {

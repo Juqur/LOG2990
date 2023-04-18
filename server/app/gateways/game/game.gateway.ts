@@ -1,5 +1,6 @@
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Constants } from '@common/constants';
 import { ChatMessage } from '@common/interfaces/chat-messages';
@@ -19,7 +20,13 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
+    // eslint-disable-next-line max-len, max-params
+    constructor(
+        private gameService: GameService,
+        private timerService: TimerService,
+        private chatService: ChatService,
+        private mongodbService: MongodbService,
+    ) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -82,8 +89,10 @@ export class GameGateway {
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
+            this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
+
             if (otherSocketId) {
                 this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.Defeat);
                 this.timerService.stopTimer(otherSocketId);
@@ -199,7 +208,7 @@ export class GameGateway {
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(levelId, false);
+        this.gameService.removeLevel(levelId, true);
     }
 
     /**
@@ -283,7 +292,6 @@ export class GameGateway {
     private handlePlayerLeavingGame(socket: Socket): void {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
-            this.gameService.removeLevel(gameState.levelId, true);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(socket, gameState);
@@ -291,6 +299,7 @@ export class GameGateway {
                 this.gameService.deleteUserFromGame(otherSocket);
             }
             this.gameService.deleteUserFromGame(socket);
+            this.gameService.removeLevel(gameState.levelId, false);
             this.timerService.stopTimer(socket.id);
         }
     }
