@@ -5,7 +5,7 @@ import { VideoTimerComponent } from '@app/components/video-timer/video-timer.com
 import { Level } from '@app/levels';
 import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Constants } from '@common/constants';
 
 /**

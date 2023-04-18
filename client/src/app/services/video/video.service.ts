@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { TimerService } from '@app/services/timer/timer.service';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 
 @Injectable({
     providedIn: 'root',

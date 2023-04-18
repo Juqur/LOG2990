@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
-import { ChatMessage, SenderType } from '@common/chat-messages';
+import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
 
 /**
  * This component represents the box in chat to write and send a message.
@@ -70,7 +70,6 @@ export class MessageBoxComponent implements OnInit {
             sender: this.playerName,
             senderId: SenderType.Player,
             text: message,
-            timestamp: new Date(),
         };
     }
 }

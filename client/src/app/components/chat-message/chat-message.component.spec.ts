@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SenderType } from '@common/chat-messages';
+import { SenderType } from '@common/interfaces/chat-messages';
 import { ChatMessageComponent } from './chat-message.component';
 
 describe('ChatMessageComponent', () => {
@@ -16,7 +16,6 @@ describe('ChatMessageComponent', () => {
             sender: 'I am a super long name',
             senderId: SenderType.Player,
             text: 'Hello world',
-            timestamp: new Date(),
         };
         fixture.detectChanges();
     });
@@ -26,7 +25,7 @@ describe('ChatMessageComponent', () => {
     });
 
     it('Chat message should display the name with the appropriate length', () => {
-        component['chatMessage'] = { senderId: '1', sender: 'Charles', text: 'Hello world', timestamp: new Date() };
+        component['chatMessage'] = { senderId: '1', sender: 'Charles', text: 'Hello world' };
 
         component.ngOnInit();
 
@@ -61,7 +60,6 @@ describe('ChatMessageComponent', () => {
             sender: 'I am a super long name',
             senderId: SenderType.Opponent,
             text: 'Hello world',
-            timestamp: new Date(),
         };
         fixture.detectChanges();
         spyOn(component, 'formatNameLength' as never);
@@ -79,7 +77,6 @@ describe('ChatMessageComponent', () => {
             sender: 'I am a super long name',
             senderId: SenderType.System,
             text: 'Hello world',
-            timestamp: new Date(),
         };
         fixture.detectChanges();
         spyOn(component, 'formatNameLength' as never);

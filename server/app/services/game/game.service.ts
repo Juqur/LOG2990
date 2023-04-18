@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
 import { Constants } from '@common/constants';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { Injectable } from '@nestjs/common';
 import { Level } from 'assets/data/level';
 import { Server, Socket } from 'socket.io';

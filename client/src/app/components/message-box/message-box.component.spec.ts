@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
-import { ChatMessage, SenderType } from '@common/chat-messages';
+import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
 
 import { MessageBoxComponent } from './message-box.component';
 
@@ -34,7 +34,7 @@ describe('MessageBoxComponent', () => {
     });
 
     it('createMessage should return a valid message', () => {
-        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText', timestamp: new Date() };
+        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText'};
         const returnedMessage: ChatMessage = component['createMessage']('someText');
         expect(returnedMessage).toEqual(message);
     });

@@ -15,7 +15,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 

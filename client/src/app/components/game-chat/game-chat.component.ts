@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { VideoService } from '@app/services/video/video.service';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Constants } from '@common/constants';
 
 /**

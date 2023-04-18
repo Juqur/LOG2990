@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { ChatMessage } from '@common/chat-messages';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 
 @Component({
     selector: 'app-video-chat',

@@ -1,7 +1,7 @@
 import { GameEvents } from '@app/gateways/game/game.gateway.events';
 import { GameState } from '@app/services/game/game.service';
-import { ChatMessage, SenderType } from '@common/chat-messages';
-import { GameData } from '@common/game-data';
+import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
+import { GameData } from '@common/interfaces/game-data';
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 
@@ -86,7 +86,6 @@ export class ChatService {
             sender: 'Système',
             senderId: SenderType.System,
             text: message,
-            timestamp: new Date(),
         };
     }
 }

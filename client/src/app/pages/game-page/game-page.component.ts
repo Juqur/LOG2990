@@ -9,7 +9,7 @@ import { SocketHandler } from '@app/services/socket-handler/socket-handler.servi
 import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { environment } from 'src/environments/environment';
 
 /**
