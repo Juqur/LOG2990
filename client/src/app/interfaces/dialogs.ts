@@ -43,7 +43,9 @@ export namespace Dialogs {
         textToSend: 'Veuillez entrer le nom du jeu',
         inputData: {
             inputLabel: 'Nom du jeu',
-            submitFunction: Dialogs.submitFunction,
+            submitFunction: (value) => {
+                return value.length !== 0 && value.length < Constants.MAX_GAME_NAME_LENGTH;
+            },
         },
         closeButtonMessage: 'Sauvegarder',
         mustProcess: true,
@@ -72,9 +74,5 @@ export namespace Dialogs {
             closeButtonMessage: 'Fermer',
             mustProcess: false,
         };
-    };
-
-    export const submitFunction: (value: string) => boolean = (value: string) => {
-        return value.length !== 0 && value.length < Constants.MAX_GAME_NAME_LENGTH;
     };
 }
