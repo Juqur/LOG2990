@@ -470,6 +470,7 @@ describe('GameGateway', () => {
             getGameStateSpy = jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(timerService, 'getStartDate').mockReturnValue(new Date());
             jest.spyOn(gateway['server'].sockets.sockets, 'get').mockReturnValue(otherSocket);
+            jest.spyOn(mongodbService, 'addGameHistory').mockImplementation(jest.fn());
         });
 
         it('should call getGameState', () => {
