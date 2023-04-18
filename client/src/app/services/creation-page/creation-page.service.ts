@@ -33,7 +33,7 @@ export class CreationPageService {
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
         private mouseServiceDefault: MouseService,
-        private mouseServiceDiff: MouseService,
+        private mouseServiceDifference: MouseService,
     ) {
         this.creationSpecs = {
             defaultImageFile: new File([], ''),
@@ -300,7 +300,7 @@ export class CreationPageService {
      */
     paintBrushMode(defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
-        this.mouseServiceDiff.isRectangleMode = false;
+        this.mouseServiceDifference.isRectangleMode = false;
         this.drawServiceDefault.context = defaultContext;
         this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.paintBrush();
@@ -316,7 +316,7 @@ export class CreationPageService {
      */
     eraseBrushMode(defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
-        this.mouseServiceDiff.isRectangleMode = false;
+        this.mouseServiceDifference.isRectangleMode = false;
         this.drawServiceDefault.context = defaultContext;
         this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.eraseBrush();
@@ -331,7 +331,7 @@ export class CreationPageService {
         this.drawServiceDefault.paintBrush();
         this.drawServiceDifference.paintBrush();
         this.mouseServiceDefault.isRectangleMode = true;
-        this.mouseServiceDiff.isRectangleMode = true;
+        this.mouseServiceDifference.isRectangleMode = true;
     }
 
     /**
@@ -340,7 +340,7 @@ export class CreationPageService {
      */
     colorPickerMode(): void {
         this.mouseServiceDefault.mouseDrawColor = this.color;
-        this.mouseServiceDiff.mouseDrawColor = this.color;
+        this.mouseServiceDifference.mouseDrawColor = this.color;
         this.drawServiceDefault.setPaintColor(this.color);
         this.drawServiceDifference.setPaintColor(this.color);
     }
