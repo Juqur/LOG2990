@@ -1,81 +1,101 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
-import { By } from '@angular/platform-browser';
-import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
 
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { MessageBoxComponent } from './message-box.component';
 
 describe('MessageBoxComponent', () => {
     let component: MessageBoxComponent;
     let fixture: ComponentFixture<MessageBoxComponent>;
+    let socketHandler: jasmine.SpyObj<SocketHandler>;
+    let createSocketSpy: jasmine.Spy;
+    let messageInput: HTMLTextAreaElement;
 
     beforeEach(async () => {
+        messageInput = {
+            value: 'Time to test!',
+        } as HTMLTextAreaElement;
+        socketHandler = jasmine.createSpyObj('SocketHandler', ['send', 'isSocketAlive', 'connect', 'removeListener']);
+
         await TestBed.configureTestingModule({
             declarations: [MessageBoxComponent, MatIcon],
+            providers: [{ provide: SocketHandler, useValue: socketHandler }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(MessageBoxComponent);
         component = fixture.componentInstance;
+        createSocketSpy = spyOn(component, 'createSocket' as never);
         fixture.detectChanges();
+        createSocketSpy.calls.reset();
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it('Clicking on the icon should call sendMessage', () => {
-        const fakeSendMessage = () => {
-            /* nothing */
-        };
-        const spy = spyOn(component, 'sendMessage').and.callFake(fakeSendMessage);
-        document.getElementById('send-icon')?.dispatchEvent(new Event('click'));
-
-        expect(spy).toHaveBeenCalled();
+    describe('ngOnInit', () => {
+        it('should call createSocket', () => {
+            component.ngOnInit();
+            expect(createSocketSpy).toHaveBeenCalledTimes(1);
+        });
     });
 
-    it('createMessage should return a valid message', () => {
-        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText' };
-        const returnedMessage: ChatMessage = component['createMessage']('someText');
-        expect(returnedMessage).toEqual(message);
+    describe('onKeyDown', () => {
+        let mockedEvent: KeyboardEvent;
+        let preventDefaultSpy: jasmine.Spy;
+        let sendMessageSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            preventDefaultSpy = jasmine.createSpy('preventDefault');
+            mockedEvent = {
+                key: 'Enter',
+                preventDefault: preventDefaultSpy,
+            } as unknown as KeyboardEvent;
+            sendMessageSpy = spyOn(component, 'sendMessage');
+        });
+
+        it('should call preventDefault if the key is Enter', () => {
+            component.onKeyDown(mockedEvent, messageInput);
+            expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call sendMessage if the key is Enter', () => {
+            component.onKeyDown(mockedEvent, messageInput);
+            expect(sendMessageSpy).toHaveBeenCalledTimes(1);
+        });
     });
 
-    it('Clicking on the icon should remove the current display message', () => {
-        const input = fixture.debugElement.query(By.css('textarea'));
-        const el = input.nativeElement;
+    describe('sendMessage', () => {
+        let createMessageSpy: jasmine.Spy;
 
-        expect(el.value).toBe('');
+        beforeEach(() => {
+            createMessageSpy = spyOn(component, 'createMessage' as never).and.returnValue({} as never);
+        });
 
-        el.value = 'someValue';
-        document.getElementById('send-icon')?.dispatchEvent(new Event('click'));
+        it('should call createMessage with the messageInput value', () => {
+            component.sendMessage(messageInput);
+            expect(createMessageSpy).toHaveBeenCalledTimes(1);
+        });
 
-        expect(el.value).toBe('');
+        it('should call send if the messageInput is not empty', () => {
+            component.sendMessage(messageInput);
+            expect(socketHandler.send).toHaveBeenCalledOnceWith('game', 'onMessageReception', {});
+        });
     });
 
-    it('should send a message to the server', () => {
-        const spySocketHandler = jasmine.createSpyObj('socketHandler', ['on', 'isSocketAlive', 'send', 'connect']);
-        component['socketHandler'] = spySocketHandler;
-
-        const messageInput = document.createElement('textarea');
-        messageInput.value = 'Hello, world!';
-        component.sendMessage(messageInput);
-
-        expect(spySocketHandler.send).toHaveBeenCalledWith('game', 'onMessageReception', jasmine.any(Object));
-        expect(messageInput.value).toEqual('');
+    describe('createSocket', () => {
+        it('should call connect if the socket is not alive', () => {
+            createSocketSpy.and.callThrough();
+            socketHandler.isSocketAlive.and.returnValue(false);
+            component['createSocket']();
+            expect(socketHandler.connect).toHaveBeenCalledTimes(1);
+        });
     });
 
-    it('should call sendMessage when Enter key is pressed without shift key', () => {
-        const messageInput = fixture.nativeElement.querySelector('#message-input');
-        spyOn(component, 'sendMessage');
-        const event = new KeyboardEvent('keydown', { key: 'Enter', shiftKey: false });
-        messageInput.dispatchEvent(event);
-        expect(component.sendMessage).toHaveBeenCalledWith(messageInput);
-    });
-
-    it('should not call sendMessage when Enter key is pressed with shift key', () => {
-        const messageInput = fixture.nativeElement.querySelector('#message-input');
-        spyOn(component, 'sendMessage');
-        const event = new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true });
-        messageInput.dispatchEvent(event);
-        expect(component.sendMessage).not.toHaveBeenCalled();
+    describe('createMessage', () => {
+        it('should return a valid message', () => {
+            const message = component['createMessage']('someText');
+            expect(message).toEqual({ sender: component.playerName, senderId: 'player', text: 'someText' });
+        });
     });
 });

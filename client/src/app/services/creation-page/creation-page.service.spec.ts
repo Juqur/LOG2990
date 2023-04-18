@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSlider, MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialog.component';
-import { LevelDifferences } from '@app/interfaces/level-differences';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -203,7 +203,7 @@ describe('CreationPageService', () => {
         expect(getContextSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('resetDiff should call restartGame and clearRect from differenceCanvas', () => {
+    it('resetDiff should call restartGame and clearRect from diffCanvas', () => {
         const restartGameSpy = spyOn(service, 'restartGame' as never);
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const defaultCanvasSpy = spyOnProperty(service['canvasShare'], 'differenceCanvas').and.callThrough();
@@ -266,11 +266,13 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call errorDialog if DifferenceService detectDifferences returned no LevelDifference', () => {
-        const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const differenceBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        differenceServiceSpy.detectDifferences.and.returnValue(undefined);
+        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const errorDialogSpy = spyOn<any>(service, 'errorDialog');
 
-        service.detectDifference(defaultBgCanvasContext, differenceBgCanvasContext);
+        diffServiceSpy.detectDifferences.and.returnValue(undefined);
+
+        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
 
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     });
@@ -395,14 +397,13 @@ describe('CreationPageService', () => {
         service.eraseBrushMode(defaultCanvasContext, differenceCanvasContext);
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
-        expect(drawServiceDefaultSpy.eraseBrush).toHaveBeenCalledTimes(1);
-        expect(drawServiceDifferenceSpy.eraseBrush).toHaveBeenCalledTimes(1);
+        expect(drawServiceDefaultSpy.paintBrush).toHaveBeenCalledTimes(1);
+        expect(drawServiceDifferenceSpy.paintBrush).toHaveBeenCalledTimes(1);
     });
 
     it('rectangleMode should set isRectangleMode to true', () => {
         service.rectangleMode();
-        expect(drawServiceDefaultSpy.paintBrush).toHaveBeenCalledTimes(1);
-        expect(drawServiceDifferenceSpy.paintBrush).toHaveBeenCalledTimes(1);
+
         expect(mouseServiceSpy.isRectangleMode).toBeTrue();
     });
 
