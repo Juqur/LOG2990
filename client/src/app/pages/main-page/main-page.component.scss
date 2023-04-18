@@ -67,8 +67,20 @@ p {
     height: 5rem;
 }
 
+.disabled {
+    background-color: #eaac8b00;
+    border: 2px solid #737373;
+}
+
 .menu-button span {
     color: #eaac8b;
+    border: none;
+    transition: 0.2s;
+    font-size: 200%;
+}
+
+.menu-button.disabled span {
+    color: #808080;
     border: none;
     transition: 0.2s;
     font-size: 200%;

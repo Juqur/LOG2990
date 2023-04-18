@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Dialogs } from '@common/dialogs';
@@ -19,6 +20,7 @@ export interface TimedGameData {
     providedIn: 'root',
 })
 export class MainPageService {
+    amountOfLevels: number = 0;
     private multiplayerDialog: DialogData = {
         textToSend: 'Voulez-vous jouer avec un autre joueur?',
         isConfirmation: true,
@@ -27,8 +29,21 @@ export class MainPageService {
     };
     private waitingForPlayer: boolean = true;
 
-    constructor(private popUpService: PopUpService, private socketHandler: SocketHandler, private router: Router) {}
+    // eslint-disable-next-line max-params
+    constructor(
+        private popUpService: PopUpService,
+        private socketHandler: SocketHandler,
+        private router: Router,
+        private communicationService: CommunicationService,
+    ) {}
 
+    async setAmountOfLevels(): Promise<number> {
+        this.amountOfLevels = 0;
+        await this.communicationService.getLevels().subscribe((levels) => {
+            this.amountOfLevels = levels.length;
+        });
+        return this.amountOfLevels;
+    }
     /**
      * This method redirects the user to a specific route.
      *
@@ -57,6 +72,12 @@ export class MainPageService {
         if (!this.socketHandler.isSocketAlive('game')) {
             this.socketHandler.connect('game');
         }
+        this.socketHandler.on('game', 'deleteLevel', () => {
+            this.setAmountOfLevels();
+        });
+        this.socketHandler.on('game', 'refreshLevels', () => {
+            this.setAmountOfLevels();
+        });
     }
 
     /**
