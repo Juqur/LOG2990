@@ -402,7 +402,8 @@ describe('CreationPageService', () => {
     });
 
     it('colorPickerMode should call the correct draw functions', () => {
-        service.colorPickerMode();
+        const event = { target: { value: '#000000' } } as unknown as Event;
+        service.colorPickerMode(event);
         expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledTimes(1);
         expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledTimes(1);
     });

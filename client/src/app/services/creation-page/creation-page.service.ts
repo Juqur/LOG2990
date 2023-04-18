@@ -18,7 +18,6 @@ import { Constants } from '@common/constants';
     providedIn: 'root',
 })
 export class CreationPageService {
-    color: string = Constants.BLACK;
     private isSaveable: boolean = false;
     private differenceAmountMessage: string = '';
     private drawServiceDefault: DrawService = new DrawService();
@@ -315,11 +314,12 @@ export class CreationPageService {
      * When the user press on the color picker button, this method is called.
      * It sets the color of the paint brush and the Rectangle brush to the color.
      */
-    colorPickerMode(): void {
-        this.mouseServiceDefault.mouseDrawColor = this.color;
-        this.mouseServiceDifference.mouseDrawColor = this.color;
-        this.drawServiceDefault.setPaintColor(this.color);
-        this.drawServiceDifference.setPaintColor(this.color);
+    colorPickerMode(event: Event): void {
+        const color = (event.target as HTMLInputElement).value;
+        this.mouseServiceDefault.mouseDrawColor = color;
+        this.mouseServiceDifference.mouseDrawColor = color;
+        this.drawServiceDefault.setPaintColor(color);
+        this.drawServiceDifference.setPaintColor(color);
     }
 
     /**
