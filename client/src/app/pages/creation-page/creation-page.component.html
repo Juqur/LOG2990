@@ -96,8 +96,8 @@
         <section id="bottom-area">
             <div id="enlargissement-container">
                 <label class="info-txt" for="values">Rayon d'élargissement:</label>
-                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="diffSliderValue"
-                    (change)="this.creationService.diffSliderChange(diffSliderValue)"></mat-slider>
+                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="differenceSliderValue"
+                    (change)="this.creationService.diffSliderChange(differenceSliderValue)"></mat-slider>
             </div>
             <div class="zone-button-container">
                 <button class="button-reset" color="orange" (click)="this.findDifference()">

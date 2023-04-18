@@ -19,7 +19,7 @@ import { Constants } from '@common/constants';
 export class CreationPageComponent implements AfterViewInit, OnDestroy {
     @ViewChild('defaultArea', { static: false }) private defaultPaintArea!: PaintAreaComponent;
     @ViewChild('differenceArea', { static: false }) private differencePaintArea!: PaintAreaComponent;
-    diffSliderValue = Constants.SLIDER_DEFAULT;
+    differenceSliderValue = Constants.SLIDER_DEFAULT;
     brushSliderValue = 1;
 
     constructor(public creationService: CreationPageService) {}
