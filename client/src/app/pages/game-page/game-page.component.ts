@@ -1,13 +1,13 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
+import { Level } from '@common/interfaces/level';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -125,7 +125,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
-            if (gameData.amountOfDifferencesFoundSecondPlayer !== undefined) {
+            if (gameData.amountOfDifferencesFoundSecondPlayer) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;

@@ -263,7 +263,7 @@ export class GameGateway {
     async onHintRequest(socket: Socket): Promise<void> {
         if (this.timerService.getCurrentTime(socket.id) > 0) {
             const data = await this.gameService.askHint(socket.id);
-            if (data !== undefined) {
+            if (data) {
                 this.timerService.addTime(this.server, socket.id, Constants.HINT_PENALTY);
                 this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
                 socket.emit(GameEvents.HintRequest, data);
