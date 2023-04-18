@@ -24,10 +24,10 @@ export namespace Dialogs {
         mustProcess: true,
     };
 
-    export const differenceDisplay: (textToSend: string, imgSrc: string) => DialogData = (textToSend: string, imgSrc: string) => {
+    export const differenceDisplay: (textToSend: string, imageSrc: string) => DialogData = (textToSend: string, imageSrc: string) => {
         return {
             textToSend,
-            imgSrc,
+            imageSrc,
             closeButtonMessage: 'Fermer',
             mustProcess: false,
         };

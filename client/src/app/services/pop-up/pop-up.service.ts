@@ -6,7 +6,7 @@ import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialo
 export interface DialogData {
     textToSend: string;
     inputData?: InputData;
-    imgSrc?: string;
+    imageSrc?: string;
     isConfirmation?: boolean;
     closeButtonMessage: string;
     mustProcess: boolean;
