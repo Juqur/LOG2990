@@ -17,7 +17,7 @@ import { Constants } from '@common/constants';
 })
 export class CreationPageService {
     color = Constants.BLACK;
-    isSaveable = false;
+    private isSaveable = false;
     private creationSpecs: CreationSpecs;
     private differenceAmountMessage = '';
     private submitFunction: (value: string) => boolean;
