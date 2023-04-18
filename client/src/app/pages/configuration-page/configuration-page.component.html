@@ -9,15 +9,31 @@
             <div class="global-variable-container prevent-select" id="credits">
                 <h2 class="team-name">Variables Globales</h2>
                 <mat-form-field>
-                    <input matInput placeholder="temps initial du compte à rebours (secondes)" value="30" />
+                    <input
+                        matInput
+                        id="initial-time-input"
+                        placeholder="temps initial du compte à rebours (secondes)"
+                        (blur)="this.levelService.setNewGameConstants($event)"
+                        [value]="this.levelService.initialTime"
+                    />
                 </mat-form-field>
                 <mat-form-field>
-                    <input matInput placeholder="temps de pénalité pour l’utilisation d’un indice (secondes)"
-                        value="5" />
+                    <input
+                        matInput
+                        id="time-penalty-hint-input"
+                        placeholder="temps de pénalité pour l’utilisation d’un indice (secondes)"
+                        (blur)="this.levelService.setNewGameConstants($event)"
+                        [value]="this.levelService.timePenaltyHint"
+                    />
                 </mat-form-field>
                 <mat-form-field>
-                    <input matInput placeholder="temps gagné avec la découverte d’une différence (secondes)"
-                        value="5" />
+                    <input
+                        matInput
+                        id="time-gained-difference-input"
+                        placeholder="temps gagné avec la découverte d’une différence (secondes)"
+                        (blur)="this.levelService.setNewGameConstants($event)"
+                        [value]="this.levelService.timeGainedDifference"
+                    />
                 </mat-form-field>
             </div>
             <button class="button-settings" color="orange">
@@ -31,18 +47,20 @@
         </header>
 
         <body class="selection-card-container">
-            <app-card *ngFor="let level of levelService.levelsToShow" [level]="level" [isSelectionPage]="false"
-                (deleteLevelEvent)="onDeleteLevel($event)"></app-card>
+            <app-card
+                *ngFor="let level of levelService.levelsToShow"
+                [level]="level"
+                [isSelectionPage]="false"
+                (deleteLevelEvent)="onDeleteLevel($event)"
+            ></app-card>
         </body>
 
         <footer class="bottom-container">
-            <button mat-fab id="arrow_back" color="orange" [disabled]="levelService.isBeginningOfList()"
-                (click)="levelService.previousPage()">
+            <button mat-fab id="arrow_back" color="orange" [disabled]="levelService.isBeginningOfList()" (click)="levelService.previousPage()">
                 <mat-icon>arrow_back</mat-icon>
             </button>
             <p class="page-display">Page {{ levelService.currentPage + 1 }}/{{ levelService.lastPage + 1 }}</p>
-            <button mat-fab id="arrow_forward" color="orange" [disabled]="levelService.isEndOfList()"
-                (click)="levelService.nextPage()">
+            <button mat-fab id="arrow_forward" color="orange" [disabled]="levelService.isEndOfList()" (click)="levelService.nextPage()">
                 <mat-icon>arrow_forward</mat-icon>
             </button>
         </footer>

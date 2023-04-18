@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LevelFormData } from '@app/interfaces/level-form-data';
-import { Level } from '@common/interfaces/level';
+import { GameConstants } from '@common/game-constants';
 import { HttpMessage } from '@common/interfaces/http-message';
+import { Level } from '@common/interfaces/level';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -104,6 +105,37 @@ export class CommunicationService {
      */
     deleteLevel(levelId: number): Observable<boolean> {
         return this.http.delete<boolean>(`${this.baseUrl}api` + '/image/' + levelId);
+    }
+
+    /**
+     * This function is used to obtain the current game constants from the database.
+     *
+     * @returns The game constants.
+     */
+    getGameConstants(): Observable<GameConstants> {
+        return this.http
+            .get<GameConstants>(`${this.baseUrl}api` + '/database/constants')
+            .pipe(catchError(this.handleError<GameConstants>('getGameConstants')));
+    }
+
+    /**
+     * This function resets the game constants to their base values.
+     */
+    resetGameConstants(): Observable<void> {
+        return this.http
+            .patch<void>(`${this.baseUrl}api` + '/database/constants/reset', null)
+            .pipe(catchError(this.handleError<void>('getGameConstants')));
+    }
+
+    /**
+     * This method sets the new game constants to the new provided values.
+     *
+     * @param gameConstants The new game constants.
+     */
+    setNewGameConstants(gameConstants: GameConstants): Observable<void> {
+        return this.http
+            .patch<void>(`${this.baseUrl}api` + '/database/constants', { gameConstants })
+            .pipe(catchError(this.handleError<void>('getGameConstants')));
     }
 
     /**
