@@ -274,6 +274,7 @@ export class GamePageService {
         if (shape.length <= 2) {
             return;
         }
+        this.hintSection = [];
         const height = shape.pop() as number;
         const width = shape.pop() as number;
         const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
