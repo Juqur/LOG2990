@@ -19,7 +19,7 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) { }
+    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -263,7 +263,6 @@ export class GameGateway {
             }
         }
     }
-
 
     /**
      * This method is called when a player disconnects.

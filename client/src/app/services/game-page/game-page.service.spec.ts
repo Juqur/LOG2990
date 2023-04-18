@@ -232,7 +232,7 @@ describe('GamePageService', () => {
     });
 
     describe('handleResponse', () => {
-        it('should call handleAreaFoundInDiff and return true if the area clicked was the difference canvas and a difference was found ', () => {
+        it('should call handleAreaFoundInDiff and return true if clicked on difference canvas and a difference was found ', () => {
             const spy = spyOn(service, 'handleAreaFoundInDiff' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
             const returnValue = service.handleResponse(false, gameData, false);
@@ -240,14 +240,14 @@ describe('GamePageService', () => {
             expect(returnValue).toEqual(true);
         });
 
-        it('should call handleAreaNotFoundInDiff and return false if the area clicked was the difference canvas and a difference was not found', () => {
+        it('should call handleAreaNotFoundInDiff and return false if clicked on difference canvas and a difference was not found', () => {
             const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
             const returnValue = service.handleResponse(false, gameData, false);
             expect(spy).toHaveBeenCalled();
             expect(returnValue).toEqual(false);
         });
 
-        it('should call handleAreaFoundInOriginal and return true if the area clicked was the original canvas and a difference was found', () => {
+        it('should call handleAreaFoundInOriginal and return true if clicked on original canvas and a difference was found', () => {
             const spy = spyOn(service, 'handleAreaFoundInOriginal' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
             const returnValue = service.handleResponse(false, gameData, true);
@@ -255,7 +255,7 @@ describe('GamePageService', () => {
             expect(returnValue).toEqual(true);
         });
 
-        it('should call handleAreaNotFoundInOriginal and return false if the area clicked was the original canvas and a difference was not found', () => {
+        it('should call handleAreaNotFoundInOriginal and return false if clicked on original canvas and a difference was not found', () => {
             const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
             const returnValue = service.handleResponse(false, gameData, true);
             expect(spy).toHaveBeenCalled();

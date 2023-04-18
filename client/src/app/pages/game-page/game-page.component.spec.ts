@@ -298,7 +298,7 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.handleTimedModeFinished).toHaveBeenCalledWith(true);
         });
 
-        it('should handle changing the pictures if server sends changeLevelTimedMode request, and call removeHintShape if showThirdHint is true', () => {
+        it('should handle changing the pictures if server sends changeLevelTimedMode request, and call removeHintShape if is showThirdHint', () => {
             const level = { id: 1 } as unknown as Level;
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'changeLevelTimedMode') {
@@ -325,12 +325,12 @@ describe('GamePageComponent', () => {
             });
         });
     });
-        describe('abandonGame', () => {
-            it('should emit a socket event when abandoning the game', () => {
-                component.abandonGame();
-                expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
-            });
+    describe('abandonGame', () => {
+        it('should emit a socket event when abandoning the game', () => {
+            component.abandonGame();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
         });
+    });
 
     describe('clickedOnOriginal', () => {
         it('should send mouse position to the server if you click on the original picture', () => {
