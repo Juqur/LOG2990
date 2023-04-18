@@ -1,8 +1,9 @@
 import { Message } from '@app/model/schema/message.schema';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
+import { Level } from '@common/interfaces/level';
 import { Injectable } from '@nestjs/common';
-import { Level, LevelData } from 'assets/data/level';
+import { LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
 import { mkdir } from 'fs/promises';
@@ -114,7 +115,7 @@ export class ImageService {
         try {
             const newId = (await this.mongodbService.getLastLevelId()) + 1;
             const levelData = newLevel as LevelData;
-            const level: Level = {
+            const level = {
                 id: newId,
                 name: levelData.name,
                 playerSolo: Constants.defaultPlayerSolo,

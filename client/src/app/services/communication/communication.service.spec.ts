@@ -1,9 +1,11 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { LevelFormData } from '@app/classes/level-form-data';
-import { Level } from '@app/levels';
+import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CommunicationService } from '@app/services/communication/communication.service';
-import { HttpMessage } from '@common/http-message';
+import { Constants } from '@common/constants';
+import { GameConstants } from '@common/game-constants';
+import { HttpMessage } from '@common/interfaces/http-message';
+import { Level } from '@common/interfaces/level';
 import { environment } from 'src/environments/environment';
 
 describe('CommunicationService', () => {
@@ -132,6 +134,48 @@ describe('CommunicationService', () => {
         const req = httpMock.expectOne(environment.serverUrl + 'api/image/1');
         expect(req.request.method).toEqual('DELETE');
         req.flush('1');
+    });
+
+    it('should make an http GET request for game constants', () => {
+        const path = '/database/constants';
+        const gameConstants = {
+            initialTime: Constants.INIT_COUNTDOWN_TIME,
+            timePenaltyHint: Constants.HINT_PENALTY,
+            timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+        } as GameConstants;
+
+        service.getGameConstants().subscribe((response) => {
+            expect(response).toEqual(gameConstants);
+        });
+
+        const req = httpMock.expectOne(`${service['baseUrl']}api${path}`);
+        expect(req.request.method).toEqual('GET');
+        req.flush(gameConstants);
+    });
+
+    it('should make an http PATCH request for game constants', () => {
+        const path = '/database/constants';
+        const gameConstants = {
+            initialTime: Constants.INIT_COUNTDOWN_TIME,
+            timePenaltyHint: Constants.HINT_PENALTY,
+            timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+        } as GameConstants;
+
+        service.setNewGameConstants(gameConstants).subscribe();
+
+        const req = httpMock.expectOne(`${service['baseUrl']}api${path}`);
+        expect(req.request.method).toEqual('PATCH');
+        req.flush(null);
+    });
+
+    it('should make an http PATCH request for game constants, reset constants', () => {
+        const path = '/database/constants/reset';
+
+        service.resetGameConstants().subscribe();
+
+        const req = httpMock.expectOne(`${service['baseUrl']}api${path}`);
+        expect(req.request.method).toEqual('PATCH');
+        req.flush(null);
     });
 
     it('handleError should handle error', () => {

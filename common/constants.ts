@@ -1,6 +1,3 @@
-/**
- * @author Louis Félix St-Amour
- */
 export namespace Constants {
     // Global constants
     export const minusOne: number = -1;
@@ -111,6 +108,9 @@ export namespace Constants {
 
     // Game Chat
     export const scrollDelay = 1;
+
+    // Level Service
+    export const MAX_GAME_TIME_LENGTH = 120;
 }
 
 export enum MouseButton {
