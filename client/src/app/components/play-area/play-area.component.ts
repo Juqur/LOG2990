@@ -42,7 +42,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
      * This method listens for key presses and updates the buttonPressed attribute in
      * consequences.
      *
-     * @param event the keyboardEvent to process.
+     * @param event The keyboardEvent to process.
      */
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent): void {
@@ -159,7 +159,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     /**
      * Fills a given area of the canvas in red.
      *
-     * @param area the area to flash
+     * @param area The area to flash.
      */
     showHintSection(section: number[]) {
         const rectangleZone: number[] = [0, 0, 0, 0];
