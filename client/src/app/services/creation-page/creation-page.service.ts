@@ -19,7 +19,7 @@ export class CreationPageService {
     color = Constants.BLACK;
     isSaveable = false;
     private creationSpecs: CreationSpecs;
-    private differenceAmountMsg = '';
+    private differenceAmountMessage = '';
     private submitFunction: (value: string) => boolean;
     private drawServiceDefault: DrawService;
     private drawServiceDiff: DrawService;
@@ -81,7 +81,7 @@ export class CreationPageService {
      * Getter for the difference amount message.
      */
     get differenceMessage(): string {
-        return this.differenceAmountMsg;
+        return this.differenceAmountMessage;
     }
 
     /**
@@ -224,10 +224,10 @@ export class CreationPageService {
                 ? true
                 : false;
         if (this.creationSpecs.nbDifferences > Constants.MAX_DIFFERENCES_LIMIT)
-            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
+            this.differenceAmountMessage = ' (Attention, le nombre de différences est trop élevé)';
         else if (this.creationSpecs.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT)
-            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
-        else this.differenceAmountMsg = '';
+            this.differenceAmountMessage = ' (Attention, le nombre de différences est trop bas)';
+        else this.differenceAmountMessage = '';
         this.popUpService.openDialog({
             textToSend: this.isSaveable
                 ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'

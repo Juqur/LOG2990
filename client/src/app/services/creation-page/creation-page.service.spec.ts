@@ -294,7 +294,7 @@ describe('CreationPageService', () => {
         expect(service['isSaveable']).toBeTrue();
     });
 
-    it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMsg', () => {
+    it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMessage', () => {
         const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const mockLevelDifference = new LevelDifferences();
@@ -308,13 +308,13 @@ describe('CreationPageService', () => {
 
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
-        expect(service['differenceAmountMsg']).toEqual(' (Attention, le nombre de différences est trop bas)');
+        expect(service['differenceAmountMessage']).toEqual(' (Attention, le nombre de différences est trop bas)');
 
         mockLevelDifference.clusters = [[1], [1], [1], [1], [1], [1], [1], [1], [1], [1]];
         service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
-        expect(service['differenceAmountMsg']).toEqual(' (Attention, le nombre de différences est trop élevé)');
+        expect(service['differenceAmountMessage']).toEqual(' (Attention, le nombre de différences est trop élevé)');
     });
 
     it('detectDifference should call openDialog if the game is not saveable', () => {
@@ -569,7 +569,7 @@ describe('CreationPageService', () => {
     }));
 
     it('get differenceMessage should return the correct value', fakeAsync(() => {
-        service['differenceAmountMsg'] = '3 differences';
+        service['differenceAmountMessage'] = '3 differences';
         const result = service.differenceMessage;
         expect(result).toEqual('3 differences');
     }));
