@@ -12,7 +12,7 @@
 .top-bar-container {
     display: flex;
     justify-content: right;
-    align-items: center;
+    align-items: flex-start;
     padding-right: 20px;
     padding-top: 20px;
     margin-bottom: 40px;
@@ -52,11 +52,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px 14px;
+    padding: 10px 25px;
     border-radius: 60px;
-    border: none;
-    color: #fff;
-    background: #3b7ff6;
+    color: #eaac8b;
+    background: transparent;
+    border: 1px solid #eaac8b;
 }
 
 .mat-orange {
@@ -113,4 +113,39 @@ mat-form-field {
     background-color: rgba(0, 0, 0, 0.26);
     border-color: transparent !important;
     cursor: default;
+}
+
+.menu-button {
+    background-color: #eaac8b00;
+    text-align: center;
+    border: 2px solid #eaac8b;
+    transition: 0.2s;
+    color: #eaac8b;
+    font-size: 100%;
+}
+
+.menu-button span {
+    padding-right: 10px;
+}
+
+.menu-button:hover {
+    transition: 0.2s;
+    background-color: #eaac8b;
+    transform: translate(0px, 5px) scale(1.1);
+    color: #355070;
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    padding-left: 20px;
+}
+
+.sub-menu-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
 }

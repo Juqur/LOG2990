@@ -26,14 +26,22 @@
                         [value]="this.levelService.timeGainedDifference" />
                 </mat-form-field>
             </div>
-            <button class="button-settings" color="orange" (click)="this.router.navigate(['/game-histories'])">
-                Historique
-                <mat-icon>clear_all</mat-icon>
-            </button>
-            <button class="button-settings" color="orange" routerLink="/creation">
-                Nouveau Jeu
-                <mat-icon>add</mat-icon>
-            </button>
+            <div class="menu-container">
+                <div class="sub-menu-container">
+                    <button mat-button class="menu-button" (click)="this.router.navigate(['/game-histories'])">
+                        <span>Historique</span>
+                        <mat-icon>clear_all</mat-icon>
+                    </button>
+                    <button mat-button class="menu-button" routerLink="/creation">
+                        <span>Nouveau Jeu</span>
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+                <button mat-button class="menu-button" routerLink="/creation">
+                    <span>Supprimer tous les niveaux</span>
+                    <mat-icon>delete_outline</mat-icon>
+                </button>
+            </div>
         </header>
 
         <body class="selection-card-container">

@@ -50,12 +50,12 @@ h1 {
 .menu-button {
     background-color: #eaac8b00;
     text-align: center;
-    border: 2px solid #eaac8b;
+    border: 2px solid #f63b3b;
     transition: 0.2s;
 }
 
 .menu-button span {
-    color: #eaac8b;
+    color: #f63b3b;
     border: none;
     transition: 0.2s;
     font-size: 200%;
@@ -63,7 +63,7 @@ h1 {
 
 .menu-button:hover {
     transition: 0.3s;
-    background-color: #eaac8b;
+    background-color: #f63b3b;
     transform: rotate(-3deg) scale(1.1);
 }
 
