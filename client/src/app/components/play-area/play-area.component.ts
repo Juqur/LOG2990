@@ -23,21 +23,20 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
     buttonPressed = '';
     private tempCanvas: HTMLCanvasElement;
-    private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
     /**
      * Getter for the canvas width
      */
     get width(): number {
-        return this.canvasSize.x;
+        return Constants.DEFAULT_WIDTH;
     }
 
     /**
      * Getter for the canvas height
      */
     get height(): number {
-        return this.canvasSize.y;
+        return Constants.DEFAULT_HEIGHT;
     }
 
     /**
