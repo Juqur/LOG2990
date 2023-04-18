@@ -520,8 +520,8 @@ describe('GameService', () => {
                 hintsUsed: 0,
             } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[4]]));
+            const mockedDifference = 4;
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[mockedDifference]]));
             const result = await service.askHint('socket1');
             expect(differencesSpy).toHaveBeenCalledTimes(1);
             expect(result).toHaveLength(1);
@@ -534,8 +534,8 @@ describe('GameService', () => {
                 hintsUsed: 1,
             } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[1000000]]));
+            const mockedDifference = 1000000;
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[mockedDifference]]));
             const result = await service.askHint('socket1');
             expect(differencesSpy).toHaveBeenCalledTimes(1);
             expect(result).toHaveLength(2);
@@ -572,14 +572,12 @@ describe('GameService', () => {
                 foundDifferences: [],
                 hintsUsed: 2,
             } as unknown as GameState);
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            const askShapeSpy = jest.spyOn(service, 'askShape').mockImplementation().mockReturnValue([7]);
-            // const spy = sinon.spy(service, 'askShape');
+            const mockedShape = 7;
+            const askShapeSpy = jest.spyOn(service, 'askShape').mockImplementation().mockReturnValue([mockedShape]);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
             differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[2]]));
             const result = await service.askHint('socket1');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            expect(result).toEqual([7]);
+            expect(result).toEqual([mockedShape]);
             expect(askShapeSpy).toHaveBeenCalled();
         });
     });
