@@ -7,6 +7,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSlider, MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialog.component';
+import { LevelDifferences } from '@app/interfaces/level-differences';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -266,13 +267,11 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call errorDialog if DifferenceService detectDifferences returned no LevelDifference', () => {
-        const defaultBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const errorDialogSpy = spyOn<any>(service, 'errorDialog');
+        const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        differenceServiceSpy.detectDifferences.and.returnValue(undefined);
 
-        diffServiceSpy.detectDifferences.and.returnValue(undefined);
-
-        service.detectDifference(defaultBgCanvasCtx, diffBgCanvasCtx);
+        service.detectDifference(defaultBgCanvasContext, differenceBgCanvasContext);
 
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     });
