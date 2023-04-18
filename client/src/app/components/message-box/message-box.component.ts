@@ -70,6 +70,7 @@ export class MessageBoxComponent implements OnInit {
             sender: this.playerName,
             senderId: SenderType.Player,
             text: message,
+            timestamp: new Date(),
         };
     }
 }

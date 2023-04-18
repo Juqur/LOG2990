@@ -2,7 +2,7 @@ import { GameState } from '@app/services/game/game.service';
 import { ChatMessage } from '@common/chat-messages';
 import { GameData } from '@common/game-data';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 
@@ -95,14 +95,26 @@ describe('ChatService', () => {
         });
     });
 
+    describe('sendMessageToPlayer', () => {
+        const message = 'This is a message';
+
+        it('should call emit', () => {
+            service.sendMessageToPlayer(socket, message);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('getSystemChatMessage', () => {
         it('should send the correct message form', () => {
+            const date = new Date();
+            jest.useFakeTimers().setSystemTime(date);
             const expectedMessage = 'This should be the message';
             const result = service['getSystemChatMessage'](expectedMessage);
             expect(result).toStrictEqual({
                 sender: 'Système',
                 senderId: 'system',
                 text: expectedMessage,
+                timestamp: date,
             });
         });
     });

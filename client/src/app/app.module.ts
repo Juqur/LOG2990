@@ -23,6 +23,8 @@ import { ScaleContainerComponent } from './components/scale-container/scale-cont
 import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
 import { CreationPageComponent } from './pages/creation-page/creation-page.component';
 import { VideoPageComponent } from './pages/video-page/video-page.component';
+import { VideoChatComponent } from './components/video-chat/video-chat.component';
+import { VideoTimerComponent } from './components/video-timer/video-timer.component';
 
 /**
  * Main module that is used in main.ts.
@@ -49,6 +51,8 @@ import { VideoPageComponent } from './pages/video-page/video-page.component';
         ScaleContainerComponent,
         PopUpDialogComponent,
         VideoPageComponent,
+        VideoChatComponent,
+        VideoTimerComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, MatSliderModule, FormsModule, HttpClientModule],
     providers: [],

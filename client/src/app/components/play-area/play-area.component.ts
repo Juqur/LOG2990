@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, ViewChild } from '@angular/core';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
@@ -15,8 +15,8 @@ import { Constants } from '@common/constants';
     styleUrls: ['./play-area.component.scss'],
     providers: [DrawService],
 })
-export class PlayAreaComponent implements AfterViewInit {
-    @Input() isDiff: boolean;
+export class PlayAreaComponent implements AfterViewInit, OnChanges {
+    @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
     currentImage: HTMLImageElement;
@@ -59,6 +59,14 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     /**
+     * Method called when the input changes.
+     * It is used to reload the image on the canvas.
+     */
+    ngOnChanges(): void {
+        this.drawPlayArea(this.image);
+    }
+
+    /**
      * Returns the canvas element.
      */
     getCanvas(): ElementRef<HTMLCanvasElement> {
@@ -70,13 +78,13 @@ export class PlayAreaComponent implements AfterViewInit {
      * It is also used to reload the image and erase any text or modifications we may
      * have added to it.
      *
-     * @param image the image source
+     * @param image The image source.
      */
     drawPlayArea(image: string): void {
         if (this.canvas) {
-            this.canvas.nativeElement.id = this.isDiff ? 'diffCanvas0' : 'defaultCanvas0';
-            const context = this.getCanvasRenderingContext2D();
-            if (!this.isDiff) {
+            this.canvas.nativeElement.id = this.isDifferenceCanvas ? 'diffCanvas' : 'defaultCanvas';
+            const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            if (!this.isDifferenceCanvas) {
                 // Default canvas (left canvas)
                 this.canvasSharing.defaultCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -99,7 +107,7 @@ export class PlayAreaComponent implements AfterViewInit {
     /**
      * Fills a given area of the canvas in red.
      *
-     * @param area the area to flash
+     * @param area The area to flash.
      */
     flashArea(area: number[]): void {
         let x = 0;
@@ -153,8 +161,8 @@ export class PlayAreaComponent implements AfterViewInit {
     /**
      * This function creates a new timeout with a given time in milliseconds as a parameter.
      *
-     * @param ms a number of milliseconds
-     * @return promise that resolves after ms milliseconds
+     * @param ms The amount of milliseconds.
+     * @return A promise that resolves after ms milliseconds.
      */
     async timeout(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -168,5 +176,30 @@ export class PlayAreaComponent implements AfterViewInit {
 
     getCanvasRenderingContext2D(): CanvasRenderingContext2D {
         return this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+    }
+
+    /**
+     * Fills a given area of the canvas in red.
+     *
+     * @param area the area to flash
+     */
+    showHintSection(section: number[]) {
+        const rectangleZone: number[] = [0, 0, 0, 0];
+        if (section[1] === Constants.TOP_RIGHT_QUADRANT || section[1] === Constants.BOTTOM_RIGHT_QUADRANT)
+            rectangleZone[0] = this.width / Constants.SUBQUADRANT_DIVIDER;
+        if (section[1] === Constants.BOTTOM_LEFT_QUADRANT || section[1] === Constants.BOTTOM_RIGHT_QUADRANT)
+            rectangleZone[1] = this.height / Constants.SUBQUADRANT_DIVIDER;
+        rectangleZone[2] = section[1] ? this.width / Constants.SUBQUADRANT_DIVIDER : this.width / 2;
+        rectangleZone[3] = section[1] ? this.height / Constants.SUBQUADRANT_DIVIDER : this.height / 2;
+        rectangleZone[0] += section[0] === Constants.TOP_RIGHT_QUADRANT || section[0] === Constants.BOTTOM_RIGHT_QUADRANT ? this.width / 2 : 0;
+        rectangleZone[1] += section[0] === Constants.BOTTOM_LEFT_QUADRANT || section[0] === Constants.BOTTOM_RIGHT_QUADRANT ? this.height / 2 : 0;
+        if (this.tempCanvas) this.deleteTempCanvas();
+        this.createTempCanvas();
+        const context = this.tempCanvas.getContext('2d') as CanvasRenderingContext2D;
+        context.strokeStyle = 'green';
+        context.lineWidth = 5;
+        context.beginPath();
+        context.rect(rectangleZone[0], rectangleZone[1], rectangleZone[2], rectangleZone[3]);
+        context.stroke();
     }
 }

@@ -69,4 +69,14 @@ export namespace TestConstants {
     // Level Service constants
     export const TIME_CONSTANTS_SOLO = { sixty: 60, sixty_five: 65, seventy: 70 };
     export const TIME_CONSTANTS_MULTI = { eighty: 80, eighty_three: 83, ninety: 90 };
+
+    // Mongodb service constants
+    export const TIME_ARRAY_SOLO_DATA_BASE = [60, 70, 80];
+    export const TIME_ARRAY_MULTI_DATA_BASE = [100, 120, 140];
+    export const PLAYER_ARRAY_SOLO_DATA_BASE = ['Shakespear', 'Molière', 'Victor Hugo'];
+    export const PLAYER_ARRAY_MULTI_DATA_BASE = ['Cirano', 'Monte Cristo', 'Merlin'];
+    export const HARD_LEVEL_NB_DIFFERENCES = 7;
+    export const NOT_NEW_BEST_TIME = 1000;
+    export const NEW_BEST_TIME = 6;
+    export const INVALID_PAGE_NUMBER = -10;
 }

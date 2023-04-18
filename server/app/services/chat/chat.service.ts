@@ -66,6 +66,16 @@ export class ChatService {
     }
 
     /**
+     * This method sends a simple message to the player.
+     *
+     * @param socket The socket of the player.
+     * @param message The message to send.
+     */
+    sendMessageToPlayer(socket: Socket, message: string): void {
+        socket.emit(GameEvents.MessageSent, this.getSystemChatMessage(message));
+    }
+
+    /**
      * This method creates a ChatMessage object with
      * the sender set to 'Système' and the senderId set to SenderType.System.
      *
@@ -76,6 +86,7 @@ export class ChatService {
             sender: 'Système',
             senderId: SenderType.System,
             text: message,
+            timestamp: new Date(),
         };
     }
 }

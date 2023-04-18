@@ -1,13 +1,12 @@
 <app-scale-container>
     <div class="container">
         <section id="top-area">
-            <button mat-button routerLink="/home"></button>
+            <button mat-button routerLink="/home" (click)="returnHome()">Retour au Menu</button>
             <button (click)="startVideo()">Start</button>
             <button (click)="pauseVideo()">Pause</button>
             <button (click)="videoSpeedTime1()">x1</button>
             <button (click)="videoSpeedTime2()">x2</button>
             <button (click)="videoSpeedTime4()">x4</button>
-            <button (click)="showLog()">Show Log</button>
             <button (click)="replayVideo()">Replay Video</button>
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">
@@ -26,7 +25,7 @@
             <app-game-timer></app-game-timer>
         </section>
         <section id="play-area-container">
-            <app-play-area [isDiff]="false" [image]="originalImageSrc" #originalPlayArea></app-play-area>
+            <app-play-area [image]="originalImageSrc" #originalPlayArea></app-play-area>
             <div *ngIf="!secondPlayerName" id="between-images">
                 <button mat-button>
                     <span> <mat-icon>image_search</mat-icon></span>
@@ -34,10 +33,10 @@
                 <p>{{ nbHints }}</p>
                 <span id="nb-hints">indices restants</span>
             </div>
-            <app-play-area [isDiff]="true" [image]="diffImageSrc" #diffPlayArea></app-play-area>
+            <app-play-area [image]="diffImageSrc" #diffPlayArea></app-play-area>
         </section>
         <section id="bottom-area">
-            <!-- <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat> -->
+            <app-video-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName" #videoChat></app-video-chat>
             <div id="info-game" *ngIf="currentLevel">
                 <div>
                     <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>

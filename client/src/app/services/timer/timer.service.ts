@@ -5,7 +5,8 @@ import { Constants } from '@common/constants';
     providedIn: 'root',
 })
 export class TimerService {
-    private static time: number = 0;
+    private static time: number = Constants.TIMER_START;
+    private static timer: ReturnType<typeof setInterval>;
 
     static get timerValue(): number {
         return TimerService.time;
@@ -13,17 +14,17 @@ export class TimerService {
 
     static startTimer(): void {
         console.log('start timer');
-        setInterval(() => {
+        TimerService.timer = setInterval(() => {
             TimerService.time++;
         }, Constants.TIMER_INTERVAL);
     }
 
     static stopTimer(): void {
         console.log('stop timer');
-        clearInterval(TimerService.time);
+        clearInterval(TimerService.timer);
     }
 
-    static endTimer(): void {
-        TimerService.time = 0;
+    static resetTimer(): void {
+        TimerService.time = Constants.TIMER_START;
     }
 }

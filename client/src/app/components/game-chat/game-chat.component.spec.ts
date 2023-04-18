@@ -87,7 +87,7 @@ describe('GameChatComponent', () => {
     describe('receiveMessage', () => {
         it('should add chat message in the message array', () => {
             spyOn(component, 'scrollToBottom' as never);
-            const message: ChatMessage = { sender: 'User', senderId: '0', text: 'Hello world' };
+            const message: ChatMessage = { sender: 'User', senderId: '0', text: 'Hello world', timestamp: new Date() };
             component['receiveMessage'](message);
             expect(component['messages'][0]).toEqual(message);
         });

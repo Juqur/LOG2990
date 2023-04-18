@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/interfaces/vec2';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants, MouseButton } from '@common/constants';
 
 /**
@@ -13,18 +13,27 @@ import { Constants, MouseButton } from '@common/constants';
     providedIn: 'root',
 })
 export class MouseService {
-    winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu de sélection',
-        mustProcess: true,
-    };
-    closePath: string = '/selection';
     canClick: boolean = true;
     isRectangleMode: boolean = true;
     mouseDrawColor: string = 'black';
     private mousePosition: Vec2 = { x: 0, y: 0 };
 
     constructor(public popUpService: PopUpService) {}
+
+    /**
+     * Returns the x coordinate of the last loaded click.
+     */
+    get x(): number {
+        return this.mousePosition.x;
+    }
+
+    /**
+     * Returns the y coordinate of the last loaded click.
+     *
+     */
+    get y(): number {
+        return this.mousePosition.y;
+    }
 
     /**
      * Takes the mouse event to calculate the position of the mouse
@@ -42,33 +51,13 @@ export class MouseService {
     }
 
     /**
-     * Returns the x coordinate of the last loaded click.
-     *
-     * @returns The value of the x coordinate.
-     */
-    getX(): number {
-        return this.mousePosition.x;
-    }
-
-    /**
-     * Returns the y coordinate of the last loaded click.
-     *
-     * @returns the value of the y coordinate.
-     */
-    getY(): number {
-        return this.mousePosition.y;
-    }
-
-    /**
      * Returns the mouse position.
      *
-     * @param event the mouse event
-     * @returns an empty array when promise is resolved.
+     * @param event The mouse event.
      */
     async mouseDrag(event: MouseEvent): Promise<void> {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
         }
-        return Promise.resolve();
     }
 }

@@ -1,12 +1,14 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { VideoChatComponent } from '@app/components/video-chat/video-chat.component';
 import { Level } from '@app/levels';
 import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
+import { ChatMessage } from '@common/chat-messages';
 import { Constants } from '@common/constants';
 
 /**
- * This component represents the game, it is the component that creates a game page.
+ * This is the replay video page component.
  *
  * @author Galen Hu
  * @class VideoPageComponent
@@ -20,6 +22,7 @@ import { Constants } from '@common/constants';
 export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
     @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
+    @ViewChild('videoChat', { static: false }) videoChat!: VideoChatComponent;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
@@ -33,15 +36,12 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     originalImageSrc: string = '';
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
-    videoSpeed: number = 1;
-    time: number = -100;
+    videoSpeed: number = Constants.NORMAL_SPEED;
+    timeFrame: number = 0;
     lastTimeFrame: number = 0;
+    messageCount: number = 0;
 
     private showVideo: ReturnType<typeof setInterval>;
-    // private levelId: number;
-
-    // eslint-disable-next-line max-params
-    // constructor(private gamePageService: GamePageService) {}
 
     /**
      * This method is called when the component is initialized.
@@ -51,8 +51,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnInit(): void {
         this.settingGameParameters();
-        const lastFrame = VideoService.getStackElement(VideoService.getStackLength() - 1);
-        this.lastTimeFrame = lastFrame.time;
+        this.lastTimeFrame = VideoService.getStackElement(VideoService.getStackLength() - 1).time;
     }
 
     ngAfterViewInit(): void {
@@ -63,13 +62,18 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         VideoService.resetStack();
     }
 
+    /**
+     * Put the frame in the canvas.
+     *
+     * @returns
+     */
     putInCanvas(): void {
         if (VideoService.pointer >= VideoService.getStackLength()) {
             clearInterval(this.showVideo);
             return;
         }
-        const frame = VideoService.getStackElement(VideoService.pointer);
-        console.log(frame);
+        const frame = VideoService.getStackElement(VideoService.pointer++);
+        // console.log(frame);
         this.applyChanges(frame);
     }
 
@@ -87,57 +91,108 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         diffContext.drawImage(canvas.diffCanvas, 0, 0);
     }
 
+    /**
+     * This method is called when the user clicks on the start video button.
+     */
     startVideo(): void {
         this.playVideo();
     }
 
+    /**
+     * Get the first player name.
+     *
+     * @returns the first player name.
+     */
     getFirstPlayerName(): string {
         return VideoService.getFirstPlayerName();
     }
 
+    /**
+     * Get the second player name.
+     *
+     * @returns the second player name.
+     */
     getSecondPlayerName(): string {
         return VideoService.getSecondPlayerName();
     }
 
-    showLog(): void {
-        console.log(VideoService.videoLog);
-    }
-
+    /**
+     * This method is called when the user clicks on the times 4 button.
+     */
     videoSpeedTime4(): void {
-        this.videoSpeed = Constants.FASTEST_SPEED;
-        this.playVideo();
+        this.videoSpeed = Constants.VERY_FAST_SPEED;
     }
 
+    /**
+     * This method is called when the user clicks on the times 2 button.
+     */
     videoSpeedTime2(): void {
         this.videoSpeed = Constants.FAST_SPEED;
-        this.playVideo();
     }
 
+    /**
+     * This method is called when the user clicks on the times 1 button.
+     */
     videoSpeedTime1(): void {
         this.videoSpeed = Constants.NORMAL_SPEED;
-        this.playVideo();
     }
 
+    /**
+     * This method is called when we have to play the video.
+     */
     playVideo(): void {
-        let timeFrame = VideoService.getStackElement(VideoService.pointer);
+        let videoFrame = VideoService.getStackElement(VideoService.pointer);
+        let messageFrame = VideoService.getMessagesStackElement(this.messageCount);
         this.showVideo = setInterval(() => {
-            this.time++;
-            if (this.time === timeFrame.time && this.time <= this.lastTimeFrame) {
-                timeFrame = VideoService.getStackElement(++VideoService.pointer);
-                this.putInCanvas();
+            if (this.timeFrame >= this.lastTimeFrame) {
+                this.pauseVideo();
             }
+            if (this.timeFrame === videoFrame.time) {
+                this.putInCanvas();
+                if (videoFrame.found) ++this.playerDifferencesCount;
+                videoFrame = VideoService.getStackElement(VideoService.pointer);
+            }
+            if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === messageFrame.time) {
+                this.addToChat(messageFrame.chatMessage);
+                messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
+            }
+            this.timeFrame++;
         }, Constants.TIMER_INTERVAL / this.videoSpeed);
     }
 
+    /**
+     * This method will add the next text to the chat.
+     *
+     * @param chatMessage the next text to be added to the chat.
+     */
+    addToChat(chatMessage: ChatMessage): void {
+        this.videoChat.addMessage(chatMessage);
+    }
+
+    /**
+     * This method will pause the video.
+     */
     pauseVideo(): void {
         clearInterval(this.showVideo);
     }
 
+    /**
+     * This method will replay the video from the beginning.
+     */
     replayVideo(): void {
         clearInterval(this.showVideo);
         VideoService.pointer = 0;
-        this.time = -100;
+        this.timeFrame = -1;
+        this.playerDifferencesCount = 0;
         this.playVideo();
+    }
+
+    /**
+     * After returning to the home page, the game stack will be reset.
+     */
+    returnHome(): void {
+        clearInterval(this.showVideo);
+        VideoService.resetStack();
     }
 
     /**

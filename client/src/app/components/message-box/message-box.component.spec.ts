@@ -34,7 +34,7 @@ describe('MessageBoxComponent', () => {
     });
 
     it('createMessage should return a valid message', () => {
-        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText' };
+        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText', timestamp: new Date() };
         const returnedMessage: ChatMessage = component['createMessage']('someText');
         expect(returnedMessage).toEqual(message);
     });

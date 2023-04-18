@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { AudioService } from '@app/services/audio/audio.service';
+import { MainPageService } from '@app/services/main-page/main-page.service';
 import SpyObj = jasmine.SpyObj;
 
 describe('MainPageComponent', () => {
@@ -11,12 +11,17 @@ describe('MainPageComponent', () => {
     let fixture: ComponentFixture<MainPageComponent>;
     const mockScaleContainer: SpyObj<ScaleContainerComponent> = jasmine.createSpyObj('ScaleContainerComponent', ['ngOnInit', 'resizeContainer']);
     let ngOnInitSpy: jasmine.Spy<() => void>;
+    let mainPageServiceSpy: jasmine.SpyObj<MainPageService>;
 
     beforeEach(waitForAsync(() => {
+        mainPageServiceSpy = jasmine.createSpyObj('MainPageService', ['navigateTo', 'chooseName', 'connectToSocket']);
         TestBed.configureTestingModule({
             declarations: [MainPageComponent, ScaleContainerComponent],
             imports: [RouterTestingModule],
-            providers: [{ provide: ScaleContainerComponent, useValue: mockScaleContainer }],
+            providers: [
+                { provide: ScaleContainerComponent, useValue: mockScaleContainer },
+                { provide: MainPageService, useValue: mainPageServiceSpy },
+            ],
         }).compileComponents();
     }));
 
@@ -63,17 +68,13 @@ describe('MainPageComponent', () => {
         expect(component.showCredits).toBeTruthy();
     });
 
-    it('should redirect to /selection when clicking on the classic button', () => {
-        const router = TestBed.inject(Router);
-        const spy = spyOn(router, 'navigate');
-        component.classicPageOnClick();
-        expect(spy).toHaveBeenCalledWith(['/selection']);
+    it('should redirect to the correct page when button is clicked', () => {
+        component.navigateTo('/selection');
+        expect(mainPageServiceSpy.navigateTo).toHaveBeenCalledWith('/selection');
     });
 
-    it('should redirect to /config when clicking on the classic button', () => {
-        const router = TestBed.inject(Router);
-        const spy = spyOn(router, 'navigate');
-        component.configPageOnClick();
-        expect(spy).toHaveBeenCalledWith(['/config']);
+    it('should ask the player to choose a name when clicking on the timed button', () => {
+        component.onLimitedTimeClick();
+        expect(mainPageServiceSpy.chooseName).toHaveBeenCalled();
     });
 });
