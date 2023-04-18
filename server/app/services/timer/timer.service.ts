@@ -34,14 +34,7 @@ export class TimerService {
         this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
-            if (sockets.otherSocketId) {
-                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time);
-            }
             this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
-            const otherSocketId = this.gameService.getGameState(socketId).otherSocketId;
-            if (otherSocketId) {
-                this.timeMap.set(otherSocketId, isClassic ? time + 1 : time - 1);
-            }
             if (!isClassic && time === 0) {
                 this.stopTimer(socketId);
                 const levelId = this.gameService.getGameState(socketId).levelId;
@@ -51,8 +44,11 @@ export class TimerService {
                 clearInterval(interval);
             }
             server.to(socketId).emit(GameEvents.SendTime, time);
+            if (sockets.otherSocketId) {
+                this.timeMap.set(sockets.otherSocketId, isClassic ? time + 1 : time - 1);
+                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time);
+            }
         }, Constants.millisecondsInOneSecond);
-
         this.timeIntervalMap.set(socketId, interval);
         if (sockets.otherSocketId) {
             this.timeIntervalMap.set(sockets.otherSocketId, interval);
