@@ -29,7 +29,7 @@ export class CreationPageService {
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
-        private diffService: DifferenceDetectorService,
+        private differenceService: DifferenceDetectorService,
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
         private mouseServiceDefault: MouseService,
@@ -213,7 +213,7 @@ export class CreationPageService {
      * @param diffMergedCtx The different canvas context.
      */
     detectDifference(defaultMergedCtx: CanvasRenderingContext2D, diffMergedCtx: CanvasRenderingContext2D): void {
-        this.creationSpecs.differences = this.diffService.detectDifferences(defaultMergedCtx, diffMergedCtx, this.creationSpecs.radius);
+        this.creationSpecs.differences = this.differenceService.detectDifferences(defaultMergedCtx, diffMergedCtx, this.creationSpecs.radius);
         if (!this.creationSpecs.differences) {
             this.errorDialog('Veuillez fournir des images non vides');
             return;
