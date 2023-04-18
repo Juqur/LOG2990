@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { Constants } from '@common/constants';
 import { GameTimerComponent } from './game-timer.component';
 
 describe('GameTimerComponent', () => {
@@ -46,6 +47,47 @@ describe('GameTimerComponent', () => {
             });
             component.ngOnInit();
             expect(spy).toHaveBeenCalledWith(data);
+        });
+
+        it('should listen to the "sendExtraTime" event on init', () => {
+            expect(socketHandlerSpy.on).toHaveBeenCalledWith('game', 'sendExtraTime', jasmine.any(Function));
+        });
+
+        it('should update the timer when receiving "sendExtraTime" event', () => {
+            const data = 0;
+            const spy = spyOn(component, 'updateTimer');
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'sendExtraTime') {
+                    callback(data);
+                }
+            });
+            component.ngOnInit();
+            expect(spy).toHaveBeenCalledWith(data);
+        });
+
+        it('should set bonusTimeAdded to true when receiving "sendExtraTime" event', () => {
+            const data = 0;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'sendExtraTime') {
+                    callback(data);
+                }
+            });
+            component.ngOnInit();
+            expect(component.bonusTimeAdded).toBeTrue();
+        });
+
+        it('should set bonusTimeAdded back to false when receiving "sendExtraTime" event after 1 second', () => {
+            const data = 0;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'sendExtraTime') {
+                    callback(data);
+                }
+            });
+            component.ngOnInit();
+            setTimeout(() => {
+                // do nothing
+            }, Constants.millisecondsInOneSecond);
+            expect(component.bonusTimeAdded).toBeFalse();
         });
     });
 

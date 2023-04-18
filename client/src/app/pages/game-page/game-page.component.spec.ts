@@ -46,6 +46,7 @@ describe('GamePageComponent', () => {
             'handleTimedModeFinished',
             'handleHintRequest',
             'handleHintShapeRequest',
+            'playSuccessSound',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
@@ -139,6 +140,31 @@ describe('GamePageComponent', () => {
             component.ngOnDestroy();
             expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'defeat');
         });
+
+        it('should remove the startCheatMode listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'startCheatMode');
+        });
+
+        it('should remove the timedModeFinished listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'timedModeFinished');
+        });
+
+        it('should remove the opponentAbandoned listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'opponentAbandoned');
+        });
+
+        it('should remove the changeLevelTimedMode listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'changeLevelTimedMode');
+        });
+
+        it('should remove the hintRequest listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'hintRequest');
+        });
     });
 
     describe('handleSocket', () => {
@@ -202,7 +228,19 @@ describe('GamePageComponent', () => {
             expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
         });
 
-        it('should handle abandon if server sends opponent abandoned request', () => {
+        it('should play success sound if the response is correct in timed game mode', () => {
+            component['isClassic'] = false;
+            const data = { differencePixels: [1] } as unknown as GameData;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'processedClick') {
+                    callback(data as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.playSuccessSound).toHaveBeenCalled();
+        });
+
+        it('should handle abandon if server sends opponent abandoned request if the game mode is classic', () => {
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'opponentAbandoned') {
                     callback({} as never);
@@ -210,6 +248,17 @@ describe('GamePageComponent', () => {
             });
             component.handleSocket();
             expect(gamePageServiceSpy.handleOpponentAbandon).toHaveBeenCalledTimes(1);
+        });
+
+        it('should remove other player if other players leaves in a timed game', () => {
+            component['isClassic'] = false;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'opponentAbandoned') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(component['secondPlayerName']).toEqual('');
         });
 
         it('should handle defeat if server sends defeat request', () => {

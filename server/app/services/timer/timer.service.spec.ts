@@ -110,6 +110,13 @@ describe('TimerService', () => {
             expect(removeSpy).toBeCalledTimes(1);
             expect(deleteSpy).toBeCalledTimes(1);
         });
+
+        it('should set the other players time to the correct value', () => {
+            const timeToAdvance = 1000;
+            service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, false);
+            jest.advanceTimersByTime(timeToAdvance);
+            expect(service['timeMap'].get('secondSocket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
+        });
     });
 
     describe('stopTimer', () => {
@@ -133,6 +140,10 @@ describe('TimerService', () => {
     describe('addTime', () => {
         beforeEach(() => {
             jest.spyOn(gameService, 'getGameState').mockReturnValue({ timedLevelList: [] } as unknown as GameState);
+            const socketsMap = new Map<string, Socket>();
+            const sockets = { sockets: socketsMap };
+            Object.defineProperty(server, 'sockets', { value: sockets });
+            jest.spyOn(socketsMap, 'get').mockReturnValue(socket);
         });
 
         it('should add time to the timer', () => {

@@ -22,6 +22,7 @@ describe('GamePageService', () => {
     let audioServiceSpy: jasmine.SpyObj<AudioService>;
     let playAreaComponentSpy: jasmine.SpyObj<PlayAreaComponent>;
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
+    let quickPlaySpy: jasmine.Spy;
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     const gameData: GameData = {
@@ -38,6 +39,7 @@ describe('GamePageService', () => {
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError', 'drawHintSection']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout', 'deleteTempCanvas']);
+        quickPlaySpy = spyOn(AudioService, 'quickPlay');
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
@@ -125,9 +127,9 @@ describe('GamePageService', () => {
 
     describe('handleVictory', () => {
         it('should call create', () => {
-            const audioSpy = spyOn(AudioService, 'quickPlay');
             service.handleVictory();
-            expect(audioSpy).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.create).toHaveBeenCalledOnceWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.play).toHaveBeenCalledOnceWith();
         });
 
         it('should call openDialog', () => {
@@ -160,9 +162,8 @@ describe('GamePageService', () => {
 
     describe('handleDefeat', () => {
         it('should call create', () => {
-            const audioSpy = spyOn(AudioService, 'quickPlay');
             service.handleDefeat();
-            expect(audioSpy).toHaveBeenCalledWith('./assets/audio/LossSound.mp3');
+            expect(quickPlaySpy).toHaveBeenCalledWith('./assets/audio/LossSound.mp3');
         });
 
         it('should call openDialog', () => {
@@ -240,12 +241,15 @@ describe('GamePageService', () => {
             expect(returnValue).toEqual(true);
         });
 
-        it('should call handleAreaNotFoundInDiff and return false if the area clicked was the difference canvas and a difference was not found', () => {
-            const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
-            const returnValue = service.handleResponse(false, gameData, false);
-            expect(spy).toHaveBeenCalled();
-            expect(returnValue).toEqual(false);
-        });
+        it(
+            'should call handleAreaNotFoundInDiff and return false' + ' if the area clicked was the difference canvas and a difference was not found',
+            () => {
+                const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
+                const returnValue = service.handleResponse(false, gameData, false);
+                expect(spy).toHaveBeenCalled();
+                expect(returnValue).toEqual(false);
+            },
+        );
 
         it('should call handleAreaFoundInOriginal and return true if the area clicked was the original canvas and a difference was found', () => {
             const spy = spyOn(service, 'handleAreaFoundInOriginal' as never);
@@ -255,12 +259,16 @@ describe('GamePageService', () => {
             expect(returnValue).toEqual(true);
         });
 
-        it('should call handleAreaNotFoundInOriginal and return false if the area clicked was the original canvas and a difference was not found', () => {
-            const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
-            const returnValue = service.handleResponse(false, gameData, true);
-            expect(spy).toHaveBeenCalled();
-            expect(returnValue).toEqual(false);
-        });
+        it(
+            'should call handleAreaNotFoundInOriginal and return false ' +
+                'if the area clicked was the original canvas and a difference was not found',
+            () => {
+                const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
+                const returnValue = service.handleResponse(false, gameData, true);
+                expect(spy).toHaveBeenCalled();
+                expect(returnValue).toEqual(false);
+            },
+        );
     });
 
     describe('copyArea', () => {
@@ -314,11 +322,9 @@ describe('GamePageService', () => {
 
     describe('handleAreaFoundInDiff', () => {
         let resetCanvasSpy: jasmine.Spy;
-        let audioSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
-            audioSpy = spyOn(AudioService, 'quickPlay');
         });
 
         it('should push the difference array correctly in imagesData', () => {
@@ -336,7 +342,7 @@ describe('GamePageService', () => {
 
         it('should call quickPlay', () => {
             service['handleAreaFoundInDiff']([], false);
-            expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
+            expect(quickPlaySpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         });
 
         it('should call flashArea', () => {
@@ -372,17 +378,15 @@ describe('GamePageService', () => {
     describe('handleAreaNotFoundInDiff', () => {
         const mockCanvas = document.createElement('canvas');
         let resetCanvasSpy: jasmine.Spy;
-        let audioSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
-            audioSpy = spyOn(AudioService, 'quickPlay');
             spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
 
         it('should call quickPlay', () => {
             service['handleAreaNotFoundInDiff']();
-            expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
+            expect(quickPlaySpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
         });
 
         it('should call drawError', () => {
@@ -398,11 +402,9 @@ describe('GamePageService', () => {
 
     describe('handleAreaFoundInOriginal', () => {
         let resetCanvasSpy: jasmine.Spy;
-        let audioSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
-            audioSpy = spyOn(AudioService, 'quickPlay');
         });
 
         it('should push the difference array correctly in imagesData', () => {
@@ -420,7 +422,7 @@ describe('GamePageService', () => {
 
         it('should call quickPlay', () => {
             service['handleAreaFoundInOriginal']([], false);
-            expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
+            expect(quickPlaySpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         });
 
         it('should call flashArea', () => {
@@ -443,17 +445,15 @@ describe('GamePageService', () => {
     describe('handleAreaNotFoundInOriginal', () => {
         const mockCanvas = document.createElement('canvas');
         let resetCanvasSpy: jasmine.Spy;
-        let audioSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
-            audioSpy = spyOn(AudioService, 'quickPlay');
             spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
 
         it('should call quickPlay', () => {
             service['handleAreaNotFoundInOriginal']();
-            expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
+            expect(quickPlaySpy).toHaveBeenCalledOnceWith('./assets/audio/failed.mp3');
         });
 
         it('should call drawError', () => {
@@ -512,6 +512,13 @@ describe('GamePageService', () => {
             timedGameFinishedDialogData.textToSend = 'La partie est terminée! Le temps est écoulé.';
             service.handleTimedModeFinished(false);
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(timedGameFinishedDialogData, '/home');
+        });
+    });
+
+    describe('playSuccessSound', () => {
+        it('should play the appropriate sound', () => {
+            service.playSuccessSound();
+            expect(quickPlaySpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         });
     });
 });

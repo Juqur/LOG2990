@@ -8,7 +8,7 @@
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">
                     <span class="diff-self">{{
-                        isClassic && secondPlayerName ? playerName + ': ' : playerName + ' et ' + secondPlayerName + ': '
+                        !isClassic && secondPlayerName ? playerName + ' et ' + secondPlayerName + ': ' : playerName + ': ' 
                     }}</span>
                     <span> {{ playerDifferencesCount }} </span>
                     <span class="diff-self">différences trouvées</span>
