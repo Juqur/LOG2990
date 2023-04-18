@@ -7,5 +7,5 @@ export interface CreationSpecs {
     nbDifferences: number;
     differences: LevelDifferences | undefined;
     defaultBgCanvasContext: CanvasRenderingContext2D | null;
-    diffBgCanvasContext: CanvasRenderingContext2D | null;
+    differenceBgCanvasContext: CanvasRenderingContext2D | null;
 }

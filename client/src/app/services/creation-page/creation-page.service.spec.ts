@@ -245,7 +245,7 @@ describe('CreationPageService', () => {
 
     it('detectDifference should not call errorDialog if none of the canvases are null and call DifferenceService detectDifferences', () => {
         const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
         const mockLevelDifference = {
             clusters: [
@@ -259,7 +259,7 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
+        service.detectDifference(defaultBgCanvasContext, differenceBgCanvasContext);
 
         expect(errorDialogSpy).not.toHaveBeenCalled();
         expect(differenceServiceSpy.detectDifferences).toHaveBeenCalledTimes(1);
@@ -267,17 +267,17 @@ describe('CreationPageService', () => {
 
     it('detectDifference should call errorDialog if DifferenceService detectDifferences returned no LevelDifference', () => {
         const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         differenceServiceSpy.detectDifferences.and.returnValue(undefined);
 
-        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
+        service.detectDifference(defaultBgCanvasContext, differenceBgCanvasContext);
 
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     });
 
     it('detectDifference correctly set the number of differences and isSaveable', () => {
         const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const mockLevelDifference = {
             clusters: [
                 [1, 1, 1],
@@ -290,7 +290,7 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
+        service.detectDifference(defaultBgCanvasContext, differenceBgCanvasContext);
 
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).toBeTrue();
@@ -298,7 +298,7 @@ describe('CreationPageService', () => {
 
     it('detectDifference correctly set the number of differences, isSaveable and differenceAmountMessage', () => {
         const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const mockLevelDifference = {
             clusters: [[1, 1, 1]],
             isHard: false,
@@ -307,14 +307,14 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
+        service.detectDifference(defaultBgCanvasContext, differenceBgCanvasContext);
 
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
         expect(service['differenceAmountMessage']).toEqual(' (Attention, le nombre de différences est trop bas)');
 
         mockLevelDifference.clusters = [[1], [1], [1], [1], [1], [1], [1], [1], [1], [1]];
-        service.detectDifference(defaultBgCanvasContext, diffBgCanvasContext);
+        service.detectDifference(defaultBgCanvasContext, differenceBgCanvasContext);
         expect(service['creationSpecs'].nbDifferences).toEqual(mockLevelDifference.clusters.length);
         expect(service['isSaveable']).not.toBeTrue();
         expect(service['differenceAmountMessage']).toEqual(' (Attention, le nombre de différences est trop élevé)');
@@ -322,7 +322,7 @@ describe('CreationPageService', () => {
 
     it('detectDifference should call openDialog if the game is not saveable', () => {
         const defaultBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        const diffBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const differenceBgCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
         const mockLevelDifference = {
             clusters: [[1]],
             isHard: false,
@@ -331,7 +331,7 @@ describe('CreationPageService', () => {
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
-        service.detectDifference(diffBgCanvasContext, defaultBgCanvasContext);
+        service.detectDifference(differenceBgCanvasContext, defaultBgCanvasContext);
 
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     });
@@ -511,7 +511,7 @@ describe('CreationPageService', () => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
-        service['creationSpecs'].diffBgCanvasContext = null;
+        service['creationSpecs'].differenceBgCanvasContext = null;
         service['showDiffImage']();
 
         imageSpy.onload();

@@ -47,11 +47,11 @@ export class CreationPageService {
             nbDifferences: Constants.INIT_DIFF_NB,
             differences: {} as LevelDifferences,
             defaultBgCanvasContext: document.createElement('canvas').getContext('2d'),
-            diffBgCanvasContext: document.createElement('canvas').getContext('2d'),
+            differenceBgCanvasContext: document.createElement('canvas').getContext('2d'),
         } as CreationSpecs;
 
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasContext?.canvas as HTMLCanvasElement;
-        this.canvasShare.differenceCanvas = this.creationSpecs.diffBgCanvasContext?.canvas as HTMLCanvasElement;
+        this.canvasShare.differenceCanvas = this.creationSpecs.differenceBgCanvasContext?.canvas as HTMLCanvasElement;
         this.getEmptyBMPFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.creationSpecs.diffImageFile = res;
@@ -405,7 +405,7 @@ export class CreationPageService {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
         image.onload = async () => {
-            if (!this.creationSpecs.diffBgCanvasContext) {
+            if (!this.creationSpecs.differenceBgCanvasContext) {
                 this.errorDialog('Aucun canvas de différence.');
                 return;
             }
@@ -416,7 +416,7 @@ export class CreationPageService {
             this.canvasShare.differenceCanvas.width = image.width;
             this.canvasShare.differenceCanvas.height = image.height;
             (this.canvasShare.differenceCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.diffBgCanvasContext = this.canvasShare.differenceCanvas.getContext('2d');
+            this.creationSpecs.differenceBgCanvasContext = this.canvasShare.differenceCanvas.getContext('2d');
         };
     }
 
