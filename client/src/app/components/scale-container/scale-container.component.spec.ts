@@ -29,13 +29,13 @@ describe('ScaleContainerComponent', () => {
 
     it('resizeContainer should calculate the scale correctly', () => {
         const expectScale = 0.4;
-        component.screen = {
+        component['screen'] = {
             nativeElement: {
                 offsetWidth: 768,
                 offsetHeight: 926,
             },
         } as ElementRef;
-        component.container = {
+        component['container'] = {
             nativeElement: {
                 offsetWidth: 1920,
                 offsetHeight: 1080,
