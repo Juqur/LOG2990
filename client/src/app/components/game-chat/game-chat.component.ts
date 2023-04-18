@@ -59,6 +59,7 @@ export class GameChatComponent implements OnInit, OnDestroy {
      */
     private receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
+        console.log('Message received: ' + message);
         setTimeout(() => {
             this.scrollToBottom();
         }, Constants.scrollDelay);
