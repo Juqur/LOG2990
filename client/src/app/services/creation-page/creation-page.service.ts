@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { MatSlider } from '@angular/material/slider';
-import { LevelDifferences } from '@app/classes/difference';
-import { LevelFormData } from '@app/classes/level-form-data';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
+import { LevelDifferences } from '@app/interfaces/level-differences';
+import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
@@ -25,6 +25,7 @@ export class CreationPageService {
     private drawServiceDiff: DrawService;
     private defaultUploadFile: File;
     private diffUploadFile: File;
+
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
@@ -40,7 +41,7 @@ export class CreationPageService {
             radius: Constants.RADIUS_DEFAULT,
             brushSize: 1,
             nbDifferences: Constants.INIT_DIFF_NB,
-            differences: new LevelDifferences(),
+            differences: {} as LevelDifferences,
             defaultBgCanvasCtx: document.createElement('canvas').getContext('2d'),
             diffBgCanvasCtx: document.createElement('canvas').getContext('2d'),
         } as CreationSpecs;
@@ -188,9 +189,11 @@ export class CreationPageService {
     }
 
     /**
-     * Changes the value of the brush size depending on a value given as parameter.
+     * Sets the brush size to the value given by the slider.
      *
-     * @param value The index of the new slider value.
+     * @param event The mat slider.
+     * @param defaultCtx The default canvas context.
+     * @param diffCtx The different canvas context.
      */
     brushSliderChange(event: MatSlider, defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
         this.drawServiceDefault.context = defaultCtx;
@@ -203,6 +206,9 @@ export class CreationPageService {
      * This methods starts the detection of differences between the two images and
      * launches a popUp display the result as a white and black image where the black
      * sections are differences while the white are regions shared between images.
+     *
+     * @param defaultMergedCtx The default canvas context.
+     * @param diffMergedCtx The different canvas context.
      */
     detectDifference(defaultMergedCtx: CanvasRenderingContext2D, diffMergedCtx: CanvasRenderingContext2D): void {
         this.creationSpecs.differences = this.diffService.detectDifferences(defaultMergedCtx, diffMergedCtx, this.creationSpecs.radius);
@@ -412,7 +418,7 @@ export class CreationPageService {
      * Verifies if an image file is of the good format, that is the file is in PNG and of type image/bmp.
      * The image must also have only 24 bits per pixels.
      *
-     * @param imageFile the image file we want to check if the format is valid.
+     * @param imageFile The image file we want to check if the format is valid.
      * @returns A Promise<boolean> which when resolved gives if the image was of the correct format.
      */
     private async verifyImageFormat(imageFile: File): Promise<boolean> {
@@ -446,12 +452,12 @@ export class CreationPageService {
     /**
      * This method is used to display an dialog with an error message.
      *
-     * @param msg the error message we want to display.
+     * @param message The error message we want to display.
      */
-    private errorDialog(msg = 'Une erreur est survenue'): void {
+    private errorDialog(message = 'Une erreur est survenue'): void {
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();
         this.popUpService.openDialog({
-            textToSend: msg,
+            textToSend: message,
             closeButtonMessage: 'Fermer',
             mustProcess: false,
         });

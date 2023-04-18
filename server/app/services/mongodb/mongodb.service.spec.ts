@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+
 /**
  * This test file draws inspiration from the following git repository:
  * https://github.com/jmcdo29/testing-nestjs/blob/main/apps/mongo-sample/src/cat/cat.service.spec.ts
@@ -8,10 +9,10 @@ import { GameHistory, GameHistoryDocument } from '@app/model/schema/game-history
 import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { Level as LevelDto } from '@common/interfaces/level';
 import { TestConstants } from '@common/test-constants';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Level as LevelDto } from 'assets/data/level';
 import { Model, Query } from 'mongoose';
 
 const mockLevel = (

@@ -1,22 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Level } from '@app/levels';
+import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialog.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LevelService } from '@app/services/level/level.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { Level } from '@common/interfaces/level';
 import { of } from 'rxjs';
 import { SelectionData, SelectionPageService, StartGameData } from './selection-page.service';
 
 describe('SelectionPageService', () => {
     let service: SelectionPageService;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let popUpServiceSpy: any;
+    let popUpServiceSpy: jasmine.SpyObj<PopUpService>;
     let socketHandlerSpy: jasmine.SpyObj<SocketHandler>;
     let levelServiceSpy: jasmine.SpyObj<LevelService>;
-    let dialogRefSpy: jasmine.SpyObj<MatDialogRef<unknown>>;
+    let dialogRefSpy: jasmine.SpyObj<MatDialogRef<PopUpDialogComponent>>;
     let routerSpy: jasmine.SpyObj<Router>;
 
     const levels: Level[] = [
@@ -39,11 +39,7 @@ describe('SelectionPageService', () => {
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogRefSpy.afterClosed.and.returnValue(of(true));
-
-        popUpServiceSpy = {
-            openDialog: jasmine.createSpy('openDialog').and.returnValue(of(undefined)),
-            dialogRef: dialogRefSpy,
-        };
+        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
 
         TestBed.configureTestingModule({
             imports: [AppRoutingModule, AppMaterialModule],

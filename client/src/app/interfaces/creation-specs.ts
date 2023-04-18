@@ -1,4 +1,4 @@
-import { LevelDifferences } from '@app/classes/difference';
+import { LevelDifferences } from '@app/interfaces/level-differences';
 
 export interface CreationSpecs {
     defaultImageFile: File;
