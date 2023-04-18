@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { DialogData, Dialogs } from '@app/interfaces/dialogs';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
-import { Dialogs } from '@app/interfaces/dialogs';
 
 /**
  * Service that handles the main page.

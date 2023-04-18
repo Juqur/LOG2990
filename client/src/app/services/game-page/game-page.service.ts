@@ -2,11 +2,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { DialogData } from '@app/interfaces/dialogs';
 import { Vec2 } from '@app/interfaces/vec2';
 import { AudioService } from '@app/services/audio/audio.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
 import { environment } from 'src/environments/environment';
@@ -43,7 +44,7 @@ export class GamePageService {
         private mouseService: MouseService,
         private popUpService: PopUpService,
         private audioService: AudioService,
-        private drawServiceDiff: DrawService,
+        private drawServiceDifference: DrawService,
         private drawServiceOriginal: DrawService,
     ) {}
 
@@ -281,17 +282,17 @@ export class GamePageService {
         this.hintSection = [];
         const height = shape.pop() as number;
         const width = shape.pop() as number;
-        const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-        differenceCanvasCtx.canvas.height = height;
-        differenceCanvasCtx.canvas.width = width;
+        const differenceCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        differenceCanvasContext.canvas.height = height;
+        differenceCanvasContext.canvas.width = width;
 
         let x = 0;
         let y = 0;
         shape.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
             y = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
-            differenceCanvasCtx.fillStyle = 'green';
-            differenceCanvasCtx.fillRect(x, y, 1, 1);
+            differenceCanvasContext.fillStyle = 'green';
+            differenceCanvasContext.fillRect(x, y, 1, 1);
         });
         const widthScale = Constants.DEFAULT_WIDTH_SHAPE_CANVAS / width;
         const heightScale = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS / height;
@@ -301,10 +302,10 @@ export class GamePageService {
         const xOffset = (Constants.DEFAULT_WIDTH_SHAPE_CANVAS - scaledWidth) / 2;
         const yOffset = (Constants.DEFAULT_HEIGHT_SHAPE_CANVAS - scaledHeight) / 2;
 
-        const shapeCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        const shapeContext = canvas.getContext('2d') as CanvasRenderingContext2D;
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
-        shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+        shapeContext.drawImage(differenceCanvasContext.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
         this.originalPlayArea.drawPlayArea(this.originalImageSrc);
         this.differencePlayArea.drawPlayArea(this.diffImageSrc);
     }
@@ -414,10 +415,10 @@ export class GamePageService {
      */
     private handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
-        this.drawServiceDiff.context = this.differencePlayArea
+        this.drawServiceDifference.context = this.differencePlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError(this.mouseService);
+        this.drawServiceDifference.drawError(this.mouseService);
         this.resetCanvas();
     }
 

@@ -1,7 +1,9 @@
 /* eslint-disable max-lines */
+/* The documentation makes this file exceeds the max lines. */
 import { Injectable } from '@angular/core';
 import { MatSlider } from '@angular/material/slider';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
+import { Dialogs } from '@app/interfaces/dialogs';
 import { LevelDifferences } from '@app/interfaces/level-differences';
 import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
@@ -9,7 +11,7 @@ import { CommunicationService } from '@app/services/communication/communication.
 import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants } from '@common/constants';
 
 @Injectable({
@@ -17,50 +19,44 @@ import { Constants } from '@common/constants';
 })
 export class CreationPageService {
     color = Constants.BLACK;
-    isSaveable = false;
-    private creationSpecs: CreationSpecs;
-    private differenceAmountMsg = '';
-    private submitFunction: (value: string) => boolean;
-    private drawServiceDefault: DrawService;
-    private drawServiceDiff: DrawService;
+    private isSaveable = false;
+    private differenceAmountMessage = '';
+    private drawServiceDefault: DrawService = new DrawService();
+    private drawServiceDifference: DrawService = new DrawService();
     private defaultUploadFile: File;
-    private diffUploadFile: File;
+    private differenceUploadFile: File;
+    private creationSpecs: CreationSpecs = {
+        defaultImageFile: new File([], ''),
+        diffImageFile: new File([], ''),
+        radius: Constants.RADIUS_DEFAULT,
+        brushSize: 1,
+        nbDifferences: Constants.INIT_DIFF_NB,
+        differences: {} as LevelDifferences,
+        defaultBgCanvasContext: document.createElement('canvas').getContext('2d'),
+        differenceBgCanvasContext: document.createElement('canvas').getContext('2d'),
+    } as CreationSpecs;
 
+    /**
+     * It is true that this service has a lot of services, however,
+     * those services are qualified terminal, which means it cannot be refactored any further.
+     */
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
-        private diffService: DifferenceDetectorService,
+        private differenceService: DifferenceDetectorService,
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
         private mouseServiceDefault: MouseService,
-        private mouseServiceDiff: MouseService,
+        private mouseServiceDifference: MouseService,
     ) {
-        this.creationSpecs = {
-            defaultImageFile: new File([], ''),
-            diffImageFile: new File([], ''),
-            radius: Constants.RADIUS_DEFAULT,
-            brushSize: 1,
-            nbDifferences: Constants.INIT_DIFF_NB,
-            differences: {} as LevelDifferences,
-            defaultBgCanvasCtx: document.createElement('canvas').getContext('2d'),
-            diffBgCanvasCtx: document.createElement('canvas').getContext('2d'),
-        } as CreationSpecs;
-
-        this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasCtx?.canvas as HTMLCanvasElement;
-        this.canvasShare.diffCanvas = this.creationSpecs.diffBgCanvasCtx?.canvas as HTMLCanvasElement;
-        this.getEmptyBMPFile().then((res) => {
+        this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasContext?.canvas as HTMLCanvasElement;
+        this.canvasShare.differenceCanvas = this.creationSpecs.differenceBgCanvasContext?.canvas as HTMLCanvasElement;
+        this.getEmptyBmpFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.creationSpecs.diffImageFile = res;
             this.showDefaultImage();
-            this.showDiffImage();
+            this.showDifferenceImage();
         });
-
-        this.drawServiceDefault = new DrawService();
-        this.drawServiceDiff = new DrawService();
-
-        this.submitFunction = (value) => {
-            return value.length !== 0 && value.length < Constants.MAX_GAME_NAME_LENGTH;
-        };
     }
 
     /**
@@ -80,8 +76,8 @@ export class CreationPageService {
     /**
      * Getter for the difference amount message.
      */
-    get differenceMsg(): string {
-        return this.differenceAmountMsg;
+    get differenceMessage(): string {
+        return this.differenceAmountMessage;
     }
 
     /**
@@ -110,9 +106,7 @@ export class CreationPageService {
         if (target.files) {
             this.creationSpecs.defaultImageFile = target.files[0];
             this.verifyImageFormat(this.creationSpecs.defaultImageFile).then((result) => {
-                if (result) {
-                    this.showDefaultImage();
-                }
+                if (result) this.showDefaultImage();
             });
         }
     }
@@ -123,13 +117,13 @@ export class CreationPageService {
      *
      * @param event File upload event on the HTMLInputElement.
      */
-    diffImageSelector(event: Event): void {
+    differenceImageSelector(event: Event): void {
         this.restartGame();
         const target = event.target as HTMLInputElement;
         if (target.files) {
             this.creationSpecs.diffImageFile = target.files[0];
             this.verifyImageFormat(this.creationSpecs.diffImageFile).then((result) => {
-                if (result) this.showDiffImage();
+                if (result) this.showDifferenceImage();
             });
         }
     }
@@ -142,7 +136,7 @@ export class CreationPageService {
      */
     bothImagesSelector(event: Event): void {
         this.defaultImageSelector(event);
-        this.diffImageSelector(event);
+        this.differenceImageSelector(event);
     }
 
     /**
@@ -160,7 +154,7 @@ export class CreationPageService {
     resetDefaultBackground(): void {
         this.restartGame();
         this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
-        this.getEmptyBMPFile().then((res) => {
+        this.getEmptyBmpFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.showDefaultImage();
         });
@@ -171,10 +165,12 @@ export class CreationPageService {
      */
     resetDiffBackground(): void {
         this.restartGame();
-        this.canvasShare.diffCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.diffCanvas.width, this.canvasShare.diffCanvas.height);
-        this.getEmptyBMPFile().then((res) => {
+        this.canvasShare.differenceCanvas
+            .getContext('2d')
+            ?.clearRect(0, 0, this.canvasShare.differenceCanvas.width, this.canvasShare.differenceCanvas.height);
+        this.getEmptyBmpFile().then((res) => {
             this.creationSpecs.diffImageFile = res;
-            this.showDiffImage();
+            this.showDifferenceImage();
         });
     }
 
@@ -184,7 +180,7 @@ export class CreationPageService {
      *
      * @param value The index of the new slider value.
      */
-    diffSliderChange(value: number): void {
+    differenceSliderChange(value: number): void {
         this.creationSpecs.radius = Constants.RADIUS_TABLE[value];
     }
 
@@ -192,14 +188,14 @@ export class CreationPageService {
      * Sets the brush size to the value given by the slider.
      *
      * @param event The mat slider.
-     * @param defaultCtx The default canvas context.
-     * @param diffCtx The different canvas context.
+     * @param defaultContext The default canvas context.
+     * @param differenceContext The different canvas context.
      */
-    brushSliderChange(event: MatSlider, defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
-        this.drawServiceDefault.context = defaultCtx;
-        this.drawServiceDiff.context = diffCtx;
+    brushSliderChange(event: MatSlider, defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
+        this.drawServiceDefault.context = defaultContext;
+        this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.setBrushSize(event.value);
-        this.drawServiceDiff.setBrushSize(event.value);
+        this.drawServiceDifference.setBrushSize(event.value);
     }
 
     /**
@@ -207,41 +203,37 @@ export class CreationPageService {
      * launches a popUp display the result as a white and black image where the black
      * sections are differences while the white are regions shared between images.
      *
-     * @param defaultMergedCtx The default canvas context.
-     * @param diffMergedCtx The different canvas context.
+     * @param defaultMergedContext The default canvas context.
+     * @param diffMergedContext The different canvas context.
      */
-    detectDifference(defaultMergedCtx: CanvasRenderingContext2D, diffMergedCtx: CanvasRenderingContext2D): void {
-        this.creationSpecs.differences = this.diffService.detectDifferences(defaultMergedCtx, diffMergedCtx, this.creationSpecs.radius);
+    detectDifference(defaultMergedContext: CanvasRenderingContext2D, diffMergedContext: CanvasRenderingContext2D): void {
+        this.creationSpecs.differences = this.differenceService.detectDifferences(defaultMergedContext, diffMergedContext, this.creationSpecs.radius);
         if (!this.creationSpecs.differences) {
             this.errorDialog('Veuillez fournir des images non vides');
             return;
         }
         this.creationSpecs.nbDifferences = this.creationSpecs.differences.clusters.length;
         this.isSaveable =
-            this.creationSpecs.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT && this.creationSpecs.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT
-                ? true
-                : false;
+            this.creationSpecs.nbDifferences >= Constants.MIN_DIFFERENCES_LIMIT &&
+            this.creationSpecs.nbDifferences <= Constants.MAX_DIFFERENCES_LIMIT;
         if (this.creationSpecs.nbDifferences > Constants.MAX_DIFFERENCES_LIMIT)
-            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop élevé)';
+            this.differenceAmountMessage = ' (Attention, le nombre de différences est trop élevé)';
         else if (this.creationSpecs.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT)
-            this.differenceAmountMsg = ' (Attention, le nombre de différences est trop bas)';
-        else this.differenceAmountMsg = '';
-        this.popUpService.openDialog({
-            textToSend: this.isSaveable
-                ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'
-                : 'Image de différence (contient ' +
-                  this.creationSpecs.nbDifferences +
-                  ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
-            imgSrc: this.creationSpecs.differences.canvas.canvas.toDataURL(),
-            closeButtonMessage: 'Fermer',
-            mustProcess: false,
-        });
+            this.differenceAmountMessage = ' (Attention, le nombre de différences est trop bas)';
+        else this.differenceAmountMessage = '';
+        const textToSend = this.isSaveable
+            ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'
+            : 'Image de différence (contient ' +
+              this.creationSpecs.nbDifferences +
+              ' différences) (Le nombre de différences doit être compris entre 3 et 9):';
+        const imageSrc = this.creationSpecs.differences.canvas.canvas.toDataURL();
+        this.popUpService.openDialog(Dialogs.differenceDisplay(textToSend, imageSrc));
         if (this.isSaveable) {
-            this.toImgFile(defaultMergedCtx).then((res) => {
+            this.toImgFile(defaultMergedContext).then((res) => {
                 this.defaultUploadFile = new File([res], 'default.bmp', { type: 'image/bmp' });
             });
-            this.toImgFile(diffMergedCtx).then((res) => {
-                this.diffUploadFile = new File([res], 'diff.bmp', { type: 'image/bmp' });
+            this.toImgFile(diffMergedContext).then((res) => {
+                this.differenceUploadFile = new File([res], 'diff.bmp', { type: 'image/bmp' });
             });
         }
     }
@@ -251,22 +243,14 @@ export class CreationPageService {
      * It opens a popUp asking the user to give a name to their new game and saves it.
      */
     saveGame(): void {
-        if (this.isSaveable && this.defaultUploadFile && this.diffUploadFile) {
-            this.popUpService.openDialog({
-                textToSend: 'Veuillez entrer le nom du jeu',
-                inputData: {
-                    inputLabel: 'Nom du jeu',
-                    submitFunction: this.submitFunction,
-                },
-                closeButtonMessage: 'Sauvegarder',
-                mustProcess: true,
-            });
+        if (this.isSaveable && this.defaultUploadFile && this.differenceUploadFile) {
+            this.popUpService.openDialog(Dialogs.inputLevelName);
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 if (this.creationSpecs.differences) {
                     this.communicationService
                         .postLevel({
                             imageOriginal: this.defaultUploadFile,
-                            imageDiff: this.diffUploadFile,
+                            imageDiff: this.differenceUploadFile,
                             name: result,
                             isEasy: (!this.creationSpecs.differences.isHard).toString(),
                             clusters: JSON.stringify(this.creationSpecs.differences.clusters),
@@ -276,12 +260,7 @@ export class CreationPageService {
                             if (data.title === 'error') {
                                 this.errorDialog(data.body);
                             } else if (data.title === 'success') {
-                                const dialogData: DialogData = {
-                                    textToSend: data.body,
-                                    closeButtonMessage: 'Fermer',
-                                    mustProcess: false,
-                                };
-                                this.popUpService.openDialog(dialogData, '/config');
+                                this.popUpService.openDialog(Dialogs.confirmation(data.body), '/config');
                             }
                         });
                 }
@@ -293,32 +272,32 @@ export class CreationPageService {
      * When the user press on the paint brush button, this method is called.
      * It sets the mouse service to Paint mode.
      *
-     * @param defaultCtx The default canvas context.
-     * @param diffCtx The diff canvas context.
+     * @param defaultContext The default canvas context.
+     * @param differenceContext The diff canvas context.
      */
-    paintBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
+    paintBrushMode(defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
-        this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = defaultCtx;
-        this.drawServiceDiff.context = diffCtx;
+        this.mouseServiceDifference.isRectangleMode = false;
+        this.drawServiceDefault.context = defaultContext;
+        this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.paintBrush();
-        this.drawServiceDiff.paintBrush();
+        this.drawServiceDifference.paintBrush();
     }
 
     /**
      * When the user press on the erase brush button, this method is called.
      * It sets the mouse service to Erase mode.
      *
-     * @param defaultCtx The default canvas context.
-     * @param diffCtx The diff canvas context.
+     * @param defaultContext The default canvas context.
+     * @param differenceContext The diff canvas context.
      */
-    eraseBrushMode(defaultCtx: CanvasRenderingContext2D, diffCtx: CanvasRenderingContext2D): void {
+    eraseBrushMode(defaultContext: CanvasRenderingContext2D, differenceContext: CanvasRenderingContext2D): void {
         this.mouseServiceDefault.isRectangleMode = false;
-        this.mouseServiceDiff.isRectangleMode = false;
-        this.drawServiceDefault.context = defaultCtx;
-        this.drawServiceDiff.context = diffCtx;
+        this.mouseServiceDifference.isRectangleMode = false;
+        this.drawServiceDefault.context = defaultContext;
+        this.drawServiceDifference.context = differenceContext;
         this.drawServiceDefault.eraseBrush();
-        this.drawServiceDiff.eraseBrush();
+        this.drawServiceDifference.eraseBrush();
     }
 
     /**
@@ -327,9 +306,9 @@ export class CreationPageService {
      */
     rectangleMode(): void {
         this.drawServiceDefault.paintBrush();
-        this.drawServiceDiff.paintBrush();
+        this.drawServiceDifference.paintBrush();
         this.mouseServiceDefault.isRectangleMode = true;
-        this.mouseServiceDiff.isRectangleMode = true;
+        this.mouseServiceDifference.isRectangleMode = true;
     }
 
     /**
@@ -338,21 +317,21 @@ export class CreationPageService {
      */
     colorPickerMode(): void {
         this.mouseServiceDefault.mouseDrawColor = this.color;
-        this.mouseServiceDiff.mouseDrawColor = this.color;
+        this.mouseServiceDifference.mouseDrawColor = this.color;
         this.drawServiceDefault.setPaintColor(this.color);
-        this.drawServiceDiff.setPaintColor(this.color);
+        this.drawServiceDifference.setPaintColor(this.color);
     }
 
     /**
      * This method is used to convert a canvas to a file.
      * It uses the canvas.toBlob() method to convert the canvas to a Blob object.
      *
-     * @param currentCtx the context of the canvas we want to convert to a file.
+     * @param currentContext the context of the canvas we want to convert to a file.
      * @returns a Promise<Blob> which when resolved gives the Blob object associated with the canvas.
      */
-    async toImgFile(currentCtx: CanvasRenderingContext2D): Promise<Blob> {
+    async toImgFile(currentContext: CanvasRenderingContext2D): Promise<Blob> {
         return new Promise((resolve) => {
-            currentCtx.canvas.toBlob((blob) => resolve(blob as Blob));
+            currentContext.canvas.toBlob((blob) => resolve(blob as Blob));
         });
     }
 
@@ -361,7 +340,7 @@ export class CreationPageService {
      *
      * @returns A file Object containing the image_empty.bmp.
      */
-    private async getEmptyBMPFile(): Promise<File> {
+    private async getEmptyBmpFile(): Promise<File> {
         const imageSrc = './assets/images/image_empty.bmp';
         return fetch(imageSrc)
             .then(async (res) => res.blob())
@@ -376,8 +355,8 @@ export class CreationPageService {
     private showDefaultImage(): void {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
-        image.onload = () => {
-            if (!this.creationSpecs.defaultBgCanvasCtx) {
+        image.onload = async () => {
+            if (!this.creationSpecs.defaultBgCanvasContext) {
                 this.errorDialog('Aucun canvas de base.');
                 return;
             }
@@ -388,18 +367,18 @@ export class CreationPageService {
             this.canvasShare.defaultCanvas.width = image.width;
             this.canvasShare.defaultCanvas.height = image.height;
             (this.canvasShare.defaultCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.defaultBgCanvasCtx = this.canvasShare.defaultCanvas.getContext('2d');
+            this.creationSpecs.defaultBgCanvasContext = this.canvasShare.defaultCanvas.getContext('2d');
         };
     }
 
     /**
      * This method is used to display the different image on the different canvas.
      */
-    private showDiffImage(): void {
+    private showDifferenceImage(): void {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
-        image.onload = () => {
-            if (!this.creationSpecs.diffBgCanvasCtx) {
+        image.onload = async () => {
+            if (!this.creationSpecs.differenceBgCanvasContext) {
                 this.errorDialog('Aucun canvas de différence.');
                 return;
             }
@@ -407,10 +386,10 @@ export class CreationPageService {
                 this.errorDialog('Les images doivent être de taille 640x480.');
                 return;
             }
-            this.canvasShare.diffCanvas.width = image.width;
-            this.canvasShare.diffCanvas.height = image.height;
-            (this.canvasShare.diffCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
-            this.creationSpecs.diffBgCanvasCtx = this.canvasShare.diffCanvas.getContext('2d');
+            this.canvasShare.differenceCanvas.width = image.width;
+            this.canvasShare.differenceCanvas.height = image.height;
+            (this.canvasShare.differenceCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
+            this.creationSpecs.differenceBgCanvasContext = this.canvasShare.differenceCanvas.getContext('2d');
         };
     }
 
@@ -423,12 +402,12 @@ export class CreationPageService {
      */
     private async verifyImageFormat(imageFile: File): Promise<boolean> {
         if (imageFile.type !== 'image/bmp') {
-            this.errorDialog('Les images doivent être au format bmp');
+            this.errorDialog('Les images doivent être au format bmp.');
             return Promise.resolve(false);
         }
         return new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 const view = new DataView((event.target as FileReader).result as ArrayBuffer);
                 const bitNb = view.getUint16(Constants.BMP_BPP_POS, true);
                 if (bitNb !== Constants.BMP_BPP) {
@@ -456,10 +435,6 @@ export class CreationPageService {
      */
     private errorDialog(message = 'Une erreur est survenue'): void {
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();
-        this.popUpService.openDialog({
-            textToSend: message,
-            closeButtonMessage: 'Fermer',
-            mustProcess: false,
-        });
+        this.popUpService.openDialog(Dialogs.errorDialog(message));
     }
 }

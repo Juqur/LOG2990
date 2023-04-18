@@ -20,9 +20,9 @@ describe('CanvasSharingService', () => {
         expect(service.defaultCanvas).toBe(canvas);
     });
 
-    it('should set diffCanvasRef', () => {
+    it('should set differenceCanvasRef', () => {
         const canvas = {} as HTMLCanvasElement;
-        service.diffCanvas = canvas;
-        expect(service.diffCanvas).toBe(canvas);
+        service.differenceCanvas = canvas;
+        expect(service.differenceCanvas).toBe(canvas);
     });
 });

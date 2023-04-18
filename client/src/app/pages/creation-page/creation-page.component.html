@@ -72,11 +72,11 @@
                 <div class="display-row">
                     <div class="display-column canvas-action">
                         <button class="button-reset" title="Réinitialiser Avant Plan"
-                            (click)="clearDiffCanvas()">Réinitialiser Avant Plan</button>
+                            (click)="clearDifferenceCanvas()">Réinitialiser Avant Plan</button>
                         <button class="button-reset" title="Dupliquer"
-                            (click)="duplicateDiffCanvas()">Dupliquer</button>
+                            (click)="duplicateDifferenceCanvas()">Dupliquer</button>
                     </div>
-                    <app-paint-area #diffArea [isDifferenceCanvas]="true"></app-paint-area>
+                    <app-paint-area #differenceArea [isDifferenceCanvas]="true"></app-paint-area>
                 </div>
                 <div class="zone-button-container">
                     <label for="diff" class="button-settings">
@@ -84,7 +84,7 @@
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
                     <input type="file" name="diff image" id="diff" accept=".bmp"
-                        (change)="this.creationService.diffImageSelector($event)"
+                        (change)="this.creationService.differenceImageSelector($event)"
                         (click)="this.creationService.cleanSrc($event)" />
                     <button class="button-reset" color="orange" (click)="this.creationService.resetDiffBackground()">
                         Réinitialiser Arrière-plan
@@ -96,8 +96,8 @@
         <section id="bottom-area">
             <div id="enlargissement-container">
                 <label class="info-txt" for="values">Rayon d'élargissement:</label>
-                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="diffSliderValue"
-                    (change)="this.creationService.diffSliderChange(diffSliderValue)"></mat-slider>
+                <mat-slider id="radiusSlider" [min]="0" [max]="3" tickInterval="1" [(ngModel)]="differenceSliderValue"
+                    (change)="this.creationService.differenceSliderChange(differenceSliderValue)"></mat-slider>
             </div>
             <div class="zone-button-container">
                 <button class="button-reset" color="orange" (click)="this.findDifference()">
@@ -118,7 +118,7 @@
                 <div>
                     <span class="info-txt">Nombre de différences: </span>
                     <span class="answer-txt">{{ creationService.nbDifferences }}</span>
-                    <span class="error">{{ creationService.differenceMsg }}</span>
+                    <span class="error">{{ creationService.differenceMessage }}</span>
                     <p id="diff-nb-note">Le nombres de différences doit se situer entre 3 et 9.</p>
                 </div>
             </div>
