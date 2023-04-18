@@ -25,7 +25,7 @@ export class GamePageService {
     private originalImageSrc: string = '';
     private diffImageSrc: string = '';
     private originalPlayArea: PlayAreaComponent;
-    private diffPlayArea: PlayAreaComponent;
+    private differencePlayArea: PlayAreaComponent;
     private tempDiffPlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData = {
         textToSend: 'Vous avez gagné!',
@@ -61,12 +61,12 @@ export class GamePageService {
      * This method sets and updates the play areas of the game page.
      *
      * @param originalPlayArea The reference to the original play area.
-     * @param diffPlayArea The reference to the diff play area.
+     * @param differencePlayArea The reference to the diff play area.
      * @param tempDiffPlayArea The reference to the temp diff play area.
      */
-    setPlayArea(originalPlayArea: PlayAreaComponent, diffPlayArea: PlayAreaComponent, tempDiffPlayArea: PlayAreaComponent): void {
+    setPlayArea(originalPlayArea: PlayAreaComponent, differencePlayArea: PlayAreaComponent, tempDiffPlayArea: PlayAreaComponent): void {
         this.originalPlayArea = originalPlayArea;
-        this.diffPlayArea = diffPlayArea;
+        this.differencePlayArea = differencePlayArea;
         this.tempDiffPlayArea = tempDiffPlayArea;
     }
 
@@ -213,10 +213,10 @@ export class GamePageService {
         });
         this.flashInterval = setInterval(() => {
             if (isVisible) {
-                this.diffPlayArea.deleteTempCanvas();
+                this.differencePlayArea.deleteTempCanvas();
                 this.originalPlayArea.deleteTempCanvas();
             } else {
-                this.diffPlayArea.flashArea(this.areaNotFound);
+                this.differencePlayArea.flashArea(this.areaNotFound);
                 this.originalPlayArea.flashArea(this.areaNotFound);
             }
             isVisible = !isVisible;
@@ -229,8 +229,8 @@ export class GamePageService {
     stopCheatMode(): void {
         clearInterval(this.flashInterval);
         this.areaNotFound = [];
-        if (this.diffPlayArea && this.originalPlayArea) {
-            this.diffPlayArea.deleteTempCanvas();
+        if (this.differencePlayArea && this.originalPlayArea) {
+            this.differencePlayArea.deleteTempCanvas();
             this.originalPlayArea.deleteTempCanvas();
         }
     }
@@ -253,14 +253,14 @@ export class GamePageService {
             return;
         }
         this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-        this.diffPlayArea.drawPlayArea(this.diffImageSrc);
+        this.differencePlayArea.drawPlayArea(this.diffImageSrc);
         setTimeout(() => {
             this.hintSection = section;
             this.drawServiceOriginal.context = this.originalPlayArea
                 .getCanvas()
                 .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawServiceOriginal.drawHintSection(this.hintSection);
-            this.drawServiceDiff.context = this.diffPlayArea
+            this.drawServiceDiff.context = this.differencePlayArea
                 .getCanvas()
                 .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawServiceDiff.drawHintSection(this.hintSection);
@@ -306,7 +306,7 @@ export class GamePageService {
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
         shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
         this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-        this.diffPlayArea.drawPlayArea(this.diffImageSrc);
+        this.differencePlayArea.drawPlayArea(this.diffImageSrc);
     }
 
     /**
@@ -349,12 +349,12 @@ export class GamePageService {
     /**
      * This method will redraw the canvas with the original image plus the elements that were not found.
      * To avoid flashing issue, it copies to a third temporary canvas.
-     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
+     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the differencePlayArea.
      */
     private resetCanvas(): void {
         this.mouseService.canClick = false;
         const delay = 1000; // ms
-        this.diffPlayArea
+        this.differencePlayArea
             .timeout(delay)
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
@@ -368,7 +368,7 @@ export class GamePageService {
             })
             .then(() => {
                 setTimeout(() => {
-                    this.diffPlayArea.deleteTempCanvas();
+                    this.differencePlayArea.deleteTempCanvas();
                     this.originalPlayArea.deleteTempCanvas();
                     this.copyDiffPlayAreaContext();
                     this.handleHintRequest(this.hintSection);
@@ -383,7 +383,7 @@ export class GamePageService {
         const contextTemp = this.tempDiffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const context = this.differencePlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const imageData = contextTemp.getImageData(0, 0, contextTemp.canvas.width, contextTemp.canvas.height);
         context.putImageData(imageData, 0, 0);
     }
@@ -402,7 +402,7 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.diffPlayArea.flashArea(result);
+        this.differencePlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
         this.resetCanvas();
     }
@@ -412,7 +412,7 @@ export class GamePageService {
      */
     private handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
-        this.drawServiceDiff.context = this.diffPlayArea
+        this.drawServiceDiff.context = this.differencePlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDiff.drawError(this.mouseService);
@@ -434,7 +434,7 @@ export class GamePageService {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);
-        this.diffPlayArea.flashArea(result);
+        this.differencePlayArea.flashArea(result);
         this.resetCanvas();
     }
     /**
