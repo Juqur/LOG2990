@@ -52,7 +52,7 @@ export class CreationPageService {
 
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasContext?.canvas as HTMLCanvasElement;
         this.canvasShare.differenceCanvas = this.creationSpecs.differenceBgCanvasContext?.canvas as HTMLCanvasElement;
-        this.getEmptyBMPFile().then((res) => {
+        this.getEmptyBmpFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.creationSpecs.diffImageFile = res;
             this.showDefaultImage();
@@ -164,7 +164,7 @@ export class CreationPageService {
     resetDefaultBackground(): void {
         this.restartGame();
         this.canvasShare.defaultCanvas.getContext('2d')?.clearRect(0, 0, this.canvasShare.defaultCanvas.width, this.canvasShare.defaultCanvas.height);
-        this.getEmptyBMPFile().then((res) => {
+        this.getEmptyBmpFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
             this.showDefaultImage();
         });
@@ -178,7 +178,7 @@ export class CreationPageService {
         this.canvasShare.differenceCanvas
             .getContext('2d')
             ?.clearRect(0, 0, this.canvasShare.differenceCanvas.width, this.canvasShare.differenceCanvas.height);
-        this.getEmptyBMPFile().then((res) => {
+        this.getEmptyBmpFile().then((res) => {
             this.creationSpecs.diffImageFile = res;
             this.showDifferenceImage();
         });
@@ -367,7 +367,7 @@ export class CreationPageService {
      *
      * @returns A file Object containing the image_empty.bmp.
      */
-    private async getEmptyBMPFile(): Promise<File> {
+    private async getEmptyBmpFile(): Promise<File> {
         const imageSrc = './assets/images/image_empty.bmp';
         return fetch(imageSrc)
             .then(async (res) => res.blob())

@@ -74,7 +74,7 @@ describe('CreationPageService', () => {
     });
 
     it('constructor should correctly initialize', fakeAsync(() => {
-        spyOn(service, 'getEmptyBMPFile' as never).and.returnValue(Promise.resolve(new File([''], '')) as never);
+        spyOn(service, 'getEmptyBmpFile' as never).and.returnValue(Promise.resolve(new File([''], '')) as never);
         spyOn(HTMLCanvasElement.prototype, 'getContext').and.returnValue(null);
         const creationService = new CreationPageService(
             new CanvasSharingService(),
@@ -412,8 +412,8 @@ describe('CreationPageService', () => {
         expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledTimes(1);
     });
 
-    it('getEmptyBMPFile should return a new File with the correct src', fakeAsync(async () => {
-        const result = await service['getEmptyBMPFile']();
+    it('getEmptyBmpFile should return a new File with the correct src', fakeAsync(async () => {
+        const result = await service['getEmptyBmpFile']();
         expect(result.name).toEqual('image_empty.bmp');
     }));
 
