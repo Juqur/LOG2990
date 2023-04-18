@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { LevelDifferences } from '@app/classes/difference';
+import { LevelDifferences } from '@app/interfaces/level-differences';
 import { Constants } from '@common/constants';
 import { TestConstants } from '@common/test-constants';
 

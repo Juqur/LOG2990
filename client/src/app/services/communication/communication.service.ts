@@ -1,9 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LevelFormData } from '@app/classes/level-form-data';
-import { Level } from '@app/levels';
+import { LevelFormData } from '@app/interfaces/level-form-data';
 import { GameConstants } from '@common/game-constants';
-import { HttpMessage } from '@common/http-message';
+import { HttpMessage } from '@common/interfaces/http-message';
+import { Level } from '@common/interfaces/level';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';

@@ -8,7 +8,7 @@ import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants } from '@common/constants';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { environment } from 'src/environments/environment';
 
 /**

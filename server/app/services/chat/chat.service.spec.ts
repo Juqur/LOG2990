@@ -1,6 +1,6 @@
 import { GameState } from '@app/services/game/game.service';
-import { ChatMessage } from '@common/chat-messages';
-import { GameData } from '@common/game-data';
+import { ChatMessage } from '@common/interfaces/chat-messages';
+import { GameData } from '@common/interfaces/game-data';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Socket } from 'socket.io';

@@ -9,14 +9,15 @@ import { GameTimerComponent } from '@app/components/game-timer/game-timer.compon
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
-import { Level } from '@app/levels';
+import { Level } from '@common/interfaces/level';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
-import { GameData } from '@common/game-data';
+import { GameData } from '@common/interfaces/game-data';
 import { of } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
 describe('GamePageComponent', () => {
@@ -433,8 +434,8 @@ describe('GamePageComponent', () => {
         it('should set the url properly for both images', () => {
             component['levelId'] = 1;
             component['settingGameImage']();
-            expect(component['originalImageSrc']).toBe('http://localhost:3000/original/1.bmp');
-            expect(component['diffImageSrc']).toBe('http://localhost:3000/modified/1.bmp');
+            expect(component['originalImageSrc']).toBe(environment.serverUrl + 'original/1.bmp');
+            expect(component['diffImageSrc']).toBe(environment.serverUrl + 'modified/1.bmp');
         });
     });
 

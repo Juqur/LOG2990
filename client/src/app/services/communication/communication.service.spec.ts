@@ -1,11 +1,11 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { LevelFormData } from '@app/classes/level-form-data';
-import { Level } from '@app/levels';
+import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { Constants } from '@common/constants';
 import { GameConstants } from '@common/game-constants';
-import { HttpMessage } from '@common/http-message';
+import { HttpMessage } from '@common/interfaces/http-message';
+import { Level } from '@common/interfaces/level';
 import { environment } from 'src/environments/environment';
 
 describe('CommunicationService', () => {

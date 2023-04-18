@@ -1,3 +1,6 @@
+/**
+ * Interface of the level's general information.
+ */
 export interface Level {
     id: number;
     name: string;

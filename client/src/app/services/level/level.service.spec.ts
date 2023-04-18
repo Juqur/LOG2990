@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Level } from '@app/levels';
+import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
