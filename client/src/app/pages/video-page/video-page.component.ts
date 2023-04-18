@@ -51,7 +51,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         this.settingGameParameters();
         this.lastTimeFrame = VideoService.getStackElement(VideoService.getStackLength() - 1).time;
-        console.table(VideoService.messageStack);
     }
 
     ngAfterViewInit(): void {
