@@ -337,8 +337,6 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call openDialog if the game is saveable', () => {
-        spyOn<unknown>(service, 'errorDialog');
-
         const mockLevelDifference = {
             clusters: [[1], [1], [1], [1], [1], [1]],
             isHard: false,
