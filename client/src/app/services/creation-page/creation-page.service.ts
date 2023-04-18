@@ -3,6 +3,7 @@
 import { Injectable } from '@angular/core';
 import { MatSlider } from '@angular/material/slider';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
+import { Dialogs } from '@app/interfaces/dialogs';
 import { LevelDifferences } from '@app/interfaces/level-differences';
 import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
@@ -10,7 +11,7 @@ import { CommunicationService } from '@app/services/communication/communication.
 import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants } from '@common/constants';
 
 @Injectable({
@@ -19,13 +20,21 @@ import { Constants } from '@common/constants';
 export class CreationPageService {
     color = Constants.BLACK;
     private isSaveable = false;
-    private creationSpecs: CreationSpecs;
     private differenceAmountMessage = '';
-    private submitFunction: (value: string) => boolean;
-    private drawServiceDefault: DrawService;
-    private drawServiceDifference: DrawService;
+    private drawServiceDefault: DrawService = new DrawService();
+    private drawServiceDifference: DrawService = new DrawService();
     private defaultUploadFile: File;
     private differenceUploadFile: File;
+    private creationSpecs: CreationSpecs = {
+        defaultImageFile: new File([], ''),
+        diffImageFile: new File([], ''),
+        radius: Constants.RADIUS_DEFAULT,
+        brushSize: 1,
+        nbDifferences: Constants.INIT_DIFF_NB,
+        differences: {} as LevelDifferences,
+        defaultBgCanvasContext: document.createElement('canvas').getContext('2d'),
+        differenceBgCanvasContext: document.createElement('canvas').getContext('2d'),
+    } as CreationSpecs;
 
     /**
      * It is true that this service has a lot of services, however,
@@ -40,17 +49,6 @@ export class CreationPageService {
         private mouseServiceDefault: MouseService,
         private mouseServiceDifference: MouseService,
     ) {
-        this.creationSpecs = {
-            defaultImageFile: new File([], ''),
-            diffImageFile: new File([], ''),
-            radius: Constants.RADIUS_DEFAULT,
-            brushSize: 1,
-            nbDifferences: Constants.INIT_DIFF_NB,
-            differences: {} as LevelDifferences,
-            defaultBgCanvasContext: document.createElement('canvas').getContext('2d'),
-            differenceBgCanvasContext: document.createElement('canvas').getContext('2d'),
-        } as CreationSpecs;
-
         this.canvasShare.defaultCanvas = this.creationSpecs.defaultBgCanvasContext?.canvas as HTMLCanvasElement;
         this.canvasShare.differenceCanvas = this.creationSpecs.differenceBgCanvasContext?.canvas as HTMLCanvasElement;
         this.getEmptyBmpFile().then((res) => {
@@ -59,13 +57,6 @@ export class CreationPageService {
             this.showDefaultImage();
             this.showDifferenceImage();
         });
-
-        this.drawServiceDefault = new DrawService();
-        this.drawServiceDifference = new DrawService();
-
-        this.submitFunction = (value) => {
-            return value.length !== 0 && value.length < Constants.MAX_GAME_NAME_LENGTH;
-        };
     }
 
     /**
@@ -230,16 +221,13 @@ export class CreationPageService {
         else if (this.creationSpecs.nbDifferences < Constants.MIN_DIFFERENCES_LIMIT)
             this.differenceAmountMessage = ' (Attention, le nombre de différences est trop bas)';
         else this.differenceAmountMessage = '';
-        this.popUpService.openDialog({
-            textToSend: this.isSaveable
-                ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'
-                : 'Image de différence (contient ' +
-                  this.creationSpecs.nbDifferences +
-                  ' différences) (Le nombre de différences doit être compris entre 3 et 9):',
-            imgSrc: this.creationSpecs.differences.canvas.canvas.toDataURL(),
-            closeButtonMessage: 'Fermer',
-            mustProcess: false,
-        });
+        const textToSend = this.isSaveable
+            ? 'Image de différence (contient ' + this.creationSpecs.nbDifferences + ' différences) :'
+            : 'Image de différence (contient ' +
+              this.creationSpecs.nbDifferences +
+              ' différences) (Le nombre de différences doit être compris entre 3 et 9):';
+        const imageSrc = this.creationSpecs.differences.canvas.canvas.toDataURL();
+        this.popUpService.openDialog(Dialogs.differenceDisplay(textToSend, imageSrc));
         if (this.isSaveable) {
             this.toImgFile(defaultMergedContext).then((res) => {
                 this.defaultUploadFile = new File([res], 'default.bmp', { type: 'image/bmp' });
@@ -256,15 +244,7 @@ export class CreationPageService {
      */
     saveGame(): void {
         if (this.isSaveable && this.defaultUploadFile && this.differenceUploadFile) {
-            this.popUpService.openDialog({
-                textToSend: 'Veuillez entrer le nom du jeu',
-                inputData: {
-                    inputLabel: 'Nom du jeu',
-                    submitFunction: this.submitFunction,
-                },
-                closeButtonMessage: 'Sauvegarder',
-                mustProcess: true,
-            });
+            this.popUpService.openDialog(Dialogs.inputLevelName);
             this.popUpService.dialogRef.afterClosed().subscribe((result) => {
                 if (this.creationSpecs.differences) {
                     this.communicationService
@@ -280,12 +260,7 @@ export class CreationPageService {
                             if (data.title === 'error') {
                                 this.errorDialog(data.body);
                             } else if (data.title === 'success') {
-                                const dialogData: DialogData = {
-                                    textToSend: data.body,
-                                    closeButtonMessage: 'Fermer',
-                                    mustProcess: false,
-                                };
-                                this.popUpService.openDialog(dialogData, '/config');
+                                this.popUpService.openDialog(Dialogs.confirmation(data.body), '/config');
                             }
                         });
                 }
@@ -460,10 +435,6 @@ export class CreationPageService {
      */
     private errorDialog(message = 'Une erreur est survenue'): void {
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();
-        this.popUpService.openDialog({
-            textToSend: message,
-            closeButtonMessage: 'Fermer',
-            mustProcess: false,
-        });
+        this.popUpService.openDialog(Dialogs.errorDialog(message));
     }
 }

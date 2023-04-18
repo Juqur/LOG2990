@@ -13,4 +13,43 @@ export namespace Dialogs {
         closeButtonMessage: 'Débuter la partie',
         mustProcess: false,
     };
+
+    export const inputLevelName: DialogData = {
+        textToSend: 'Veuillez entrer le nom du jeu',
+        inputData: {
+            inputLabel: 'Nom du jeu',
+            submitFunction: Dialogs.submitFunction,
+        },
+        closeButtonMessage: 'Sauvegarder',
+        mustProcess: true,
+    };
+
+    export const differenceDisplay: (textToSend: string, imgSrc: string) => DialogData = (textToSend: string, imgSrc: string) => {
+        return {
+            textToSend,
+            imgSrc,
+            closeButtonMessage: 'Fermer',
+            mustProcess: false,
+        };
+    };
+
+    export const confirmation = (message: string) => {
+        return {
+            textToSend: message,
+            closeButtonMessage: 'Fermer',
+            mustProcess: false,
+        } as DialogData;
+    };
+
+    export const errorDialog: (message: string) => DialogData = (message: string) => {
+        return {
+            textToSend: message,
+            closeButtonMessage: 'Fermer',
+            mustProcess: false,
+        };
+    };
+
+    export const submitFunction: (value: string) => boolean = (value: string) => {
+        return value.length !== 0 && value.length < Constants.MAX_GAME_NAME_LENGTH;
+    };
 }
