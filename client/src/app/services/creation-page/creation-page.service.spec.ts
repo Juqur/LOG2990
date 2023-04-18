@@ -396,8 +396,8 @@ describe('CreationPageService', () => {
         service.eraseBrushMode(defaultCanvasContext, differenceCanvasContext);
 
         expect(mouseServiceSpy.isRectangleMode).toBeFalse();
-        expect(drawServiceDefaultSpy.paintBrush).toHaveBeenCalledTimes(1);
-        expect(drawServiceDifferenceSpy.paintBrush).toHaveBeenCalledTimes(1);
+        expect(drawServiceDefaultSpy.eraseBrush).toHaveBeenCalledTimes(1);
+        expect(drawServiceDifferenceSpy.eraseBrush).toHaveBeenCalledTimes(1);
     });
 
     it('rectangleMode should set isRectangleMode to true', () => {
