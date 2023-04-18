@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/interfaces/chat-messages';
 
@@ -11,25 +10,30 @@ import { ChatMessage } from '@common/interfaces/chat-messages';
 export class VideoService {
     static videoLog: string[] = [];
     static messageStack: { chatMessage: ChatMessage; time: number }[] = [];
-    static gamePageStack: {
-        originalCanvas: PlayAreaComponent;
-        diffCanvas: PlayAreaComponent;
-        timestamp: Date;
-        chat: string;
-        gameEnded: boolean;
-        isWinning: boolean;
-    }[] = [];
     static pointer = 0;
-
     static firstPlayerName: string;
     static secondPlayerName: string;
 
     static stackCounter = 0;
 
-    private static videoStack: { time: number; found: boolean; defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement }[] = [];
+    private static videoStack: {
+        time: number;
+        found: boolean;
+        playerDifferencesCount: number;
+        secondPlayerDifferencesCount: number;
+        defaultCanvas: HTMLCanvasElement;
+        diffCanvas: HTMLCanvasElement;
+    }[] = [];
 
     // eslint-disable-next-line max-params
-    static addToVideoStack(time: number, found: boolean = false, defaultCanvas: CanvasRenderingContext2D, diffCanvas: CanvasRenderingContext2D) {
+    static addToVideoStack(
+        time: number,
+        found: boolean = false,
+        playerDifferencesCount: number,
+        secondPlayerDifferencesCount: number,
+        defaultCanvas: CanvasRenderingContext2D,
+        diffCanvas: CanvasRenderingContext2D,
+    ) {
         const tempDefaultCanvas = document.createElement('canvas');
         tempDefaultCanvas.width = defaultCanvas.canvas.width;
         tempDefaultCanvas.height = defaultCanvas.canvas.height;
@@ -42,7 +46,14 @@ export class VideoService {
         const tempDiffContext = tempDiffCanvas.getContext('2d') as CanvasRenderingContext2D;
         tempDiffContext.drawImage(diffCanvas.canvas, 0, 0);
 
-        this.videoStack.push({ time, found, defaultCanvas: tempDefaultCanvas, diffCanvas: tempDiffCanvas });
+        this.videoStack.push({
+            time,
+            found,
+            playerDifferencesCount,
+            secondPlayerDifferencesCount,
+            defaultCanvas: tempDefaultCanvas,
+            diffCanvas: tempDiffCanvas,
+        });
         console.table(this.videoStack);
     }
 
@@ -80,7 +91,14 @@ export class VideoService {
         this.videoLog.push(message);
     }
 
-    static getStackElement(index: number): { time: number; found: boolean; defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } {
+    static getStackElement(index: number): {
+        time: number;
+        found: boolean;
+        playerDifferencesCount: number;
+        secondPlayerDifferencesCount: number;
+        defaultCanvas: HTMLCanvasElement;
+        diffCanvas: HTMLCanvasElement;
+    } {
         return this.videoStack[index];
     }
 

@@ -33,4 +33,8 @@ export class VideoChatComponent {
             this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
         }
     }
+
+    clearChat(): void {
+        this.messages = [];
+    }
 }

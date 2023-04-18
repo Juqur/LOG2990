@@ -109,6 +109,8 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         VideoService.addToVideoStack(
             TimerService.timerValue,
             false,
+            this.playerDifferencesCount,
+            this.secondPlayerDifferencesCount,
             this.originalPlayArea.getCanvasRenderingContext2D(),
             this.diffPlayArea.getCanvasRenderingContext2D(),
         );
@@ -150,7 +152,13 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-                this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+                this.gamePageService.handleResponse(
+                    this.isInCheatMode,
+                    gameData,
+                    this.clickedOriginalImage,
+                    this.playerDifferencesCount,
+                    this.secondPlayerDifferencesCount,
+                );
             }
         });
         this.socketHandler.on('game', 'victory', () => {
@@ -167,7 +175,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.gamePageService.handleTimedModeFinished(finishedWithLastLevel);
         });
         this.socketHandler.on('game', 'startCheatMode', (differences: number[]) => {
-            this.gamePageService.startCheatMode(differences);
+            this.gamePageService.startCheatMode(differences, this.playerDifferencesCount, this.secondPlayerDifferencesCount);
         });
         this.socketHandler.on('game', 'hintRequest', (data) => {
             const section = data as number[];

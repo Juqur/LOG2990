@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -130,13 +131,19 @@ export class GamePageService {
      * @param gameData The game data.
      * @param clickedOriginalImage Boolean that represents if the player clicked on the original image or the difference image.
      */
-    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
+    handleResponse(
+        isInCheatMode: boolean,
+        gameData: GameData,
+        clickedOriginalImage: boolean,
+        playerDifferencesCount: number,
+        secondPlayerDifferencesCount: number,
+    ): void {
         const response = this.validateResponse(gameData.differencePixels);
         if (response) {
             if (!clickedOriginalImage) {
-                this.handleAreaFoundInDiff(gameData.differencePixels, isInCheatMode);
+                this.handleAreaFoundInDiff(gameData.differencePixels, isInCheatMode, playerDifferencesCount, secondPlayerDifferencesCount);
             } else {
-                this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode);
+                this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode, playerDifferencesCount, secondPlayerDifferencesCount);
             }
         } else {
             if (!clickedOriginalImage) {
@@ -223,7 +230,7 @@ export class GamePageService {
      *
      * @param differences The differences to have flash
      */
-    startCheatMode(differences: number[]): void {
+    startCheatMode(differences: number[], playerDifferencesCount: number, secondPlayerDifferencesCount: number): void {
         this.resetCanvas();
         this.addToVideoStack();
         let isVisible = false;
@@ -240,6 +247,8 @@ export class GamePageService {
                 this.originalPlayArea.flashArea(this.areaNotFound);
                 this.addToVideoStack(
                     false,
+                    playerDifferencesCount,
+                    secondPlayerDifferencesCount,
                     this.originalPlayArea.getFlashingCopy().getContext('2d'),
                     this.diffPlayArea.getFlashingCopy().getContext('2d'),
                 );
@@ -268,12 +277,21 @@ export class GamePageService {
         this.router.navigate(['/home']);
     }
 
-    addToVideoStack(found: boolean = false, original?: CanvasRenderingContext2D | null, diff?: CanvasRenderingContext2D | null): void {
-        if (original && diff) VideoService.addToVideoStack(TimerService.timerValue, found, original, diff);
+    addToVideoStack(
+        found: boolean = false,
+        playerDifferencesCount: number = 0,
+        secondPlayerDifferencesCount: number = 0,
+        original?: CanvasRenderingContext2D | null,
+        diff?: CanvasRenderingContext2D | null,
+    ): void {
+        if (original && diff)
+            VideoService.addToVideoStack(TimerService.timerValue, found, playerDifferencesCount, secondPlayerDifferencesCount, original, diff);
         else
             VideoService.addToVideoStack(
                 TimerService.timerValue,
                 found,
+                playerDifferencesCount,
+                secondPlayerDifferencesCount,
                 this.originalPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
                 this.diffPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
             );
@@ -420,7 +438,12 @@ export class GamePageService {
      *
      * @param result The array of pixels that represents the area found as a difference.
      */
-    private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
+    private handleAreaFoundInDiff(
+        result: number[],
+        isInCheatMode: boolean,
+        playerDifferencesCount: number,
+        secondPlayerDifferencesCount: number,
+    ): void {
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
@@ -431,6 +454,8 @@ export class GamePageService {
         this.flashBothCanvas(result).then(() => {
             this.addToVideoStack(
                 true,
+                playerDifferencesCount,
+                secondPlayerDifferencesCount,
                 this.originalPlayArea.getFlashingCopy().getContext('2d'),
                 this.diffPlayArea.getFlashingCopy().getContext('2d'),
             );
@@ -457,7 +482,12 @@ export class GamePageService {
      *
      * @param result The array of pixels that represents the area found as a difference.
      */
-    private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
+    private handleAreaFoundInOriginal(
+        result: number[],
+        isInCheatMode: boolean,
+        playerDifferencesCount: number,
+        secondPlayerDifferencesCount: number,
+    ): void {
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
@@ -468,6 +498,8 @@ export class GamePageService {
         this.flashBothCanvas(result).then(() => {
             this.addToVideoStack(
                 true,
+                playerDifferencesCount,
+                secondPlayerDifferencesCount,
                 this.originalPlayArea.getFlashingCopy().getContext('2d'),
                 this.diffPlayArea.getFlashingCopy().getContext('2d'),
             );

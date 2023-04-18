@@ -13,14 +13,12 @@ export class TimerService {
     }
 
     static startTimer(): void {
-        console.log('start timer');
         TimerService.timer = setInterval(() => {
             TimerService.time++;
         }, Constants.TIMER_INTERVAL);
     }
 
     static stopTimer(): void {
-        console.log('stop timer');
         clearInterval(TimerService.timer);
     }
 

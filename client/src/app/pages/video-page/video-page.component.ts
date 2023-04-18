@@ -5,8 +5,8 @@ import { VideoTimerComponent } from '@app/components/video-timer/video-timer.com
 import { Level } from '@app/levels';
 import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
-import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Constants } from '@common/constants';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 
 /**
  * This is the replay video page component.
@@ -40,9 +40,18 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     currentLevel: Level | undefined;
     videoSpeed: number = Constants.NORMAL_SPEED;
     timeFrame: number = 0;
-    lastTimeFrame: number = 0;
+    lastTimeFrame: number = VideoService.getStackElement(VideoService.getStackLength() - 1).time;
     messageCount: number = 0;
     isStart: boolean = true;
+    videoFrame: {
+        time: number;
+        found: boolean;
+        playerDifferencesCount: number;
+        secondPlayerDifferencesCount: number;
+        defaultCanvas: HTMLCanvasElement;
+        diffCanvas: HTMLCanvasElement;
+    } = VideoService.getStackElement(VideoService.pointer);
+    messageFrame: { chatMessage: ChatMessage; time: number } = VideoService.getMessagesStackElement(this.messageCount);
 
     private showVideo: ReturnType<typeof setInterval>;
 
@@ -54,7 +63,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnInit(): void {
         this.settingGameParameters();
-        this.lastTimeFrame = VideoService.getStackElement(VideoService.getStackLength() - 1).time;
     }
 
     ngAfterViewInit(): void {
@@ -103,6 +111,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
             this.playVideo();
         } else {
             this.pauseVideo();
+            this.videoTimer.stopTimer();
         }
         this.isStart = !this.isStart;
     }
@@ -130,6 +139,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     videoSpeedTime4(): void {
         this.videoSpeed = Constants.VERY_FAST_SPEED;
+        this.pauseVideo();
+        this.playVideo();
     }
 
     /**
@@ -137,6 +148,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     videoSpeedTime2(): void {
         this.videoSpeed = Constants.FAST_SPEED;
+        this.pauseVideo();
+        this.playVideo();
     }
 
     /**
@@ -144,27 +157,33 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     videoSpeedTime1(): void {
         this.videoSpeed = Constants.NORMAL_SPEED;
+        this.pauseVideo();
+        this.playVideo();
     }
 
     /**
      * This method is called when we have to play the video.
      */
     playVideo(): void {
-        let videoFrame = VideoService.getStackElement(VideoService.pointer);
-        let messageFrame = VideoService.getMessagesStackElement(this.messageCount);
+        // let videoFrame = VideoService.getStackElement(VideoService.pointer);
+        // let messageFrame = VideoService.getMessagesStackElement(this.messageCount);
         this.showVideo = setInterval(() => {
             if (this.timeFrame >= this.lastTimeFrame) {
                 this.pauseVideo();
             }
-            console.log(this.timeFrame, videoFrame);
-            if (this.timeFrame >= videoFrame.time) {
+            // console.log(this.timeFrame, videoFrame);
+            if (this.timeFrame >= this.videoFrame.time) {
                 this.putInCanvas();
-                if (videoFrame.found) ++this.playerDifferencesCount;
-                videoFrame = VideoService.getStackElement(VideoService.pointer);
+                console.log(this.videoFrame.time);
+                if (this.videoFrame.found) {
+                    this.playerDifferencesCount = this.videoFrame.playerDifferencesCount;
+                    this.secondPlayerDifferencesCount = this.videoFrame.secondPlayerDifferencesCount;
+                }
+                this.videoFrame = VideoService.getStackElement(VideoService.pointer);
             }
-            if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === messageFrame.time) {
-                this.addToChat(messageFrame.chatMessage);
-                messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
+            if (this.timeFrame <= VideoService.messageStack[VideoService.messageStack.length - 1].time && this.timeFrame === this.messageFrame.time) {
+                this.addToChat(this.messageFrame.chatMessage);
+                this.messageFrame = VideoService.getMessagesStackElement(++this.messageCount);
             }
             this.timeFrame++;
         }, Constants.TIMER_INTERVAL / this.videoSpeed);
@@ -197,8 +216,12 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         this.playerDifferencesCount = 0;
         this.messageCount = 0;
         this.videoTimer.resetTimer();
-        this.playVideo();
+        this.videoChat.clearChat();
+        this.isStart = true;
+        this.videoFrame = VideoService.getStackElement(VideoService.pointer);
+        this.messageFrame = VideoService.getMessagesStackElement(this.messageCount);
         this.videoTimer.startTimer();
+        this.playVideo();
     }
 
     resetVideoAndTimer(): void {
