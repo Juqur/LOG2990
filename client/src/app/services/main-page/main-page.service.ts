@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
-import { Dialogs } from '@common/dialogs';
+import { Dialogs } from '@app/interfaces/dialogs';
 
 export interface TimedGameData {
     levelId: number;

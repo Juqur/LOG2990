@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { UtilityService } from '@app/services/utility/utility.service';
 import { Constants } from '@common/constants';
 
 /**
@@ -16,6 +17,7 @@ import { Constants } from '@common/constants';
 export class GameTimerComponent implements OnInit, OnDestroy {
     gameTimeFormatted: string;
     bonusTimeAdded: boolean;
+    currentTime: string;
 
     constructor(private socketHandler: SocketHandler) {}
 
@@ -45,12 +47,7 @@ export class GameTimerComponent implements OnInit, OnDestroy {
      * @param time The time to set the timer to.
      */
     updateTimer(time: number): void {
-        const minutes: number = Math.floor(time / Constants.SECONDS_PER_MINUTE);
-        const seconds: number = time % Constants.SECONDS_PER_MINUTE;
-
-        const minutesString: string = minutes < Constants.PADDING_NUMBER ? '0' + minutes : minutes.toString();
-        const secondsString: string = seconds < Constants.PADDING_NUMBER ? '0' + seconds : seconds.toString();
-        this.gameTimeFormatted = 'Time: ' + minutesString + ':' + secondsString;
+        this.currentTime = 'Temps: ' + UtilityService.formatTime(time);
     }
 
     /**

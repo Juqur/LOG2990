@@ -21,6 +21,7 @@ export enum GameEvents {
 
     MessageSent = 'messageSent',
     UpdateSelection = 'updateSelection',
+    UpdateHighscores = 'updateHighscores',
     InvalidName = 'invalidName',
     ToBeAccepted = 'toBeAccepted',
     PlayerSelection = 'playerSelection',
