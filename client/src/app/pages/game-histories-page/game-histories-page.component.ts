@@ -2,6 +2,12 @@ import { Component } from '@angular/core';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GameHistory } from '@common/game-history';
 
+/**
+ * This page represents the history page where a user is able to look at all game histories saved in the database.
+ *
+ * @author Charles Degrandpré
+ * @class GameHistoriesPageComponent
+ */
 @Component({
     selector: 'app-game-histories-page',
     templateUrl: './game-histories-page.component.html',

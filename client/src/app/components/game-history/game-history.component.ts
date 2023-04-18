@@ -2,6 +2,12 @@ import { Component, Input } from '@angular/core';
 import { Constants } from '@common/constants';
 import { GameHistory } from '@common/game-history';
 
+/**
+ * This component acts as a container for a singular game-history instance.
+ *
+ * @author Charles Degrandpré
+ * @class GameHistoryComponent
+ */
 @Component({
     selector: 'app-game-history',
     templateUrl: './game-history.component.html',

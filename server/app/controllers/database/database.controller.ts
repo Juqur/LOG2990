@@ -9,6 +9,12 @@ enum HttpCodes {
     CREATED = 201,
 }
 
+/**
+ * This controller provides the server API requests for the database controller requests that do not impact directly levels.
+ *
+ * @author Charles Degrandpré
+ * @class DatabaseController
+ */
 @Controller('database')
 export class DatabaseController {
     constructor(private mongodbService: MongodbService) {}
@@ -16,7 +22,7 @@ export class DatabaseController {
     /**
      * Gets the game constants.
      *
-     * @returns The game constants
+     * @returns The game constants.
      */
     @ApiOkResponse({
         description: 'Returns data for a level',
@@ -56,7 +62,7 @@ export class DatabaseController {
     /**
      * Gets the game constants.
      *
-     * @returns The game constants
+     * @returns The game constants.
      */
     @ApiOkResponse({
         description: 'Returns data for all gameHistories',

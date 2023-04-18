@@ -74,9 +74,9 @@ const mockLevelDoc = (mock?: Partial<Level>): Partial<LevelDocument> => ({
     timeSolo: mock?.timeSolo || TestConstants.TIME_ARRAY_SOLO_DATA_BASE,
     playerMulti: mock?.playerMulti || TestConstants.PLAYER_ARRAY_MULTI_DATA_BASE,
     timeMulti: mock?.timeMulti || TestConstants.TIME_ARRAY_MULTI_DATA_BASE,
-    isEasy: typeof mock?.isEasy !== 'undefined' ? mock?.isEasy : true,
+    isEasy: mock ? mock?.isEasy : true,
     nbDifferences: mock?.nbDifferences || TestConstants.EXPECTED_DIFFERENCES,
-    canJoin: typeof mock?.canJoin !== 'undefined' ? mock?.canJoin : true,
+    canJoin: mock ? mock?.canJoin : true,
 });
 
 const mockGameHistoryDoc = (mock?: Partial<GameHistory>): Partial<GameHistoryDocument> => ({

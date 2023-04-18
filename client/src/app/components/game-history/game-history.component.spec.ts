@@ -40,7 +40,6 @@ describe('GameHistoryComponent', () => {
     });
 
     it('should correctly format the Date', () => {
-        // DD month YYYY à HH:MM
         const date = new Date();
         date.setDate(1);
         date.setMonth(0);
