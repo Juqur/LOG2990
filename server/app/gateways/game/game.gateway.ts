@@ -20,7 +20,7 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) { }
+    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -91,8 +91,8 @@ export class GameGateway {
             if (this.handleTimedGame(socket, gameState)) return;
         }
         socket.emit(GameEvents.ProcessedClick, dataToSend);
+        this.chatService.sendSystemMessage({ socket, server: this.server }, dataToSend, gameState);
         const otherSocketId = gameState.otherSocketId;
-        this.chatService.sendSystemMessage(socket, dataToSend, gameState);
         if (otherSocketId) {
             if (!gameState.timedLevelList) {
                 dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
@@ -245,7 +245,7 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
         const gameState = this.gameService.getGameState(socket.id);
-        this.chatService.sendToBothPlayers(socket, message, gameState);
+        this.chatService.sendToBothPlayers({ socket, server: this.server }, message, gameState);
     }
 
     /**
@@ -298,7 +298,10 @@ export class GameGateway {
         }
     }
 
-
+    @SubscribeMessage(GameEvents.OnRefreshLevels)
+    async onRefreshLevels(): Promise<void> {
+        this.server.emit(GameEvents.RefreshLevels);
+    }
     /**
      * This method is called when a player disconnects.
      * Handles unexpected disconnections such as page refreshes.
@@ -322,14 +325,15 @@ export class GameGateway {
         if (gameState) {
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
-                this.chatService.abandonMessage(socket, gameState);
+                this.chatService.abandonMessage(this.server, gameState);
                 otherSocket.emit(GameEvents.OpponentAbandoned);
-                if (!gameState.timedLevelList) this.gameService.deleteUserFromGame(otherSocket);
                 this.gameService.setOtherPlayerAbandoned(otherSocket.id);
             }
-            this.gameService.deleteUserFromGame(socket);
+            if (!gameState.timedLevelList || !gameState.otherSocketId) {
+                this.gameService.deleteUserFromGame(socket);
+                this.timerService.stopTimer(socket.id);
+            }
             this.gameService.removeLevel(gameState.levelId, false);
-            this.timerService.stopTimer(socket.id);
         }
     }
 
