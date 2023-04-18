@@ -118,7 +118,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         let videoFrame = VideoService.getStackElement(VideoService.pointer);
         let messageFrame = VideoService.getMessagesStackElement(this.messageCount);
         this.showVideo = setInterval(() => {
-            // console.table({ timer: this.timeFrame, video: videoFrame.time });
             if (this.timeFrame >= this.lastTimeFrame) {
                 this.pauseVideo();
             }

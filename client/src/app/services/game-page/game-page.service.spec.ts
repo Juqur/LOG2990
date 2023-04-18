@@ -168,12 +168,12 @@ describe('GamePageService', () => {
     describe('handleDefeat', () => {
         it('should call create', () => {
             const audioSpy = spyOn(AudioService, 'quickPlay');
-            service.handleDefeat();
+            service.handleDefeat(1, '', '');
             expect(audioSpy).toHaveBeenCalledWith('./assets/audio/LossSound.mp3');
         });
 
         it('should call openDialog', () => {
-            service.handleDefeat();
+            service.handleDefeat(1, '', '');
             expect(popUpServiceSpy.openDialog).toHaveBeenCalled();
         });
     });

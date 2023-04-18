@@ -287,6 +287,10 @@ describe('MongodbService', () => {
                 isInCheatMode: false,
             } as GameState;
 
+            jest.spyOn(service, 'getLevelById').mockReturnValue({
+                exec: jest.fn().mockReturnValue(levelDocArray[0]),
+            } as never);
+
             endTime = TestConstants.NEW_BEST_TIME;
         });
 

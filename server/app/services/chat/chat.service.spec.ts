@@ -112,6 +112,7 @@ describe('ChatService', () => {
                 sender: 'Système',
                 senderId: 'system',
                 text: expectedMessage,
+                timestamp: new Date(),
             });
         });
     });

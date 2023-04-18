@@ -142,35 +142,37 @@ export class MongodbService {
      * @param gameState The game state associated with the game that just finished.
      */
     async updateHighscore(endTime: number, gameState: GameState): Promise<number> {
-        let names: string[] = [];
-        let times: number[] = [];
+        if (await this.getLevelById(gameState.levelId)) {
+            let names: string[] = [];
+            let times: number[] = [];
 
-        if (gameState.otherSocketId) {
-            names = await this.getPlayerMultiArray(gameState.levelId);
-            times = await this.getTimeMultiArray(gameState.levelId);
-        } else {
-            names = await this.getPlayerSoloArray(gameState.levelId);
-            times = await this.getTimeSoloArray(gameState.levelId);
-        }
-
-        if (endTime < times[2]) {
-            names[2] = gameState.playerName;
-            times[2] = endTime;
-            for (let i = names.length - 1; i > 0; i--) {
-                if (times[i] < times[i - 1]) {
-                    times[i] = times[i - 1];
-                    names[i] = names[i - 1];
-
-                    times[i - 1] = endTime;
-                    names[i - 1] = gameState.playerName;
-                }
-            }
             if (gameState.otherSocketId) {
-                await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerMulti: names, timeMulti: times }).exec();
+                names = await this.getPlayerMultiArray(gameState.levelId);
+                times = await this.getTimeMultiArray(gameState.levelId);
             } else {
-                await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerSolo: names, timeSolo: times }).exec();
+                names = await this.getPlayerSoloArray(gameState.levelId);
+                times = await this.getTimeSoloArray(gameState.levelId);
             }
-            return names.indexOf(gameState.playerName);
+
+            if (endTime < times[2]) {
+                names[2] = gameState.playerName;
+                times[2] = endTime;
+                for (let i = names.length - 1; i > 0; i--) {
+                    if (times[i] < times[i - 1]) {
+                        times[i] = times[i - 1];
+                        names[i] = names[i - 1];
+
+                        times[i - 1] = endTime;
+                        names[i - 1] = gameState.playerName;
+                    }
+                }
+                if (gameState.otherSocketId) {
+                    await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerMulti: names, timeMulti: times }).exec();
+                } else {
+                    await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerSolo: names, timeSolo: times }).exec();
+                }
+                return names.indexOf(gameState.playerName);
+            }
         }
     }
 

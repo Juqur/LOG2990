@@ -274,8 +274,8 @@ export class GamePageService {
             VideoService.addToVideoStack(
                 TimerService.timerValue,
                 found,
-                this.originalPlayArea.getCanvasRenderingContext2D(),
-                this.diffPlayArea.getCanvasRenderingContext2D(),
+                this.originalPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
+                this.diffPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
             );
     }
 
@@ -428,17 +428,14 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.flashBothCanvas(result)
-            .then(() => {
-                this.addToVideoStack(
-                    true,
-                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
-                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
-                );
-            })
-            .then(() => {
-                this.resetCanvas();
-            });
+        this.flashBothCanvas(result).then(() => {
+            this.addToVideoStack(
+                true,
+                this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                this.diffPlayArea.getFlashingCopy().getContext('2d'),
+            );
+            this.resetCanvas();
+        });
     }
 
     /**
@@ -468,17 +465,16 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.flashBothCanvas(result)
-            .then(() => {
-                this.addToVideoStack(
-                    true,
-                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
-                    this.diffPlayArea.getFlashingCopy().getContext('2d'),
-                );
-            })
-            .then(() => {
-                this.resetCanvas();
-            });
+        this.flashBothCanvas(result).then(() => {
+            this.addToVideoStack(
+                true,
+                this.originalPlayArea.getFlashingCopy().getContext('2d'),
+                this.diffPlayArea.getFlashingCopy().getContext('2d'),
+            );
+            this.resetCanvas();
+        });
+        // .then(() => {
+        // });
     }
     /**
      * Performs a failed sound and prompts an error in the original canvas.
