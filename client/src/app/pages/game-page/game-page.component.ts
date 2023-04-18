@@ -1,13 +1,13 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
+import { Level } from '@common/interfaces/level';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -23,10 +23,10 @@ import { environment } from 'src/environments/environment';
     providers: [DrawService, CommunicationService],
 })
 export class GamePageComponent implements OnInit, OnDestroy {
-    @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
-    @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
-    @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
-    @ViewChild('hintShapeCanvas', { static: false }) hintShapeCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
+    @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
+    @ViewChild('tempDiffPlayArea', { static: false }) private tempDiffPlayArea!: PlayAreaComponent;
+    @ViewChild('hintShapeCanvas', { static: false }) private hintShapeCanvas!: ElementRef<HTMLCanvasElement>;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
