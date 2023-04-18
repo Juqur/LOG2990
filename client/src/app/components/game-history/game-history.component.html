@@ -1,5 +1,5 @@
 <div class="history-container">
-    <h1>{{this.parseDate(this.gameHistory.startDate)}}</h1>
+    <h1>{{ this.parseDate(this.gameHistory.startDate) }}</h1>
     <ul class="sub-info">
         <li>
             <span>Temps:</span>
@@ -11,11 +11,13 @@
         </li>
         <li>
             <span>{{ this.gameHistory.isClassic ? 'Gagnant:' : 'Joueur 1:' }}</span>
-            <span>{{ this.gameHistory.firstPlayerName }}</span>
+            <span [ngClass]="this.gameHistory.secondPlayerName ? 'bold' : this.gameHistory.hasPlayerAbandoned ? 'strike-through' : 'bold'">{{
+                this.gameHistory.firstPlayerName
+            }}</span>
         </li>
         <li *ngIf="this.gameHistory.secondPlayerName">
             <span>{{ this.gameHistory.isClassic ? 'Perdant:' : 'Joueur 2:' }}</span>
-            <span>{{ this.gameHistory.secondPlayerName }}</span>
+            <span [ngClass]="this.gameHistory.hasPlayerAbandoned ? 'strike-through' : ''">{{ this.gameHistory.secondPlayerName }}</span>
         </li>
     </ul>
     <p *ngIf="this.gameHistory.hasPlayerAbandoned">Le joueur a abandonné la partie.</p>
