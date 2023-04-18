@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameConstants } from '@common/game-constants';
+import { Level } from '@common/interfaces/level';
 import { tap } from 'rxjs';
 
 /**
@@ -46,7 +46,7 @@ export class LevelService {
     }
 
     /**
-     * Getter for the time penalty on using hints value
+     * Getter for the time penalty on using hints value.
      */
     get timePenaltyHint(): number {
         return this.gameConstants ? this.gameConstants.timePenaltyHint : Constants.HINT_PENALTY;
