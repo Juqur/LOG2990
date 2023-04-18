@@ -56,7 +56,7 @@ export class CreationPageService {
             this.creationSpecs.defaultImageFile = res;
             this.creationSpecs.diffImageFile = res;
             this.showDefaultImage();
-            this.showDiffImage();
+            this.showDifferenceImage();
         });
 
         this.drawServiceDefault = new DrawService();
@@ -127,13 +127,13 @@ export class CreationPageService {
      *
      * @param event File upload event on the HTMLInputElement.
      */
-    diffImageSelector(event: Event): void {
+    differenceImageSelector(event: Event): void {
         this.restartGame();
         const target = event.target as HTMLInputElement;
         if (target.files) {
             this.creationSpecs.diffImageFile = target.files[0];
             this.verifyImageFormat(this.creationSpecs.diffImageFile).then((result) => {
-                if (result) this.showDiffImage();
+                if (result) this.showDifferenceImage();
             });
         }
     }
@@ -146,7 +146,7 @@ export class CreationPageService {
      */
     bothImagesSelector(event: Event): void {
         this.defaultImageSelector(event);
-        this.diffImageSelector(event);
+        this.differenceImageSelector(event);
     }
 
     /**
@@ -180,7 +180,7 @@ export class CreationPageService {
             ?.clearRect(0, 0, this.canvasShare.differenceCanvas.width, this.canvasShare.differenceCanvas.height);
         this.getEmptyBMPFile().then((res) => {
             this.creationSpecs.diffImageFile = res;
-            this.showDiffImage();
+            this.showDifferenceImage();
         });
     }
 
@@ -401,7 +401,7 @@ export class CreationPageService {
     /**
      * This method is used to display the different image on the different canvas.
      */
-    private showDiffImage(): void {
+    private showDifferenceImage(): void {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
         image.onload = async () => {

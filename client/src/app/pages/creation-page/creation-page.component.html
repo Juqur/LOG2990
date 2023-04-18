@@ -84,7 +84,7 @@
                         <mat-icon>add_a_photo</mat-icon>
                     </label>
                     <input type="file" name="diff image" id="diff" accept=".bmp"
-                        (change)="this.creationService.diffImageSelector($event)"
+                        (change)="this.creationService.differenceImageSelector($event)"
                         (click)="this.creationService.cleanSrc($event)" />
                     <button class="button-reset" color="orange" (click)="this.creationService.resetDiffBackground()">
                         Réinitialiser Arrière-plan

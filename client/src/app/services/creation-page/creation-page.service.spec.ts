@@ -129,50 +129,50 @@ describe('CreationPageService', () => {
         expect(showDefaultImageSpy).not.toHaveBeenCalled();
     }));
 
-    it('diffImageSelector should make the appropriate function calls', fakeAsync(() => {
+    it('differenceImageSelector should make the appropriate function calls', fakeAsync(() => {
         const restartGameSpy = spyOn(service, 'restartGame' as never);
         const verifyImageFormatSpy = spyOn(service, 'verifyImageFormat' as never).and.resolveTo(true as never);
-        const showDiffImageSpy = spyOn(service, 'showDiffImage' as never);
+        const showDifferenceImageSpy = spyOn(service, 'showDifferenceImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
-        service.diffImageSelector(mockEvent);
+        service.differenceImageSelector(mockEvent);
         tick();
         expect(restartGameSpy).toHaveBeenCalledTimes(1);
         expect(verifyImageFormatSpy).toHaveBeenCalledTimes(1);
-        expect(showDiffImageSpy).toHaveBeenCalledTimes(1);
+        expect(showDifferenceImageSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('diffImageSelector should initialize diffImageFile with the file given as parameter', fakeAsync(() => {
+    it('differenceImageSelector should initialize diffImageFile with the file given as parameter', fakeAsync(() => {
         spyOn(service, 'restartGame' as never);
         spyOn(service, 'verifyImageFormat' as never).and.resolveTo(true as never);
-        spyOn(service, 'showDiffImage' as never);
+        spyOn(service, 'showDifferenceImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
-        service.diffImageSelector(mockEvent);
+        service.differenceImageSelector(mockEvent);
         tick();
         expect(service['creationSpecs'].diffImageFile).toEqual(mockFile);
     }));
 
-    it('diffImageSelector should not call showDefaultImage if verifyImageFormat returned false', fakeAsync(() => {
+    it('differenceImageSelector should not call showDefaultImage if verifyImageFormat returned false', fakeAsync(() => {
         spyOn(service, 'restartGame' as never);
         spyOn(service, 'verifyImageFormat' as never).and.resolveTo(false as never);
-        const showDiffImageSpy = spyOn(service, 'showDiffImage' as never);
+        const showDifferenceImageSpy = spyOn(service, 'showDifferenceImage' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
-        service.diffImageSelector(mockEvent);
+        service.differenceImageSelector(mockEvent);
         tick();
-        expect(showDiffImageSpy).not.toHaveBeenCalled();
+        expect(showDifferenceImageSpy).not.toHaveBeenCalled();
     }));
 
-    it('both image selector should call diffImageSelector and defaultImageSelector', fakeAsync(() => {
+    it('both image selector should call differenceImageSelector and defaultImageSelector', fakeAsync(() => {
         const defaultImageSelectorSpy = spyOn(service, 'defaultImageSelector' as never);
-        const diffImageSelectorSpy = spyOn(service, 'diffImageSelector' as never);
+        const differenceImageSelectorSpy = spyOn(service, 'differenceImageSelector' as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.bothImagesSelector(mockEvent);
         tick();
         expect(defaultImageSelectorSpy).toHaveBeenCalledTimes(1);
-        expect(diffImageSelectorSpy).toHaveBeenCalledTimes(1);
+        expect(differenceImageSelectorSpy).toHaveBeenCalledTimes(1);
     }));
 
     it('cleanSrc should empty the value of the input element.', () => {
@@ -507,39 +507,39 @@ describe('CreationPageService', () => {
         expect(service['canvasShare'].defaultCanvas.height).toEqual(Constants.DEFAULT_HEIGHT);
     }));
 
-    it('showDiffImage should call errorDialog if differenceCanvasContext is undefined', fakeAsync(() => {
+    it('showDifferenceImage should call errorDialog if differenceCanvasContext is undefined', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload']);
         spyOn(window, 'Image').and.returnValue(imageSpy);
 
         service['creationSpecs'].differenceBgCanvasContext = null;
-        service['showDiffImage']();
+        service['showDifferenceImage']();
 
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('showDiffImage should call errorDialog if image is not correct width', fakeAsync(() => {
+    it('showDifferenceImage should call errorDialog if image is not correct width', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
-        service['showDiffImage']();
+        service['showDifferenceImage']();
 
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('showDiffImage should call errorDialog if image is not correct height', fakeAsync(() => {
+    it('showDifferenceImage should call errorDialog if image is not correct height', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
-        service['showDiffImage']();
+        service['showDifferenceImage']();
 
         imageSpy.onload();
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('showDiffImage should correctly update class attributes', fakeAsync(() => {
+    it('showDifferenceImage should correctly update class attributes', fakeAsync(() => {
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
-        service['showDiffImage']();
+        service['showDifferenceImage']();
         spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
 
         imageSpy.onload();
