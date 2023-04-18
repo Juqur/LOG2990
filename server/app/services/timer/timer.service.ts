@@ -6,7 +6,7 @@ import { Server, Socket } from 'socket.io';
 
 @Injectable()
 export class TimerService {
-    private timeMap = new Map<string, number>();
+    private timeMap = new Map<string, { time: number; startDate: Date }>();
     private timeIntervalMap = new Map<string, NodeJS.Timeout>();
 
     constructor(private gameService: GameService) {}
@@ -15,7 +15,17 @@ export class TimerService {
      * Gets the game time.
      */
     getTime(socketId: string): number {
-        return this.timeMap.get(socketId);
+        return this.timeMap.get(socketId).time;
+    }
+
+    /**
+     * Gets the start date.
+     *
+     * @param socketId The socket id of the associated player.
+     * @returns The start date.
+     */
+    getStartDate(socketId: string): Date {
+        return this.timeMap.get(socketId).startDate;
     }
 
     /**
@@ -31,14 +41,14 @@ export class TimerService {
      */
     startTimer(sockets: { socket: Socket; otherSocketId?: string }, server: Server, isClassic: boolean): void {
         const socketId = sockets.socket.id;
-        this.timeMap.set(socketId, isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH);
+        this.timeMap.set(socketId, { time: isClassic ? 0 : Constants.TIMED_GAME_MODE_LENGTH, startDate: new Date() });
         const interval = setInterval(() => {
             const time = this.timeMap.get(socketId);
             if (sockets.otherSocketId) {
-                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time);
+                server.to(sockets.otherSocketId).emit(GameEvents.SendTime, time.time);
             }
-            this.timeMap.set(socketId, isClassic ? time + 1 : time - 1);
-            if (!isClassic && time === 0) {
+            this.timeMap.set(socketId, { time: isClassic ? time.time + 1 : time.time - 1, startDate: time.startDate });
+            if (!isClassic && time.time === 0) {
                 this.stopTimer(socketId);
                 const levelId = this.gameService.getGameState(socketId).levelId;
                 this.gameService.removeLevel(levelId, false);
@@ -46,7 +56,7 @@ export class TimerService {
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
                 clearInterval(interval);
             }
-            server.to(socketId).emit(GameEvents.SendTime, time);
+            server.to(socketId).emit(GameEvents.SendTime, time.time);
         }, Constants.millisecondsInOneSecond);
 
         this.timeIntervalMap.set(socketId, interval);
@@ -80,11 +90,11 @@ export class TimerService {
     addTime(server: Server, socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            if (this.gameService.getGameState(socketId).timedLevelList && currentTime + time > Constants.TIMED_GAME_MODE_LENGTH) {
-                time = Constants.TIMED_GAME_MODE_LENGTH - currentTime;
+            if (this.gameService.getGameState(socketId).timedLevelList && currentTime.time + time > Constants.TIMED_GAME_MODE_LENGTH) {
+                time = Constants.TIMED_GAME_MODE_LENGTH - currentTime.time;
             }
-            server.to(socketId).emit('sendTime', currentTime + time);
-            this.timeMap.set(socketId, currentTime + time);
+            server.to(socketId).emit('sendTime', currentTime.time + time);
+            this.timeMap.set(socketId, { time: currentTime.time + time, startDate: currentTime.startDate });
         }
     }
 
@@ -98,11 +108,11 @@ export class TimerService {
     subtractTime(server: Server, socketId: string, time: number): void {
         const currentTime = this.timeMap.get(socketId);
         if (currentTime) {
-            if (currentTime - time < 0) {
-                time = currentTime;
+            if (currentTime.time - time < 0) {
+                time = currentTime.time;
             }
-            server.to(socketId).emit('sendTime', currentTime - time);
-            this.timeMap.set(socketId, currentTime - time);
+            server.to(socketId).emit('sendTime', currentTime.time - time);
+            this.timeMap.set(socketId, { time: currentTime.time - time, startDate: currentTime.startDate });
         }
     }
 
@@ -114,6 +124,6 @@ export class TimerService {
      * @returns The current time of the timer as a number.
      */
     getCurrentTime(socketId: string): number {
-        return this.timeMap.get(socketId) ?? 0;
+        return this.timeMap.get(socketId) ? this.timeMap.get(socketId).time : 0;
     }
 }

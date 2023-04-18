@@ -22,3 +22,9 @@
     background-color: #355070;
     transform-origin: center center;
 }
+
+.scalable {
+    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}

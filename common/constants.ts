@@ -107,6 +107,9 @@ export namespace Constants {
 
     // Game Chat
     export const scrollDelay = 1;
+
+    // Level Service
+    export const MAX_GAME_TIME_LENGTH = 120;
 }
 
 export enum MouseButton {

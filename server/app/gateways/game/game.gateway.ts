@@ -1,8 +1,11 @@
+/* eslint-disable max-lines */
+/* Documentation adds extra lines, otherwise we are bellow the lint max line. */
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Constants } from '@common/constants';
+import { GameHistory } from '@common/game-history';
 import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -87,8 +90,18 @@ export class GameGateway {
             }
         }
 
+        const firstPlayerName = gameState.playerName;
+        const secondPlayerName = gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined;
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
+            await this.mongodbService.addGameHistory({
+                startDate: this.timerService.getStartDate(socket.id),
+                lengthGame: this.timerService.getTime(socket.id),
+                isClassic: !gameState.timedLevelList ? true : false,
+                firstPlayerName,
+                secondPlayerName,
+                hasPlayerAbandoned: false,
+            });
             this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
@@ -229,8 +242,8 @@ export class GameGateway {
      * @param socket The socket of the player.
      */
     @SubscribeMessage(GameEvents.OnAbandonGame)
-    onAbandonGame(socket: Socket): void {
-        this.handlePlayerLeavingGame(socket);
+    async onAbandonGame(socket: Socket): Promise<void> {
+        await this.handlePlayerLeavingGame(socket);
     }
 
     /**
@@ -277,8 +290,8 @@ export class GameGateway {
      *
      * @param socket The socket of the player.
      */
-    handleDisconnect(socket: Socket): void {
-        this.handlePlayerLeavingGame(socket);
+    async handleDisconnect(socket: Socket): Promise<void> {
+        await this.handlePlayerLeavingGame(socket);
     }
 
     /**
@@ -289,9 +302,21 @@ export class GameGateway {
      *
      * @param socket The socket of the player.
      */
-    private handlePlayerLeavingGame(socket: Socket): void {
+    private async handlePlayerLeavingGame(socket: Socket): Promise<void> {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
+            const endDate = new Date();
+            const gameHistory = {
+                startDate: this.timerService.getStartDate(socket.id),
+                lengthGame: !gameState.timedLevelList
+                    ? this.timerService.getTime(socket.id)
+                    : Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
+                isClassic: !gameState.timedLevelList ? true : false,
+                firstPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : gameState.playerName,
+                secondPlayerName: gameState.otherSocketId ? gameState.playerName : undefined,
+                hasPlayerAbandoned: true,
+            } as GameHistory;
+            await this.mongodbService.addGameHistory(gameHistory);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(socket, gameState);
@@ -331,6 +356,16 @@ export class GameGateway {
     private handleTimedGame(socket: Socket, gameState: GameState): boolean {
         this.timerService.addTime(this.server, socket.id, Constants.FOUND_DIFFERENCE_BONUS);
         if (gameState.timedLevelList.length === 0) {
+            const endDate = new Date();
+            const gameHistory = {
+                startDate: this.timerService.getStartDate(socket.id),
+                lengthGame: Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
+                isClassic: false,
+                firstPlayerName: gameState.playerName,
+                secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
+                hasPlayerAbandoned: false,
+            } as GameHistory;
+            this.mongodbService.addGameHistory(gameHistory);
             socket.emit(GameEvents.TimedModeFinished, true);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
