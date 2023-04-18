@@ -57,8 +57,6 @@ describe('CreationPageService', () => {
                 { provide: DifferenceDetectorService, useValue: differenceServiceSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: CommunicationService, useValue: communicationSpy },
-                { provide: DrawService, useValue: drawServiceDefaultSpy },
-                { provide: DrawService, useValue: drawServiceDifferenceSpy },
                 { provide: MouseService, useValue: mouseServiceSpy },
             ],
             imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],

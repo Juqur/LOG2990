@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+/* The documentation makes this file exceeds the max lines. */
 import { Injectable } from '@angular/core';
 import { MatSlider } from '@angular/material/slider';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
