@@ -170,7 +170,7 @@ export class PaintAreaComponent implements AfterViewInit {
         this.currentImage = new Image();
         this.currentImage.crossOrigin = 'anonymous';
         this.currentImage.src = imageSource;
-        this.currentImage.onload = () => {
+        this.currentImage.onload = async () => {
             context.drawImage(this.currentImage, 0, 0, this.width, this.height);
         };
         this.backgroundCanvas.nativeElement.style.backgroundColor = 'white';

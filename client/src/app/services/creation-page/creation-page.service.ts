@@ -378,7 +378,7 @@ export class CreationPageService {
     private showDefaultImage(): void {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.defaultImageFile);
-        image.onload = () => {
+        image.onload = async () => {
             if (!this.creationSpecs.defaultBgCanvasCtx) {
                 this.errorDialog('Aucun canvas de base.');
                 return;
@@ -400,7 +400,7 @@ export class CreationPageService {
     private showDiffImage(): void {
         const image = new Image();
         image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
-        image.onload = () => {
+        image.onload = async () => {
             if (!this.creationSpecs.diffBgCanvasCtx) {
                 this.errorDialog('Aucun canvas de différence.');
                 return;

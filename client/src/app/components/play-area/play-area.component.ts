@@ -96,7 +96,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
             this.currentImage = new Image();
             this.currentImage.crossOrigin = 'anonymous';
             this.currentImage.src = image;
-            this.currentImage.onload = () => {
+            this.currentImage.onload = async () => {
                 context.drawImage(this.currentImage, 0, 0, this.width, this.height);
             };
             this.canvas.nativeElement.style.backgroundColor = 'white';
