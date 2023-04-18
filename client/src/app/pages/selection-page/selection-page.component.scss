@@ -62,9 +62,17 @@
     border-radius: 50%;
     color: white;
     z-index: 11;
+    cursor: pointer;
 }
 
 .side-button:hover {
     transition: 0.1s;
     border-color: white;
+}
+
+.side-button:disabled {
+    color: black;
+    background-color: rgba(0, 0, 0, 0.26);
+    border-color: transparent !important;
+    cursor: default;
 }
