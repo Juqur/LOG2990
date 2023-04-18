@@ -49,6 +49,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.audioServiceSoundtrack.mute();
         this.audioServiceSoundtrack.play();
         this.mainPageService.connectToSocket();
+        this.mainPageService.setAmountOfLevels();
     }
 
     /**
