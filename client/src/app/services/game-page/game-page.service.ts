@@ -261,10 +261,10 @@ export class GamePageService {
                 .getCanvas()
                 .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             this.drawServiceOriginal.drawHintSection(this.hintSection);
-            this.drawServiceDiff.context = this.differencePlayArea
+            this.drawServiceDifference.context = this.differencePlayArea
                 .getCanvas()
                 .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-            this.drawServiceDiff.drawHintSection(this.hintSection);
+            this.drawServiceDifference.drawHintSection(this.hintSection);
         }, 0);
     }
 
