@@ -7,23 +7,25 @@
                 </button>
             </span>
             <div class="global-variable-container prevent-select" id="credits">
-                <h2 class="team-name">Variables Globales</h2>
-                <mat-form-field>
-                    <input matInput id="initial-time-input" placeholder="temps initial du compte à rebours (secondes)"
-                        (blur)="this.levelService.setNewGameConstants($event)"
+                <h1 class="team-name">Variables Globales</h1>
+                <mat-form-field [color]="'warn'">
+                    <p>Temps initial du compte à rebours</p>
+                    <input matInput id="initial-time-input" (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.initialTime" />
+                    <mat-hint>Entre 1 et 120 secondes</mat-hint>
                 </mat-form-field>
-                <mat-form-field>
-                    <input matInput id="time-penalty-hint-input"
-                        placeholder="temps de pénalité pour l'utilisation d'un indice (secondes)"
-                        (blur)="this.levelService.setNewGameConstants($event)"
+                <mat-form-field [color]="'warn'">
+                    <p>Temps de pénalité pour l'utilisation d'un indice</p>
+                    <input matInput id="time-penalty-hint-input" (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.timePenaltyHint" />
+                    <mat-hint>Entre 0 et 10 secondes</mat-hint>
                 </mat-form-field>
-                <mat-form-field>
+                <mat-form-field [color]="'warn'">
+                    <p>Temps gagné avec la découverte d'une différence</p>
                     <input matInput id="time-gained-difference-input"
-                        placeholder="temps gagné avec la découverte d'une différence (secondes)"
                         (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.timeGainedDifference" />
+                    <mat-hint>Entre 0 et 10 secondes</mat-hint>
                 </mat-form-field>
             </div>
             <div class="menu-container">
