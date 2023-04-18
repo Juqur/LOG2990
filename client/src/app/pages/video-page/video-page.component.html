@@ -2,8 +2,8 @@
     <div class="container">
         <section id="top-area">
             <button mat-button routerLink="/home" (click)="returnHome()">Retour au Menu</button>
-            <button (click)="startVideo()">Start</button>
-            <button (click)="pauseVideo()">Pause</button>
+            <button (click)="startStopVideo()" *ngIf="isStart">Start</button>
+            <button (click)="startStopVideo()" *ngIf="!isStart">Pause</button>
             <button (click)="videoSpeedTime1()">x1</button>
             <button (click)="videoSpeedTime2()">x2</button>
             <button (click)="videoSpeedTime4()">x4</button>
@@ -22,7 +22,7 @@
             </div>
         </section>
         <section id="top-area">
-            <app-game-timer></app-game-timer>
+            <app-video-timer #videoTimer></app-video-timer>
         </section>
         <section id="play-area-container">
             <app-play-area [image]="originalImageSrc" #originalPlayArea></app-play-area>

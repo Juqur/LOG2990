@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { VideoChatComponent } from '@app/components/video-chat/video-chat.component';
+import { VideoTimerComponent } from '@app/components/video-timer/video-timer.component';
 import { Level } from '@app/levels';
 import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
@@ -20,9 +21,10 @@ import { Constants } from '@common/constants';
     providers: [TimerService],
 })
 export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
-    @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
-    @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
-    @ViewChild('videoChat', { static: false }) videoChat!: VideoChatComponent;
+    @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
+    @ViewChild('diffPlayArea', { static: false }) private diffPlayArea!: PlayAreaComponent;
+    @ViewChild('videoChat', { static: false }) private videoChat!: VideoChatComponent;
+    @ViewChild('videoTimer', { static: false }) private videoTimer!: VideoTimerComponent;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
@@ -40,6 +42,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     timeFrame: number = 0;
     lastTimeFrame: number = 0;
     messageCount: number = 0;
+    isStart: boolean = true;
 
     private showVideo: ReturnType<typeof setInterval>;
 
@@ -94,8 +97,14 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * This method is called when the user clicks on the start video button.
      */
-    startVideo(): void {
-        this.playVideo();
+    startStopVideo(): void {
+        if (this.isStart) {
+            this.videoTimer.startTimer();
+            this.playVideo();
+        } else {
+            this.pauseVideo();
+        }
+        this.isStart = !this.isStart;
     }
 
     /**
@@ -147,7 +156,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
             if (this.timeFrame >= this.lastTimeFrame) {
                 this.pauseVideo();
             }
-            if (this.timeFrame === videoFrame.time) {
+            console.log(this.timeFrame, videoFrame);
+            if (this.timeFrame >= videoFrame.time) {
                 this.putInCanvas();
                 if (videoFrame.found) ++this.playerDifferencesCount;
                 videoFrame = VideoService.getStackElement(VideoService.pointer);
@@ -174,6 +184,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     pauseVideo(): void {
         clearInterval(this.showVideo);
+        this.videoTimer.stopTimer();
     }
 
     /**
@@ -184,7 +195,19 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         VideoService.pointer = 0;
         this.timeFrame = -1;
         this.playerDifferencesCount = 0;
+        this.messageCount = 0;
+        this.videoTimer.resetTimer();
         this.playVideo();
+        this.videoTimer.startTimer();
+    }
+
+    resetVideoAndTimer(): void {
+        clearInterval(this.showVideo);
+        VideoService.pointer = 0;
+        this.timeFrame = -1;
+        this.playerDifferencesCount = 0;
+        this.messageCount = 0;
+        this.videoTimer.resetTimer();
     }
 
     /**
@@ -193,6 +216,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     returnHome(): void {
         clearInterval(this.showVideo);
         VideoService.resetStack();
+        this.videoTimer.resetTimer();
+        this.resetVideoAndTimer();
     }
 
     /**

@@ -8,7 +8,8 @@ import { Constants } from '@common/constants';
 })
 export class VideoTimerComponent implements OnInit {
     gameTimeFormatted: string;
-
+    interval: ReturnType<typeof setInterval>;
+    time: number = 0;
     /**
      * This method verifies if we aren't connected to the time gateway and connects us to it
      * if that was the case. We then send the corresponding soloClassic event and prepare to
@@ -27,9 +28,24 @@ export class VideoTimerComponent implements OnInit {
     updateTimer(time: number): void {
         const minutes: number = Math.floor(time / Constants.SECONDS_PER_MINUTE);
         const seconds: number = time % Constants.SECONDS_PER_MINUTE;
-
         const minutesString: string = minutes < Constants.PADDING_NUMBER ? '0' + minutes : minutes.toString();
         const secondsString: string = seconds < Constants.PADDING_NUMBER ? '0' + seconds : seconds.toString();
         this.gameTimeFormatted = 'Temps: ' + minutesString + ':' + secondsString;
+    }
+
+    startTimer() {
+        this.interval = setInterval(() => {
+            this.updateTimer(this.time++);
+        }, Constants.millisecondsInOneSecond);
+    }
+
+    stopTimer() {
+        clearInterval(this.interval);
+    }
+
+    resetTimer() {
+        this.stopTimer();
+        this.time = 0;
+        this.updateTimer(this.time);
     }
 }
