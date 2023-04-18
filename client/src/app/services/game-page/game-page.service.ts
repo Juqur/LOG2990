@@ -326,7 +326,7 @@ export class GamePageService {
      * This method will redraw the canvas with the original image plus the elements that were not found.
      * To avoid flashing issue, it copies to a third temporary canvas.
      * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
-     * 
+     *
      * @param cooldown If true, the player will not be able to click on the canvas during the cooldown.
      */
     private resetCanvas(cooldown: boolean): void {
