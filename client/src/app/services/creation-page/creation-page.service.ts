@@ -26,6 +26,10 @@ export class CreationPageService {
     private defaultUploadFile: File;
     private differenceUploadFile: File;
 
+    /**
+     * It is true that this service has a lot of services, however,
+     * those services are qualified terminal, which means it cannot be refactored any further.
+     */
     // eslint-disable-next-line max-params
     constructor(
         private canvasShare: CanvasSharingService,
