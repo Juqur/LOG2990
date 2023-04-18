@@ -1,5 +1,6 @@
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/chat-messages';
 import { Constants } from '@common/constants';
@@ -19,7 +20,13 @@ import { GameEvents } from './game.gateway.events';
 export class GameGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private gameService: GameService, private timerService: TimerService, private chatService: ChatService) {}
+    // eslint-disable-next-line max-len, max-params
+    constructor(
+        private gameService: GameService,
+        private timerService: TimerService,
+        private chatService: ChatService,
+        private mongodbService: MongodbService,
+    ) {}
 
     /**
      * This method is called when a player joins a new game. It creates a new room and adds the player to it.
@@ -82,8 +89,10 @@ export class GameGateway {
 
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
+            this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
+
             if (otherSocketId) {
                 this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.Defeat);
                 this.timerService.stopTimer(otherSocketId);
