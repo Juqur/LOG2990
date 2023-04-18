@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
@@ -20,8 +20,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     @Input() image: string = '';
     @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
-    currentImage: HTMLImageElement;
-    buttonPressed = '';
+    private currentImage: HTMLImageElement;
     private tempCanvas: HTMLCanvasElement;
 
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
@@ -38,17 +37,6 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
      */
     get height(): number {
         return Constants.DEFAULT_HEIGHT;
-    }
-
-    /**
-     * This method listens for key presses and updates the buttonPressed attribute in
-     * consequences.
-     *
-     * @param event The keyboardEvent to process.
-     */
-    @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent): void {
-        this.buttonPressed = event.key;
     }
 
     /**
