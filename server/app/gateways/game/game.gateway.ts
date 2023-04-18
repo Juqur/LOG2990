@@ -4,9 +4,9 @@ import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { ChatMessage } from '@common/chat-messages';
 import { Constants } from '@common/constants';
 import { GameHistory } from '@common/game-history';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Injectable } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -92,11 +92,13 @@ export class GameGateway {
 
         const firstPlayerName = gameState.playerName;
         const secondPlayerName = gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined;
+        const startDate = new Date(this.timerService.getStartDate(socket.id));
+        const lengthGame = this.timerService.getTime(socket.id);
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
             socket.emit(GameEvents.Victory);
             await this.mongodbService.addGameHistory({
-                startDate: this.timerService.getStartDate(socket.id),
-                lengthGame: this.timerService.getTime(socket.id),
+                startDate,
+                lengthGame,
                 isClassic: !gameState.timedLevelList ? true : false,
                 firstPlayerName,
                 secondPlayerName,

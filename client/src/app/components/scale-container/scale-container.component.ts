@@ -12,8 +12,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
  * @class ScaleContainerComponent
  */
 export class ScaleContainerComponent implements OnInit {
-    @ViewChild('screen', { static: true }) screen: ElementRef;
-    @ViewChild('container', { static: true }) container: ElementRef;
+    @ViewChild('screen', { static: true }) private screen: ElementRef;
+    @ViewChild('container', { static: true }) private container: ElementRef;
     private scaleRatio: number = 1;
 
     /**
