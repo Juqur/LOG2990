@@ -41,7 +41,6 @@ export class CardComponent {
      * @returns The path difficulty image.
      */
     displayDifficultyIcon(): string {
-        console.log(this.imagePath + this.level.id);
         return this.level.isEasy ? 'assets/images/easy.png' : 'assets/images/hard.png';
     }
 
