@@ -11,7 +11,7 @@ import { Level, LevelDocument } from '@app/model/schema/level.schema';
 import { GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
-import { Level as LevelDto } from '@common/interfaces/level';
+import { Level as LevelDataObject } from '@common/interfaces/level';
 import { TestConstants } from '@common/test-constants';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -253,7 +253,7 @@ describe('MongodbService', () => {
     describe('createNewLevel', () => {
         it('should create a new level', async () => {
             const createSpy = jest.spyOn(levelModel, 'create' as never);
-            await service.createNewLevel({} as unknown as LevelDto);
+            await service.createNewLevel({} as unknown as LevelDataObject);
             expect(createSpy).toHaveBeenCalledTimes(1);
         });
     });

@@ -5,7 +5,7 @@ import { Message } from '@app/model/schema/message.schema';
 import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
 import { GameConstants as GameConstantsDto } from '@common/game-constants';
-import { Level as LevelDto } from '@common/interfaces/level';
+import { Level as LevelDataObject } from '@common/interfaces/level';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
@@ -44,7 +44,7 @@ export class MongodbService {
      *
      * @param level The level DTO with the relevant information to create a new level in the database.
      */
-    async createNewLevel(level: LevelDto): Promise<void> {
+    async createNewLevel(level: LevelDataObject): Promise<void> {
         await this.levelModel.create({
             id: level.id,
             name: level.name,
@@ -76,8 +76,8 @@ export class MongodbService {
      *
      * @returns All the levels in the db.
      */
-    async getAllLevels(): Promise<LevelDto[] | null> {
-        return (await this.levelModel.find({}).exec()) as LevelDto[] | null;
+    async getAllLevels(): Promise<LevelDataObject[] | null> {
+        return (await this.levelModel.find({}).exec()) as LevelDataObject[] | null;
     }
 
     /**
@@ -90,8 +90,8 @@ export class MongodbService {
      * @param levelId The id of the level we want to find.
      * @returns The level associated with the given id.
      */
-    async getLevelById(levelId: number): Promise<LevelDto | null> {
-        return (await this.levelModel.findOne({ id: levelId }).exec()) as LevelDto | null;
+    async getLevelById(levelId: number): Promise<LevelDataObject | null> {
+        return (await this.levelModel.findOne({ id: levelId }).exec()) as LevelDataObject | null;
     }
 
     /**
