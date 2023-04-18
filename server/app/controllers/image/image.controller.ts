@@ -2,9 +2,9 @@ import { Message } from '@app/model/schema/message.schema';
 import { GameService } from '@app/services/game/game.service';
 import { ImageService } from '@app/services/image/image.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { Level } from '@common/interfaces/level';
 import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { Level } from 'assets/data/level';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 
 enum HttpCodes {
