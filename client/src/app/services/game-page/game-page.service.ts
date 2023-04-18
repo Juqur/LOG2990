@@ -301,6 +301,8 @@ export class GamePageService {
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
         shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+        this.diffPlayArea.drawPlayArea(this.diffImageSrc);
     }
 
     /**

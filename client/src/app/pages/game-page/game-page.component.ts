@@ -157,6 +157,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
         this.socketHandler.on('game', 'hintRequest', (data) => {
             const section = data as number[];
+            this.gamePageService.setImages(this.levelId);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             if (section.length < 3 && this.nbHints > 1) {
                 this.gamePageService.handleHintRequest(section);
                 this.nbHints--;
