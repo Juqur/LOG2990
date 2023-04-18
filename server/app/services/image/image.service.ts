@@ -1,10 +1,12 @@
 import { Message } from '@app/model/schema/message.schema';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
+import { Level } from '@common/interfaces/level';
 import { Injectable } from '@nestjs/common';
-import { Level, LevelData } from 'assets/data/level';
+import { LevelData } from 'assets/data/level';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
+import { mkdir } from 'fs/promises';
 
 /**
  * This service is used to get the amount of differences left between the two images.
@@ -125,12 +127,17 @@ export class ImageService {
             } as Level;
             await this.mongodbService.createNewLevel(level);
 
+            await mkdir(this.pathDifference, { recursive: true });
             fs.writeFile(this.pathDifference + newId + '.json', levelData.clusters.toString(), (error) => {
                 if (error) throw error;
             });
+
+            await mkdir(this.pathOriginal, { recursive: true });
             fs.rename(levelData.imageOriginal.path, this.pathOriginal + newId + '.bmp', (error) => {
                 if (error) throw error;
             });
+
+            await mkdir(this.pathModified, { recursive: true });
             fs.rename(levelData.imageDiff.path, this.pathModified + newId + '.bmp', (error) => {
                 if (error) throw error;
             });

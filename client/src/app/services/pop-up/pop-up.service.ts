@@ -29,9 +29,6 @@ export interface InputData {
     submitFunction: (value: string) => boolean;
 }
 
-@Injectable({
-    providedIn: 'root',
-})
 /**
  * This service is used to interact with a pop-up-dialog component to generate a custom pop up on the screen.
  * It is only used to start the pop-up-dialog and retrieve the information that may or may not have been given
@@ -40,9 +37,12 @@ export interface InputData {
  * @author Charles Degrandpré
  * @class PopUpService
  */
+@Injectable({
+    providedIn: 'root',
+})
 export class PopUpService {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dialogRef: MatDialogRef<PopUpDialogComponent, any>;
+    dialogRef: MatDialogRef<PopUpDialogComponent>;
+
     constructor(public dialog: MatDialog, private router: Router) {}
 
     /**
@@ -51,8 +51,8 @@ export class PopUpService {
      * a boolean indicating if it needs an input field, the label of said input field
      * and the route to send the user once the pop-up is closed.
      *
-     * @param dataToSend a DialogData instance which has three attributes.
-     * @param routToGo the route to send the user to once the pop-up is closed.
+     * @param dataToSend A DialogData instance which has three attributes.
+     * @param routToGo The route to send the user to once the pop-up is closed.
      */
     openDialog(dataToSend: DialogData, routeToGo?: string): void {
         if (dataToSend.mustProcess) {
