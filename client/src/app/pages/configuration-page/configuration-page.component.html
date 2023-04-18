@@ -11,6 +11,7 @@
                 <mat-form-field>
                     <input
                         matInput
+                        id="initial-time-input"
                         placeholder="temps initial du compte à rebours (secondes)"
                         (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.initialTime"
@@ -19,6 +20,7 @@
                 <mat-form-field>
                     <input
                         matInput
+                        id="time-penalty-hint-input"
                         placeholder="temps de pénalité pour l’utilisation d’un indice (secondes)"
                         (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.timePenaltyHint"
@@ -27,6 +29,7 @@
                 <mat-form-field>
                     <input
                         matInput
+                        id="time-gained-difference-input"
                         placeholder="temps gagné avec la découverte d’une différence (secondes)"
                         (blur)="this.levelService.setNewGameConstants($event)"
                         [value]="this.levelService.timeGainedDifference"
