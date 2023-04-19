@@ -260,6 +260,21 @@ describe('LevelService', () => {
         });
     });
 
+    describe('setNewGameConstants', () => {
+        it('should set the gameConstants to its default values', () => {
+            service.resetGameConstants();
+            expect(service['gameConstants']).toEqual({
+                initialTime: Constants.INIT_COUNTDOWN_TIME,
+                timePenaltyHint: Constants.HINT_PENALTY,
+                timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+            });
+        });
+
+        it('should call communicationService.setNewGameConstants', () => {
+            service.resetGameConstants();
+            expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
+        });
+    });
     describe('nextPage', () => {
         it('should increment page count and call updatePageLevels', () => {
             const spy = spyOn(service, 'updatePageLevels' as never);

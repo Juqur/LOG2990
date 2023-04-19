@@ -19,6 +19,7 @@ describe('ConfigurationPageComponent', () => {
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<unknown>>;
     let deleteLevelSpy: jasmine.Spy;
     let deleteAllLevelsSpy: jasmine.Spy;
+    let resetGameConstantsSpy: jasmine.Spy;
 
     beforeEach(async () => {
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
@@ -27,6 +28,7 @@ describe('ConfigurationPageComponent', () => {
 
         deleteLevelSpy = spyOn(LevelService.prototype, 'deleteLevel');
         deleteAllLevelsSpy = spyOn(LevelService.prototype, 'deleteAllLevels');
+        resetGameConstantsSpy = spyOn(LevelService.prototype, 'resetGameConstants');
 
         await TestBed.configureTestingModule({
             declarations: [ConfigurationPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
@@ -67,6 +69,18 @@ describe('ConfigurationPageComponent', () => {
         it('should call deleteLevel', () => {
             component.onDeleteAllLevels();
             expect(deleteAllLevelsSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('onResetGameConstants', () => {
+        it('should call openDialog', () => {
+            component.onResetGameConstants();
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call deleteLevel', () => {
+            component.onResetGameConstants();
+            expect(resetGameConstantsSpy).toHaveBeenCalledTimes(1);
         });
     });
 });

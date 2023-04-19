@@ -46,4 +46,13 @@ export class ConfigurationPageComponent {
             }
         });
     }
+
+    onResetGameConstants(): void {
+        this.popUpService.openDialog(Dialogs.confirmResetGameConstants);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                this.levelService.resetGameConstants();
+            }
+        });
+    }
 }

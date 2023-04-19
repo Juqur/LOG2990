@@ -74,6 +74,13 @@ export namespace Dialogs {
         mustProcess: true,
     };
 
+    export const confirmResetGameConstants: DialogData = {
+        textToSend: 'Voulez-vous vraiment réinitialiser les paramètres de jeu?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+        mustProcess: true,
+    };
+
     export const confirmation = (message: string) => {
         return {
             textToSend: message,

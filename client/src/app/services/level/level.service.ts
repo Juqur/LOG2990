@@ -87,6 +87,11 @@ export class LevelService {
         return Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
     }
 
+    /**
+     * Sets new game constants for all games.
+     *
+     * @param event The event that triggered the function.
+     */
     setNewGameConstants(event: Event) {
         if (this.gameConstants) {
             const input = event.target as HTMLInputElement;
@@ -121,10 +126,21 @@ export class LevelService {
             }
             if (valueChanged) {
                 this.communicationService.setNewGameConstants(this.gameConstants).subscribe();
-            } else {
-                alert('La valeur est invalide.');
+                alert('La valeur a été modifiée avec succès.');
             }
         }
+    }
+
+    /**
+     * Resets the game constants to their default values.
+     */
+    resetGameConstants(): void {
+        this.gameConstants = {
+            initialTime: Constants.INIT_COUNTDOWN_TIME,
+            timePenaltyHint: Constants.HINT_PENALTY,
+            timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+        };
+        this.communicationService.setNewGameConstants(this.gameConstants).subscribe();
     }
 
     /**
