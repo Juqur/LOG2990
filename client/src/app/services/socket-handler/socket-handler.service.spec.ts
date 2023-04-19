@@ -158,7 +158,7 @@ describe('SocketClientService', () => {
         });
 
         it('should not call emit if socket is undefined', () => {
-            const data = 0;
+            const data = '0';
             const spy = spyOn(socketTest, 'emit');
             spyOn(service, 'getSocket').and.returnValue(undefined);
 
@@ -168,7 +168,7 @@ describe('SocketClientService', () => {
         });
 
         it('send should call emit with data when using send', () => {
-            const data = 0;
+            const data = '0';
             const spy = spyOn(socketTest, 'emit');
             service.send(socketGateway1, event, data);
             expect(spy).toHaveBeenCalledTimes(1);
