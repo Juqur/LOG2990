@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHandler } from '@angular/common/http';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -14,6 +14,7 @@ import { DifferenceDetectorService } from '@app/services/difference-detector/dif
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { of } from 'rxjs';
 import { CreationPageService } from './creation-page.service';
@@ -29,6 +30,7 @@ describe('CreationPageService', () => {
     let mouseServiceSpy: SpyObj<MouseService>;
     let dialogRefSpy: SpyObj<MatDialogRef<PopUpDialogComponent>>;
     let errorDialogSpy: jasmine.Spy;
+    let socketHandlerSpy: SpyObj<SocketHandler>;
     let getEmptyBmpFileSpy: jasmine.Spy;
     let showDefaultImageSpy: jasmine.Spy;
     let showDifferenceImageSpy: jasmine.Spy;
@@ -53,6 +55,7 @@ describe('CreationPageService', () => {
             'incrementCounter',
             'getDifferenceCounter',
         ]);
+        socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
     });
 
     beforeEach(() => {
@@ -65,8 +68,9 @@ describe('CreationPageService', () => {
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: CommunicationService, useValue: communicationSpy },
                 { provide: MouseService, useValue: mouseServiceSpy },
+                { provide: SocketHandler, useValue: socketHandlerSpy },
             ],
-            imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule],
+            imports: [AppMaterialModule, MatSliderModule, FormsModule, RouterTestingModule, HttpClientModule],
         });
         service = TestBed.inject(CreationPageService);
         service['drawServiceDefault'] = drawServiceDefaultSpy;
@@ -85,6 +89,7 @@ describe('CreationPageService', () => {
             differenceServiceSpy,
             popUpServiceSpy,
             communicationSpy,
+            socketHandlerSpy,
             mouseServiceSpy,
             mouseServiceSpy,
         );

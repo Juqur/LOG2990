@@ -51,13 +51,13 @@ export class ChatService {
      * @param dataToSend The data to send to the players.
      * @param gameService The game service.
      */
-    sendSystemMessage(socket: Socket, dataToSend: GameData, gameState: GameState): void {
+    sendSystemMessage(sockets: { socket: Socket; server: Server }, dataToSend: GameData, gameState: GameState): void {
         const otherSocketId = gameState.otherSocketId;
         const message: string = dataToSend.differencePixels.length === 0 ? 'Erreur' : 'Différence trouvée';
         const playerName: string = gameState.otherSocketId ? ' par ' + gameState.playerName : '';
-        socket.emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
-        if (gameState.otherSocketId) {
-            socket.to(otherSocketId).emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
+        sockets.socket.emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
+        if (otherSocketId) {
+            sockets.server.sockets.sockets.get(otherSocketId).emit(GameEvents.MessageSent, this.getSystemChatMessage(message + playerName));
         }
     }
 
@@ -70,12 +70,11 @@ export class ChatService {
      * @param message The message to send.
      * @param gameService The game service of game.gateway.ts.
      */
-    sendToBothPlayers(socket: Socket, message: ChatMessage, gameState: GameState): void {
-        socket.emit(GameEvents.MessageSent, message);
-
+    sendToBothPlayers(sockets: { socket: Socket; server: Server }, message: ChatMessage, gameState: GameState): void {
+        sockets.socket.emit(GameEvents.MessageSent, message);
         message.senderId = SenderType.Opponent;
         const otherSocketId = gameState.otherSocketId;
-        socket.to(otherSocketId).emit(GameEvents.MessageSent, message);
+        sockets.server.sockets.sockets.get(otherSocketId).emit(GameEvents.MessageSent, message);
     }
 
     /**
@@ -87,10 +86,10 @@ export class ChatService {
      * @param socket The socket of the player.
      * @param gameService The game service of game.gateway.ts.
      */
-    abandonMessage(socket: Socket, gameState: GameState): void {
+    abandonMessage(server: Server, gameState: GameState): void {
         const otherSocketId = gameState.otherSocketId;
         const playerName: string = gameState.playerName;
-        socket.to(otherSocketId).emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
+        server.sockets.sockets.get(otherSocketId).emit(GameEvents.MessageSent, this.getSystemChatMessage(playerName + ' a abandonné la partie'));
     }
 
     /**

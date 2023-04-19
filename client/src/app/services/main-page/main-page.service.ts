@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogData, Dialogs } from '@app/interfaces/dialogs';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+
+export interface TimedGameData {
+    levelId: number;
+    otherPlayerName: string;
+}
 
 /**
  * Service that handles the main page.
@@ -14,15 +20,31 @@ import { SocketHandler } from '@app/services/socket-handler/socket-handler.servi
     providedIn: 'root',
 })
 export class MainPageService {
+    amountOfLevels: number = 0;
     private multiplayerDialog: DialogData = {
         textToSend: 'Voulez-vous jouer avec un autre joueur?',
         isConfirmation: true,
         closeButtonMessage: '',
         mustProcess: false,
     };
+    private waitingForPlayer: boolean = true;
 
-    constructor(private popUpService: PopUpService, private socketHandler: SocketHandler, private router: Router) {}
+    // eslint-disable-next-line max-params
+    constructor(
+        private popUpService: PopUpService,
+        private socketHandler: SocketHandler,
+        private router: Router,
+        private communicationService: CommunicationService,
+    ) {}
 
+    /**
+     * This method gets the amount of levels in the database.
+     */
+    setAmountOfLevels(): void {
+        this.communicationService.getLevels().subscribe((levels) => {
+            this.amountOfLevels = levels.length;
+        });
+    }
     /**
      * This method redirects the user to a specific route.
      *
@@ -51,6 +73,12 @@ export class MainPageService {
         if (!this.socketHandler.isSocketAlive('game')) {
             this.socketHandler.connect('game');
         }
+        this.socketHandler.on('game', 'deleteLevel', () => {
+            this.setAmountOfLevels();
+        });
+        this.socketHandler.on('game', 'refreshLevels', () => {
+            this.setAmountOfLevels();
+        });
     }
 
     /**
@@ -65,9 +93,36 @@ export class MainPageService {
         this.popUpService.openDialog(this.multiplayerDialog);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             this.socketHandler.send('game', 'onCreateTimedGame', { multiplayer: result, playerName });
-            this.router.navigate([`/game/${0}/`], {
-                queryParams: { playerName },
+            if (result) {
+                this.waitingForOpponent(playerName);
+            } else {
+                this.router.navigate([`/game/${0}/`], {
+                    queryParams: { playerName, gameMode: 'timed' },
+                });
+            }
+        });
+    }
+
+    private waitingForOpponent(playerName: string) {
+        const dialogData: DialogData = {
+            textToSend: "En attente d'un adversaire",
+            isConfirmation: false,
+            closeButtonMessage: 'Annuler',
+            mustProcess: false,
+        };
+        this.popUpService.openDialog(dialogData);
+        this.popUpService.dialogRef.afterClosed().subscribe(() => {
+            if (this.waitingForPlayer) {
+                this.socketHandler.send('game', 'onTimedGameCancelled');
+            }
+            this.waitingForPlayer = true;
+        });
+        this.socketHandler.on('game', 'startTimedGameMultiplayer', (data: TimedGameData) => {
+            this.waitingForPlayer = false;
+            this.router.navigate([`/game/${data.levelId}/`], {
+                queryParams: { playerName, opponent: data.otherPlayerName, gameMode: 'timed' },
             });
+            this.popUpService.dialogRef.close();
         });
     }
 }
