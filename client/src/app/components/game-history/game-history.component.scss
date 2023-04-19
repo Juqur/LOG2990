@@ -1,0 +1,54 @@
+h1 {
+    font-weight: 500;
+    font-size: 30px;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    padding-block: 15px;
+}
+
+ul {
+    list-style-type: none;
+    padding-inline-start: 0;
+}
+
+ul > li:nth-child(1),
+li:nth-child(3) {
+    border-bottom: solid;
+}
+
+ul.sub-info li span:first-child {
+    justify-content: start;
+}
+
+ul.sub-info li span:nth-child(2) {
+    color: #d6a88f;
+    justify-content: end;
+    font-weight: 400;
+}
+
+.history-container {
+    border: 0.2em solid #eaac8b;
+    padding: 40px;
+    color: #eaac8b;
+    font-size: 30px;
+}
+
+.sub-info {
+    display: block;
+    height: auto;
+    padding: 0 0 0.75rem;
+    column-count: 2;
+    column-gap: 100px;
+    width: 80%;
+}
+
+.bold {
+    font-weight: bolder !important;
+}
+
+.strike-through {
+    text-decoration: line-through;
+}

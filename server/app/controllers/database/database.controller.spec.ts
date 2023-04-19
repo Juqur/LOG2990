@@ -48,4 +48,16 @@ describe('DatabaseController', () => {
         await controller.resetGameConstants();
         expect(spy).toHaveBeenCalledTimes(1);
     });
+
+    it('should call mongodb service getGameHistories', async () => {
+        const spy = jest.spyOn(mongodbService, 'getGameHistories');
+        await controller.getGameHistories();
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call mongodb service deleteAllGameHistories', async () => {
+        const spy = jest.spyOn(mongodbService, 'deleteAllGameHistories');
+        await controller.deleteGameHistories();
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
 });
