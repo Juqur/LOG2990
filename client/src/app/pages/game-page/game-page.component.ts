@@ -133,11 +133,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
-                this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+                const isFound = this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+                if (isFound && this.showThirdHint) {
+                    this.removeHintShape();
+                }
             }
         });
-        this.socketHandler.on('game', 'victory', () => {
-            this.gamePageService.handleVictory();
+        this.socketHandler.on('game', 'victory', (highscorePosition: number) => {
+            this.gamePageService.handleVictory(highscorePosition);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
             this.gamePageService.handleOpponentAbandon();
@@ -154,6 +157,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
         this.socketHandler.on('game', 'hintRequest', (data) => {
             const section = data as number[];
+            this.gamePageService.setImages(this.levelId);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
             if (section.length < 3 && this.nbHints > 1) {
                 this.gamePageService.handleHintRequest(section);
                 this.nbHints--;
@@ -167,8 +172,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.levelId = level.id;
             this.currentLevel = level;
             this.settingGameImage();
+            this.gamePageService.resetImagesData();
             this.gamePageService.setMouseCanClick(true);
             this.gamePageService.setImages(this.levelId);
+            if (this.showThirdHint) this.removeHintShape();
         });
     }
 
@@ -184,9 +191,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = true;
         }
-        if (this.showThirdHint) {
-            this.removeHintShape();
-        }
     }
 
     /**
@@ -200,9 +204,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = false;
-        }
-        if (this.showThirdHint) {
-            this.removeHintShape();
         }
     }
 

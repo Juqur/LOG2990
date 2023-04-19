@@ -49,10 +49,10 @@
                         'Classique' : 'Temps limité' }}</span>
                 </div>
                 <div>
-                    <span class="info-question">Différences totale : </span><span class="info-answer">{{
+                    <span class="info-question">Différences totales : </span><span class="info-answer">{{
                         currentLevel.nbDifferences }}</span>
                 </div>
-                <div *ngIf="isClassic">
+                <div *ngIf="!secondPlayerName">
                     <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + '
                         secondes' }}</span>
                 </div>

@@ -1,0 +1,20 @@
+<app-scale-container [isScalable]="true">
+    <header class="top-bar-container">
+        <span class="corner-button">
+            <button class="side-button" routerLink="/config">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+        </span>
+    </header>
+
+    <body class="body-container">
+        <div class="title-container">
+            <h1>Historique des parties</h1>
+            <button mat-button class="menu-button" (click)="onClearHistory()"><span>Tout supprimer</span></button>
+        </div>
+        <div class="history" *ngFor="let history of gameHistories">
+            <app-game-history [gameHistory]="history"></app-game-history>
+        </div>
+    </body>
+
+</app-scale-container>
