@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LevelService } from '@app/services/level/level.service';
 import { SelectionPageService } from '@app/services/selection-page/selection-page.service';
 
@@ -14,14 +14,16 @@ import { SelectionPageService } from '@app/services/selection-page/selection-pag
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
-export class SelectionPageComponent implements OnInit {
+export class SelectionPageComponent implements OnInit, OnDestroy {
     constructor(public selectionPageService: SelectionPageService, public levelService: LevelService) {}
-    /**
-     * This method is called when the component is initialized.
-     * It sets up the socket.
-     */
+
     ngOnInit(): void {
         this.selectionPageService.setupSocket(this.levelService);
+        this.levelService.setupSocket();
         this.levelService.refreshLevels();
+    }
+
+    ngOnDestroy(): void {
+        this.levelService.destroySocket();
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Dialogs } from '@app/interfaces/dialogs';
 import { LevelService } from '@app/services/level/level.service';
@@ -16,11 +16,16 @@ import { PopUpService } from '@app/services/pop-up/pop-up.service';
     templateUrl: './configuration-page.component.html',
     styleUrls: ['./configuration-page.component.scss'],
 })
-export class ConfigurationPageComponent implements OnInit {
+export class ConfigurationPageComponent implements OnInit, OnDestroy {
     constructor(public levelService: LevelService, private popUpService: PopUpService, public router: Router) {}
 
     ngOnInit(): void {
         this.levelService.refreshLevels();
+        this.levelService.setupSocket();
+    }
+
+    ngOnDestroy(): void {
+        this.levelService.destroySocket();
     }
 
     /**
