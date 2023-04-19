@@ -737,6 +737,20 @@ describe('GameGateway', () => {
         });
     });
 
+    describe('onResetLevelHighScore', () => {
+        it('should call resetLevelHighScore', () => {
+            const spy = jest.spyOn(mongodbService, 'resetLevelHighScore').mockImplementation();
+            gateway['onResetLevelHighScore'](socket, 1);
+            expect(spy).toBeCalledWith(1);
+        });
+
+        it('should emit RefreshLevels', () => {
+            jest.spyOn(mongodbService, 'resetLevelHighScore').mockImplementation();
+            gateway['onResetLevelHighScore'](socket, 1);
+            expect(server.emit).toBeCalledWith('refreshLevels', 1);
+        });
+    });
+
     describe('onTimedGameCancelled', () => {
         it('should delete the user from the game', () => {
             jest.spyOn(gameService, 'getGameState').mockReturnValue({ isInGame: false } as unknown as GameState);
