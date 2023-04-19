@@ -289,49 +289,53 @@ fdescribe('GamePageService', () => {
     describe('handleAreaFoundInDifference', () => {
         let resetCanvasSpy: jasmine.Spy;
         let audioSpy: jasmine.Spy;
+        let flashBothCanvasSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
-            spyOn(service, 'flashBothCanvas' as never).and.resolveTo();
+            flashBothCanvasSpy = spyOn(service, 'flashBothCanvas' as never).and.resolveTo();
             spyOn(service, 'addToVideoStack' as never);
             playAreaComponentSpy.getFlashingCopy.and.returnValue(document.createElement('canvas'));
-            playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
         });
 
-        it('should push the difference array correctly in imagesData', () => {
+        it('should push the difference array correctly in imagesData', fakeAsync(async () => {
             const expectedArray = [0, 1, 2];
             service['handleAreaFoundInDifference'](expectedArray, false, 0, 0);
+            await flashBothCanvasSpy;
             expect(service['imagesData']).toEqual(expectedArray);
-        });
+        }));
 
-        it('should correctly filter areaNotFound in handleAreaFoundInDifference', () => {
+        it('should correctly filter areaNotFound in handleAreaFoundInDifference', fakeAsync(async () => {
             service['areaNotFound'] = [0, 1, 2, 3];
             const expectedArray = [0, 1, 2];
             service['handleAreaFoundInDifference'](expectedArray, true, 0, 0);
+            await flashBothCanvasSpy;
             expect(service['areaNotFound']).toEqual([3]);
-        });
+        }));
 
-        it('should call quickPlay', () => {
+        it('should call quickPlay', fakeAsync(async () => {
             service['handleAreaFoundInDifference']([], false, 0, 0);
+            await flashBothCanvasSpy;
+
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
-        });
+        }));
 
-        it('should call getFlashingCopy', fakeAsync(() => {
+        it('should call getFlashingCopy', fakeAsync(async () => {
             service['handleAreaFoundInDifference']([], false, 0, 0);
-            tick();
+            await flashBothCanvasSpy;
             expect(playAreaComponentSpy.getFlashingCopy).toHaveBeenCalledTimes(2);
         }));
 
-        it('should call addToVideoStack', fakeAsync(() => {
+        it('should call addToVideoStack', fakeAsync(async () => {
             service['handleAreaFoundInDifference']([], false, 0, 0);
-            tick();
+            await flashBothCanvasSpy;
             expect(service['addToVideoStack']).toHaveBeenCalledTimes(1);
         }));
 
-        it('should call reset canvas', fakeAsync(() => {
+        it('should call reset canvas', fakeAsync(async () => {
             service['handleAreaFoundInDifference']([], false, 0, 0);
-            tick();
+            await flashBothCanvasSpy;
             expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         }));
     });
