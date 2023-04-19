@@ -28,11 +28,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('videoChat', { static: false }) private videoChat!: VideoChatComponent;
     @ViewChild('videoTimer', { static: false }) private videoTimer!: VideoTimerComponent;
 
-    nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
-    // closePath: string = '/selection';
-    diffCanvasCtx: CanvasRenderingContext2D | null = null;
     playerName: string = '';
     secondPlayerName: string | null = null;
     playerDifferencesCount: number = 0;
@@ -64,8 +61,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      * It also handles the pausing of any audio playing if the player decides to leave the page.
      * It also connects to the the game socket and handles the response.
      */
-
     constructor(private popUpService: PopUpService) {}
+
     ngOnInit(): void {
         this.settingGameParameters();
     }
