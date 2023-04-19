@@ -130,9 +130,9 @@ describe('GamePageService', () => {
 
     describe('handleVictory', () => {
         it('should call create', () => {
-            const audioSpy = spyOn(AudioService, 'quickPlay');
             service.handleVictory(2);
-            expect(audioSpy).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.create).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
+            expect(audioServiceSpy.play).toHaveBeenCalled();
         });
 
         it('should call openDialog without adding the highscore position', () => {

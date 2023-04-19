@@ -161,10 +161,12 @@ describe('MainPageService', () => {
 
     // describe('setAmountOfLevels', () => {
     //     it('should set amountOfLevels to the length of the levels returned by communication service', () => {
-    //         // const levels = [{} as Level];
-    //         // communicationServiceSpy.getLevels.and.returnValue(of(levels));
+    //         const levelsList = [{} as Level];
+    //         communicationServiceSpy.getLevels.and.returnValue(of(levelsList));
+    //         communicationServiceSpy.getLevels().subscribe((levels) => {
+    //             expect(service.amountOfLevels).toEqual(levels.length);
+    //         });
     //         service.setAmountOfLevels();
-    //         expect(service.amountOfLevels).toEqual(1);
     //     });
     // });
 });
