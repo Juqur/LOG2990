@@ -245,13 +245,9 @@ export class GamePageService {
             } else {
                 this.differencePlayArea.flashArea(this.areaNotFound);
                 this.originalPlayArea.flashArea(this.areaNotFound);
-                this.addToVideoStack(
-                    false,
-                    playerDifferencesCount,
-                    secondPlayerDifferencesCount,
-                    this.originalPlayArea.getFlashingCopy().getContext('2d'),
-                    this.differencePlayArea.getFlashingCopy().getContext('2d'),
-                );
+                const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+                const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+                this.addToVideoStack(false, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
             }
             isVisible = !isVisible;
         }, Constants.CHEAT_FLASHING_DELAY);
@@ -462,13 +458,9 @@ export class GamePageService {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.flashBothCanvas(result).then(() => {
-            this.addToVideoStack(
-                true,
-                playerDifferencesCount,
-                secondPlayerDifferencesCount,
-                this.originalPlayArea.getFlashingCopy().getContext('2d'),
-                this.differencePlayArea.getFlashingCopy().getContext('2d'),
-            );
+            const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+            const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+            this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
             this.resetCanvas();
         });
     }
@@ -505,13 +497,9 @@ export class GamePageService {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.flashBothCanvas(result).then(() => {
-            this.addToVideoStack(
-                true,
-                playerDifferencesCount,
-                secondPlayerDifferencesCount,
-                this.originalPlayArea.getFlashingCopy().getContext('2d'),
-                this.differencePlayArea.getFlashingCopy().getContext('2d'),
-            );
+            const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+            const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+            this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
             this.resetCanvas();
         });
     }

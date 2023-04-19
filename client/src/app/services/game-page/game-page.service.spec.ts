@@ -12,16 +12,20 @@ import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
+import { of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-describe('GamePageService', () => {
+fdescribe('GamePageService', () => {
     let service: GamePageService;
     let socketHandlerSpy: jasmine.SpyObj<SocketHandler>;
     let mouseServiceSpy: jasmine.SpyObj<MouseService>;
-    let popUpServiceSpy: jasmine.SpyObj<PopUpService>;
+    // let popUpServiceSpy: jasmine.SpyObj<PopUpService>;
     let audioServiceSpy: jasmine.SpyObj<AudioService>;
     let playAreaComponentSpy: jasmine.SpyObj<PlayAreaComponent>;
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
+    const popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
+    popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const canvas = document.createElement('canvas');
     const nativeElementMock = { nativeElement: canvas };
@@ -32,10 +36,16 @@ describe('GamePageService', () => {
         amountOfDifferencesFoundSecondPlayer: 0,
     };
 
+    // const popUpService = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
+    // popUpService.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    // popUpService.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
+
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
-        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
+        // popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
+        // popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+        // popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', [
@@ -343,16 +353,18 @@ describe('GamePageService', () => {
         });
     });
 
-    fdescribe('handleAreaFoundInOriginal', () => {
+    describe('handleAreaFoundInOriginal', () => {
         let resetCanvasSpy: jasmine.Spy;
         let audioSpy: jasmine.Spy;
-        let getFlashingCopy: jasmine.Spy;
         let addToVideoStackSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
             addToVideoStackSpy = spyOn(service, 'addToVideoStack' as never);
+            spyOn(service, 'flashBothCanvas' as never).and.resolveTo();
+            playAreaComponentSpy.getFlashingCopy.and.returnValue(document.createElement('canvas'));
+            // console.log(addToVideoStackSpy);
         });
 
         it('should push the difference array correctly in imagesData', () => {
@@ -367,11 +379,12 @@ describe('GamePageService', () => {
             expect(addToVideoStackSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should call getFlashingCopy', () => {
+        it('should call getFlashingCopy', fakeAsync(() => {
             const expectedArray = [0, 1, 2];
             service['handleAreaFoundInOriginal'](expectedArray, false, 0, 0);
-            expect(getFlashingCopy).toHaveBeenCalledTimes(2);
-        });
+            tick();
+            expect(playAreaComponentSpy.getFlashingCopy).toHaveBeenCalledTimes(2);
+        }));
 
         it('should correctly filter areaNotFound in handleAreaFoundInOriginal', () => {
             const expectedArray = [0, 1, 2];
@@ -397,12 +410,19 @@ describe('GamePageService', () => {
     });
 
     describe('handleAreaNotFoundInOriginal', () => {
-        const mockCanvas = document.createElement('canvas');
+        // const mockCanvas = document.createElement('canvas');
         let audioSpy: jasmine.Spy;
+        // this.addToVideoStack();
+        // this.resetCanvas();
 
         beforeEach(() => {
             audioSpy = spyOn(AudioService, 'quickPlay');
-            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            playAreaComponentSpy.getFlashingCopy.and.returnValue(document.createElement('canvas'));
+            spyOn(service, 'addToVideoStack' as never);
+            spyOn(service, 'resetCanvas' as never);
+            // spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            // spyOn(playAreaComponentSpy, 'getCanvas').and.returnValue(document.createElement('canvas'));
+            playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
         });
 
         it('should call quickPlay', () => {
