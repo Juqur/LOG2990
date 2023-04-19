@@ -23,7 +23,8 @@ describe('GamePageService', () => {
     let audioServiceSpy: jasmine.SpyObj<AudioService>;
     let playAreaComponentSpy: jasmine.SpyObj<PlayAreaComponent>;
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
-    let videoServiceSpy: jasmine.SpyObj<VideoService>;
+    // let videoServiceSpy: jasmine.SpyObj<VideoService>;
+    let videoServiceSpy = jasmine.createSpyObj('VideoService', ['addToVideoStack']);
     const popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
     popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
     popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
@@ -570,11 +571,17 @@ describe('GamePageService', () => {
     });
 
     describe('addToVideoStack', () => {
-        it('should call VideoService.addToVideoStack if original && difference are true', () => {
-            spyOn(service, 'addToVideoStack' as never);
+        it('should call VideoService.addToVideoStack if original && difference are defined', () => {
             const mockOriginalCanvas = document.createElement('canvas');
             const mockDifferenceCanvas = document.createElement('canvas');
             service['addToVideoStack'](false, 0, 0, mockOriginalCanvas.getContext('2d'), mockDifferenceCanvas.getContext('2d'));
+            expect(videoServiceSpy.addToVideoStack).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not call VideoService.addToVideoStack if original && difference are null', () => {
+            const mockOriginalCanvas = null;
+            const mockDifferenceCanvas = null;
+            service['addToVideoStack'](false, 0, 0, mockOriginalCanvas, mockDifferenceCanvas);
             expect(videoServiceSpy.addToVideoStack).toHaveBeenCalledTimes(1);
         });
     });
