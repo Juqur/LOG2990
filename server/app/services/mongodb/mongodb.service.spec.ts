@@ -505,6 +505,25 @@ describe('MongodbService', () => {
         });
     });
 
+    describe('resetLevelHighScore', () => {
+        it('should call findOneAndUpdate with correct parameters', async () => {
+            const levelId = 1;
+            const findOneAndUpdateSpy = jest.spyOn(levelModel, 'findOneAndUpdate').mockReturnValue({
+                exec: jest.fn(),
+            } as never);
+            await service.resetLevelHighScore(levelId);
+            expect(findOneAndUpdateSpy).toHaveBeenCalledWith(
+                { id: levelId },
+                {
+                    playerSolo: Constants.defaultPlayerSolo,
+                    timeSolo: Constants.defaultTimeSolo,
+                    playerMulti: Constants.defaultPlayerMulti,
+                    timeMulti: Constants.defaultTimeMulti,
+                },
+            );
+        });
+    });
+
     describe('getLevelsInPage', () => {
         it('should return null if page number is 0 or negative', async () => {
             let page = 0;

@@ -18,7 +18,8 @@
                     : 'Créer' }}</button>
             </div>
             <div class="action-button-container" *ngIf="!isSelectionPage">
-                <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
+                <button (click)="resetLevelHighScore(level.id)" mat-raised-button
+                    class="action-button reinitiate-button">Réinitialiser</button>
                 <button (click)="deleteLevel(level.id)" mat-raised-button
                     class="action-button delete-button">Effacer</button>
             </div>

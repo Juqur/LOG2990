@@ -81,6 +81,13 @@ export namespace Dialogs {
         mustProcess: true,
     };
 
+    export const confirmResetLevelHighScore: DialogData = {
+        textToSend: 'Voulez-vous vraiment réinitialiser les meilleurs temps de ce niveau?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+        mustProcess: true,
+    };
+
     export const confirmation = (message: string) => {
         return {
             textToSend: message,

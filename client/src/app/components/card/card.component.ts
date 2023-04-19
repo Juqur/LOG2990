@@ -23,6 +23,7 @@ export class CardComponent {
     @Input() isSelectionPage: boolean = true;
     @Output() startGameDialogEvent = new EventEmitter();
     @Output() deleteLevelEvent = new EventEmitter<number>();
+    @Output() resetLevelHighScoreEvent = new EventEmitter<number>();
 
     readonly imagePath: string = environment.serverUrl + 'original/';
 
@@ -66,5 +67,9 @@ export class CardComponent {
      */
     deleteLevel(levelId: number): void {
         this.deleteLevelEvent.emit(levelId);
+    }
+
+    resetLevelHighScore(levelId: number): void {
+        this.resetLevelHighScoreEvent.emit(levelId);
     }
 }

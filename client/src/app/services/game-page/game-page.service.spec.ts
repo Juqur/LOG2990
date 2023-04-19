@@ -337,7 +337,7 @@ describe('GamePageService', () => {
         }));
 
         it('should call copyArea, copyDiffPlayAreaContext and handleHintRequest', fakeAsync(() => {
-            service['resetCanvas'](false);
+            service['resetCanvas'](true);
             tick(delay);
             expect(copyAreaSpy).toHaveBeenCalledTimes(1);
             expect(copyDiffCtxSpy).toHaveBeenCalledTimes(1);
