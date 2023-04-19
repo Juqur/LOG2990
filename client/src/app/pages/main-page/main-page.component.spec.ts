@@ -14,7 +14,7 @@ describe('MainPageComponent', () => {
     let mainPageServiceSpy: jasmine.SpyObj<MainPageService>;
 
     beforeEach(waitForAsync(() => {
-        mainPageServiceSpy = jasmine.createSpyObj('MainPageService', ['navigateTo', 'chooseName', 'connectToSocket']);
+        mainPageServiceSpy = jasmine.createSpyObj('MainPageService', ['navigateTo', 'chooseName', 'connectToSocket', 'setAmountOfLevels']);
         TestBed.configureTestingModule({
             declarations: [MainPageComponent, ScaleContainerComponent],
             imports: [RouterTestingModule],

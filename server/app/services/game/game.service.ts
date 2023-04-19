@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
 import { Level } from '@common/interfaces/level';
@@ -16,6 +17,10 @@ export interface GameState {
     isInCheatMode: boolean;
     otherSocketId?: string;
     timedLevelList?: Level[];
+    otherPlayerAbandoned?: boolean;
+    penaltyTime?: number;
+    bonusTime?: number;
+    timedGameLength?: number;
     hintsUsed: number;
 }
 
@@ -30,7 +35,7 @@ export class GameService {
     private playerGameMap = new Map<string, GameState>();
     private levelDeletionQueue: number[] = [];
 
-    constructor(private imageService: ImageService) {}
+    constructor(private imageService: ImageService, private mongodbService: MongodbService) {}
 
     /**
      * This method gets the level deletion queue.
@@ -83,7 +88,6 @@ export class GameService {
         }
         return listOfLevels;
     }
-
     /**
      * This method sets the attribute of isGameFound.
      *
@@ -109,6 +113,18 @@ export class GameService {
     }
 
     /**
+     * This method sets the attribute of otherPlayerAbandoned to true.
+     *
+     * @param socketId The socket id of the player.
+     */
+    setOtherPlayerAbandoned(socketId: string): void {
+        const gameState = this.playerGameMap.get(socketId);
+        gameState.otherPlayerAbandoned = true;
+        gameState.otherSocketId = undefined;
+        this.playerGameMap.set(socketId, gameState);
+    }
+
+    /**
      * This method is called when a player clicks on a pixel.
      * It uses imageService to detect whether the pixel is a difference pixel.
      *
@@ -125,10 +141,17 @@ export class GameService {
             if (gameState.timedLevelList) {
                 gameState.foundDifferences = [];
             }
+            if (gameState.timedLevelList) {
+                gameState.foundDifferences = [];
+            }
             this.playerGameMap.set(socketId, gameState);
+
             if (gameState.otherSocketId) {
                 const otherGameState = this.playerGameMap.get(gameState.otherSocketId);
                 otherGameState.foundDifferences = gameState.foundDifferences;
+                if (gameState.timedLevelList) {
+                    otherGameState.amountOfDifferencesFound = gameState.amountOfDifferencesFound;
+                }
                 this.playerGameMap.set(gameState.otherSocketId, otherGameState);
             }
         }
@@ -151,7 +174,7 @@ export class GameService {
      */
     verifyWinCondition(socket: Socket, server: Server, totalDifferences: number): boolean {
         const gameState = this.playerGameMap.get(socket.id);
-        if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2)) {
+        if (gameState.otherSocketId && gameState.amountOfDifferencesFound >= Math.ceil(totalDifferences / 2) && !gameState.timedLevelList) {
             this.deleteUserFromGame(socket);
             this.deleteUserFromGame(server.sockets.sockets.get(gameState.otherSocketId));
             this.removeLevel(gameState.levelId, false);
@@ -188,6 +211,10 @@ export class GameService {
         if (data.levelId === 0) {
             playerGameState.timedLevelList = await this.imageService.getLevels();
         }
+        const constants = await this.mongodbService.getGameConstants();
+        playerGameState.penaltyTime = constants.timePenaltyHint;
+        playerGameState.bonusTime = constants.timeGainedDifference;
+        playerGameState.timedGameLength = constants.initialTime;
         this.playerGameMap.set(socketId, playerGameState);
     }
 
@@ -219,6 +246,8 @@ export class GameService {
     connectRooms(socket: Socket, otherSocket: Socket): void {
         this.playerGameMap.get(socket.id).isInGame = true;
         this.playerGameMap.get(otherSocket.id).isInGame = true;
+        socket.join(otherSocket.id);
+        otherSocket.join(socket.id);
         this.bindPlayers(socket.id, otherSocket.id);
     }
 
@@ -300,6 +329,11 @@ export class GameService {
         const gameState = this.playerGameMap.get(socketId);
         const level = gameState.timedLevelList[Math.floor(Math.random() * gameState.timedLevelList.length)];
         gameState.timedLevelList.splice(gameState.timedLevelList.indexOf(level), 1);
+        if (gameState.otherSocketId) {
+            const otherGameState = this.playerGameMap.get(gameState.otherSocketId);
+            otherGameState.timedLevelList = gameState.timedLevelList;
+            this.playerGameMap.set(gameState.otherSocketId, otherGameState);
+        }
         return level;
     }
 
