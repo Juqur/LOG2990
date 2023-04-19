@@ -208,7 +208,6 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = true;
-            VideoService.addToLog('clicked on original image');
         }
         if (this.showThirdHint) {
             this.removeHintShape();
@@ -226,7 +225,6 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         if (mousePosition >= 0) {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = false;
-            VideoService.addToLog('clicked on diff image');
         }
         if (this.showThirdHint) {
             this.removeHintShape();

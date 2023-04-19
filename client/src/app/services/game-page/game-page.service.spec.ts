@@ -23,7 +23,8 @@ describe('GamePageService', () => {
     let playAreaComponentSpy: jasmine.SpyObj<PlayAreaComponent>;
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-
+    const canvas = document.createElement('canvas');
+    const nativeElementMock = { nativeElement: canvas };
     const gameData: GameData = {
         differencePixels: [],
         totalDifferences: 0,
@@ -45,14 +46,12 @@ describe('GamePageService', () => {
             'deleteTempCanvas',
             'showHintSection',
         ]);
-        const canvas = document.createElement('canvas');
-        const nativeElementMock = { nativeElement: canvas };
+
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
         playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
 
-        playAreaComponentSpy.timeout.and.returnValue(Promise.resolve());
-
         TestBed.configureTestingModule({
+            declarations: [PlayAreaComponent],
             imports: [HttpClientTestingModule],
             providers: [
                 { provide: Router, useValue: routerSpy },
@@ -231,26 +230,26 @@ describe('GamePageService', () => {
         it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
             const spy = spyOn(service, 'handleAreaFoundInDiff' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
-            service.handleResponse(false, gameData, false);
+            service.handleResponse(false, gameData, false, 0, 0);
             expect(spy).toHaveBeenCalled();
         });
 
         it('should call handleAreaNotFoundInDiff if the area clicked was the difference canvas and a difference was not found', () => {
             const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
-            service.handleResponse(false, gameData, false);
+            service.handleResponse(false, gameData, false, 0, 0);
             expect(spy).toHaveBeenCalled();
         });
 
         it('should call handleAreaFoundInOriginal if the area clicked was the original canvas and a difference was found', () => {
             const spy = spyOn(service, 'handleAreaFoundInOriginal' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
-            service.handleResponse(false, gameData, true);
+            service.handleResponse(false, gameData, true, 0, 0);
             expect(spy).toHaveBeenCalled();
         });
 
         it('should call handleAreaNotFoundInOriginal if the area clicked was the original canvas and a difference was not found', () => {
             const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
-            service.handleResponse(false, gameData, true);
+            service.handleResponse(false, gameData, true, 0, 0);
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -284,42 +283,42 @@ describe('GamePageService', () => {
 
         it('should push the difference array correctly in imagesData', () => {
             const expectedArray = [0, 1, 2];
-            service['handleAreaFoundInDiff'](expectedArray, false);
+            service['handleAreaFoundInDiff'](expectedArray, false, 0, 0);
             expect(service['imagesData']).toEqual(expectedArray);
         });
 
         it('should correctly filter areaNotFOund in handleAreaFoundInDiff', () => {
             service['areaNotFound'] = [0, 1, 2, 3];
             const expectedArray = [0, 1, 2];
-            service['handleAreaFoundInDiff'](expectedArray, true);
+            service['handleAreaFoundInDiff'](expectedArray, true, 0, 0);
             expect(service['areaNotFound']).toEqual([3]);
         });
 
         it('should call quickPlay', () => {
-            service['handleAreaFoundInDiff']([], false);
+            service['handleAreaFoundInDiff']([], false, 0, 0);
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         });
 
         it('should call flashArea', () => {
-            service['handleAreaFoundInDiff']([], false);
+            service['handleAreaFoundInDiff']([], false, 0, 0);
             expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
         });
 
         it('should call reset canvas', () => {
-            service['handleAreaFoundInDiff']([], false);
+            service['handleAreaFoundInDiff']([], false, 0, 0);
             expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
     });
 
     describe('handleAreaNotFoundInDiff', () => {
-        const mockCanvas = document.createElement('canvas');
         let resetCanvasSpy: jasmine.Spy;
+        let addToVideoStackSpy: jasmine.Spy;
         let audioSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
-            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            addToVideoStackSpy = spyOn(service, 'addToVideoStack' as never);
         });
 
         it('should call quickPlay', () => {
@@ -330,6 +329,11 @@ describe('GamePageService', () => {
         it('should call drawError', () => {
             service['handleAreaNotFoundInDiff']();
             expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call addToVideoStack', () => {
+            service['handleAreaNotFoundInDiff']();
+            expect(addToVideoStackSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call reset canvas', () => {
@@ -349,29 +353,29 @@ describe('GamePageService', () => {
 
         it('should push the difference array correctly in imagesData', () => {
             const expectedArray = [0, 1, 2];
-            service['handleAreaFoundInOriginal'](expectedArray, false);
+            service['handleAreaFoundInOriginal'](expectedArray, false, 0, 0);
             expect(service['imagesData']).toEqual(expectedArray);
         });
 
         it('should correctly filter areaNotFound in handleAreaFoundInOriginal', () => {
             const expectedArray = [0, 1, 2];
             service['areaNotFound'] = [0, 1, 2, 3];
-            service['handleAreaFoundInOriginal'](expectedArray, true);
+            service['handleAreaFoundInOriginal'](expectedArray, true, 0, 0);
             expect(service['areaNotFound']).toEqual([3]);
         });
 
         it('should call quickPlay', () => {
-            service['handleAreaFoundInOriginal']([], false);
+            service['handleAreaFoundInOriginal']([], false, 0, 0);
             expect(audioSpy).toHaveBeenCalledOnceWith('./assets/audio/success.mp3');
         });
 
         it('should call flashArea', () => {
-            service['handleAreaFoundInOriginal']([], false);
+            service['handleAreaFoundInOriginal']([], false, 0, 0);
             expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
         });
 
         it('should call reset canvas', () => {
-            service['handleAreaFoundInOriginal']([], false);
+            service['handleAreaFoundInOriginal']([], false, 0, 0);
             expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
     });
@@ -400,7 +404,7 @@ describe('GamePageService', () => {
         const data = [1, 2, 3];
         service['imagesData'] = [1, 2];
         const spy = spyOn(service, 'resetCanvas' as never);
-        service.startCheatMode(data);
+        service.startCheatMode(data, 0, 0);
         tick(Constants.CHEAT_FLASHING_DELAY);
         expect(spy).toHaveBeenCalledTimes(1);
         expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);

@@ -89,10 +89,6 @@ export class VideoService {
         return VideoService.secondPlayerName;
     }
 
-    static addToLog(message: string): void {
-        this.videoLog.push(message);
-    }
-
     static getStackElement(index: number): {
         time: number;
         found: boolean;
@@ -114,6 +110,5 @@ export class VideoService {
 
     static addMessageToStack(message: ChatMessage): void {
         this.messageStack.push({ chatMessage: message, time: TimerService.timerValue });
-        console.table(this.messageStack);
     }
 }

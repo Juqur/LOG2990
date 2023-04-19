@@ -474,7 +474,6 @@ export class GamePageService {
         this.drawServiceDiff.drawError(this.mouseService);
         this.addToVideoStack();
         this.resetCanvas();
-        VideoService.addToLog('Area not found in difference image');
     }
 
     /**

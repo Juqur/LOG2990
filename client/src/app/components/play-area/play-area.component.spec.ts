@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { DrawService } from '@app/services/draw/draw.service';
@@ -18,7 +18,7 @@ describe('PlayAreaComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
-            imports: [HttpClientModule],
+            imports: [HttpClientTestingModule],
         })
             .overrideProvider(DrawService, { useValue: drawServiceSpy })
             .compileComponents();
