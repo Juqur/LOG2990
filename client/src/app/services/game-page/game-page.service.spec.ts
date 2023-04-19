@@ -10,6 +10,7 @@ import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
 import { of } from 'rxjs';
@@ -22,6 +23,7 @@ describe('GamePageService', () => {
     let audioServiceSpy: jasmine.SpyObj<AudioService>;
     let playAreaComponentSpy: jasmine.SpyObj<PlayAreaComponent>;
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
+    let videoServiceSpy: jasmine.SpyObj<VideoService>;
     const popUpServiceSpy = jasmine.createSpyObj('PopUpServiceService', ['openDialog', 'dialogRef']);
     popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
     popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
@@ -40,6 +42,7 @@ describe('GamePageService', () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
         drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
+        videoServiceSpy = jasmine.createSpyObj('VideoService', ['addToVideoStack']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', [
             'getCanvas',
             'drawPlayArea',
@@ -62,6 +65,7 @@ describe('GamePageService', () => {
                 { provide: MouseService, useValue: mouseServiceSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: AudioService, useValue: audioServiceSpy },
+                { provide: VideoService, useValue: videoServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: DrawService, useValue: drawServiceSpy },
             ],
@@ -74,6 +78,18 @@ describe('GamePageService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    describe('getter', () => {
+        it('getImageData should return the correct value', () => {
+            service['imagesData'] = [1];
+            expect(service.getImageData).toEqual(service['imagesData']);
+        });
+
+        it('getAreaNotFound should return the correct value', () => {
+            service['areaNotFound'] = [1];
+            expect(service.getAreaNotFound).toEqual(service['areaNotFound']);
+        });
     });
 
     describe('validateResponse', () => {
@@ -480,15 +496,16 @@ describe('GamePageService', () => {
 
         beforeEach(() => {
             // service = new YourComponent();
+            jasmine.clock().install();
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             addToVideoStackSpy = spyOn(service, 'addToVideoStack' as never);
-            jasmine.clock().install();
             playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
+            playAreaComponentSpy.getFlashingCopy.and.returnValue(document.createElement('canvas'));
         });
 
         afterEach(() => {
-            clearInterval(service['flashInterval']);
             jasmine.clock().uninstall();
+            clearInterval(service['flashInterval']);
         });
 
         it('should call resetCanvas method', () => {
@@ -501,25 +518,20 @@ describe('GamePageService', () => {
             expect(addToVideoStackSpy).toHaveBeenCalled();
         });
 
-        // will fix later
-        // it('should make the appropriate function calls', fakeAsync(() => {
-        //     service.startCheatMode([1, 2, 3], 0, 0);
+        it('should make the appropriate function calls', fakeAsync(() => {
+            service.startCheatMode([1, 2, 3], 0, 0);
 
-        //     jasmine.clock().tick(Constants.CHEAT_FLASHING_DELAY);
-        //     expect(playAreaComponentSpy.flashArea).toHaveBeenCalledWith(service['areaNotFound']);
+            jasmine.clock().tick(Constants.CHEAT_FLASHING_DELAY);
+            expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
 
-        //     jasmine.clock().tick(Constants.CHEAT_FLASHING_DELAY);
-        //     expect(service['addToVideoStack']).toHaveBeenCalledWith(
-        //         false,
-        //         0,
-        //         0,
-        //         jasmine.any(CanvasRenderingContext2D),
-        //         jasmine.any(CanvasRenderingContext2D),
-        //     );
-        //     expect(playAreaComponentSpy.deleteTempCanvas).toHaveBeenCalledTimes(2);
-        //     expect(playAreaComponentSpy.getFlashingCopy).toHaveBeenCalledTimes(2);
-        //     expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
-        // }));
+            expect(playAreaComponentSpy.getFlashingCopy).toHaveBeenCalledTimes(2);
+            expect(service['addToVideoStack']).toHaveBeenCalledTimes(2);
+
+            jasmine.clock().tick(Constants.CHEAT_FLASHING_DELAY);
+            // expect(playAreaComponentSpy.flashArea).toHaveBeenCalledWith(service['areaNotFound']);
+            expect(playAreaComponentSpy.deleteTempCanvas).toHaveBeenCalledTimes(2);
+            clearInterval(service['flashInterval']);
+        }));
     });
 
     it('stopCheatMode should clear the flash interval', fakeAsync(() => {
@@ -554,6 +566,16 @@ describe('GamePageService', () => {
             timedGameFinishedDialogData.textToSend = 'La partie est terminée! Le temps est écoulé.';
             service.handleTimedModeFinished(false);
             expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(timedGameFinishedDialogData, '/home');
+        });
+    });
+
+    describe('addToVideoStack', () => {
+        it('should call VideoService.addToVideoStack if original && difference are true', () => {
+            spyOn(service, 'addToVideoStack' as never);
+            const mockOriginalCanvas = document.createElement('canvas');
+            const mockDifferenceCanvas = document.createElement('canvas');
+            service['addToVideoStack'](false, 0, 0, mockOriginalCanvas.getContext('2d'), mockDifferenceCanvas.getContext('2d'));
+            expect(videoServiceSpy.addToVideoStack).toHaveBeenCalledTimes(1);
         });
     });
 });
