@@ -316,27 +316,26 @@ describe('GamePageService', () => {
         });
 
         it('should call drawPlayArea twice', fakeAsync(() => {
-            const delay = 1000;
             service['resetCanvas'](true);
             tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));
 
         it('should call deleteTempCanvas twice', fakeAsync(() => {
-            service['resetCanvas']();
+            service['resetCanvas'](true);
             tick(delay);
             expect(playAreaComponentSpy.deleteTempCanvas).toHaveBeenCalledTimes(2);
         }));
 
         it('should set back canClick to true after delay', fakeAsync(() => {
-            service['resetCanvas']();
+            service['resetCanvas'](true);
             expect(mouseServiceSpy['canClick']).toBeFalse();
             tick(delay);
             expect(mouseServiceSpy['canClick']).toBeTrue();
         }));
 
         it('should call copyArea, copyDiffPlayAreaContext and handleHintRequest', fakeAsync(() => {
-            service['resetCanvas']();
+            service['resetCanvas'](true);
             tick(delay);
             expect(copyAreaSpy).toHaveBeenCalledTimes(1);
             expect(copyDiffCtxSpy).toHaveBeenCalledTimes(1);

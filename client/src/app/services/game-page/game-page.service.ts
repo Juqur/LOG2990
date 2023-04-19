@@ -425,7 +425,7 @@ export class GamePageService {
         this.drawServiceDifference.context = this.differencePlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawError(this.mouseService);
+        this.drawServiceDifference.drawError(this.mouseService);
         this.resetCanvas(true);
     }
 
