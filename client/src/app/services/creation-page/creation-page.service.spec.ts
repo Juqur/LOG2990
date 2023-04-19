@@ -92,7 +92,7 @@ describe('CreationPageService', () => {
         expect(creationService['canvasShare'].differenceCanvas).toBeUndefined();
         tick();
         expect(service['creationSpecs'].defaultImageFile).toEqual(new File([''], ''));
-        expect(service['creationSpecs'].diffImageFile).toEqual(new File([''], ''));
+        expect(service['creationSpecs'].differenceImageFile).toEqual(new File([''], ''));
     }));
 
     it('defaultImageSelector should make the appropriate function calls', fakeAsync(() => {
@@ -139,14 +139,14 @@ describe('CreationPageService', () => {
         expect(showDifferenceImageSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('differenceImageSelector should initialize diffImageFile with the file given as parameter', fakeAsync(() => {
+    it('differenceImageSelector should initialize differenceImageFile with the file given as parameter', fakeAsync(() => {
         spyOn(service, 'restartGame' as never);
         spyOn(service, 'verifyImageFormat' as never).and.resolveTo(true as never);
         const mockFile = new File([''], 'mock.bmp');
         const mockEvent = { target: { files: [mockFile] } } as unknown as Event;
         service.differenceImageSelector(mockEvent);
         tick();
-        expect(service['creationSpecs'].diffImageFile).toEqual(mockFile);
+        expect(service['creationSpecs'].differenceImageFile).toEqual(mockFile);
     }));
 
     it('differenceImageSelector should not call showDefaultImage if verifyImageFormat returned false', fakeAsync(() => {
@@ -402,7 +402,8 @@ describe('CreationPageService', () => {
     });
 
     it('colorPickerMode should call the correct draw functions', () => {
-        service.colorPickerMode();
+        const event = { target: { value: '#000000' } } as unknown as Event;
+        service.colorPickerMode(event);
         expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledTimes(1);
         expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledTimes(1);
     });

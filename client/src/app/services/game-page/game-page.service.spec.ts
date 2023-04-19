@@ -33,6 +33,9 @@ describe('GamePageService', () => {
     };
 
     beforeEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        spyOn(Audio.prototype, 'play').and.callFake(() => {});
+
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
@@ -84,7 +87,7 @@ describe('GamePageService', () => {
             service.setPlayArea(playArea, playArea, playArea);
             expect(service['originalPlayArea']).toEqual(playArea);
             expect(service['differencePlayArea']).toEqual(playArea);
-            expect(service['tempDifferencePlayArea']).toEqual(playArea);
+            expect(service['tempDiffPlayArea']).toEqual(playArea);
         });
     });
 
@@ -127,13 +130,38 @@ describe('GamePageService', () => {
     describe('handleVictory', () => {
         it('should call create', () => {
             const audioSpy = spyOn(AudioService, 'quickPlay');
-            service.handleVictory();
+            service.handleVictory(2);
             expect(audioSpy).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
         });
 
-        it('should call openDialog', () => {
-            service.handleVictory();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['winGameDialogData'], service['closePath']);
+        it('should call openDialog without adding the highscore position', () => {
+            const winDialog: DialogData = {
+                textToSend: 'Vous avez gagné!',
+                closeButtonMessage: 'Retour au menu principal',
+                mustProcess: false,
+            };
+            service.handleVictory(null);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winDialog, service['closePath']);
+        });
+
+        it('should call openDialog with correct data when player is in first place', () => {
+            const winDialog: DialogData = {
+                textToSend: 'Vous avez gagné! Vous avez obtenu la 1ère position du classement.',
+                closeButtonMessage: 'Retour au menu principal',
+                mustProcess: false,
+            };
+            service.handleVictory(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winDialog, service['closePath']);
+        });
+
+        it('should call openDialog with correct data when player is in first place', () => {
+            const winDialog: DialogData = {
+                textToSend: 'Vous avez gagné! Vous avez obtenu la 2e position du classement.',
+                closeButtonMessage: 'Retour au menu principal',
+                mustProcess: false,
+            };
+            service.handleVictory(2);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winDialog, service['closePath']);
         });
     });
 

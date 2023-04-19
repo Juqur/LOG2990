@@ -32,8 +32,7 @@
             </div>
             <app-play-area [isDifferenceCanvas]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)"
                 #differencePlayArea></app-play-area>
-            <app-play-area #tempDifferencePlayArea class="tempDifferencePlayArea"
-                (click)="clickedOnDiff($event)"></app-play-area>
+            <app-play-area #tempDiffPlayArea class="tempDiffPlayArea" (click)="clickedOnDiff($event)"></app-play-area>
         </section>
         <section id="bottom-area">
             <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat>

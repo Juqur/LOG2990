@@ -67,7 +67,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         if ((event.key === 't' || event.key === 'T') && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
                 this.gamePageService.setImages(this.levelId);
                 this.isInCheatMode = !this.isInCheatMode;
                 return;
@@ -132,15 +132,15 @@ export class GamePageComponent implements OnInit, OnDestroy {
             }
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
                 const isFound = this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
                 if (isFound && this.showThirdHint) {
                     this.removeHintShape();
                 }
             }
         });
-        this.socketHandler.on('game', 'victory', () => {
-            this.gamePageService.handleVictory();
+        this.socketHandler.on('game', 'victory', (highscorePosition: number) => {
+            this.gamePageService.handleVictory(highscorePosition);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
             this.gamePageService.handleOpponentAbandon();
@@ -158,7 +158,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'hintRequest', (data) => {
             const section = data as number[];
             this.gamePageService.setImages(this.levelId);
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
             if (section.length < 3 && this.nbHints > 1) {
                 this.gamePageService.handleHintRequest(section);
                 this.nbHints--;
@@ -212,7 +212,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     askForHint(): void {
         if (!this.secondPlayerName) {
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
             this.socketHandler.send('game', 'onHintRequest');
         }
     }
