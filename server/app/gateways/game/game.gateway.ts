@@ -254,12 +254,13 @@ export class GameGateway {
      * @param levelId The id of the level to be deleted.
      */
     @SubscribeMessage(GameEvents.OnDeleteLevel)
-    onDeleteLevel(socket: Socket, levelId: number): void {
+    async onDeleteLevel(socket: Socket, levelId: number): Promise<void> {
         this.server.emit(GameEvents.DeleteLevel, levelId);
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(levelId, true);
+        await this.gameService.removeLevel(levelId, true);
+        this.server.emit(GameEvents.RefreshLevels);
     }
 
     /**
@@ -270,11 +271,12 @@ export class GameGateway {
      */
     @SubscribeMessage(GameEvents.OnDeleteAllLevels)
     onDeleteAllLevels(socket: Socket): void {
-        this.mongodbService.getAllLevels().then((levels) => {
+        this.mongodbService.getAllLevels().then(async (levels) => {
             for (const level of levels) {
-                this.onDeleteLevel(socket, level.id);
+                await this.onDeleteLevel(socket, level.id);
             }
         });
+        this.server.emit(GameEvents.RefreshLevels);
     }
 
     /**
