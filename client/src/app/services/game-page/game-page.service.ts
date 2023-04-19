@@ -141,13 +141,13 @@ export class GamePageService {
         const response = this.validateResponse(gameData.differencePixels);
         if (response) {
             if (!clickedOriginalImage) {
-                this.handleAreaFoundInDiff(gameData.differencePixels, isInCheatMode, playerDifferencesCount, secondPlayerDifferencesCount);
+                this.handleAreaFoundInDifference(gameData.differencePixels, isInCheatMode, playerDifferencesCount, secondPlayerDifferencesCount);
             } else {
                 this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode, playerDifferencesCount, secondPlayerDifferencesCount);
             }
         } else {
             if (!clickedOriginalImage) {
-                this.handleAreaNotFoundInDiff();
+                this.handleAreaNotFoundInDifference();
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
@@ -396,7 +396,7 @@ export class GamePageService {
      */
     private resetCanvas(): void {
         this.mouseService.canClick = false;
-        const delay = 1000; // ms
+        const delay = Constants.millisecondsInOneSecond;
         this.differencePlayArea
             .timeout(delay)
             .then(() => {
@@ -444,7 +444,7 @@ export class GamePageService {
      *
      * @param result The array of pixels that represents the area found as a difference.
      */
-    private handleAreaFoundInDiff(
+    private handleAreaFoundInDifference(
         result: number[],
         isInCheatMode: boolean,
         playerDifferencesCount: number,
@@ -468,7 +468,7 @@ export class GamePageService {
     /**
      * Performs a failed sound and prompts an error in the difference canvas.
      */
-    private handleAreaNotFoundInDiff(): void {
+    private handleAreaNotFoundInDifference(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceDiff.context = this.differencePlayArea
             .getCanvas()
