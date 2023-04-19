@@ -156,7 +156,8 @@ export class GamePageService {
             mustProcess: false,
         };
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.play();
     }
 
     /**
@@ -314,6 +315,13 @@ export class GamePageService {
         shapeContext.drawImage(differenceCanvasContext.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
         this.originalPlayArea.drawPlayArea(this.originalImageSrc);
         this.differencePlayArea.drawPlayArea(this.diffImageSrc);
+    }
+
+    /**
+     * This method is called when a player clicks on a difference.
+     */
+    playSuccessSound(): void {
+        AudioService.quickPlay('./assets/audio/success.mp3');
     }
 
     /**

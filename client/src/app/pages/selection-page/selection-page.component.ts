@@ -22,5 +22,6 @@ export class SelectionPageComponent implements OnInit {
      */
     ngOnInit(): void {
         this.selectionPageService.setupSocket(this.levelService);
+        this.levelService.refreshLevels();
     }
 }

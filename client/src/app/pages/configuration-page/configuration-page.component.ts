@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LevelService } from '@app/services/level/level.service';
 
@@ -14,8 +14,12 @@ import { LevelService } from '@app/services/level/level.service';
     templateUrl: './configuration-page.component.html',
     styleUrls: ['./configuration-page.component.scss'],
 })
-export class ConfigurationPageComponent {
+export class ConfigurationPageComponent implements OnInit {
     constructor(public levelService: LevelService, public router: Router) {}
+
+    ngOnInit(): void {
+        this.levelService.refreshLevels();
+    }
 
     /**
      * Event listener for the delete button.

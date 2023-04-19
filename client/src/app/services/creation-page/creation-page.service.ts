@@ -13,6 +13,7 @@ import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants } from '@common/constants';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 
 @Injectable({
     providedIn: 'root',
@@ -45,6 +46,7 @@ export class CreationPageService {
         private differenceService: DifferenceDetectorService,
         public popUpService: PopUpService,
         private communicationService: CommunicationService,
+        private socketHandler: SocketHandler,
         private mouseServiceDefault: MouseService,
         private mouseServiceDifference: MouseService,
     ) {
@@ -265,6 +267,7 @@ export class CreationPageService {
                             } else if (data.title === 'success') {
                                 this.popUpService.openDialog(Dialogs.confirmation(data.body), '/config');
                             }
+                            this.socketHandler.send('game', 'onRefreshLevels');
                         });
                 }
             });

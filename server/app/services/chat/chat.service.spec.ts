@@ -14,16 +14,22 @@ describe('ChatService', () => {
     let service: ChatService;
     let mongodbService: SinonStubbedInstance<MongodbService>;
     let socket: SinonStubbedInstance<Socket>;
+    let otherSocket: SinonStubbedInstance<Socket>;
     let server: SinonStubbedInstance<Server>;
     let emitSpy: jest.SpyInstance;
-    let emitToSpy: jest.SpyInstance;
+    let otherEmitSpy: jest.SpyInstance;
 
     beforeEach(async () => {
         socket = createStubInstance<Socket>(Socket);
+        otherSocket = createStubInstance<Socket>(Socket);
         server = createStubInstance<Server>(Server);
+        const socketsMap = new Map<string, Socket>();
+        const sockets = { sockets: socketsMap };
+        Object.defineProperty(server, 'sockets', { value: sockets });
+        jest.spyOn(socketsMap, 'get').mockReturnValue(otherSocket);
+        emitSpy = jest.spyOn(socket, 'emit');
+        otherEmitSpy = jest.spyOn(otherSocket, 'emit');
         mongodbService = createStubInstance<MongodbService>(MongodbService);
-        emitSpy = jest.spyOn(socket, 'emit').mockImplementation();
-        emitToSpy = jest.spyOn(socket, 'to').mockImplementation(() => ({ emit: jest.fn() } as never));
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -137,25 +143,26 @@ describe('ChatService', () => {
         });
 
         it('should call emit', () => {
-            service.sendSystemMessage(socket, data, gameState);
+            service.sendSystemMessage({ socket, server }, data, gameState);
             expect(emitSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call getSystemChatMessage if a difference is found', () => {
-            service.sendSystemMessage(socket, data, gameState);
+            service.sendSystemMessage({ socket, server }, data, gameState);
             expect(getSystemChatMessageSpy).toHaveBeenCalledWith('Différence trouvée');
         });
 
         it('should call getSystemChatMessage if a difference is not found', () => {
             data.differencePixels = [];
-            service.sendSystemMessage(socket, data, gameState);
+            service.sendSystemMessage({ socket, server }, data, gameState);
             expect(getSystemChatMessageSpy).toHaveBeenCalledWith('Erreur');
         });
 
         it('should call emit to the other socket if the other socket exists', () => {
             gameState.otherSocketId = 'otherSocketId';
-            service.sendSystemMessage(socket, data, gameState);
-            expect(emitToSpy).toHaveBeenCalledTimes(1);
+            service.sendSystemMessage({ socket, server }, data, gameState);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
+            expect(otherEmitSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -163,13 +170,13 @@ describe('ChatService', () => {
         const message = {} as unknown as ChatMessage;
 
         it('should call emit', () => {
-            service.sendToBothPlayers(socket, message, gameState);
+            service.sendToBothPlayers({ socket, server }, message, gameState);
             expect(emitSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call emit to the other socket', () => {
-            service.sendToBothPlayers(socket, message, gameState);
-            expect(emitToSpy).toHaveBeenCalledTimes(1);
+            service.sendToBothPlayers({ socket, server }, message, gameState);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -181,12 +188,12 @@ describe('ChatService', () => {
         });
 
         it('should call emit to the other socket', () => {
-            service.abandonMessage(socket, gameState);
-            expect(emitToSpy).toHaveBeenCalledTimes(1);
+            service.abandonMessage(server, gameState);
+            expect(otherEmitSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call getSystemChatMessage', () => {
-            service.abandonMessage(socket, gameState);
+            service.abandonMessage(server, gameState);
             expect(getSystemChatMessageSpy).toHaveBeenCalledTimes(1);
         });
     });
