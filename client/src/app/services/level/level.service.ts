@@ -24,10 +24,6 @@ export class LevelService {
 
     constructor(private communicationService: CommunicationService, private socketHandler: SocketHandler) {
         this.refreshLevels();
-        this.socketHandler.on('game', 'refreshLevels', () => {
-            this.refreshLevels();
-        });
-
         this.communicationService
             .getGameConstants()
             .pipe(
@@ -85,6 +81,25 @@ export class LevelService {
      */
     get lastPage(): number {
         return Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
+    }
+
+    /**
+     * This method refreshes the levels when a event is emitted from the server.
+     */
+    setupSocket(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.on('game', 'refreshLevels', () => {
+            this.refreshLevels();
+        });
+    }
+
+    /**
+     * This method removes the listener for the refreshLevels event.
+     */
+    destroySocket(): void {
+        this.socketHandler.removeListener('game', 'refreshLevels');
     }
 
     /**
