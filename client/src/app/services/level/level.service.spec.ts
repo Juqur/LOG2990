@@ -143,16 +143,6 @@ describe('LevelService', () => {
     });
 
     describe('constructor', () => {
-        // it('should call refreshLevels on socket event', () => {
-        //     const spy = spyOn(service, 'refreshLevels');
-        //     socketHandlerMock.on.and.callFake((event, eventName, callback) => {
-        //         if (eventName === 'refreshLevels') {
-        //             callback({} as never);
-        //         }
-        //     });
-        //     expect(spy).toHaveBeenCalled();
-        // });
-
         it('should correctly initialize class attributes', () => {
             expect(service['levels']).toEqual(levelExpectedArray);
             expect(service['currentShownPage']).toEqual(0);
@@ -418,6 +408,26 @@ describe('LevelService', () => {
         });
     });
 
+    describe('resetCard', () => {
+        it('should correctly reset the card', () => {
+            const levelId = 1;
+            const level = { id: 1 } as Level;
+            service['levels'] = [level, { id: 2 } as Level, { id: 3 } as Level];
+            service['resetCard'](levelId);
+            expect(service['levels']).toEqual([
+                {
+                    id: 1,
+                    playerSolo: Constants.defaultPlayerSolo,
+                    timeSolo: Constants.defaultTimeSolo,
+                    playerMulti: Constants.defaultPlayerMulti,
+                    timeMulti: Constants.defaultTimeMulti,
+                } as Level,
+                { id: 2 } as Level,
+                { id: 3 } as Level,
+            ]);
+        });
+    });
+
     describe('updatePageLevels', () => {
         it('should correctly update the shownLevel attribute', () => {
             service['currentShownPage'] = 1;
@@ -431,6 +441,19 @@ describe('LevelService', () => {
             socketHandlerMock.isSocketAlive.and.returnValue(false);
             service['checkForSocketConnection']();
             expect(socketHandlerMock.connect).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('setupSocket', () => {
+        it('should call refreshLevels on socket event', () => {
+            const spy = spyOn(service, 'refreshLevels');
+            socketHandlerMock.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'refreshLevels') {
+                    callback({} as never);
+                }
+            });
+            service['setupSocket']();
+            expect(spy).toHaveBeenCalled();
         });
     });
 });

@@ -24,9 +24,7 @@ export class LevelService {
 
     constructor(private communicationService: CommunicationService, private socketHandler: SocketHandler) {
         this.refreshLevels();
-        this.socketHandler.on('game', 'refreshLevels', () => {
-            this.refreshLevels();
-        });
+        this.setupSocket();
 
         this.communicationService
             .getGameConstants()
@@ -269,5 +267,14 @@ export class LevelService {
         if (!this.socketHandler.isSocketAlive('game')) {
             this.socketHandler.connect('game');
         }
+    }
+
+    /**
+     * Internal that sets up the socket.
+     */
+    private setupSocket(): void {
+        this.socketHandler.on('game', 'refreshLevels', () => {
+            this.refreshLevels();
+        });
     }
 }
