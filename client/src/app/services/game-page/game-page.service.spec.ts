@@ -40,15 +40,8 @@ describe('GamePageService', () => {
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         audioServiceSpy = jasmine.createSpyObj('AudioService', ['play', 'create', 'reset']);
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError']);
-        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', [
-            'getCanvas',
-            'drawPlayArea',
-            'flashArea',
-            'timeout',
-            'deleteTempCanvas',
-            'showHintSection',
-        ]);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['context', 'drawError', 'drawHintSection']);
+        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout', 'deleteTempCanvas']);
         const canvas = document.createElement('canvas');
         const nativeElementMock = { nativeElement: canvas };
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
@@ -215,11 +208,24 @@ describe('GamePageService', () => {
     });
 
     describe('handleHintRequest', () => {
-        it('should call showHintSection on both canvas', () => {
+        const mockCanvas = document.createElement('canvas');
+        it('should call drawHintSection on both canvas', fakeAsync(() => {
+            const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
             const mockSection = [1];
             service.handleHintRequest(mockSection);
-            expect(playAreaComponentSpy.showHintSection).toHaveBeenCalledTimes(2);
-            expect(playAreaComponentSpy.showHintSection).toHaveBeenCalledWith(mockSection);
+            tick();
+            expect(getCanvasSpy).toHaveBeenCalledTimes(2);
+            expect(drawServiceSpy.drawHintSection).toHaveBeenCalledTimes(2);
+            expect(drawServiceSpy.drawHintSection).toHaveBeenCalledWith(mockSection);
+            expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
+        }));
+        it('should not make calls if section is empty', () => {
+            const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            const mockSection = [] as number[];
+            service.handleHintRequest(mockSection);
+            expect(getCanvasSpy).not.toHaveBeenCalled();
+            expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
+            expect(drawServiceSpy.drawHintSection).not.toHaveBeenCalled();
         });
     });
 
@@ -257,30 +263,34 @@ describe('GamePageService', () => {
     });
 
     describe('handleResponse', () => {
-        it('should call handleAreaFoundInDiff if the area clicked was the difference canvas and a difference was found ', () => {
+        it('should call handleAreaFoundInDiff and return true if clicked on difference canvas and a difference was found ', () => {
             const spy = spyOn(service, 'handleAreaFoundInDiff' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
-            service.handleResponse(false, gameData, false);
+            const returnValue = service.handleResponse(false, gameData, false);
             expect(spy).toHaveBeenCalled();
+            expect(returnValue).toEqual(true);
         });
 
-        it('should call handleAreaNotFoundInDiff if the area clicked was the difference canvas and a difference was not found', () => {
+        it('should call handleAreaNotFoundInDiff and return false if clicked on difference canvas and a difference was not found', () => {
             const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
-            service.handleResponse(false, gameData, false);
+            const returnValue = service.handleResponse(false, gameData, false);
             expect(spy).toHaveBeenCalled();
+            expect(returnValue).toEqual(false);
         });
 
-        it('should call handleAreaFoundInOriginal if the area clicked was the original canvas and a difference was found', () => {
+        it('should call handleAreaFoundInOriginal and return true if clicked on original canvas and a difference was found', () => {
             const spy = spyOn(service, 'handleAreaFoundInOriginal' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
-            service.handleResponse(false, gameData, true);
+            const returnValue = service.handleResponse(false, gameData, true);
             expect(spy).toHaveBeenCalled();
+            expect(returnValue).toEqual(true);
         });
 
-        it('should call handleAreaNotFoundInOriginal if the area clicked was the original canvas and a difference was not found', () => {
+        it('should call handleAreaNotFoundInOriginal and return false if clicked on original canvas and a difference was not found', () => {
             const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
-            service.handleResponse(false, gameData, true);
+            const returnValue = service.handleResponse(false, gameData, true);
             expect(spy).toHaveBeenCalled();
+            expect(returnValue).toEqual(false);
         });
     });
 
@@ -294,11 +304,42 @@ describe('GamePageService', () => {
     });
 
     describe('resetCanvas', () => {
+        const delay = 1000;
+        let copyAreaSpy: jasmine.Spy;
+        let copyDiffCtxSpy: jasmine.Spy;
+        let handleHintRequestSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            copyAreaSpy = spyOn(service, 'copyArea' as never);
+            copyDiffCtxSpy = spyOn(service, 'copyDiffPlayAreaContext' as never);
+            handleHintRequestSpy = spyOn(service, 'handleHintRequest' as never);
+        });
+
         it('should call drawPlayArea twice', fakeAsync(() => {
-            const delay = 1000;
             service['resetCanvas']();
             tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
+        }));
+
+        it('should call deleteTempCanvas twice', fakeAsync(() => {
+            service['resetCanvas']();
+            tick(delay);
+            expect(playAreaComponentSpy.deleteTempCanvas).toHaveBeenCalledTimes(2);
+        }));
+
+        it('should set back canClick to true after delay', fakeAsync(() => {
+            service['resetCanvas']();
+            expect(mouseServiceSpy['canClick']).toBeFalse();
+            tick(delay);
+            expect(mouseServiceSpy['canClick']).toBeTrue();
+        }));
+
+        it('should call copyArea, copyDiffPlayAreaContext and handleHintRequest', fakeAsync(() => {
+            service['resetCanvas']();
+            tick(delay);
+            expect(copyAreaSpy).toHaveBeenCalledTimes(1);
+            expect(copyDiffCtxSpy).toHaveBeenCalledTimes(1);
+            expect(handleHintRequestSpy).toHaveBeenCalledTimes(1);
         }));
     });
 
@@ -337,6 +378,25 @@ describe('GamePageService', () => {
         it('should call reset canvas', () => {
             service['handleAreaFoundInDiff']([], false);
             expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should set hintSection to empty array', () => {
+            service['hintSection'] = [0, 1, 2, 3];
+            service['handleAreaFoundInDiff']([], false);
+            expect(service['hintSection']).toEqual([]);
+        });
+    });
+
+    describe('copyDiffPlayAreaContext', () => {
+        it('should call the appropriate functions', () => {
+            const mockCanvas = document.createElement('canvas');
+            const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            const getImgDataSpy = spyOn(CanvasRenderingContext2D.prototype, 'getImageData');
+            const putImgDataSpy = spyOn(CanvasRenderingContext2D.prototype, 'putImageData');
+            service['copyDiffPlayAreaContext']();
+            expect(getCanvasSpy).toHaveBeenCalledTimes(2);
+            expect(getImgDataSpy).toHaveBeenCalledTimes(1);
+            expect(putImgDataSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -403,13 +463,21 @@ describe('GamePageService', () => {
             service['handleAreaFoundInOriginal']([], false);
             expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
+
+        it('should set hintSection to empty array', () => {
+            service['hintSection'] = [0, 1, 2, 3];
+            service['handleAreaFoundInOriginal']([], false);
+            expect(service['hintSection']).toEqual([]);
+        });
     });
 
     describe('handleAreaNotFoundInOriginal', () => {
         const mockCanvas = document.createElement('canvas');
+        let resetCanvasSpy: jasmine.Spy;
         let audioSpy: jasmine.Spy;
 
         beforeEach(() => {
+            resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
             spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
@@ -422,6 +490,11 @@ describe('GamePageService', () => {
         it('should call drawError', () => {
             service['handleAreaNotFoundInOriginal']();
             expect(drawServiceSpy.drawError).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call reset canvas', () => {
+            service['handleAreaNotFoundInOriginal']();
+            expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
     });
 

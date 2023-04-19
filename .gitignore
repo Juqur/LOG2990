@@ -12,3 +12,7 @@ coverage/
 /node_modules
 
 **/adasdasdsdasd
+server/.env
+server/assets/images/differences/1.json
+server/assets/images/modified/1.bmp
+server/assets/images/original/1.bmp
