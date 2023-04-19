@@ -13,7 +13,7 @@ import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { Constants } from '@common/constants';
-import { SocketHandler } from '../socket-handler/socket-handler.service';
+import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 
 @Injectable({
     providedIn: 'root',
