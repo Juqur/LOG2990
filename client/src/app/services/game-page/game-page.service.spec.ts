@@ -579,10 +579,18 @@ describe('GamePageService', () => {
         });
 
         it('should not call VideoService.addToVideoStack if original && difference are null', () => {
-            const mockOriginalCanvas = null;
-            const mockDifferenceCanvas = null;
-            service['addToVideoStack'](false, 0, 0, mockOriginalCanvas, mockDifferenceCanvas);
+            service['addToVideoStack']();
             expect(videoServiceSpy.addToVideoStack).toHaveBeenCalledTimes(1);
         });
     });
+
+    it('copyDiffPlayAreaContext should copy tempDiffPlayArea context to differencePlayArea context', () => {
+        service['copyDiffPlayAreaContext']();
+    });
+
+    it('flashBothCanvas should call flashArea on both playAreaComponent', fakeAsync(() => {
+        service['flashBothCanvas']([1]);
+        tick(Constants.CHEAT_FLASHING_DELAY);
+        expect(playAreaComponentSpy.flashArea).toHaveBeenCalledTimes(2);
+    }));
 });

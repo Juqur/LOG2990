@@ -431,6 +431,12 @@ export class GamePageService {
         context.putImageData(imageData, 0, 0);
     }
 
+    /**
+     * Flash the area red in both canvas.
+     *
+     * @param area The area to flash.
+     * @returns
+     */
     private async flashBothCanvas(area: number[]): Promise<void> {
         return new Promise<void>((resolve) => {
             this.differencePlayArea.flashArea(area);
