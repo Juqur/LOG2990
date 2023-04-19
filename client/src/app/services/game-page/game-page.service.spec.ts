@@ -217,7 +217,6 @@ describe('GamePageService', () => {
             expect(getCanvasSpy).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledWith(mockSection);
-            expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));
         it('should not make calls if section is empty', () => {
             const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
@@ -233,17 +232,21 @@ describe('GamePageService', () => {
         it('should call the appropriate functions', () => {
             const mockCanvas = document.createElement('canvas');
             const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+            const resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             const mockSection = [0, 2, 2];
             service.handleHintShapeRequest(mockSection, mockCanvas);
             expect(fillRectSpy).toHaveBeenCalledTimes(1);
+            expect(resetCanvasSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should not call anything if the size of the shape array is lower than 2', () => {
             const mockCanvas = document.createElement('canvas');
             const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+            const resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             const mockSection = [0, 0];
             service.handleHintShapeRequest(mockSection, mockCanvas);
             expect(fillRectSpy).not.toHaveBeenCalled();
+            expect(resetCanvasSpy).not.toHaveBeenCalled();
         });
     });
 
