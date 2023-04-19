@@ -418,7 +418,7 @@ export class GameGateway {
                 hasPlayerAbandoned: false,
             } as GameHistory;
             this.mongodbService.addGameHistory(gameHistory);
-            socket.emit(GameEvents.TimedModeFinished, true);
+            this.server.to(socket.id).emit(GameEvents.TimedModeFinished, true);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
             return true;
