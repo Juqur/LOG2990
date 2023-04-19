@@ -1,4 +1,5 @@
 import { GameService, GameState } from '@app/services/game/game.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
@@ -12,11 +13,13 @@ describe('TimerService', () => {
     let server: SinonStubbedInstance<Server>;
     let socket: SinonStubbedInstance<Socket>;
     let gameService: SinonStubbedInstance<GameService>;
+    let mongodbService: SinonStubbedInstance<MongodbService>;
 
     beforeEach(async () => {
         server = createStubInstance<Server>(Server);
         socket = createStubInstance<Socket>(Socket);
         gameService = createStubInstance<GameService>(GameService);
+        mongodbService = createStubInstance<MongodbService>(MongodbService);
 
         Object.defineProperty(socket, 'id', { value: 'socket' });
 
@@ -28,6 +31,7 @@ describe('TimerService', () => {
                 { provide: GameService, useValue: gameService },
                 { provide: Socket, useValue: socket },
                 { provide: Server, useValue: server },
+                { provide: MongodbService, useValue: mongodbService },
             ],
         }).compile();
 
@@ -64,6 +68,7 @@ describe('TimerService', () => {
             removeSpy = jest.spyOn(gameService, 'removeLevel').mockImplementation();
             deleteSpy = jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
             jest.spyOn(gameService, 'getGameState').mockReturnValue({ levelId: 0 } as unknown as GameState);
+            jest.spyOn(mongodbService, 'addGameHistory').mockResolvedValue();
         });
 
         it('should start the timer for a single player game', () => {

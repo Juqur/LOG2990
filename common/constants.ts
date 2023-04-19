@@ -94,7 +94,7 @@ export namespace Constants {
 
     // Undo/Redo Service
     export const EMPTY_STACK = -1;
-    export const TIMED_GAME_MODE_LENGTH = 5;
+    export const TIMED_GAME_MODE_LENGTH = 120;
     export const DEFAULT_LEVEL = {
         id: 0,
         name: 'no name',
