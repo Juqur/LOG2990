@@ -30,7 +30,7 @@
             </div>
             <div class="menu-container">
                 <div class="sub-menu-container">
-                    <button mat-button class="menu-button" (click)="this.router.navigate(['/game-histories'])">
+                    <button mat-button class="menu-button" routerLink="/game-histories">
                         <span>Historique</span>
                         <mat-icon>clear_all</mat-icon>
                     </button>
@@ -39,7 +39,7 @@
                         <mat-icon>add</mat-icon>
                     </button>
                 </div>
-                <button mat-button class="menu-button" routerLink="/creation">
+                <button mat-button class="menu-button" (click)="onDeleteAllLevels()">
                     <span>Supprimer tous les niveaux</span>
                     <mat-icon>delete_outline</mat-icon>
                 </button>

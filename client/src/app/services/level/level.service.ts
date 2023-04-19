@@ -170,12 +170,31 @@ export class LevelService {
     }
 
     /**
+     * This method emits a socket event to the server to delete all levels.
+     */
+    deleteAllLevels(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.send('game', 'onDeleteAllLevels');
+        this.removeAllCards();
+    }
+
+    /**
      * This method removes a level from the levels array.
      *
      * @param levelId The id of the level to remove.
      */
     removeCard(levelId: number): void {
         this.levels = this.levels.filter((level) => level.id !== levelId);
+        this.updatePageLevels();
+    }
+
+    /**
+     * This method removes all levels from the levels array.
+     */
+    removeAllCards(): void {
+        this.levels = [];
         this.updatePageLevels();
     }
 

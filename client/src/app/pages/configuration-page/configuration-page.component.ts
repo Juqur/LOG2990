@@ -26,4 +26,12 @@ export class ConfigurationPageComponent {
     onDeleteLevel(levelId: number): void {
         this.levelService.deleteLevel(levelId);
     }
+
+    /**
+     * Event listener for the delete all levels button.
+     * It will call the deleteAllLevels function from the levelService.
+     */
+    onDeleteAllLevels(): void {
+        this.levelService.deleteAllLevels();
+    }
 }
