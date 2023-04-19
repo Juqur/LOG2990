@@ -10,19 +10,21 @@ describe('ChatService', () => {
     const gameState = {} as unknown as GameState;
     let service: ChatService;
     let socket: SinonStubbedInstance<Socket>;
+    let otherSocket: SinonStubbedInstance<Socket>;
     let server: SinonStubbedInstance<Server>;
     let emitSpy: jest.SpyInstance;
-    let emitToSpy: jest.SpyInstance;
+    let otherEmitSpy: jest.SpyInstance;
 
     beforeEach(async () => {
         socket = createStubInstance<Socket>(Socket);
+        otherSocket = createStubInstance<Socket>(Socket);
         server = createStubInstance<Server>(Server);
         const socketsMap = new Map<string, Socket>();
         const sockets = { sockets: socketsMap };
         Object.defineProperty(server, 'sockets', { value: sockets });
-        jest.spyOn(socketsMap, 'get').mockReturnValue(socket);
+        jest.spyOn(socketsMap, 'get').mockReturnValue(otherSocket);
         emitSpy = jest.spyOn(socket, 'emit');
-        emitToSpy = jest.spyOn(socket, 'to').mockImplementation(() => ({ emit: jest.fn() } as never));
+        otherEmitSpy = jest.spyOn(otherSocket, 'emit');
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [ChatService],
@@ -65,7 +67,8 @@ describe('ChatService', () => {
         it('should call emit to the other socket if the other socket exists', () => {
             gameState.otherSocketId = 'otherSocketId';
             service.sendSystemMessage({ socket, server }, data, gameState);
-            expect(emitToSpy).toHaveBeenCalledTimes(1);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
+            expect(otherEmitSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -79,7 +82,7 @@ describe('ChatService', () => {
 
         it('should call emit to the other socket', () => {
             service.sendToBothPlayers({ socket, server }, message, gameState);
-            expect(emitToSpy).toHaveBeenCalledTimes(1);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -92,7 +95,7 @@ describe('ChatService', () => {
 
         it('should call emit to the other socket', () => {
             service.abandonMessage(server, gameState);
-            expect(emitToSpy).toHaveBeenCalledTimes(1);
+            expect(otherEmitSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call getSystemChatMessage', () => {

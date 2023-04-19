@@ -1,8 +1,11 @@
+import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { Level } from '@common/interfaces/level';
 import { of } from 'rxjs';
 import { MainPageService, TimedGameData } from './main-page.service';
 
@@ -12,12 +15,16 @@ describe('MainPageService', () => {
     let routerSpy: jasmine.SpyObj<Router>;
     let popUpServiceSpy: jasmine.SpyObj<PopUpService>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<unknown>>;
+    const communicationServiceSpy: jasmine.SpyObj<CommunicationService> = jasmine.createSpyObj('CommunicationService', ['getLevels']);
 
     beforeEach(() => {
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send', 'on', 'send']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
+
+        communicationServiceSpy.getLevels.and.returnValue(of([{} as Level] as Level[]));
+
         dialogRefSpy.afterClosed.and.returnValue(of({ hasAccepted: true }));
         TestBed.configureTestingModule({
             providers: [
@@ -26,6 +33,7 @@ describe('MainPageService', () => {
                 { provide: MatDialogRef, useValue: dialogRefSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
             ],
+            imports: [HttpClientModule],
         });
         service = TestBed.inject(MainPageService);
     });
@@ -72,6 +80,28 @@ describe('MainPageService', () => {
             socketHandlerSpy.isSocketAlive.and.returnValue(true);
             service.connectToSocket();
             expect(socketHandlerSpy.connect).not.toHaveBeenCalled();
+        });
+
+        it('should set the amount of levels after the levels are refreshed', () => {
+            const spy = spyOn(service, 'setAmountOfLevels' as never);
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'refreshLevels') {
+                    callback({} as never);
+                }
+            });
+            service.connectToSocket();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should set the amount of levels after a level is deleted', () => {
+            const spy = spyOn(service, 'setAmountOfLevels' as never);
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'deleteLevel') {
+                    callback({} as never);
+                }
+            });
+            service.connectToSocket();
+            expect(spy).toHaveBeenCalled();
         });
     });
 
@@ -128,4 +158,13 @@ describe('MainPageService', () => {
             });
         });
     });
+
+    // describe('setAmountOfLevels', () => {
+    //     it('should set amountOfLevels to the length of the levels returned by communication service', () => {
+    //         // const levels = [{} as Level];
+    //         // communicationServiceSpy.getLevels.and.returnValue(of(levels));
+    //         service.setAmountOfLevels();
+    //         expect(service.amountOfLevels).toEqual(1);
+    //     });
+    // });
 });

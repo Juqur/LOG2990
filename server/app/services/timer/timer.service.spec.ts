@@ -12,10 +12,20 @@ describe('TimerService', () => {
     let server: SinonStubbedInstance<Server>;
     let socket: SinonStubbedInstance<Socket>;
     let gameService: SinonStubbedInstance<GameService>;
+    let otherSocket: SinonStubbedInstance<Socket>;
+    let emitSpy: jest.SpyInstance;
+    let otherEmitSpy: jest.SpyInstance;
 
     beforeEach(async () => {
-        server = createStubInstance<Server>(Server);
         socket = createStubInstance<Socket>(Socket);
+        otherSocket = createStubInstance<Socket>(Socket);
+        server = createStubInstance<Server>(Server);
+        const socketsMap = new Map<string, Socket>();
+        const sockets = { sockets: socketsMap };
+        Object.defineProperty(server, 'sockets', { value: sockets });
+        jest.spyOn(socketsMap, 'get').mockReturnValue(otherSocket);
+        emitSpy = jest.spyOn(socket, 'emit');
+        otherEmitSpy = jest.spyOn(otherSocket, 'emit');
         gameService = createStubInstance<GameService>(GameService);
 
         Object.defineProperty(socket, 'id', { value: 'socket' });
@@ -63,7 +73,7 @@ describe('TimerService', () => {
         beforeEach(() => {
             removeSpy = jest.spyOn(gameService, 'removeLevel').mockImplementation();
             deleteSpy = jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
-            jest.spyOn(gameService, 'getGameState').mockReturnValue({ levelId: 0 } as unknown as GameState);
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ levelId: 0, timedGameLength: 120 } as unknown as GameState);
         });
 
         it('should start the timer for a single player game', () => {
@@ -92,24 +102,22 @@ describe('TimerService', () => {
         });
 
         it('should emit the time every second', () => {
-            const emitSpy = jest.fn();
-            const toSpy = jest.spyOn(server, 'to').mockReturnValue({ emit: emitSpy } as never);
             const timeToAdvance = 1000;
-            service.startTimer({ socket }, server, true);
+            service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, true);
             jest.advanceTimersByTime(timeToAdvance);
-            expect(toSpy).toBeCalledTimes(1);
+            expect(otherEmitSpy).toBeCalledTimes(1);
             expect(emitSpy).toBeCalledTimes(1);
         });
 
         it('should set the time to the the timed game mode time', () => {
-            service.startTimer({ socket }, server, false);
+            service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, false);
             expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
             expect(service['timeIntervalMap'].get('socket')).toBeDefined();
         });
 
         it('should decrement the time every second', () => {
             const timeToAdvance = 1000;
-            service.startTimer({ socket }, server, false);
+            service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, false);
             jest.advanceTimersByTime(timeToAdvance);
             expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
         });
@@ -135,11 +143,20 @@ describe('TimerService', () => {
             const timeToAdvance = 1000;
             service.startTimer({ socket, otherSocketId: 'secondSocket' }, server, false);
             jest.advanceTimersByTime(timeToAdvance);
-            expect(service['timeMap'].get('secondSocket')).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
+            expect(service['timeMap'].get('secondSocket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
         });
     });
 
     describe('stopTimer', () => {
+        it('should not do anything if no interval is found', () => {
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ otherSocketId: 'secondSocket' } as unknown as GameState);
+            jest.spyOn(service['timeIntervalMap'], 'get').mockReturnValue(undefined);
+            jest.spyOn(gameService, 'getGameState').mockReturnValue(undefined);
+            const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation();
+            service.stopTimer('socket');
+            expect(clearIntervalSpy).toHaveBeenCalledTimes(0);
+        });
+
         it('should delete the key map', () => {
             const currentTime = { time: 9, startDate: new Date() };
             service['timeMap'].set('socket', currentTime);
@@ -155,15 +172,27 @@ describe('TimerService', () => {
             expect(clearIntervalSpy).toHaveBeenCalledTimes(1);
             expect(service['timeMap'].get('socket')).toBeUndefined();
         });
+
+        it('should clear other sockets interval', () => {
+            const currentTime = { time: 9, startDate: new Date() };
+            service['timeMap'].set('secondSocket', currentTime);
+            service['timeIntervalMap'].set(
+                'secondSocket',
+                setInterval(() => {
+                    return null;
+                }, 0),
+            );
+            const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation();
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ otherSocketId: 'secondSocket' } as unknown as GameState);
+            service.stopTimer('socket');
+            expect(clearIntervalSpy).toHaveBeenCalledTimes(2);
+            expect(service['timeMap'].get('secondSocket')).toBeUndefined();
+        });
     });
 
     describe('addTime', () => {
         beforeEach(() => {
             jest.spyOn(gameService, 'getGameState').mockReturnValue({ timedLevelList: [] } as unknown as GameState);
-            const socketsMap = new Map<string, Socket>();
-            const sockets = { sockets: socketsMap };
-            Object.defineProperty(server, 'sockets', { value: sockets });
-            jest.spyOn(socketsMap, 'get').mockReturnValue(socket);
         });
 
         it('should add time to the timer', () => {
@@ -181,25 +210,22 @@ describe('TimerService', () => {
             service.addTime(server, 'socket', timeToAdd);
             expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH);
         });
-    });
 
-    describe('subtractTime', () => {
-        beforeEach(() => {
-            jest.spyOn(gameService, 'getGameState').mockReturnValue({ otherSocketId: '' } as unknown as GameState);
-        });
-        it('should subtract time to the timer', () => {
-            const currentTime = { time: 55, startDate: new Date() };
-            const timeToSubtract = 14;
+        it('should not remove time if the time is less than 0', () => {
+            const currentTime = { time: 0, startDate: new Date() };
+            const timeToAdd = -1;
             service['timeMap'].set('socket', currentTime);
-            service.subtractTime(server, 'socket', timeToSubtract);
-            expect(service['timeMap'].get('socket').time).toEqual(currentTime.time - timeToSubtract);
-        });
-        it('should not remove more time than the min time', () => {
-            const currentTime = { time: 20, startDate: new Date() };
-            const timeToSubtract = 100;
-            service['timeMap'].set('socket', currentTime);
-            service.subtractTime(server, 'socket', timeToSubtract);
+            service.addTime(server, 'socket', timeToAdd);
             expect(service['timeMap'].get('socket').time).toEqual(0);
+        });
+
+        it('should set the other players time to the correct value', () => {
+            const currentTime = { time: 4, startDate: new Date() };
+            const timeToAdd = 10;
+            service['timeMap'].set('socket', currentTime);
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ otherSocketId: 'secondSocket' } as unknown as GameState);
+            service.addTime(server, 'socket', timeToAdd);
+            expect(service['timeMap'].get('secondSocket').time).toEqual(currentTime.time + timeToAdd);
         });
     });
 
