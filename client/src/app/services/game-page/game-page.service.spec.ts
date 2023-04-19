@@ -276,6 +276,9 @@ fdescribe('GamePageService', () => {
 
     describe('resetCanvas', () => {
         it('should call drawPlayArea twice', fakeAsync(() => {
+            spyOn(service, 'copyArea' as never);
+            spyOn(service, 'copyDiffPlayAreaContext' as never);
+            spyOn(service, 'addToVideoStack' as never);
             const delay = 1000;
             service['resetCanvas']();
             tick(delay);
@@ -302,7 +305,7 @@ fdescribe('GamePageService', () => {
             expect(service['imagesData']).toEqual(expectedArray);
         });
 
-        it('should correctly filter areaNotFOund in handleAreaFoundInDifference', () => {
+        it('should correctly filter areaNotFound in handleAreaFoundInDifference', () => {
             service['areaNotFound'] = [0, 1, 2, 3];
             const expectedArray = [0, 1, 2];
             service['handleAreaFoundInDifference'](expectedArray, true, 0, 0);
@@ -378,7 +381,6 @@ fdescribe('GamePageService', () => {
             addToVideoStackSpy = spyOn(service, 'addToVideoStack' as never);
             spyOn(service, 'flashBothCanvas' as never).and.resolveTo();
             playAreaComponentSpy.getFlashingCopy.and.returnValue(document.createElement('canvas'));
-            // console.log(addToVideoStackSpy);
         });
 
         it('should push the difference array correctly in imagesData', () => {
