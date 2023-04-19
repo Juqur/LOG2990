@@ -353,18 +353,6 @@ export class GameGateway {
     private async handlePlayerLeavingGame(socket: Socket): Promise<void> {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
-            const endDate = new Date();
-            const gameHistory = {
-                startDate: this.timerService.getStartDate(socket.id),
-                lengthGame: !gameState.timedLevelList
-                    ? this.timerService.getTime(socket.id)
-                    : Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
-                isClassic: !gameState.timedLevelList ? true : false,
-                firstPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : gameState.playerName,
-                secondPlayerName: gameState.otherSocketId ? gameState.playerName : undefined,
-                hasPlayerAbandoned: true,
-            } as GameHistory;
-            await this.mongodbService.addGameHistory(gameHistory);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
                 this.chatService.abandonMessage(this.server, gameState);
@@ -372,6 +360,20 @@ export class GameGateway {
                 this.gameService.setOtherPlayerAbandoned(otherSocket.id);
             }
             if (!gameState.timedLevelList || !gameState.otherSocketId) {
+                const endDate = new Date();
+                const gameHistory = {
+                    startDate: this.timerService.getStartDate(socket.id),
+                    lengthGame: !gameState.timedLevelList
+                        ? this.timerService.getTime(socket.id)
+                        : Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
+                    isClassic: !gameState.timedLevelList ? true : false,
+                    firstPlayerName: gameState.otherSocketId
+                        ? this.gameService.getGameState(gameState.otherSocketId).playerName
+                        : gameState.playerName,
+                    secondPlayerName: gameState.otherSocketId ? gameState.playerName : undefined,
+                    hasPlayerAbandoned: true,
+                } as GameHistory;
+                await this.mongodbService.addGameHistory(gameHistory);
                 this.gameService.deleteUserFromGame(socket);
                 this.timerService.stopTimer(socket.id);
             }
