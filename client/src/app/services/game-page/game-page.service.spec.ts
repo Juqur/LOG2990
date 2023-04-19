@@ -313,33 +313,43 @@ describe('GamePageService', () => {
             copyAreaSpy = spyOn(service, 'copyArea' as never);
             copyDiffCtxSpy = spyOn(service, 'copyDiffPlayAreaContext' as never);
             handleHintRequestSpy = spyOn(service, 'handleHintRequest' as never);
+            service['resetCanvasDelayInProgress'] = false;
         });
 
         it('should call drawPlayArea twice', fakeAsync(() => {
-            service['resetCanvas']();
+            service['resetCanvas'](false);
             tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));
 
         it('should call deleteTempCanvas twice', fakeAsync(() => {
-            service['resetCanvas']();
+            service['resetCanvas'](false);
             tick(delay);
             expect(playAreaComponentSpy.deleteTempCanvas).toHaveBeenCalledTimes(2);
         }));
 
-        it('should set back canClick to true after delay', fakeAsync(() => {
-            service['resetCanvas']();
+        it('should set back canClick to true after delay is cooldown is true', fakeAsync(() => {
+            service['resetCanvas'](true);
             expect(mouseServiceSpy['canClick']).toBeFalse();
             tick(delay);
             expect(mouseServiceSpy['canClick']).toBeTrue();
         }));
 
         it('should call copyArea, copyDiffPlayAreaContext and handleHintRequest', fakeAsync(() => {
-            service['resetCanvas']();
+            service['resetCanvas'](false);
             tick(delay);
             expect(copyAreaSpy).toHaveBeenCalledTimes(1);
             expect(copyDiffCtxSpy).toHaveBeenCalledTimes(1);
             expect(handleHintRequestSpy).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should not make calls if cooldown and resetCanvasDelayInProgress are true', fakeAsync(() => {
+            service['resetCanvasDelayInProgress'] = true;
+            service['resetCanvas'](true);
+            tick(delay);
+            expect(copyAreaSpy).not.toHaveBeenCalled();
+            expect(copyDiffCtxSpy).not.toHaveBeenCalled();
+            expect(handleHintRequestSpy).not.toHaveBeenCalled();
         }));
     });
 
