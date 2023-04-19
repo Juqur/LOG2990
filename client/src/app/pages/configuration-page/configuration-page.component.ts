@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Dialogs } from '@app/interfaces/dialogs';
 import { LevelService } from '@app/services/level/level.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 
 /**
  * This component represents the page where the user can modify, delete or create new games. It is accessible from
@@ -16,7 +17,7 @@ import { LevelService } from '@app/services/level/level.service';
     styleUrls: ['./configuration-page.component.scss'],
 })
 export class ConfigurationPageComponent implements OnInit {
-    constructor(public levelService: LevelService, public router: Router) {}
+    constructor(public levelService: LevelService, public router: Router, private popUpService: PopUpService) {}
 
     ngOnInit(): void {
         this.levelService.refreshLevels();

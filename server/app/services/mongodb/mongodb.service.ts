@@ -49,8 +49,8 @@ export class MongodbService {
         await this.levelModel.create({
             id: level.id,
             name: level.name,
-            playerSolo: level.playerMulti,
-            timeSolo: level.timeMulti,
+            playerSolo: level.playerSolo,
+            timeSolo: level.timeSolo,
             playerMulti: level.playerMulti,
             timeMulti: level.timeMulti,
             isEasy: level.isEasy,
