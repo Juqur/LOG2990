@@ -443,6 +443,7 @@ export class GamePageService {
         this.differencePlayArea.flashArea(result);
         this.resetCanvas();
     }
+
     /**
      * Performs a failed sound and prompts an error in the original canvas.
      */

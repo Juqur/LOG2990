@@ -1,30 +1,31 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
-import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
 describe('PlayAreaComponent', () => {
-    let drawServiceSpy: SpyObj<DrawService>;
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
 
-    beforeEach(() => {
-        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess', 'drawPlayArea']);
-    });
+    let canvasSharingServiceSpy: SpyObj<CanvasSharingService>;
+    let drawServiceSpy: SpyObj<DrawService>;
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(async () => {
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['drawError', 'drawSuccess', 'drawPlayArea']);
+        canvasSharingServiceSpy = jasmine.createSpyObj('CanvasSharingService', ['getCanvas', 'setCanvas']);
+
         TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
             imports: [HttpClientModule],
-        })
-            .overrideProvider(DrawService, { useValue: drawServiceSpy })
-            .compileComponents();
-    }));
+            providers: [
+                { provide: DrawService, useValue: drawServiceSpy },
+                { provide: CanvasSharingService, useValue: canvasSharingServiceSpy },
+            ],
+        }).compileComponents();
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(PlayAreaComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -40,24 +41,15 @@ describe('PlayAreaComponent', () => {
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('buttonDetect should modify the buttonPressed variable', () => {
-        const expectedKey = 'a';
-        const buttonEvent = {
-            key: expectedKey,
-        } as KeyboardEvent;
-        component.buttonDetect(buttonEvent);
-        expect(component.buttonPressed).toEqual(expectedKey);
-    });
-
     it('getCanvas should return the canvas element', () => {
         const canvas = component.getCanvas();
-        expect(canvas).toEqual(component.canvas);
+        expect(canvas).toEqual(component['canvas']);
     });
 
     it('drawPlayArea should call context.drawImage', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
-        component.drawPlayArea(environment.serverUrl + 'original/1.bmp');
-        component.currentImage.dispatchEvent(new Event('load'));
+        component.drawPlayArea('');
+        component['currentImage'].dispatchEvent(new Event('load'));
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
@@ -65,8 +57,8 @@ describe('PlayAreaComponent', () => {
     it('drawPlayArea should call the diff canvas when isDifferenceCanvas is true', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
         component.isDifferenceCanvas = true;
-        component.drawPlayArea(environment.serverUrl + 'originals/1.bmp');
-        component.currentImage.dispatchEvent(new Event('load'));
+        component.drawPlayArea('');
+        component['currentImage'].dispatchEvent(new Event('load'));
 
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
@@ -95,8 +87,8 @@ describe('PlayAreaComponent', () => {
     it('createTempCanvas should create a new canvas with the right properties', () => {
         component.createTempCanvas();
         expect(component['tempCanvas']).toBeDefined();
-        expect(component['tempCanvas'].width).toEqual(component.canvas.nativeElement.width);
-        expect(component['tempCanvas'].height).toEqual(component.canvas.nativeElement.height);
+        expect(component['tempCanvas'].width).toEqual(component['canvas'].nativeElement.width);
+        expect(component['tempCanvas'].height).toEqual(component['canvas'].nativeElement.height);
         expect(component['tempCanvas'].style.position).toEqual('absolute');
         expect(component['tempCanvas'].style.pointerEvents).toEqual('none');
     });
