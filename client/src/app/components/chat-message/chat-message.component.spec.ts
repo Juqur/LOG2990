@@ -26,29 +26,23 @@ describe('ChatMessageComponent', () => {
 
     it('Chat message should display the name with the appropriate length', () => {
         component['chatMessage'] = { senderId: '1', sender: 'Charles', text: 'Hello world' };
-
         component.ngOnInit();
-
         expect(component['displayName']).toEqual('Charles');
     });
 
     it('Chat message should cut name if name is to long', () => {
         component.ngOnInit();
-
         expect(component['displayName']).toEqual('I am a s...');
     });
 
     it('Chat message should cut name if name is to long', () => {
         component.ngOnInit();
-
         expect(component['displayName']).toEqual('I am a s...');
     });
 
     it('A message should have the class player if the message has an id = to SenderType.Player', () => {
         spyOn(component, 'formatNameLength' as never);
-
         component.ngOnInit();
-
         expect(document.getElementById('message-outer-box')).toBeTruthy();
         expect(document.getElementById('sender')?.classList).toContain('player');
     });
@@ -63,7 +57,6 @@ describe('ChatMessageComponent', () => {
         };
         fixture.detectChanges();
         spyOn(component, 'formatNameLength' as never);
-
         component.ngOnInit();
 
         expect(document.getElementById('message-outer-box')).toBeTruthy();
