@@ -33,6 +33,7 @@ export class GamePageService {
     private areaNotFound: number[];
     private closePath: string = '/home';
     private hintSection: number[] = [];
+    private resetCanvasDelayInProgress: boolean = false;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -360,6 +361,10 @@ export class GamePageService {
      * @param cooldown If true, the player will not be able to click on the canvas during the cooldown.
      */
     private resetCanvas(cooldown: boolean): void {
+        if (this.resetCanvasDelayInProgress && cooldown) {
+            return;
+        }
+        this.resetCanvasDelayInProgress = true;
         this.mouseService.canClick = !cooldown;
         const delay = 1000; // ms
         this.differencePlayArea
@@ -372,6 +377,7 @@ export class GamePageService {
                 setTimeout(() => {
                     this.copyArea(this.imagesData);
                     this.mouseService.canClick = true;
+                    this.resetCanvasDelayInProgress = false;
                 }, 0);
             })
             .then(() => {
