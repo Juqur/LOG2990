@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
 import { Level } from '@common/interfaces/level';
@@ -17,6 +18,9 @@ export interface GameState {
     otherSocketId?: string;
     timedLevelList?: Level[];
     otherPlayerAbandoned?: boolean;
+    penaltyTime?: number;
+    bonusTime?: number;
+    timedGameLength?: number;
     hintsUsed: number;
 }
 
@@ -31,7 +35,7 @@ export class GameService {
     private playerGameMap = new Map<string, GameState>();
     private levelDeletionQueue: number[] = [];
 
-    constructor(private imageService: ImageService) {}
+    constructor(private imageService: ImageService, private mongodbService: MongodbService) {}
 
     /**
      * This method gets the level deletion queue.
@@ -207,9 +211,10 @@ export class GameService {
         if (data.levelId === 0) {
             playerGameState.timedLevelList = await this.imageService.getLevels();
         }
-        if (data.levelId === 0) {
-            playerGameState.timedLevelList = await this.imageService.getLevels();
-        }
+        const constants = await this.mongodbService.getGameConstants();
+        playerGameState.penaltyTime = constants.timePenaltyHint;
+        playerGameState.bonusTime = constants.timeGainedDifference;
+        playerGameState.timedGameLength = constants.initialTime;
         this.playerGameMap.set(socketId, playerGameState);
     }
 

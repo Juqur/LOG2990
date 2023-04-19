@@ -38,8 +38,8 @@ export class GameGateway {
      * @param data The data of the player, including the levelId and the playerName.
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
-    onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
-        this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, false);
+    async onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): Promise<void> {
+        await this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, false);
         this.timerService.startTimer({ socket }, this.server, true);
     }
 
@@ -70,7 +70,7 @@ export class GameGateway {
                 this.gameService.setLevelId(socket.id, level.id);
                 this.gameService.setLevelId(otherSocketId, level.id);
                 this.gameService.connectRooms(socket, otherSocket);
-                this.timerService.startTimer({ socket }, this.server, false);
+                this.timerService.startTimer({ socket, otherSocketId }, this.server, false);
             }
         } else {
             const level = this.gameService.getRandomLevelForTimedGame(socket.id);
@@ -124,7 +124,8 @@ export class GameGateway {
                 secondPlayerName,
                 hasPlayerAbandoned: false,
             });
-            this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
+            await this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
+            this.server.emit(GameEvents.RefreshLevels);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
@@ -147,12 +148,12 @@ export class GameGateway {
      * @param data The data of the player, including the levelId and the playerName.
      */
     @SubscribeMessage(GameEvents.OnGameSelection)
-    onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
+    async onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): Promise<void> {
         if (data.playerName.length <= 1) {
             socket.emit(GameEvents.InvalidName);
             return;
         }
-        this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, true);
+        await this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, true);
         const otherPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
         if (otherPlayerId) {
             this.gameService.bindPlayers(socket.id, otherPlayerId);
@@ -313,7 +314,7 @@ export class GameGateway {
             if (data !== undefined) {
                 this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
                 const gameState = this.gameService.getGameState(socket.id);
-                const hintPenalty = gameState.timedLevelList ? -Constants.HINT_PENALTY : Constants.HINT_PENALTY;
+                const hintPenalty = gameState.timedLevelList ? -gameState.penaltyTime : gameState.penaltyTime;
                 this.timerService.addTime(this.server, socket.id, hintPenalty);
                 socket.emit(GameEvents.HintRequest, data);
             }
@@ -398,12 +399,22 @@ export class GameGateway {
      * @returns True if the player has finished the timed game, false otherwise.
      */
     private handleTimedGame(socket: Socket, gameState: GameState): boolean {
-        this.timerService.addTime(this.server, socket.id, Constants.FOUND_DIFFERENCE_BONUS);
-        const otherSocketId = this.gameService.getGameState(socket.id).otherSocketId;
+        this.timerService.addTime(this.server, socket.id, gameState.bonusTime);
+        const otherSocketId = gameState.otherSocketId;
         if (gameState.timedLevelList.length === 0) {
             socket.emit(GameEvents.TimedModeFinished, true);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
+            const endDate = new Date();
+            const gameHistory = {
+                startDate: this.timerService.getStartDate(socket.id),
+                lengthGame: Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
+                isClassic: false,
+                firstPlayerName: gameState.playerName,
+                secondPlayerName: otherSocketId ? this.gameService.getGameState(otherSocketId).playerName : undefined,
+                hasPlayerAbandoned: false,
+            } as GameHistory;
+            this.mongodbService.addGameHistory(gameHistory);
             return true;
         }
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);
