@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
-import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Constants } from '@common/constants';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 
 /**
  * Is the "container" of all messages sent in the game be they player sent or system sent.
@@ -59,7 +59,6 @@ export class GameChatComponent implements OnInit, OnDestroy {
      */
     private receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
-        console.log('Message received: ' + message);
         setTimeout(() => {
             this.scrollToBottom();
         }, Constants.scrollDelay);
