@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -294,11 +295,16 @@ describe('LevelService', () => {
     });
 
     describe('deleteLevel', () => {
-        it('deleteLevel should call removeCard', () => {
+        let removeCardSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            removeCardSpy = spyOn(service, 'removeCard');
+        });
+
+        it('should call removeCard', () => {
             const levelId = 1;
-            const spy = spyOn(service, 'removeCard' as never);
             service.deleteLevel(levelId);
-            expect(spy).toHaveBeenCalledTimes(1);
+            expect(removeCardSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call connect if the socket is not alive', () => {
@@ -315,12 +321,44 @@ describe('LevelService', () => {
         });
     });
 
+    describe('deleteAllLevels', () => {
+        let removeAllCardsSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            removeAllCardsSpy = spyOn(service, 'removeAllCards');
+        });
+
+        it('should call removeAllCards', () => {
+            service.deleteAllLevels();
+            expect(removeAllCardsSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call connect if the socket is not alive', () => {
+            socketHandlerMock.isSocketAlive.and.returnValue(false);
+            service.deleteAllLevels();
+            expect(socketHandlerMock.connect).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call send', () => {
+            service.deleteAllLevels();
+            expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onDeleteAllLevels');
+        });
+    });
+
     describe('removeCard', () => {
-        it('removeCard should correctly remove the card', () => {
+        it('should correctly remove the card', () => {
             const levelId = 1;
             service['levels'] = [{ id: 1 } as Level, { id: 2 } as Level, { id: 3 } as Level];
             service['removeCard'](levelId);
             expect(service['levels']).toEqual([{ id: 2 } as Level, { id: 3 } as Level]);
+        });
+    });
+
+    describe('removeAllCards', () => {
+        it('should correctly remove all cards', () => {
+            service['levels'] = [{ id: 1 } as Level, { id: 2 } as Level, { id: 3 } as Level];
+            service['removeAllCards']();
+            expect(service['levels']).toEqual([]);
         });
     });
 
