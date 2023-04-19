@@ -89,7 +89,7 @@ describe('GamePageService', () => {
             service.setPlayArea(playArea, playArea, playArea);
             expect(service['originalPlayArea']).toEqual(playArea);
             expect(service['differencePlayArea']).toEqual(playArea);
-            expect(service['tempDiffPlayArea']).toEqual(playArea);
+            expect(service['tempDifferencePlayArea']).toEqual(playArea);
         });
     });
 

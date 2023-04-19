@@ -15,9 +15,9 @@ import { ChatMessage } from '@common/interfaces/chat-messages';
     styleUrls: ['./game-chat.component.scss'],
 })
 export class GameChatComponent implements OnInit, OnDestroy {
-    @ViewChild('messagesContainer') messagesContainer: ElementRef<HTMLElement>;
     @Input() isMultiplayer: boolean = true;
     @Input() playerName: string = '';
+    @ViewChild('messagesContainer') private messagesContainer: ElementRef<HTMLElement>;
     private messages: ChatMessage[] = [];
 
     constructor(private socketHandler: SocketHandler) {}
