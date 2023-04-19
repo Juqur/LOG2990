@@ -33,16 +33,25 @@ export class VideoTimerComponent implements OnInit {
         this.gameTimeFormatted = 'Temps: ' + minutesString + ':' + secondsString;
     }
 
+    /**
+     * Starts the timer.
+     */
     startTimer() {
         this.interval = setInterval(() => {
             this.updateTimer(this.time++);
         }, Constants.millisecondsInOneSecond);
     }
 
+    /**
+     * Stops the timer.
+     */
     stopTimer() {
         clearInterval(this.interval);
     }
 
+    /**
+     * Resets the timer.
+     */
     resetTimer() {
         this.stopTimer();
         this.time = 0;

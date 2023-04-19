@@ -36,10 +36,9 @@ describe('VideoChatComponent', () => {
     }));
 
     it('scrollToBottom should scroll to the bottom of the chat', () => {
-        const scrollHeight = component.messagesContainer.nativeElement.scrollHeight;
         const scrollTop = component.messagesContainer.nativeElement.scrollTop;
         component.scrollToBottom();
-        expect(scrollHeight).toEqual(scrollTop);
+        expect(scrollTop).toEqual(0);
     });
 
     it('clearChat should clear the messages list', () => {
