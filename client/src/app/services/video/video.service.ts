@@ -55,7 +55,6 @@ export class VideoService {
             defaultCanvas: tempDefaultCanvas,
             diffCanvas: tempDiffCanvas,
         });
-        console.table(this.videoStack);
     }
 
     static popStack(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
