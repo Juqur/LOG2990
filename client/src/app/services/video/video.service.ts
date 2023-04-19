@@ -59,7 +59,7 @@ export class VideoService {
 
     static popStack(): { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined {
         if (!this.isStackEmpty()) {
-            return VideoService.videoStack.pop(); //
+            return VideoService.videoStack.pop();
         } else {
             return undefined;
         }
@@ -71,7 +71,7 @@ export class VideoService {
     }
 
     static isStackEmpty(): boolean {
-        return VideoService.videoStack.length === 0; //
+        return VideoService.videoStack.length === 0;
     }
 
     static setVariables(firstPlayerName: string, secondPlayerName: string, isWinning: boolean): void {
