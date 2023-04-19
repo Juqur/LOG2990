@@ -434,7 +434,7 @@ describe('GameGateway', () => {
 
         it('should call getCurrentTime', async () => {
             await gateway.onHintRequest(socket);
-            expect(timerService.getCurrentTime).toBeCalledTimes(1);
+            expect(getCurrentTimeSpy).toBeCalledTimes(1);
         });
 
         it('should call askHint', async () => {
