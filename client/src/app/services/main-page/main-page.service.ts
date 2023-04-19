@@ -37,12 +37,13 @@ export class MainPageService {
         private communicationService: CommunicationService,
     ) {}
 
-    async setAmountOfLevels(): Promise<number> {
-        this.amountOfLevels = 0;
-        await this.communicationService.getLevels().subscribe((levels) => {
+    /**
+     * This method gets the amount of levels in the database.
+     */
+    setAmountOfLevels(): void {
+        this.communicationService.getLevels().subscribe((levels) => {
             this.amountOfLevels = levels.length;
         });
-        return this.amountOfLevels;
     }
     /**
      * This method redirects the user to a specific route.
