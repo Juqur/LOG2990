@@ -220,9 +220,10 @@ export class MongodbService {
                 } else {
                     await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerSolo: names, timeSolo: times }).exec();
                 }
-                return names.indexOf(gameState.playerName);
+                return names.indexOf(gameState.playerName) + 1;
             }
         }
+        return null;
     }
 
     /**

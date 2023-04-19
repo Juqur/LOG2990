@@ -24,7 +24,7 @@ export class MessageBoxComponent implements OnInit {
 
     /**
      * This method is called when the user presses a key in the message box.
-     * It checks if the space bar was pressed and sends the message.
+     * It checks if the enter button was pressed and sends the message.
      *
      * @param event The event that triggered the method.
      * @param messageInput The HTML input containing the message.
