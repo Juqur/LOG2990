@@ -127,6 +127,7 @@ describe('GameGateway', () => {
         beforeEach(() => {
             timerSpy = jest.spyOn(timerService, 'stopTimer');
             gameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            jest.spyOn(mongodbService, 'updateHighscore').mockReturnValue(Promise.resolve(2));
             jest.spyOn(gameService, 'getImageInfoOnClick').mockReturnValue(Promise.resolve(gameData));
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(false);
@@ -163,7 +164,8 @@ describe('GameGateway', () => {
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(true);
             await gateway.onClick(socket, 1);
             expect(emitSpy).toBeCalledWith('processedClick', gameData);
-            expect(emitSpy).toBeCalledWith('victory');
+
+            expect(emitSpy).toBeCalledWith('victory', 2);
             expect(timerSpy).toBeCalledTimes(1);
             expect(gameSpy).toBeCalledTimes(1);
         });
@@ -416,15 +418,30 @@ describe('GameGateway', () => {
 
     describe('onHintRequest', () => {
         it('should call chatService, timerService and askHint', async () => {
+            gameState.timedLevelList = undefined;
+            jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(timerService, 'getCurrentTime').mockReturnValue(1);
-            const addTimeSpy = jest.spyOn(timerService, 'addTime');
             const sendMessageSpy = jest.spyOn(chatService, 'sendMessageToPlayer');
             const askHintSpy = jest.spyOn(gameService, 'askHint').mockReturnValue(Promise.resolve([1, 2]));
+            const addTimeSpy = jest.spyOn(timerService, 'addTime');
             await gateway.onHintRequest(socket);
             expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]); // check the emitted event
-            expect(addTimeSpy).toBeCalledTimes(1);
             expect(sendMessageSpy).toBeCalledWith(socket, 'Indice utilisé');
             expect(askHintSpy).toBeCalledWith(socket.id);
+            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, expect.any(Number));
+            expect(addTimeSpy.mock.calls[0][2]).toBeGreaterThan(0);
+        });
+
+        it('should decrement timer when in timed game mode', async () => {
+            gameState.timedLevelList = [{} as Level];
+            jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
+            jest.spyOn(timerService, 'getCurrentTime').mockReturnValue(1);
+            jest.spyOn(gameService, 'askHint').mockReturnValue(Promise.resolve([1, 2]));
+            jest.spyOn(chatService, 'sendMessageToPlayer');
+            const addTimeSpy = jest.spyOn(timerService, 'addTime');
+            await gateway.onHintRequest(socket);
+            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, expect.any(Number));
+            expect(addTimeSpy.mock.calls[0][2]).toBeLessThan(0);
         });
     });
 

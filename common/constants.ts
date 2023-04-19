@@ -76,7 +76,6 @@ export namespace Constants {
     export const INIT_DIFF_NB = 0;
     export const BMP_BPP_POS = 28;
     export const BMP_BPP = 24;
-    export const BLACK = '#000000';
     export const MAX_GAME_NAME_LENGTH = 10;
     export const AREA_TO_DUPLICATE = 15;
     export const RECTANGLE_SIZE = 100;
@@ -111,6 +110,8 @@ export namespace Constants {
 
     // Level Service
     export const MAX_GAME_TIME_LENGTH = 120;
+    export const MAX_TIME_PENALTY_HINT = 10;
+    export const MAX_TIME_GAINED_DIFFERENCE = 10;
 }
 
 export enum MouseButton {

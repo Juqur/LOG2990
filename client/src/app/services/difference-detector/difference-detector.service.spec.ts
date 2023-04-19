@@ -21,14 +21,14 @@ describe('DifferenceDetectorService', () => {
 
         const defaultImageLoaded = new Promise<void>((resolve) => {
             defaultImage.src = './assets/test/image_7_diff.bmp';
-            defaultImage.onload = () => {
+            defaultImage.onload = async () => {
                 resolve();
             };
         });
 
         const modifiedImageLoaded = new Promise<void>((resolve) => {
             modifiedImage.src = './assets/test/image_empty.bmp';
-            modifiedImage.onload = () => {
+            modifiedImage.onload = async () => {
                 resolve();
             };
         });

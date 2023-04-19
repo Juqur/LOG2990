@@ -95,7 +95,6 @@ export class GameGateway {
         const startDate = new Date(this.timerService.getStartDate(socket.id));
         const lengthGame = this.timerService.getTime(socket.id);
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
-            socket.emit(GameEvents.Victory);
             await this.mongodbService.addGameHistory({
                 startDate,
                 lengthGame,
@@ -104,7 +103,12 @@ export class GameGateway {
                 secondPlayerName,
                 hasPlayerAbandoned: false,
             });
-            this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
+            // The timer counts one more second when the game ends, even though the player finished the game.
+            const playerPosition: number = await this.mongodbService.updateHighscore(this.timerService.getTime(socket.id) - 1, gameState);
+            if (playerPosition) {
+                await this.chatService.sendSystemGlobalHighscoreMessage(this.server, gameState, playerPosition);
+            }
+            socket.emit(GameEvents.Victory, playerPosition);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
@@ -279,8 +283,10 @@ export class GameGateway {
         if (this.timerService.getCurrentTime(socket.id) > 0) {
             const data = await this.gameService.askHint(socket.id);
             if (data !== undefined) {
-                this.timerService.addTime(this.server, socket.id, Constants.HINT_PENALTY);
                 this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
+                const gameState = this.gameService.getGameState(socket.id);
+                const hintPenalty = gameState.timedLevelList ? -Constants.HINT_PENALTY : Constants.HINT_PENALTY;
+                this.timerService.addTime(this.server, socket.id, hintPenalty);
                 socket.emit(GameEvents.HintRequest, data);
             }
         }
