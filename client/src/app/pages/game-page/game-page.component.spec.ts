@@ -191,16 +191,18 @@ describe('GamePageComponent', () => {
             expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
         });
 
-        it('should set the amount of difference found by the player', () => {
-            const expectedDifferences = 5;
-            const data = { amountOfDifferencesFound: expectedDifferences } as unknown as GameData;
+        it('should call removeHintShape if response is true and showThirdHint is true', () => {
+            const data = { amountOfDifferencesFound: 5 } as unknown as GameData;
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component['showThirdHint'] = true;
+            gamePageServiceSpy.handleResponse.and.returnValue(true);
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'processedClick') {
                     callback(data as never);
                 }
             });
             component.handleSocket();
-            expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
+            expect(removeHintShapeSpy).toHaveBeenCalled();
         });
 
         it('should handle abandon if server sends opponent abandoned request', () => {
@@ -297,7 +299,7 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.handleTimedModeFinished).toHaveBeenCalledWith(true);
         });
 
-        it('should handle changing the pictures if server sends changeLevelTimedMode request', () => {
+        it('should handle changing the pictures if server sends changeLevelTimedMode request, and call removeHintShape if is showThirdHint', () => {
             const level = { id: 1 } as unknown as Level;
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'changeLevelTimedMode') {
@@ -305,12 +307,16 @@ describe('GamePageComponent', () => {
                 }
             });
             const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component['showThirdHint'] = true;
             component.handleSocket();
             expect(component['levelId']).toEqual(1);
             expect(component['currentLevel']).toEqual(level);
             expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
+            expect(gamePageServiceSpy.resetImagesData).toHaveBeenCalledTimes(1);
             expect(gamePageServiceSpy.setMouseCanClick).toHaveBeenCalledWith(true);
             expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
+            expect(removeHintShapeSpy).toHaveBeenCalledTimes(1);
         });
 
         describe('abandonGame', () => {
@@ -318,6 +324,12 @@ describe('GamePageComponent', () => {
                 component.abandonGame();
                 expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
             });
+        });
+    });
+    describe('abandonGame', () => {
+        it('should emit a socket event when abandoning the game', () => {
+            component.abandonGame();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
         });
     });
 
@@ -340,16 +352,6 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
         });
-
-        it('should call removeHintShape if showThirdHint is true', () => {
-            const event: MouseEvent = new MouseEvent('click');
-            const mousePositionReturnValue = 1;
-            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-            component['showThirdHint'] = true;
-            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-            component.clickedOnOriginal(event);
-            expect(removeHintShapeSpy).toHaveBeenCalled();
-        });
     });
 
     describe('clickedOnDiff', () => {
@@ -370,16 +372,6 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
             expect(component['clickedOriginalImage']).toBe(false);
-        });
-
-        it('should call removeHintShape if showThirdHint is true', () => {
-            const event: MouseEvent = new MouseEvent('click');
-            const mousePositionReturnValue = 1;
-            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-            component['showThirdHint'] = true;
-            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-            component.clickedOnDiff(event);
-            expect(removeHintShapeSpy).toHaveBeenCalled();
         });
     });
 

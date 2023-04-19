@@ -73,6 +73,7 @@ describe('PlayAreaComponent', () => {
 
     it('flashArea should call fillRect', () => {
         const fillRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+        spyOn(component, 'deleteTempCanvas');
         spyOn(component, 'createTempCanvas').and.callFake(() => {
             component['tempCanvas'] = document.createElement('canvas');
         });
@@ -81,7 +82,7 @@ describe('PlayAreaComponent', () => {
         expect(fillRectSpy).toHaveBeenCalledTimes(area.length);
     });
 
-    it('flashArea should call deleteTempCanvas if tempCanvas is defined', () => {
+    it('flashArea should call deleteTempCanvas', () => {
         spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
         spyOn(component, 'createTempCanvas');
         component['tempCanvas'] = document.createElement('canvas');
@@ -117,25 +118,5 @@ describe('PlayAreaComponent', () => {
         const spy = spyOn(component, 'drawPlayArea');
         component.ngOnChanges();
         expect(spy).toHaveBeenCalledTimes(1);
-    });
-    it('showHintSection should call rect', () => {
-        const rectSpy = spyOn(CanvasRenderingContext2D.prototype, 'rect');
-        spyOn(component, 'createTempCanvas').and.callFake(() => {
-            component['tempCanvas'] = document.createElement('canvas');
-        });
-        const quadrantsNumbers = { quadrant: 4, subQuadrant: 4 };
-        const quadrants = [quadrantsNumbers.quadrant, quadrantsNumbers.subQuadrant];
-        component.showHintSection(quadrants);
-        expect(rectSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('showHintSection should call deleteTempCanvas if tempCanvas is defined', () => {
-        spyOn(CanvasRenderingContext2D.prototype, 'rect');
-        spyOn(component, 'createTempCanvas');
-        component['tempCanvas'] = document.createElement('canvas');
-        const deleteTempCanvasSpy = spyOn(component, 'deleteTempCanvas');
-        const quadrants = [1];
-        component.showHintSection(quadrants);
-        expect(deleteTempCanvasSpy).toHaveBeenCalledTimes(1);
     });
 });
