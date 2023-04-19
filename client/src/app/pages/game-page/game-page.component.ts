@@ -138,12 +138,19 @@ export class GamePageComponent implements OnInit, OnDestroy {
                     this.removeHintShape();
                 }
             }
+            if (!this.isClassic && gameData.differencePixels.length > 0) {
+                this.gamePageService.playSuccessSound();
+            }
         });
         this.socketHandler.on('game', 'victory', (highscorePosition: number) => {
             this.gamePageService.handleVictory(highscorePosition);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
-            this.gamePageService.handleOpponentAbandon();
+            if (this.isClassic) {
+                this.gamePageService.handleOpponentAbandon();
+            } else {
+                this.secondPlayerName = '';
+            }
         });
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat();
@@ -242,11 +249,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
-        if (this.route.snapshot.params.id === '0') {
+        if (this.route.snapshot.queryParams.gameMode === 'timed') {
             this.isClassic = false;
+        }
+        if (this.route.snapshot.params.id === '0') {
             return;
         }
-
         this.settingGameLevel();
         this.settingGameImage();
     }

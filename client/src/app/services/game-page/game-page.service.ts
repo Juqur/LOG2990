@@ -33,6 +33,7 @@ export class GamePageService {
     private areaNotFound: number[];
     private closePath: string = '/home';
     private hintSection: number[] = [];
+    private resetCanvasDelayInProgress: boolean = false;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -155,7 +156,8 @@ export class GamePageService {
             mustProcess: false,
         };
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
-        AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
+        this.audioService.play();
     }
 
     /**
@@ -316,6 +318,13 @@ export class GamePageService {
     }
 
     /**
+     * This method is called when a player clicks on a difference.
+     */
+    playSuccessSound(): void {
+        AudioService.quickPlay('./assets/audio/success.mp3');
+    }
+
+    /**
      * The equivalent of eyedropper tool.
      * This method finds the rgba value of a pixel on the original image.
      *
@@ -357,11 +366,15 @@ export class GamePageService {
     /**
      * This method will redraw the canvas with the original image plus the elements that were not found.
      * To avoid flashing issue, it copies to a third temporary canvas.
-     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
+     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the differencePlayArea.
      *
      * @param cooldown If true, the player will not be able to click on the canvas during the cooldown.
      */
     private resetCanvas(cooldown: boolean): void {
+        if (this.resetCanvasDelayInProgress && cooldown) {
+            return;
+        }
+        this.resetCanvasDelayInProgress = true;
         this.mouseService.canClick = !cooldown;
         const delay = 1000; // ms
         this.differencePlayArea
@@ -374,6 +387,7 @@ export class GamePageService {
                 setTimeout(() => {
                     this.copyArea(this.imagesData);
                     this.mouseService.canClick = true;
+                    this.resetCanvasDelayInProgress = false;
                 }, 0);
             })
             .then(() => {

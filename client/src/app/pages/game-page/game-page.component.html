@@ -7,11 +7,13 @@
             <app-game-timer></app-game-timer>
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">
-                    <span class="diff-self">{{ playerName + ': ' }}</span>
+                    <span class="diff-self">{{
+                        !isClassic && secondPlayerName ? playerName + ' et ' + secondPlayerName + ': ' : playerName + ': ' 
+                    }}</span>
                     <span> {{ playerDifferencesCount }} </span>
                     <span class="diff-self">différences trouvées</span>
                 </div>
-                <div *ngIf="secondPlayerName" class="player-counter">
+                <div *ngIf="secondPlayerName && isClassic" class="player-counter">
                     <span class="diff-friend">{{ secondPlayerName }} :</span>
                     <span> {{ secondPlayerDifferencesCount }} </span>
                     <span class="diff-friend">différences trouvées</span>

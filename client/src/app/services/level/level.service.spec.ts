@@ -121,7 +121,7 @@ describe('LevelService', () => {
             'setNewGameConstants',
             'resetGameConstants',
         ]);
-        socketHandlerMock = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send']);
+        socketHandlerMock = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send', 'on']);
         communicationServiceMock.getLevels.and.returnValue(of(levelExpectedArray));
         communicationServiceMock.deleteLevel.and.returnValue(of(true));
         communicationServiceMock.getGameConstants.and.returnValue(of(gameConstants));
@@ -143,6 +143,16 @@ describe('LevelService', () => {
     });
 
     describe('constructor', () => {
+        // it('should call refreshLevels on socket event', () => {
+        //     const spy = spyOn(service, 'refreshLevels');
+        //     socketHandlerMock.on.and.callFake((event, eventName, callback) => {
+        //         if (eventName === 'refreshLevels') {
+        //             callback({} as never);
+        //         }
+        //     });
+        //     expect(spy).toHaveBeenCalled();
+        // });
+
         it('should correctly initialize class attributes', () => {
             expect(service['levels']).toEqual(levelExpectedArray);
             expect(service['currentShownPage']).toEqual(0);
