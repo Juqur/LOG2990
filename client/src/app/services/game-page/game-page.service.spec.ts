@@ -316,7 +316,8 @@ describe('GamePageService', () => {
         });
 
         it('should call drawPlayArea twice', fakeAsync(() => {
-            service['resetCanvas']();
+            const delay = 1000;
+            service['resetCanvas'](true);
             tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));
