@@ -275,6 +275,7 @@ describe('LevelService', () => {
             expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
         });
     });
+
     describe('nextPage', () => {
         it('should increment page count and call updatePageLevels', () => {
             const spy = spyOn(service, 'updatePageLevels' as never);
