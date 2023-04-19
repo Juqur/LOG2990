@@ -127,6 +127,7 @@ describe('GameGateway', () => {
         beforeEach(() => {
             timerSpy = jest.spyOn(timerService, 'stopTimer');
             gameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            jest.spyOn(mongodbService, 'updateHighscore').mockReturnValue(Promise.resolve(2));
             jest.spyOn(gameService, 'getImageInfoOnClick').mockReturnValue(Promise.resolve(gameData));
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(false);
@@ -163,7 +164,8 @@ describe('GameGateway', () => {
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(true);
             await gateway.onClick(socket, 1);
             expect(emitSpy).toBeCalledWith('processedClick', gameData);
-            expect(emitSpy).toBeCalledWith('victory');
+
+            expect(emitSpy).toBeCalledWith('victory', 2);
             expect(timerSpy).toBeCalledTimes(1);
             expect(gameSpy).toBeCalledTimes(1);
         });

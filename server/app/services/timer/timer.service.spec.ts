@@ -1,4 +1,5 @@
 import { GameService, GameState } from '@app/services/game/game.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
@@ -12,11 +13,13 @@ describe('TimerService', () => {
     let server: SinonStubbedInstance<Server>;
     let socket: SinonStubbedInstance<Socket>;
     let gameService: SinonStubbedInstance<GameService>;
+    let mongodbService: SinonStubbedInstance<MongodbService>;
 
     beforeEach(async () => {
         server = createStubInstance<Server>(Server);
         socket = createStubInstance<Socket>(Socket);
         gameService = createStubInstance<GameService>(GameService);
+        mongodbService = createStubInstance<MongodbService>(MongodbService);
 
         Object.defineProperty(socket, 'id', { value: 'socket' });
 
@@ -28,6 +31,7 @@ describe('TimerService', () => {
                 { provide: GameService, useValue: gameService },
                 { provide: Socket, useValue: socket },
                 { provide: Server, useValue: server },
+                { provide: MongodbService, useValue: mongodbService },
             ],
         }).compile();
 
@@ -64,6 +68,7 @@ describe('TimerService', () => {
             removeSpy = jest.spyOn(gameService, 'removeLevel').mockImplementation();
             deleteSpy = jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
             jest.spyOn(gameService, 'getGameState').mockReturnValue({ levelId: 0 } as unknown as GameState);
+            jest.spyOn(mongodbService, 'addGameHistory').mockImplementation(jest.fn()).mockResolvedValue();
         });
 
         it('should start the timer for a single player game', () => {
@@ -114,7 +119,8 @@ describe('TimerService', () => {
             expect(service['timeMap'].get('socket').time).toEqual(Constants.TIMED_GAME_MODE_LENGTH - 1);
         });
 
-        it('should delete user from maps if time is 0', () => {
+        it('should delete user from maps if time is 0', async () => {
+            jest.useFakeTimers();
             const spy = jest.spyOn(service, 'stopTimer').mockImplementation();
             const timeToAdvance = 1000;
             service.startTimer({ socket }, server, false);
@@ -123,6 +129,18 @@ describe('TimerService', () => {
         });
 
         it('should try to remove level at the end of the timer', () => {
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({
+                levelId: 1,
+                foundDifferences: [],
+                amountOfDifferencesFound: 0,
+                playerName: 'player1',
+                isInGame: true,
+                isGameFound: false,
+                isInCheatMode: false,
+                otherSocketId: 'player2',
+                timedLevelList: [],
+                hintsUsed: 0,
+            } as GameState);
             jest.spyOn(service, 'stopTimer').mockImplementation();
             const timeToAdvance = 1000;
             service.startTimer({ socket }, server, false);

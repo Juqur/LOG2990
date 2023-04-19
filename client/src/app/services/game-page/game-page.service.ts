@@ -28,11 +28,7 @@ export class GamePageService {
     private originalPlayArea: PlayAreaComponent;
     private diffPlayArea: PlayAreaComponent;
     private tempDiffPlayArea: PlayAreaComponent;
-    private winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
+    private winGameDialogData: DialogData;
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
@@ -141,7 +137,16 @@ export class GamePageService {
      * This method is called when the player wins.
      * It will open a dialog and play a victory sound.
      */
-    handleVictory(): void {
+    handleVictory(highscorePosition: number | null): void {
+        let highscoreMessage = '';
+        if (highscorePosition) {
+            highscoreMessage = ' Vous avez obtenu la ' + highscorePosition + (highscorePosition === 1 ? 'ère' : 'e') + ' position du classement.';
+        }
+        this.winGameDialogData = {
+            textToSend: 'Vous avez gagné!' + highscoreMessage,
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
         AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
     }

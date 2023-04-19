@@ -1,13 +1,13 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
+import { Level } from '@common/interfaces/level';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -136,8 +136,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
             }
         });
-        this.socketHandler.on('game', 'victory', () => {
-            this.gamePageService.handleVictory();
+        this.socketHandler.on('game', 'victory', (highscorePosition: number) => {
+            this.gamePageService.handleVictory(highscorePosition);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
             this.gamePageService.handleOpponentAbandon();

@@ -95,7 +95,6 @@ export class GameGateway {
         const startDate = new Date(this.timerService.getStartDate(socket.id));
         const lengthGame = this.timerService.getTime(socket.id);
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
-            socket.emit(GameEvents.Victory);
             await this.mongodbService.addGameHistory({
                 startDate,
                 lengthGame,
@@ -104,7 +103,12 @@ export class GameGateway {
                 secondPlayerName,
                 hasPlayerAbandoned: false,
             });
-            this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
+            // The timer counts one more second when the game ends, even though the player finished the game.
+            const playerPosition: number = await this.mongodbService.updateHighscore(this.timerService.getTime(socket.id) - 1, gameState);
+            if (playerPosition) {
+                await this.chatService.sendSystemGlobalHighscoreMessage(this.server, gameState, playerPosition);
+            }
+            socket.emit(GameEvents.Victory, playerPosition);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
