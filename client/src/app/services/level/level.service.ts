@@ -93,21 +93,21 @@ export class LevelService {
             let valueChanged = false;
             const inputValue = Number(input.value);
             switch (input.id) {
-                case 'mat-input-0': {
+                case 'initial-time-input': {
                     if (inputValue !== this.gameConstants.initialTime && inputValue <= Constants.MAX_GAME_TIME_LENGTH) {
                         this.gameConstants.initialTime = inputValue;
                         valueChanged = true;
                     }
                     break;
                 }
-                case 'mat-input-1': {
+                case 'time-penalty-hint-input': {
                     if (inputValue !== this.gameConstants.timePenaltyHint) {
                         this.gameConstants.timePenaltyHint = inputValue;
                         valueChanged = true;
                     }
                     break;
                 }
-                case 'mat-input-2': {
+                case 'time-gained-difference-input': {
                     if (inputValue !== this.gameConstants.timeGainedDifference) {
                         this.gameConstants.timeGainedDifference = inputValue;
                         valueChanged = true;
