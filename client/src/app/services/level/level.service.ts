@@ -285,13 +285,4 @@ export class LevelService {
             this.socketHandler.connect('game');
         }
     }
-
-    /**
-     * Internal that sets up the socket.
-     */
-    private setupSocket(): void {
-        this.socketHandler.on('game', 'refreshLevels', () => {
-            this.refreshLevels();
-        });
-    }
 }
