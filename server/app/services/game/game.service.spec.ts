@@ -461,7 +461,7 @@ describe('GameService', () => {
     });
 
     describe('startCheatMode', () => {
-        it('should return all the differences as a single array', () => {
+        it('should return all the differences as a single array', async () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
@@ -473,10 +473,10 @@ describe('GameService', () => {
                 hintsUsed: 0,
             });
             const spy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            spy.mockImplementation().mockReturnValue(Promise.resolve([[1], [2], [3]]));
-            const result = service.startCheatMode('socket1');
+            spy.mockReturnValue(Promise.resolve([[1], [2], [3]]));
+            const result = await service.startCheatMode('socket1');
             expect(spy).toHaveBeenCalledTimes(1);
-            expect(result).toStrictEqual(Promise.resolve([1, 2, 3]));
+            expect(result).toStrictEqual([1, 2, 3]);
         });
     });
 
@@ -517,16 +517,11 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 0,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[4]]));
+            const mockedDifference = 4;
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[mockedDifference]]));
             const result = await service.askHint('socket1');
             expect(differencesSpy).toHaveBeenCalledTimes(1);
             expect(result).toHaveLength(1);
@@ -536,16 +531,11 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 1,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[1000000]]));
+            const mockedDifference = 1000000;
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[mockedDifference]]));
             const result = await service.askHint('socket1');
             expect(differencesSpy).toHaveBeenCalledTimes(1);
             expect(result).toHaveLength(2);
@@ -555,13 +545,8 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 1,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[3500]]));
@@ -573,13 +558,8 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 3,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
             differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[1]]));
             const result = service.askHint('socket1') as Promise<number[]>;
@@ -590,21 +570,14 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 2,
-            });
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            const askShapeSpy = jest.spyOn(service, 'askShape').mockImplementation().mockReturnValue([7]);
-            // const spy = sinon.spy(service, 'askShape');
+            } as unknown as GameState);
+            const mockedShape = 7;
+            const askShapeSpy = jest.spyOn(service, 'askShape').mockImplementation().mockReturnValue([mockedShape]);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
             differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[2]]));
             const result = await service.askHint('socket1');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            expect(result).toEqual([7]);
+            expect(result).toEqual([mockedShape]);
             expect(askShapeSpy).toHaveBeenCalled();
         });
     });

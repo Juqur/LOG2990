@@ -11,7 +11,7 @@ import { Injectable } from '@angular/core';
  */
 export class CanvasSharingService {
     private defaultCanvasRef: HTMLCanvasElement;
-    private diffCanvasRef: HTMLCanvasElement;
+    private differenceCanvasRef: HTMLCanvasElement;
 
     /**
      * Getter for the default canvas
@@ -23,8 +23,8 @@ export class CanvasSharingService {
     /**
      * Getter for the difference canvas
      */
-    get diffCanvas(): HTMLCanvasElement {
-        return this.diffCanvasRef;
+    get differenceCanvas(): HTMLCanvasElement {
+        return this.differenceCanvasRef;
     }
 
     /**
@@ -41,7 +41,7 @@ export class CanvasSharingService {
      *
      * @param canvas the difference canvas
      */
-    set diffCanvas(canvas: HTMLCanvasElement) {
-        this.diffCanvasRef = canvas;
+    set differenceCanvas(canvas: HTMLCanvasElement) {
+        this.differenceCanvasRef = canvas;
     }
 }

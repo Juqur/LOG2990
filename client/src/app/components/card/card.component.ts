@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Dialogs } from '@app/interfaces/dialogs';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { DialogData, Dialogs } from '@app/interfaces/dialogs';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { Level } from '@common/interfaces/level';

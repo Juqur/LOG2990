@@ -1,9 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Level } from '@common/interfaces/level';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
+import { GameConstants } from '@common/game-constants';
+import { Level } from '@common/interfaces/level';
 import { TestConstants } from '@common/test-constants';
 import { of } from 'rxjs';
 import { LevelService } from './level.service';
@@ -105,12 +106,24 @@ describe('LevelService', () => {
             nbDifferences: 5,
         },
     ];
+    const gameConstants = {
+        initialTime: Constants.INIT_COUNTDOWN_TIME,
+        timePenaltyHint: Constants.HINT_PENALTY,
+        timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+    } as GameConstants;
 
     beforeEach(() => {
-        communicationServiceMock = jasmine.createSpyObj('CommunicationService', ['getLevels', 'deleteLevel']);
+        communicationServiceMock = jasmine.createSpyObj('CommunicationService', [
+            'getLevels',
+            'deleteLevel',
+            'getGameConstants',
+            'setNewGameConstants',
+        ]);
         socketHandlerMock = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send']);
         communicationServiceMock.getLevels.and.returnValue(of(levelExpectedArray));
         communicationServiceMock.deleteLevel.and.returnValue(of(true));
+        communicationServiceMock.getGameConstants.and.returnValue(of(gameConstants));
+        communicationServiceMock.setNewGameConstants.and.returnValue(of(undefined));
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
@@ -131,6 +144,27 @@ describe('LevelService', () => {
             expect(service['levels']).toEqual(levelExpectedArray);
             expect(service['currentShownPage']).toEqual(0);
             expect(service['shownLevels']).toEqual(levelExpectedArray.slice(0, Constants.levelsPerPage));
+        });
+    });
+
+    describe('get initialTime', () => {
+        it('should use gameConstants if defined', () => {
+            service['gameConstants'] = gameConstants;
+            expect(service.initialTime).toEqual(gameConstants.initialTime);
+        });
+    });
+
+    describe('get timePenaltyHint', () => {
+        it('should use gameConstants if defined', () => {
+            service['gameConstants'] = gameConstants;
+            expect(service.timePenaltyHint).toEqual(gameConstants.timePenaltyHint);
+        });
+    });
+
+    describe('get timeGainedDifference', () => {
+        it('should use gameConstants if defined', () => {
+            service['gameConstants'] = gameConstants;
+            expect(service.timeGainedDifference).toEqual(gameConstants.timeGainedDifference);
         });
     });
 
@@ -155,6 +189,71 @@ describe('LevelService', () => {
     describe('lastPage', () => {
         it('should return the correct last page', () => {
             expect(service.lastPage).toEqual(1);
+        });
+    });
+
+    describe('setNewGameConstants', () => {
+        let inputElement: HTMLInputElement;
+        let mockEvent: Event;
+        beforeEach(() => {
+            inputElement = document.createElement('input');
+            inputElement.id = 'initial-time-input';
+            inputElement.value = '10';
+            mockEvent = {
+                target: inputElement,
+            } as unknown as Event;
+            communicationServiceMock.setNewGameConstants.calls.reset();
+            service['gameConstants'] = {
+                initialTime: Constants.INIT_COUNTDOWN_TIME,
+                timePenaltyHint: Constants.HINT_PENALTY,
+                timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+            } as GameConstants;
+        });
+
+        it('should not call communicationService.setNewGameConstants if gameConstants is not defined', () => {
+            service['gameConstants'] = null;
+            service.setNewGameConstants(mockEvent);
+            expect(communicationServiceMock.setNewGameConstants).not.toHaveBeenCalled();
+        });
+
+        it('should not call communicationService.setNewGameConstants if inputValue is higher than 2 minutes for initialTime', () => {
+            (mockEvent.target as HTMLInputElement).value = JSON.stringify(Constants.MAX_GAME_TIME_LENGTH + 1);
+            service.setNewGameConstants(mockEvent);
+            expect(communicationServiceMock.setNewGameConstants).not.toHaveBeenCalled();
+        });
+
+        it('should call communicationService.setNewGameConstants if inputValue is lower than 2 minutes for initialTime', () => {
+            service.setNewGameConstants(mockEvent);
+            expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
+            expect(service['gameConstants']?.initialTime).toEqual(Number((mockEvent.target as HTMLInputElement).value));
+        });
+
+        it('should not call communicationService.setNewGameConstants if inputValue has not changed for timePenaltyHint', () => {
+            (mockEvent.target as HTMLInputElement).value = '5';
+            (mockEvent.target as HTMLInputElement).id = 'time-penalty-hint-input';
+            service.setNewGameConstants(mockEvent);
+            expect(communicationServiceMock.setNewGameConstants).not.toHaveBeenCalled();
+        });
+
+        it('should call communicationService.setNewGameConstants if inputValue has changed for timePenaltyHint', () => {
+            (mockEvent.target as HTMLInputElement).id = 'time-penalty-hint-input';
+            service.setNewGameConstants(mockEvent);
+            expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
+            expect(service['gameConstants']?.timePenaltyHint).toEqual(Number((mockEvent.target as HTMLInputElement).value));
+        });
+
+        it('should not call communicationService.setNewGameConstants if inputValue has not changed for timeGainedDifference', () => {
+            (mockEvent.target as HTMLInputElement).value = '5';
+            (mockEvent.target as HTMLInputElement).id = 'time-gained-difference-input';
+            service.setNewGameConstants(mockEvent);
+            expect(communicationServiceMock.setNewGameConstants).not.toHaveBeenCalled();
+        });
+
+        it('should call communicationService.setNewGameConstants if inputValue has changed for timeGainedDifference', () => {
+            (mockEvent.target as HTMLInputElement).id = 'time-gained-difference-input';
+            service.setNewGameConstants(mockEvent);
+            expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
+            expect(service['gameConstants']?.timeGainedDifference).toEqual(Number((mockEvent.target as HTMLInputElement).value));
         });
     });
 
