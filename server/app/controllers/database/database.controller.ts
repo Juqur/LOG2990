@@ -1,6 +1,7 @@
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { GameConstants } from '@common/game-constants';
-import { Body, Controller, Get, HttpCode, Patch } from '@nestjs/common';
+import { GameHistory } from '@common/game-history';
+import { Body, Controller, Delete, Get, HttpCode, Patch } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
 enum HttpCodes {
@@ -56,5 +57,31 @@ export class DatabaseController {
     @HttpCode(HttpCodes.CREATED)
     async resetGameConstants(): Promise<void> {
         await this.mongodbService.resetGameConstants();
+    }
+
+    /**
+     * Gets the game constants.
+     *
+     * @returns The game constants.
+     */
+    @ApiOkResponse({
+        description: 'Returns data for all gameHistories',
+    })
+    @Get('/gameHistories')
+    @HttpCode(HttpCodes.OK)
+    async getGameHistories(): Promise<GameHistory[]> {
+        return await this.mongodbService.getGameHistories();
+    }
+
+    /**
+     * Resets the game constants to their default values.
+     */
+    @ApiOkResponse({
+        description: 'Deletes the game histories from the database',
+    })
+    @Delete('/gameHistories')
+    @HttpCode(HttpCodes.OK)
+    async deleteGameHistories(): Promise<void> {
+        await this.mongodbService.deleteAllGameHistories();
     }
 }

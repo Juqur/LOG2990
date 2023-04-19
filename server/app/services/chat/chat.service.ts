@@ -1,7 +1,9 @@
 import { GameEvents } from '@app/gateways/game/game.gateway.events';
 import { GameState } from '@app/services/game/game.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
 import { GameData } from '@common/interfaces/game-data';
+import { Level } from '@common/interfaces/level';
 import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
@@ -14,6 +16,32 @@ import { Server, Socket } from 'socket.io';
  */
 @Injectable()
 export class ChatService {
+    constructor(private mongodbService: MongodbService) {}
+
+    /**
+     * This method sends a message all current players.
+     * It is used to send a message to all players currently in a game.
+     *
+     * @param socket The socket of the player.
+     * @param message The message to send.
+     * */
+    async sendSystemGlobalHighscoreMessage(server: Server, gameState: GameState, playerPosition: number): Promise<void> {
+        const level: Level = await this.mongodbService.getLevelById(gameState.levelId);
+        const playerPositionSyntax: string = playerPosition === 1 ? 'ère' : 'e';
+        const gameMode: string = gameState.otherSocketId ? '1V1' : 'SOLO';
+
+        const timeBeatenMessage: string =
+            gameState.playerName +
+            ' obtient la ' +
+            playerPosition +
+            playerPositionSyntax +
+            ' place dans les meilleurs temps du jeu "' +
+            level.name +
+            '" en ' +
+            gameMode;
+        server.emit(GameEvents.MessageSent, this.getSystemChatMessage(timeBeatenMessage));
+    }
+
     /**
      * This method sends a message to the other player.
      * It is used to send a message to the other player when a difference is found

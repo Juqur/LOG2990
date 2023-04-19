@@ -1,5 +1,6 @@
 import { GameEvents } from '@app/gateways/game/game.gateway.events';
 import { GameService } from '@app/services/game/game.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
 import { Constants } from '@common/constants';
 import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
@@ -9,7 +10,7 @@ export class TimerService {
     private timeMap = new Map<string, { time: number; startDate: Date }>();
     private timeIntervalMap = new Map<string, NodeJS.Timeout>();
 
-    constructor(private gameService: GameService) {}
+    constructor(private gameService: GameService, private mongoDbService: MongodbService) {}
 
     /**
      * Gets the game time.
@@ -52,9 +53,21 @@ export class TimerService {
                 server.sockets.sockets.get(sockets.otherSocketId).emit(GameEvents.SendTime, time.time);
             }
             if (!isClassic && time.time === 0) {
+                const gameState = this.gameService.getGameState(socketId);
+                this.mongoDbService
+                    .addGameHistory({
+                        startDate: this.timeMap.get(socketId).startDate,
+                        lengthGame: Math.ceil(
+                            (new Date().getTime() - this.timeMap.get(socketId).startDate.getTime()) / Constants.millisecondsInOneSecond,
+                        ),
+                        isClassic: !gameState.timedLevelList,
+                        firstPlayerName: gameState.playerName,
+                        secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
+                        hasPlayerAbandoned: false,
+                    })
+                    .then();
                 this.stopTimer(socketId);
-                const levelId = this.gameService.getGameState(socketId).levelId;
-                this.gameService.removeLevel(levelId, false);
+                this.gameService.removeLevel(gameState.levelId, false);
                 this.gameService.deleteUserFromGame(sockets.socket);
                 server.to(socketId).emit(GameEvents.TimedModeFinished, false);
                 clearInterval(interval);

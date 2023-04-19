@@ -43,7 +43,7 @@ export class ChatMessageComponent implements OnInit {
     /**
      * Setter for the textMessage attribute
      *
-     * @param message The message to be displayed
+     * @param message The message to be displayed.
      */
     @Input()
     set message(message: ChatMessage) {
@@ -60,15 +60,14 @@ export class ChatMessageComponent implements OnInit {
     }
 
     /**
-     * Limits the length of the name displayed to Constants.maxNameLengthShown. This has no impact
-     * on the length of the name saved.
+     * Limits the length of the name displayed to Constants.maxNameLengthShown.
+     * This has no impact on the length of the name saved.
      */
     private formatNameLength(): void {
-        if (this.chatMessage.sender.length > Constants.maxNameLength) {
-            this.displayName = this.chatMessage.sender.substring(0, Constants.maxNameLengthShown) + '...';
-        } else {
-            this.displayName = this.chatMessage.sender;
-        }
+        this.displayName =
+            this.chatMessage.sender.length > Constants.maxNameLength
+                ? (this.displayName = this.chatMessage.sender.substring(0, Constants.maxNameLengthShown) + '...')
+                : (this.displayName = this.chatMessage.sender);
     }
 
     /**

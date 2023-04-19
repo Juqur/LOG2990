@@ -27,11 +27,7 @@ export class GamePageService {
     private originalPlayArea: PlayAreaComponent;
     private diffPlayArea: PlayAreaComponent;
     private tempDiffPlayArea: PlayAreaComponent;
-    private winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
+    private winGameDialogData: DialogData;
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
@@ -121,7 +117,7 @@ export class GamePageService {
      * @param response The response of validateResponse().
      * @param gameData The game data.
      * @param clickedOriginalImage Boolean that represents if the player clicked on the original image or the difference image.
-     * 
+     *
      * @returns Boolean that represents if the player clicked on a difference pixel or not.
      */
     handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): boolean {
@@ -147,7 +143,16 @@ export class GamePageService {
      * This method is called when the player wins.
      * It will open a dialog and play a victory sound.
      */
-    handleVictory(): void {
+    handleVictory(highscorePosition: number | null): void {
+        let highscoreMessage = '';
+        if (highscorePosition) {
+            highscoreMessage = ' Vous avez obtenu la ' + highscorePosition + (highscorePosition === 1 ? 'ère' : 'e') + ' position du classement.';
+        }
+        this.winGameDialogData = {
+            textToSend: 'Vous avez gagné!' + highscoreMessage,
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
         this.audioService.play();
@@ -253,15 +258,19 @@ export class GamePageService {
         if (section.length < 1 || section.length > 2) {
             return;
         }
-        this.hintSection = section;
-        this.drawServiceOriginal.context = this.originalPlayArea
-            .getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceOriginal.drawHintSection(this.hintSection);
-        this.drawServiceDiff.context = this.diffPlayArea
-            .getCanvas()
-            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        this.drawServiceDiff.drawHintSection(this.hintSection);
+        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+        this.diffPlayArea.drawPlayArea(this.diffImageSrc);
+        setTimeout(() => {
+            this.hintSection = section;
+            this.drawServiceOriginal.context = this.originalPlayArea
+                .getCanvas()
+                .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawServiceOriginal.drawHintSection(this.hintSection);
+            this.drawServiceDiff.context = this.diffPlayArea
+                .getCanvas()
+                .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawServiceDiff.drawHintSection(this.hintSection);
+        }, 0);
     }
 
     /**
@@ -275,6 +284,7 @@ export class GamePageService {
         if (shape.length <= 2) {
             return;
         }
+        this.hintSection = [];
         const height = shape.pop() as number;
         const width = shape.pop() as number;
         const differenceCanvasCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
@@ -301,6 +311,8 @@ export class GamePageService {
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
         shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+        this.diffPlayArea.drawPlayArea(this.diffImageSrc);
     }
 
     /**

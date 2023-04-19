@@ -115,7 +115,6 @@ export class GameGateway {
         const startDate = new Date(this.timerService.getStartDate(socket.id));
         const lengthGame = this.timerService.getTime(socket.id);
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
-            socket.emit(GameEvents.Victory);
             await this.mongodbService.addGameHistory({
                 startDate,
                 lengthGame,
@@ -124,8 +123,13 @@ export class GameGateway {
                 secondPlayerName,
                 hasPlayerAbandoned: false,
             });
-            await this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
-            this.server.emit(GameEvents.RefreshLevels);
+            // The timer counts one more second when the game ends, even though the player finished the game.
+            const playerPosition: number = await this.mongodbService.updateHighscore(this.timerService.getTime(socket.id) - 1, gameState);
+            if (playerPosition) {
+                await this.chatService.sendSystemGlobalHighscoreMessage(this.server, gameState, playerPosition);
+                this.server.emit(GameEvents.RefreshLevels);
+            }
+            socket.emit(GameEvents.Victory, playerPosition);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
@@ -320,7 +324,9 @@ export class GameGateway {
             }
         }
     }
-
+    /**
+     * This method is called to refresh the list of levels.
+     */
     @SubscribeMessage(GameEvents.OnRefreshLevels)
     async onRefreshLevels(): Promise<void> {
         this.server.emit(GameEvents.RefreshLevels);
@@ -402,9 +408,6 @@ export class GameGateway {
         this.timerService.addTime(this.server, socket.id, gameState.bonusTime);
         const otherSocketId = gameState.otherSocketId;
         if (gameState.timedLevelList.length === 0) {
-            socket.emit(GameEvents.TimedModeFinished, true);
-            this.timerService.stopTimer(socket.id);
-            this.gameService.deleteUserFromGame(socket);
             const endDate = new Date();
             const gameHistory = {
                 startDate: this.timerService.getStartDate(socket.id),
@@ -415,6 +418,9 @@ export class GameGateway {
                 hasPlayerAbandoned: false,
             } as GameHistory;
             this.mongodbService.addGameHistory(gameHistory);
+            socket.emit(GameEvents.TimedModeFinished, true);
+            this.timerService.stopTimer(socket.id);
+            this.gameService.deleteUserFromGame(socket);
             return true;
         }
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);

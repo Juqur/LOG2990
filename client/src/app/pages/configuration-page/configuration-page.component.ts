@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { LevelService } from '@app/services/level/level.service';
 
 /**
@@ -14,7 +15,7 @@ import { LevelService } from '@app/services/level/level.service';
     styleUrls: ['./configuration-page.component.scss'],
 })
 export class ConfigurationPageComponent implements OnInit {
-    constructor(public levelService: LevelService) {}
+    constructor(public levelService: LevelService, public router: Router) {}
 
     ngOnInit(): void {
         this.levelService.refreshLevels();

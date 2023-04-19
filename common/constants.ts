@@ -111,6 +111,8 @@ export namespace Constants {
 
     // Level Service
     export const MAX_GAME_TIME_LENGTH = 120;
+    export const MAX_TIME_PENALTY_HINT = 10;
+    export const MAX_TIME_GAINED_DIFFERENCE = 10;
 }
 
 export enum MouseButton {

@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CardComponent } from '@app/components/card/card.component';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
@@ -15,7 +16,7 @@ describe('ConfigurationPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ConfigurationPageComponent, CarouselComponent, CardComponent, ScaleContainerComponent],
-            imports: [AppMaterialModule, BrowserAnimationsModule, HttpClientTestingModule],
+            imports: [AppMaterialModule, BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule],
             providers: [LevelService],
         }).compileComponents();
     });

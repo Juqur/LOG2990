@@ -33,6 +33,9 @@ describe('GamePageService', () => {
     };
 
     beforeEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        spyOn(Audio.prototype, 'play').and.callFake(() => {});
+
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
@@ -127,14 +130,39 @@ describe('GamePageService', () => {
 
     describe('handleVictory', () => {
         it('should call create', () => {
-            service.handleVictory();
-            expect(audioServiceSpy.create).toHaveBeenCalledOnceWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
-            expect(audioServiceSpy.play).toHaveBeenCalledOnceWith();
+            const audioSpy = spyOn(AudioService, 'quickPlay');
+            service.handleVictory(2);
+            expect(audioSpy).toHaveBeenCalledWith('./assets/audio/Bing_Chilling_vine_boom.mp3');
         });
 
-        it('should call openDialog', () => {
-            service.handleVictory();
-            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(service['winGameDialogData'], service['closePath']);
+        it('should call openDialog without adding the highscore position', () => {
+            const winDialog: DialogData = {
+                textToSend: 'Vous avez gagné!',
+                closeButtonMessage: 'Retour au menu principal',
+                mustProcess: false,
+            };
+            service.handleVictory(null);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winDialog, service['closePath']);
+        });
+
+        it('should call openDialog with correct data when player is in first place', () => {
+            const winDialog: DialogData = {
+                textToSend: 'Vous avez gagné! Vous avez obtenu la 1ère position du classement.',
+                closeButtonMessage: 'Retour au menu principal',
+                mustProcess: false,
+            };
+            service.handleVictory(1);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winDialog, service['closePath']);
+        });
+
+        it('should call openDialog with correct data when player is in first place', () => {
+            const winDialog: DialogData = {
+                textToSend: 'Vous avez gagné! Vous avez obtenu la 2e position du classement.',
+                closeButtonMessage: 'Retour au menu principal',
+                mustProcess: false,
+            };
+            service.handleVictory(2);
+            expect(popUpServiceSpy.openDialog).toHaveBeenCalledWith(winDialog, service['closePath']);
         });
     });
 
@@ -181,14 +209,16 @@ describe('GamePageService', () => {
 
     describe('handleHintRequest', () => {
         const mockCanvas = document.createElement('canvas');
-        it('should call drawHintSection on both canvas', () => {
+        it('should call drawHintSection on both canvas', fakeAsync(() => {
             const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
             const mockSection = [1];
             service.handleHintRequest(mockSection);
+            tick();
             expect(getCanvasSpy).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledTimes(2);
             expect(drawServiceSpy.drawHintSection).toHaveBeenCalledWith(mockSection);
-        });
+            expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
+        }));
         it('should not make calls if section is empty', () => {
             const getCanvasSpy = spyOn(playAreaComponentSpy.getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
             const mockSection = [] as number[];
@@ -233,7 +263,7 @@ describe('GamePageService', () => {
     });
 
     describe('handleResponse', () => {
-        it('should call handleAreaFoundInDiff and return true if the area clicked was the difference canvas and a difference was found ', () => {
+        it('should call handleAreaFoundInDiff and return true if clicked on difference canvas and a difference was found ', () => {
             const spy = spyOn(service, 'handleAreaFoundInDiff' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
             const returnValue = service.handleResponse(false, gameData, false);
@@ -241,17 +271,14 @@ describe('GamePageService', () => {
             expect(returnValue).toEqual(true);
         });
 
-        it(
-            'should call handleAreaNotFoundInDiff and return false' + ' if the area clicked was the difference canvas and a difference was not found',
-            () => {
-                const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
-                const returnValue = service.handleResponse(false, gameData, false);
-                expect(spy).toHaveBeenCalled();
-                expect(returnValue).toEqual(false);
-            },
-        );
+        it('should call handleAreaNotFoundInDiff and return false if clicked on difference canvas and a difference was not found', () => {
+            const spy = spyOn(service, 'handleAreaNotFoundInDiff' as never);
+            const returnValue = service.handleResponse(false, gameData, false);
+            expect(spy).toHaveBeenCalled();
+            expect(returnValue).toEqual(false);
+        });
 
-        it('should call handleAreaFoundInOriginal and return true if the area clicked was the original canvas and a difference was found', () => {
+        it('should call handleAreaFoundInOriginal and return true if clicked on original canvas and a difference was found', () => {
             const spy = spyOn(service, 'handleAreaFoundInOriginal' as never);
             spyOn(service, 'validateResponse').and.returnValue(true);
             const returnValue = service.handleResponse(false, gameData, true);
@@ -259,16 +286,12 @@ describe('GamePageService', () => {
             expect(returnValue).toEqual(true);
         });
 
-        it(
-            'should call handleAreaNotFoundInOriginal and return false ' +
-                'if the area clicked was the original canvas and a difference was not found',
-            () => {
-                const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
-                const returnValue = service.handleResponse(false, gameData, true);
-                expect(spy).toHaveBeenCalled();
-                expect(returnValue).toEqual(false);
-            },
-        );
+        it('should call handleAreaNotFoundInOriginal and return false if clicked on original canvas and a difference was not found', () => {
+            const spy = spyOn(service, 'handleAreaNotFoundInOriginal' as never);
+            const returnValue = service.handleResponse(false, gameData, true);
+            expect(spy).toHaveBeenCalled();
+            expect(returnValue).toEqual(false);
+        });
     });
 
     describe('copyArea', () => {

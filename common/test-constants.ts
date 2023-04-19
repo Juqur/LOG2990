@@ -80,4 +80,7 @@ export namespace TestConstants {
     export const NEW_BEST_TIME = 6;
     export const INVALID_PAGE_NUMBER = -10;
     export const DATE_ARRAY = [new Date(), new Date(), new Date()];
+
+    // Game history component
+    export const CURRENT_YEAR = 2023;
 }
