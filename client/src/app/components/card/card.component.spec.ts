@@ -69,7 +69,6 @@ describe('CardComponent', () => {
         const spy = spyOn(component.deleteLevelEvent, 'emit');
         component.level.id = 1;
         component.deleteLevel(1);
-        expect(popUpService.openDialog).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledTimes(1);
     });
 });

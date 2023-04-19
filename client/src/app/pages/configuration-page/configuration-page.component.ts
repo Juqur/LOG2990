@@ -17,7 +17,7 @@ import { PopUpService } from '@app/services/pop-up/pop-up.service';
     styleUrls: ['./configuration-page.component.scss'],
 })
 export class ConfigurationPageComponent {
-    constructor(public levelService: LevelService, public popUpService: PopUpService, public router: Router) {}
+    constructor(public levelService: LevelService, private popUpService: PopUpService, public router: Router) {}
 
     /**
      * Event listener for the delete button.
