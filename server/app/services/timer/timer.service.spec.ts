@@ -147,6 +147,7 @@ describe('TimerService', () => {
                 isInCheatMode: false,
                 otherSocketId: 'player2',
                 timedLevelList: [],
+                timedGameLength: Constants.TIMED_GAME_MODE_LENGTH,
                 hintsUsed: 0,
             } as GameState);
             jest.spyOn(service, 'stopTimer').mockImplementation();

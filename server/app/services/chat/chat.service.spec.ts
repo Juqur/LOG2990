@@ -29,7 +29,6 @@ describe('ChatService', () => {
         jest.spyOn(socketsMap, 'get').mockReturnValue(otherSocket);
         emitSpy = jest.spyOn(socket, 'emit');
         otherEmitSpy = jest.spyOn(otherSocket, 'emit');
-        server = createStubInstance<Server>(Server);
         mongodbService = createStubInstance<MongodbService>(MongodbService);
 
         const module: TestingModule = await Test.createTestingModule({
