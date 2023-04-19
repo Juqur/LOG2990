@@ -72,8 +72,8 @@ export class GamePageService {
      * This method sets and updates the play areas of the game page.
      *
      * @param originalPlayArea The reference to the original play area.
-     * @param differencePlayArea The reference to the diff play area.
-     * @param tempDiffPlayArea The reference to the temp diff play area.
+     * @param differencePlayArea The reference to the difference play area.
+     * @param tempDiffPlayArea The reference to the temp difference play area.
      */
     setPlayArea(originalPlayArea: PlayAreaComponent, differencePlayArea: PlayAreaComponent, tempDiffPlayArea: PlayAreaComponent): void {
         this.originalPlayArea = originalPlayArea;
@@ -277,26 +277,6 @@ export class GamePageService {
         this.router.navigate(['/home']);
     }
 
-    addToVideoStack(
-        found: boolean = false,
-        playerDifferencesCount: number = 0,
-        secondPlayerDifferencesCount: number = 0,
-        original?: CanvasRenderingContext2D | null,
-        diff?: CanvasRenderingContext2D | null,
-    ): void {
-        if (original && diff)
-            VideoService.addToVideoStack(TimerService.timerValue, found, playerDifferencesCount, secondPlayerDifferencesCount, original, diff);
-        else
-            VideoService.addToVideoStack(
-                TimerService.timerValue,
-                found,
-                playerDifferencesCount,
-                secondPlayerDifferencesCount,
-                this.originalPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
-                this.differencePlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
-            );
-    }
-
     /**
      * Method that shows the first and second hint for the player on both canvas.
      *
@@ -344,6 +324,36 @@ export class GamePageService {
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
         shapeCtx.drawImage(differenceCanvasCtx.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+    }
+
+    /**
+     * This method add the frame to the video stack.
+     * The frame is added when the player clicks on the canvas.
+     *
+     * @param found Boolean that represents if the player found the difference.
+     * @param playerDifferencesCount The number of differences found by the first player.
+     * @param secondPlayerDifferencesCount The number of differences found by the second player.
+     * @param original The original canvas context.
+     * @param difference The difference canvas context.
+     */
+    private addToVideoStack(
+        found: boolean = false,
+        playerDifferencesCount: number = 0,
+        secondPlayerDifferencesCount: number = 0,
+        original?: CanvasRenderingContext2D | null,
+        difference?: CanvasRenderingContext2D | null,
+    ): void {
+        if (original && difference)
+            VideoService.addToVideoStack(TimerService.timerValue, found, playerDifferencesCount, secondPlayerDifferencesCount, original, difference);
+        else
+            VideoService.addToVideoStack(
+                TimerService.timerValue,
+                found,
+                playerDifferencesCount,
+                secondPlayerDifferencesCount,
+                this.originalPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
+                this.differencePlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
+            );
     }
 
     /**
@@ -504,8 +514,6 @@ export class GamePageService {
             );
             this.resetCanvas();
         });
-        // .then(() => {
-        // });
     }
     /**
      * Performs a failed sound and prompts an error in the original canvas.

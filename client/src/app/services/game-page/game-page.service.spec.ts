@@ -45,6 +45,7 @@ describe('GamePageService', () => {
             'timeout',
             'deleteTempCanvas',
             'showHintSection',
+            'getFlashingCopy',
         ]);
 
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
@@ -342,19 +343,34 @@ describe('GamePageService', () => {
         });
     });
 
-    describe('handleAreaFoundInOriginal', () => {
+    fdescribe('handleAreaFoundInOriginal', () => {
         let resetCanvasSpy: jasmine.Spy;
         let audioSpy: jasmine.Spy;
+        let getFlashingCopy: jasmine.Spy;
+        let addToVideoStackSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
+            addToVideoStackSpy = spyOn(service, 'addToVideoStack' as never);
         });
 
         it('should push the difference array correctly in imagesData', () => {
             const expectedArray = [0, 1, 2];
             service['handleAreaFoundInOriginal'](expectedArray, false, 0, 0);
             expect(service['imagesData']).toEqual(expectedArray);
+        });
+
+        it('should call addToVideoStack', () => {
+            const expectedArray = [0, 1, 2];
+            service['handleAreaFoundInOriginal'](expectedArray, false, 0, 0);
+            expect(addToVideoStackSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call getFlashingCopy', () => {
+            const expectedArray = [0, 1, 2];
+            service['handleAreaFoundInOriginal'](expectedArray, false, 0, 0);
+            expect(getFlashingCopy).toHaveBeenCalledTimes(2);
         });
 
         it('should correctly filter areaNotFound in handleAreaFoundInOriginal', () => {

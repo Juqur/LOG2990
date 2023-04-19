@@ -394,15 +394,15 @@ export class GameService {
      * It returns a difference array similar to those in the differences JSON, to which we add the maximum x and y values
      * of the translated difference at the end.
      *
-     * @param diff The difference for which the shape should be determined.
+     * @param difference The difference for which the shape should be determined.
      * @returns The translated difference array. The last two objects correspond to the maximum x and y values.
      */
-    askShape(diff: number[]): number[] {
+    askShape(difference: number[]): number[] {
         let maxX = 0;
         let maxY = 0;
         let minX = Constants.DEFAULT_WIDTH;
         let minY = Constants.DEFAULT_HEIGHT;
-        diff.forEach((pixelData) => {
+        difference.forEach((pixelData) => {
             const x = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
             const y = Math.floor(pixelData / Constants.DEFAULT_WIDTH / Constants.PIXEL_SIZE);
             if (x > maxX) maxX = x;
@@ -411,7 +411,7 @@ export class GameService {
             else if (y < minY) minY = y;
         });
         const translatedDifferencesArray: number[] = [];
-        diff.forEach((pixelData) => {
+        difference.forEach((pixelData) => {
             const x = (pixelData / Constants.PIXEL_SIZE) % Constants.DEFAULT_WIDTH;
             const y = Math.floor(pixelData / (Constants.DEFAULT_WIDTH * Constants.PIXEL_SIZE));
             const translatedX = x - minX;

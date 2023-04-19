@@ -93,7 +93,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * After the undo or redo function has been called, this method will apply the changes to the canvas.
      *
-     * @param canvas Takes 2 canvas, the default (left) canvas and the diff (right) canvas.
+     * @param canvas Takes 2 canvas, the default (left) canvas and the difference (right) canvas.
      */
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;

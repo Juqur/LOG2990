@@ -138,7 +138,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
      * This method handles the socket connection.
      * It connects to the game socket and sends the level id to the server.
      * It also handles the response from the server.
-     * It checks if the difference is in the original image or in the diff image, and if the game is finished.
+     * It checks if the difference is in the original image or in the difference image, and if the game is finished.
      * It checks if we have entered the cheat mode.
      */
     handleSocket(): void {
