@@ -35,7 +35,7 @@
             <app-play-area #tempDiffPlayArea class="tempDiffPlayArea" (click)="clickedOnDiff($event)"></app-play-area>
         </section>
         <section id="bottom-area">
-            <app-game-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"></app-game-chat>
+            <app-game-chat [isMultiplayer]="!!secondPlayerName" [playerName]="playerName"></app-game-chat>
             <div id="info-game" *ngIf="currentLevel">
                 <div>
                     <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>
