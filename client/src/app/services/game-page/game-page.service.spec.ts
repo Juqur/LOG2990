@@ -86,7 +86,7 @@ describe('GamePageService', () => {
             const playArea = playAreaComponentSpy;
             service.setPlayArea(playArea, playArea, playArea);
             expect(service['originalPlayArea']).toEqual(playArea);
-            expect(service['diffPlayArea']).toEqual(playArea);
+            expect(service['differencePlayArea']).toEqual(playArea);
             expect(service['tempDiffPlayArea']).toEqual(playArea);
         });
     });
@@ -250,7 +250,7 @@ describe('GamePageService', () => {
     describe('pick', () => {
         it('should return undefined when context is undefined when copying', () => {
             const area = [0];
-            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(null);
+            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(null);
             spyOn(service, 'pick' as never);
             const returnValue = service['copyArea'](area);
             expect(returnValue).toBeUndefined();
@@ -408,7 +408,7 @@ describe('GamePageService', () => {
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
-            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
 
         it('should call quickPlay', () => {
@@ -479,7 +479,7 @@ describe('GamePageService', () => {
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
             audioSpy = spyOn(AudioService, 'quickPlay');
-            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
 
         it('should call quickPlay', () => {
