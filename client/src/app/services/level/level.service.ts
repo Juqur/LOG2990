@@ -218,6 +218,9 @@ export class LevelService {
      * This method emits a socket event to the server to delete all levels.
      */
     deleteAllLevels(): void {
+        if (this.levels.length < 1) {
+            return;
+        }
         this.checkForSocketConnection();
         this.socketHandler.send('game', 'onDeleteAllLevels');
         this.removeAllCards();

@@ -173,7 +173,6 @@ describe('LevelService', () => {
             service.destroySocket();
             expect(socketHandlerMock.removeListener).toHaveBeenCalled();
         });
-
     });
 
     describe('get initialTime', () => {
@@ -388,6 +387,13 @@ describe('LevelService', () => {
         it('should call send', () => {
             service.deleteAllLevels();
             expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onDeleteAllLevels');
+        });
+
+        it('should not call any method if there are no levels', () => {
+            service['levels'] = [];
+            service.deleteAllLevels();
+            expect(removeAllCardsSpy).not.toHaveBeenCalled();
+            expect(socketHandlerMock.send).not.toHaveBeenCalled();
         });
     });
 

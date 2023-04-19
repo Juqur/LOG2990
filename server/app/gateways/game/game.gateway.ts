@@ -275,8 +275,8 @@ export class GameGateway {
             for (const level of levels) {
                 await this.onDeleteLevel(socket, level.id);
             }
+            this.server.emit(GameEvents.RefreshLevels);
         });
-        this.server.emit(GameEvents.RefreshLevels);
     }
 
     @SubscribeMessage(GameEvents.OnResetLevelHighScore)
