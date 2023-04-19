@@ -370,6 +370,26 @@ describe('GameGateway', () => {
         });
     });
 
+    describe('onDeleteAllLevels', () => {
+        let onDeleteLevel: jest.SpyInstance;
+        let getAllLevelsSpy: jest.SpyInstance;
+
+        beforeEach(() => {
+            onDeleteLevel = jest.spyOn(gateway, 'onDeleteLevel').mockImplementation();
+            getAllLevelsSpy = jest.spyOn(mongodbService, 'getAllLevels').mockResolvedValue([{} as Level] as Level[]);
+        });
+
+        it('should call getAllLevelsSpy', () => {
+            gateway.onDeleteAllLevels(socket);
+            expect(getAllLevelsSpy).toBeCalledTimes(1);
+        });
+
+        it('should call onDeleteLevel for each level', () => {
+            gateway.onDeleteAllLevels(socket);
+            expect(onDeleteLevel).toBeCalledTimes(1);
+        });
+    });
+
     describe('onMessageReception', () => {
         let getGameStateSpy: jest.SpyInstance;
         let sendToBothPlayersSpy: jest.SpyInstance;

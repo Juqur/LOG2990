@@ -221,7 +221,7 @@ export class GameGateway {
      * @param levelId The id of the level to be deleted.
      */
     @SubscribeMessage(GameEvents.OnDeleteLevel)
-    onDeleteLevel(levelId: number): void {
+    onDeleteLevel(socket: Socket, levelId: number): void {
         this.server.emit(GameEvents.DeleteLevel, levelId);
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
@@ -236,10 +236,10 @@ export class GameGateway {
      * It also removes the level from the list of levels that players can join.
      */
     @SubscribeMessage(GameEvents.OnDeleteAllLevels)
-    onDeleteAllLevels(): void {
+    onDeleteAllLevels(socket: Socket): void {
         this.mongodbService.getAllLevels().then((levels) => {
             for (const level of levels) {
-                this.onDeleteLevel(level.id);
+                this.onDeleteLevel(socket, level.id);
             }
         });
     }
