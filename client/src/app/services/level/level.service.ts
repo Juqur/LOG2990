@@ -121,6 +121,8 @@ export class LevelService {
             }
             if (valueChanged) {
                 this.communicationService.setNewGameConstants(this.gameConstants).subscribe();
+            } else {
+                alert('La valeur est invalide.');
             }
         }
     }

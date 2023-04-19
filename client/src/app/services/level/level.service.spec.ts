@@ -196,6 +196,7 @@ describe('LevelService', () => {
     describe('setNewGameConstants', () => {
         let inputElement: HTMLInputElement;
         let mockEvent: Event;
+
         beforeEach(() => {
             inputElement = document.createElement('input');
             inputElement.id = 'initial-time-input';
@@ -209,6 +210,7 @@ describe('LevelService', () => {
                 timePenaltyHint: Constants.HINT_PENALTY,
                 timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
             } as GameConstants;
+            spyOn(window, 'alert');
         });
 
         it('should not call communicationService.setNewGameConstants if gameConstants is not defined', () => {
