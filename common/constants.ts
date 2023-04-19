@@ -23,7 +23,7 @@ export namespace Constants {
     // Default highscore values
     export const defaultPlayerSolo: string[] = ['Gontrand G.Marcotte', 'primexlbr123', 'Escargot mobile'];
     export const defaultTimeSolo: number[] = [60, 65, 70];
-    export const defaultPlayerMulti: string[] = ['Jean-Pierre Laflèche', 'GAYSHIM IMPACT', 'someone'];
+    export const defaultPlayerMulti: string[] = ['Jean-Pierre Laflèche', 'GENSHIM IMPACT', 'someone'];
     export const defaultTimeMulti: number[] = [80, 83, 90];
 
     // Draw Service

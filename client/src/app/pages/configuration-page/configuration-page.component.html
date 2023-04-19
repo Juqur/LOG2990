@@ -52,7 +52,8 @@
 
         <body class="selection-card-container">
             <app-card *ngFor="let level of levelService.levelsToShow" [level]="level" [isSelectionPage]="false"
-                (deleteLevelEvent)="onDeleteLevel($event)"></app-card>
+                (deleteLevelEvent)="onDeleteLevel($event)"
+                (resetLevelHighScoreEvent)="onResetLevelHighScore($event)"></app-card>
         </body>
 
         <footer class="bottom-container">

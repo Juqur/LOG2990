@@ -47,6 +47,15 @@ export class ConfigurationPageComponent {
         });
     }
 
+    onResetLevelHighScore(levelId: number): void {
+        this.popUpService.openDialog(Dialogs.confirmResetLevelHighScore);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                this.levelService.resetLevelHighScore(levelId);
+            }
+        });
+    }
+
     onResetGameConstants(): void {
         this.popUpService.openDialog(Dialogs.confirmResetGameConstants);
         this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {

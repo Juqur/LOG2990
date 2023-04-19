@@ -172,10 +172,10 @@ export class MongodbService {
         await this.gameHistoryModel.deleteMany({}).exec();
     }
 
-    /*
+    /**
      * This method returns the multiplayer highscores names of the specified level.
      *
-     * @param id The id of the level.
+     * @param levelId The id of the level.
      * @returns The multiplayer highscores names of the specified level.
      */
     async getPlayerMultiArray(levelId: number): Promise<string[] | null> {
@@ -189,6 +189,7 @@ export class MongodbService {
      *
      * @param endTime The duration of the game in seconds.
      * @param gameState The game state associated with the game that just finished.
+     * @returns The position of the new highscore.
      */
     async updateHighscore(endTime: number, gameState: GameState): Promise<number> {
         if (await this.getLevelById(gameState.levelId)) {
@@ -224,6 +225,25 @@ export class MongodbService {
             }
         }
         return null;
+    }
+
+    /**
+     * This method resets the high score of a level.
+     *
+     * @param levelId The id of the level.
+     */
+    async resetLevelHighScore(levelId: number): Promise<void> {
+        await this.levelModel
+            .findOneAndUpdate(
+                { id: levelId },
+                {
+                    playerSolo: Constants.defaultPlayerSolo,
+                    timeSolo: Constants.defaultTimeSolo,
+                    playerMulti: Constants.defaultPlayerMulti,
+                    timeMulti: Constants.defaultTimeMulti,
+                },
+            )
+            .exec();
     }
 
     /**

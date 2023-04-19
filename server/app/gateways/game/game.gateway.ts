@@ -244,6 +244,12 @@ export class GameGateway {
         });
     }
 
+    @SubscribeMessage(GameEvents.OnResetLevelHighScore)
+    onResetLevelHighScore(socket: Socket, levelId: number): void {
+        this.server.emit(GameEvents.ResetLevelHighScore, levelId);
+        this.mongodbService.resetLevelHighScore(levelId);
+    }
+
     /**
      * This method is called when a player sends a message.
      *

@@ -203,6 +203,19 @@ export class LevelService {
     }
 
     /**
+     * This method emits a socket event to the server to reset the level's high score.
+     *
+     * @param levelId The id of the level's high score to reset.
+     */
+    resetLevelHighScore(levelId: number): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.send('game', 'onResetLevelHighScore', levelId);
+        this.resetCard(levelId);
+    }
+
+    /**
      * This method removes a level from the levels array.
      *
      * @param levelId The id of the level to remove.
@@ -217,6 +230,21 @@ export class LevelService {
      */
     removeAllCards(): void {
         this.levels = [];
+        this.updatePageLevels();
+    }
+
+    /**
+     * This method resets the high score of a level.
+     */
+    resetCard(levelId: number): void {
+        this.levels.forEach((level) => {
+            if (level.id === levelId) {
+                level.playerSolo = Constants.defaultPlayerSolo;
+                level.timeSolo = Constants.defaultTimeSolo;
+                level.playerMulti = Constants.defaultPlayerMulti;
+                level.timeMulti = Constants.defaultTimeMulti;
+            }
+        });
         this.updatePageLevels();
     }
 
