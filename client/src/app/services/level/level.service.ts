@@ -194,9 +194,7 @@ export class LevelService {
      * @param levelId The id of the level to delete.
      */
     deleteLevel(levelId: number): void {
-        if (!this.socketHandler.isSocketAlive('game')) {
-            this.socketHandler.connect('game');
-        }
+        this.checkForSocketConnection();
         this.socketHandler.send('game', 'onDeleteLevel', levelId);
         this.removeCard(levelId);
     }
@@ -205,9 +203,7 @@ export class LevelService {
      * This method emits a socket event to the server to delete all levels.
      */
     deleteAllLevels(): void {
-        if (!this.socketHandler.isSocketAlive('game')) {
-            this.socketHandler.connect('game');
-        }
+        this.checkForSocketConnection();
         this.socketHandler.send('game', 'onDeleteAllLevels');
         this.removeAllCards();
     }
@@ -218,9 +214,7 @@ export class LevelService {
      * @param levelId The id of the level's high score to reset.
      */
     resetLevelHighScore(levelId: number): void {
-        if (!this.socketHandler.isSocketAlive('game')) {
-            this.socketHandler.connect('game');
-        }
+        this.checkForSocketConnection();
         this.socketHandler.send('game', 'onResetLevelHighScore', levelId);
         this.resetCard(levelId);
     }
@@ -266,5 +260,14 @@ export class LevelService {
             this.currentPage * Constants.levelsPerPage,
             this.currentPage * Constants.levelsPerPage + Constants.levelsPerPage,
         );
+    }
+
+    /**
+     * Internal method that ensures the socket is connected.
+     */
+    private checkForSocketConnection(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
     }
 }

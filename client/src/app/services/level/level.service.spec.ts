@@ -325,27 +325,26 @@ describe('LevelService', () => {
     });
 
     describe('deleteLevel', () => {
+        const levelId = 1;
         let removeCardSpy: jasmine.Spy;
+        let checkForSocketConnectionSpy: jasmine.Spy;
 
         beforeEach(() => {
             removeCardSpy = spyOn(service, 'removeCard');
+            checkForSocketConnectionSpy = spyOn(service, 'checkForSocketConnection' as never);
+        });
+
+        it('should call checkForSocketConnection', () => {
+            service.deleteLevel(levelId);
+            expect(checkForSocketConnectionSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call removeCard', () => {
-            const levelId = 1;
             service.deleteLevel(levelId);
             expect(removeCardSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should call connect if the socket is not alive', () => {
-            const levelId = 1;
-            socketHandlerMock.isSocketAlive.and.returnValue(false);
-            service.deleteLevel(levelId);
-            expect(socketHandlerMock.connect).toHaveBeenCalledTimes(1);
-        });
-
         it('should call send', () => {
-            const levelId = 1;
             service.deleteLevel(levelId);
             expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onDeleteLevel', levelId);
         });
@@ -353,9 +352,16 @@ describe('LevelService', () => {
 
     describe('deleteAllLevels', () => {
         let removeAllCardsSpy: jasmine.Spy;
+        let checkForSocketConnectionSpy: jasmine.Spy;
 
         beforeEach(() => {
             removeAllCardsSpy = spyOn(service, 'removeAllCards');
+            checkForSocketConnectionSpy = spyOn(service, 'checkForSocketConnection' as never);
+        });
+
+        it('should call checkForSocketConnection', () => {
+            service.deleteAllLevels();
+            expect(checkForSocketConnectionSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call removeAllCards', () => {
@@ -363,15 +369,35 @@ describe('LevelService', () => {
             expect(removeAllCardsSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should call connect if the socket is not alive', () => {
-            socketHandlerMock.isSocketAlive.and.returnValue(false);
-            service.deleteAllLevels();
-            expect(socketHandlerMock.connect).toHaveBeenCalledTimes(1);
-        });
-
         it('should call send', () => {
             service.deleteAllLevels();
             expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onDeleteAllLevels');
+        });
+    });
+
+    describe('resetLevelHighScore', () => {
+        const levelId = 1;
+        let resetCardSpy: jasmine.Spy;
+        let checkForSocketConnectionSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            resetCardSpy = spyOn(service, 'resetCard');
+            checkForSocketConnectionSpy = spyOn(service, 'checkForSocketConnection' as never);
+        });
+
+        it('should call checkForSocketConnection', () => {
+            service.resetLevelHighScore(levelId);
+            expect(checkForSocketConnectionSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call resetCard', () => {
+            service.resetLevelHighScore(levelId);
+            expect(resetCardSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call send', () => {
+            service.resetLevelHighScore(levelId);
+            expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onResetLevelHighScore', levelId);
         });
     });
 
@@ -397,6 +423,14 @@ describe('LevelService', () => {
             service['currentShownPage'] = 1;
             service['updatePageLevels']();
             expect(service['shownLevels']).toEqual(levelExpectedArray.slice(Constants.levelsPerPage, levelExpectedArray.length));
+        });
+    });
+
+    describe('checkForSocketConnection', () => {
+        it('should call connect if the socket is not alive', () => {
+            socketHandlerMock.isSocketAlive.and.returnValue(false);
+            service['checkForSocketConnection']();
+            expect(socketHandlerMock.connect).toHaveBeenCalledTimes(1);
         });
     });
 });

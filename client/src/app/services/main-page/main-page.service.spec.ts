@@ -32,6 +32,7 @@ describe('MainPageService', () => {
                 { provide: Router, useValue: routerSpy },
                 { provide: MatDialogRef, useValue: dialogRefSpy },
                 { provide: PopUpService, useValue: popUpServiceSpy },
+                { provide: CommunicationService, useValue: communicationServiceSpy },
             ],
             imports: [HttpClientModule],
         });
@@ -40,6 +41,13 @@ describe('MainPageService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    describe('setAmountOfLevels', () => {
+        it('should call getLevels', () => {
+            service.setAmountOfLevels();
+            expect(communicationServiceSpy.getLevels).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe('navigateTo', () => {
@@ -103,6 +111,17 @@ describe('MainPageService', () => {
             service.connectToSocket();
             expect(spy).toHaveBeenCalled();
         });
+
+        it('should set the amount of levels after a level is deleted', () => {
+            const spy = spyOn(service, 'setAmountOfLevels' as never);
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'refreshLevels') {
+                    callback({} as never);
+                }
+            });
+            service.connectToSocket();
+            expect(spy).toHaveBeenCalled();
+        });
     });
 
     describe('chooseGameType', () => {
@@ -158,15 +177,4 @@ describe('MainPageService', () => {
             });
         });
     });
-
-    // describe('setAmountOfLevels', () => {
-    //     it('should set amountOfLevels to the length of the levels returned by communication service', () => {
-    //         const levelsList = [{} as Level];
-    //         communicationServiceSpy.getLevels.and.returnValue(of(levelsList));
-    //         communicationServiceSpy.getLevels().subscribe((levels) => {
-    //             expect(service.amountOfLevels).toEqual(levels.length);
-    //         });
-    //         service.setAmountOfLevels();
-    //     });
-    // });
 });
