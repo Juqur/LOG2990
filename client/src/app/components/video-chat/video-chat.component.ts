@@ -12,8 +12,6 @@ export class VideoChatComponent {
     @Input() playerName: string = '';
     private messages: ChatMessage[] = [];
 
-    // constructor() {}
-
     /**
      * Getter for the display name attribute.
      */
@@ -21,6 +19,11 @@ export class VideoChatComponent {
         return this.messages;
     }
 
+    /**
+     * The message to add to the message box
+     *
+     * @param message The player's message.
+     */
     addMessage(message: ChatMessage): void {
         this.messages.push(message);
         setTimeout(() => {
@@ -28,12 +31,16 @@ export class VideoChatComponent {
         }, 0);
     }
 
+    /**
+     * Scrolls the message box to the bottom.
+     */
     scrollToBottom(): void {
-        if (this.messagesContainer) {
-            this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
-        }
+        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
     }
 
+    /**
+     * Clears the chat.
+     */
     clearChat(): void {
         this.messages = [];
     }
