@@ -17,8 +17,8 @@
                     <img src="assets/images/eraser.png" alt="efface" class="button-icon" />
                 </button>
                 <label for="colorPicker"></label>
-                <input type="color" id="colorPicker" name="colorPicker" (input)="this.creationService.colorPickerMode()"
-                    title="Selecteur de couleur" [(ngModel)]="this.creationService.color" />
+                <input type="color" value="#000000" id="colorPicker" name="colorPicker"
+                    (input)="this.creationService.colorPickerMode($event)" title="Selecteur de couleur" />
             </div>
         </section>
         <section id="creation-area-container">

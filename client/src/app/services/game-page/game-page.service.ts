@@ -26,16 +26,13 @@ export class GamePageService {
     private originalImageSrc: string = '';
     private diffImageSrc: string = '';
     private originalPlayArea: PlayAreaComponent;
-    private diffPlayArea: PlayAreaComponent;
+    private differencePlayArea: PlayAreaComponent;
     private tempDiffPlayArea: PlayAreaComponent;
-    private winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagné!',
-        closeButtonMessage: 'Retour au menu principal',
-        mustProcess: false,
-    };
+    private winGameDialogData: DialogData;
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
+    private hintSection: number[] = [];
 
     // eslint-disable-next-line max-params
     constructor(
@@ -61,12 +58,12 @@ export class GamePageService {
      * This method sets and updates the play areas of the game page.
      *
      * @param originalPlayArea The reference to the original play area.
-     * @param diffPlayArea The reference to the diff play area.
+     * @param differencePlayArea The reference to the diff play area.
      * @param tempDiffPlayArea The reference to the temp diff play area.
      */
-    setPlayArea(originalPlayArea: PlayAreaComponent, diffPlayArea: PlayAreaComponent, tempDiffPlayArea: PlayAreaComponent): void {
+    setPlayArea(originalPlayArea: PlayAreaComponent, differencePlayArea: PlayAreaComponent, tempDiffPlayArea: PlayAreaComponent): void {
         this.originalPlayArea = originalPlayArea;
-        this.diffPlayArea = diffPlayArea;
+        this.differencePlayArea = differencePlayArea;
         this.tempDiffPlayArea = tempDiffPlayArea;
     }
 
@@ -81,6 +78,7 @@ export class GamePageService {
      * This method verifies whether the click is valid or not.
      *
      * @param event The mouse event.
+     * @returns The position of the mouse on the canvas.
      */
     verifyClick(event: MouseEvent): number {
         const invalid = -1;
@@ -97,10 +95,11 @@ export class GamePageService {
     }
 
     /**
-     * This method reset the images data at the start of a new game.
+     * This method reset the images data and the hintSection at the start of a new game.
      */
     resetImagesData(): void {
         this.imagesData = [];
+        this.hintSection = [];
     }
 
     /**
@@ -119,8 +118,10 @@ export class GamePageService {
      * @param response The response of validateResponse().
      * @param gameData The game data.
      * @param clickedOriginalImage Boolean that represents if the player clicked on the original image or the difference image.
+     *
+     * @returns Boolean that represents if the player clicked on a difference pixel or not.
      */
-    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): void {
+    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): boolean {
         const response = this.validateResponse(gameData.differencePixels);
         if (response) {
             if (!clickedOriginalImage) {
@@ -128,12 +129,14 @@ export class GamePageService {
             } else {
                 this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode);
             }
+            return true;
         } else {
             if (!clickedOriginalImage) {
                 this.handleAreaNotFoundInDiff();
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
+            return false;
         }
     }
 
@@ -141,7 +144,16 @@ export class GamePageService {
      * This method is called when the player wins.
      * It will open a dialog and play a victory sound.
      */
-    handleVictory(): void {
+    handleVictory(highscorePosition: number | null): void {
+        let highscoreMessage = '';
+        if (highscorePosition) {
+            highscoreMessage = ' Vous avez obtenu la ' + highscorePosition + (highscorePosition === 1 ? 'ère' : 'e') + ' position du classement.';
+        }
+        this.winGameDialogData = {
+            textToSend: 'Vous avez gagné!' + highscoreMessage,
+            closeButtonMessage: 'Retour au menu principal',
+            mustProcess: false,
+        };
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
         AudioService.quickPlay('./assets/audio/Bing_Chilling_vine_boom.mp3');
     }
@@ -207,10 +219,10 @@ export class GamePageService {
         });
         this.flashInterval = setInterval(() => {
             if (isVisible) {
-                this.diffPlayArea.deleteTempCanvas();
+                this.differencePlayArea.deleteTempCanvas();
                 this.originalPlayArea.deleteTempCanvas();
             } else {
-                this.diffPlayArea.flashArea(this.areaNotFound);
+                this.differencePlayArea.flashArea(this.areaNotFound);
                 this.originalPlayArea.flashArea(this.areaNotFound);
             }
             isVisible = !isVisible;
@@ -223,8 +235,8 @@ export class GamePageService {
     stopCheatMode(): void {
         clearInterval(this.flashInterval);
         this.areaNotFound = [];
-        if (this.diffPlayArea && this.originalPlayArea) {
-            this.diffPlayArea.deleteTempCanvas();
+        if (this.differencePlayArea && this.originalPlayArea) {
+            this.differencePlayArea.deleteTempCanvas();
             this.originalPlayArea.deleteTempCanvas();
         }
     }
@@ -243,8 +255,22 @@ export class GamePageService {
      * @param section The quadrant or sub-quadrant in which the hint is
      */
     handleHintRequest(section: number[]): void {
-        this.diffPlayArea.showHintSection(section);
-        this.originalPlayArea.showHintSection(section);
+        if (section.length < 1 || section.length > 2) {
+            return;
+        }
+        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+        this.differencePlayArea.drawPlayArea(this.diffImageSrc);
+        setTimeout(() => {
+            this.hintSection = section;
+            this.drawServiceOriginal.context = this.originalPlayArea
+                .getCanvas()
+                .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawServiceOriginal.drawHintSection(this.hintSection);
+            this.drawServiceDifference.context = this.differencePlayArea
+                .getCanvas()
+                .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+            this.drawServiceDifference.drawHintSection(this.hintSection);
+        }, 0);
     }
 
     /**
@@ -258,6 +284,7 @@ export class GamePageService {
         if (shape.length <= 2) {
             return;
         }
+        this.hintSection = [];
         const height = shape.pop() as number;
         const width = shape.pop() as number;
         const differenceCanvasContext = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
@@ -284,6 +311,8 @@ export class GamePageService {
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
         shapeContext.drawImage(differenceCanvasContext.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
+        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
+        this.differencePlayArea.drawPlayArea(this.diffImageSrc);
     }
 
     /**
@@ -326,12 +355,12 @@ export class GamePageService {
     /**
      * This method will redraw the canvas with the original image plus the elements that were not found.
      * To avoid flashing issue, it copies to a third temporary canvas.
-     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the diffPlayArea.
+     * Later in copyDiffPlayAreaContext we will copy the temporaryPlayArea to the differencePlayArea.
      */
     private resetCanvas(): void {
         this.mouseService.canClick = false;
         const delay = 1000; // ms
-        this.diffPlayArea
+        this.differencePlayArea
             .timeout(delay)
             .then(() => {
                 this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
@@ -345,9 +374,10 @@ export class GamePageService {
             })
             .then(() => {
                 setTimeout(() => {
-                    this.diffPlayArea.deleteTempCanvas();
+                    this.differencePlayArea.deleteTempCanvas();
                     this.originalPlayArea.deleteTempCanvas();
                     this.copyDiffPlayAreaContext();
+                    this.handleHintRequest(this.hintSection);
                 }, 0);
             });
     }
@@ -359,7 +389,7 @@ export class GamePageService {
         const contextTemp = this.tempDiffPlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const context = this.diffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const context = this.differencePlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const imageData = contextTemp.getImageData(0, 0, contextTemp.canvas.width, contextTemp.canvas.height);
         context.putImageData(imageData, 0, 0);
     }
@@ -370,6 +400,7 @@ export class GamePageService {
      * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
+        this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
@@ -377,7 +408,7 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.diffPlayArea.flashArea(result);
+        this.differencePlayArea.flashArea(result);
         this.originalPlayArea.flashArea(result);
         this.resetCanvas();
     }
@@ -387,7 +418,7 @@ export class GamePageService {
      */
     private handleAreaNotFoundInDiff(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
-        this.drawServiceDifference.context = this.diffPlayArea
+        this.drawServiceDifference.context = this.differencePlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDifference.drawError(this.mouseService);
@@ -400,6 +431,7 @@ export class GamePageService {
      * @param result The array of pixels that represents the area found as a difference.
      */
     private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
+        this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
                 return !result.includes(item);
@@ -408,7 +440,7 @@ export class GamePageService {
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
         this.originalPlayArea.flashArea(result);
-        this.diffPlayArea.flashArea(result);
+        this.differencePlayArea.flashArea(result);
         this.resetCanvas();
     }
     /**

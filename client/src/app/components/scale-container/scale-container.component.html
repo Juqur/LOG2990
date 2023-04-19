@@ -1,5 +1,6 @@
 <div #screen (window:resize)="resizeContainer()" id="flexible-fullscreen-body">
-    <div #container id="container" [ngStyle]="{ transform: 'translate(-50%, -50%) scale(' + this.scale + ')' }">
+    <div #container id="container" [class.scalable]="isScalable"
+        [ngStyle]="{ transform: 'translate(-50%, -50%) scale(' + this.scale + ')' }">
         <ng-content></ng-content>
     </div>
 </div>

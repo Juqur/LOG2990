@@ -22,6 +22,8 @@ import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.c
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
 import { CreationPageComponent } from './pages/creation-page/creation-page.component';
+import { GameHistoriesPageComponent } from './pages/game-histories-page/game-histories-page.component';
+import { GameHistoryComponent } from './components/game-history/game-history.component';
 
 /**
  * Main module that is used in main.ts.
@@ -47,6 +49,8 @@ import { CreationPageComponent } from './pages/creation-page/creation-page.compo
         CreationPageComponent,
         ScaleContainerComponent,
         PopUpDialogComponent,
+        GameHistoriesPageComponent,
+        GameHistoryComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, MatSliderModule, FormsModule, HttpClientModule],
     providers: [],

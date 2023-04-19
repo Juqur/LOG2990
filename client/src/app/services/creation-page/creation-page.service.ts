@@ -18,16 +18,15 @@ import { Constants } from '@common/constants';
     providedIn: 'root',
 })
 export class CreationPageService {
-    color = Constants.BLACK;
-    private isSaveable = false;
-    private differenceAmountMessage = '';
+    private isSaveable: boolean = false;
+    private differenceAmountMessage: string = '';
     private drawServiceDefault: DrawService = new DrawService();
     private drawServiceDifference: DrawService = new DrawService();
     private defaultUploadFile: File;
     private differenceUploadFile: File;
     private creationSpecs: CreationSpecs = {
         defaultImageFile: new File([], ''),
-        diffImageFile: new File([], ''),
+        differenceImageFile: new File([], ''),
         radius: Constants.RADIUS_DEFAULT,
         brushSize: 1,
         nbDifferences: Constants.INIT_DIFF_NB,
@@ -53,7 +52,7 @@ export class CreationPageService {
         this.canvasShare.differenceCanvas = this.creationSpecs.differenceBgCanvasContext?.canvas as HTMLCanvasElement;
         this.getEmptyBmpFile().then((res) => {
             this.creationSpecs.defaultImageFile = res;
-            this.creationSpecs.diffImageFile = res;
+            this.creationSpecs.differenceImageFile = res;
             this.showDefaultImage();
             this.showDifferenceImage();
         });
@@ -121,8 +120,8 @@ export class CreationPageService {
         this.restartGame();
         const target = event.target as HTMLInputElement;
         if (target.files) {
-            this.creationSpecs.diffImageFile = target.files[0];
-            this.verifyImageFormat(this.creationSpecs.diffImageFile).then((result) => {
+            this.creationSpecs.differenceImageFile = target.files[0];
+            this.verifyImageFormat(this.creationSpecs.differenceImageFile).then((result) => {
                 if (result) this.showDifferenceImage();
             });
         }
@@ -169,7 +168,7 @@ export class CreationPageService {
             .getContext('2d')
             ?.clearRect(0, 0, this.canvasShare.differenceCanvas.width, this.canvasShare.differenceCanvas.height);
         this.getEmptyBmpFile().then((res) => {
-            this.creationSpecs.diffImageFile = res;
+            this.creationSpecs.differenceImageFile = res;
             this.showDifferenceImage();
         });
     }
@@ -204,10 +203,14 @@ export class CreationPageService {
      * sections are differences while the white are regions shared between images.
      *
      * @param defaultMergedContext The default canvas context.
-     * @param diffMergedContext The different canvas context.
+     * @param differenceMergedContext The different canvas context.
      */
-    detectDifference(defaultMergedContext: CanvasRenderingContext2D, diffMergedContext: CanvasRenderingContext2D): void {
-        this.creationSpecs.differences = this.differenceService.detectDifferences(defaultMergedContext, diffMergedContext, this.creationSpecs.radius);
+    detectDifference(defaultMergedContext: CanvasRenderingContext2D, differenceMergedContext: CanvasRenderingContext2D): void {
+        this.creationSpecs.differences = this.differenceService.detectDifferences(
+            defaultMergedContext,
+            differenceMergedContext,
+            this.creationSpecs.radius,
+        );
         if (!this.creationSpecs.differences) {
             this.errorDialog('Veuillez fournir des images non vides');
             return;
@@ -232,7 +235,7 @@ export class CreationPageService {
             this.toImgFile(defaultMergedContext).then((res) => {
                 this.defaultUploadFile = new File([res], 'default.bmp', { type: 'image/bmp' });
             });
-            this.toImgFile(diffMergedContext).then((res) => {
+            this.toImgFile(differenceMergedContext).then((res) => {
                 this.differenceUploadFile = new File([res], 'diff.bmp', { type: 'image/bmp' });
             });
         }
@@ -315,11 +318,12 @@ export class CreationPageService {
      * When the user press on the color picker button, this method is called.
      * It sets the color of the paint brush and the Rectangle brush to the color.
      */
-    colorPickerMode(): void {
-        this.mouseServiceDefault.mouseDrawColor = this.color;
-        this.mouseServiceDifference.mouseDrawColor = this.color;
-        this.drawServiceDefault.setPaintColor(this.color);
-        this.drawServiceDifference.setPaintColor(this.color);
+    colorPickerMode(event: Event): void {
+        const color = (event.target as HTMLInputElement).value;
+        this.mouseServiceDefault.mouseDrawColor = color;
+        this.mouseServiceDifference.mouseDrawColor = color;
+        this.drawServiceDefault.setPaintColor(color);
+        this.drawServiceDifference.setPaintColor(color);
     }
 
     /**
@@ -376,7 +380,7 @@ export class CreationPageService {
      */
     private showDifferenceImage(): void {
         const image = new Image();
-        image.src = URL.createObjectURL(this.creationSpecs.diffImageFile);
+        image.src = URL.createObjectURL(this.creationSpecs.differenceImageFile);
         image.onload = async () => {
             if (!this.creationSpecs.differenceBgCanvasContext) {
                 this.errorDialog('Aucun canvas de différence.');
