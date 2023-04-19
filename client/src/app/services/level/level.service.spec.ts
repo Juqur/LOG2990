@@ -119,12 +119,14 @@ describe('LevelService', () => {
             'deleteLevel',
             'getGameConstants',
             'setNewGameConstants',
+            'resetGameConstants',
         ]);
         socketHandlerMock = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send']);
         communicationServiceMock.getLevels.and.returnValue(of(levelExpectedArray));
         communicationServiceMock.deleteLevel.and.returnValue(of(true));
         communicationServiceMock.getGameConstants.and.returnValue(of(gameConstants));
         communicationServiceMock.setNewGameConstants.and.returnValue(of(undefined));
+        communicationServiceMock.resetGameConstants.and.returnValue(of(undefined));
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
@@ -260,7 +262,7 @@ describe('LevelService', () => {
         });
     });
 
-    describe('setNewGameConstants', () => {
+    describe('resetGameConstants', () => {
         it('should set the gameConstants to its default values', () => {
             service.resetGameConstants();
             expect(service['gameConstants']).toEqual({
@@ -270,9 +272,9 @@ describe('LevelService', () => {
             });
         });
 
-        it('should call communicationService.setNewGameConstants', () => {
+        it('should call communicationService.resetGameConstants', () => {
             service.resetGameConstants();
-            expect(communicationServiceMock.setNewGameConstants).toHaveBeenCalledTimes(1);
+            expect(communicationServiceMock.resetGameConstants).toHaveBeenCalledTimes(1);
         });
     });
 

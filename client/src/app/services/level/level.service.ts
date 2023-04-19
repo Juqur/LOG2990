@@ -92,7 +92,7 @@ export class LevelService {
      *
      * @param event The event that triggered the function.
      */
-    setNewGameConstants(event: Event) {
+    setNewGameConstants(event: Event): void {
         if (this.gameConstants) {
             const input = event.target as HTMLInputElement;
             let valueChanged = false;
@@ -140,7 +140,7 @@ export class LevelService {
             timePenaltyHint: Constants.HINT_PENALTY,
             timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
         };
-        this.communicationService.setNewGameConstants(this.gameConstants).subscribe();
+        this.communicationService.resetGameConstants().subscribe();
     }
 
     /**
