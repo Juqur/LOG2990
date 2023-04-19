@@ -4,11 +4,12 @@ import { ElementRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { DialogData } from '@app/interfaces/dialogs';
 import { AudioService } from '@app/services/audio/audio.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
@@ -64,7 +65,7 @@ describe('GamePageService', () => {
         });
         service = TestBed.inject(GamePageService);
         service.setPlayArea(playAreaComponentSpy, playAreaComponentSpy, playAreaComponentSpy);
-        service['drawServiceDiff'] = drawServiceSpy;
+        service['drawServiceDifference'] = drawServiceSpy;
         service['drawServiceOriginal'] = drawServiceSpy;
     });
 
@@ -87,7 +88,7 @@ describe('GamePageService', () => {
             const playArea = playAreaComponentSpy;
             service.setPlayArea(playArea, playArea, playArea);
             expect(service['originalPlayArea']).toEqual(playArea);
-            expect(service['diffPlayArea']).toEqual(playArea);
+            expect(service['differencePlayArea']).toEqual(playArea);
             expect(service['tempDiffPlayArea']).toEqual(playArea);
         });
     });
@@ -250,7 +251,7 @@ describe('GamePageService', () => {
     describe('pick', () => {
         it('should return undefined when context is undefined when copying', () => {
             const area = [0];
-            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(null);
+            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(null);
             spyOn(service, 'pick' as never);
             const returnValue = service['copyArea'](area);
             expect(returnValue).toBeUndefined();
@@ -404,7 +405,7 @@ describe('GamePageService', () => {
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
-            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
 
         it('should call quickPlay', () => {
@@ -471,7 +472,7 @@ describe('GamePageService', () => {
 
         beforeEach(() => {
             resetCanvasSpy = spyOn(service, 'resetCanvas' as never);
-            spyOn(service['diffPlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
+            spyOn(service['differencePlayArea'].getCanvas().nativeElement, 'getContext').and.returnValue(mockCanvas.getContext('2d'));
         });
 
         it('should call quickPlay', () => {

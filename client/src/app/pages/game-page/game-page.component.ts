@@ -24,7 +24,7 @@ import { environment } from 'src/environments/environment';
 })
 export class GamePageComponent implements OnInit, OnDestroy {
     @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
-    @ViewChild('diffPlayArea', { static: false }) diffPlayArea!: PlayAreaComponent;
+    @ViewChild('differencePlayArea', { static: false }) differencePlayArea!: PlayAreaComponent;
     @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
     @ViewChild('hintShapeCanvas', { static: false }) hintShapeCanvas!: ElementRef<HTMLCanvasElement>;
 
@@ -32,7 +32,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     hintPenalty: number = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     closePath: string = '/selection';
-    diffCanvasCtx: CanvasRenderingContext2D | null = null;
+    differenceCanvasContext: CanvasRenderingContext2D | null = null;
     playerName: string;
     playerDifferencesCount: number = 0;
     secondPlayerName: string;
@@ -67,7 +67,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         if ((event.key === 't' || event.key === 'T') && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
                 this.gamePageService.setImages(this.levelId);
                 this.isInCheatMode = !this.isInCheatMode;
                 return;
@@ -132,7 +132,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             }
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
                 const isFound = this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
                 if (isFound && this.showThirdHint) {
                     this.removeHintShape();
@@ -165,7 +165,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.on('game', 'hintRequest', (data) => {
             const section = data as number[];
             this.gamePageService.setImages(this.levelId);
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
             if (section.length < 3 && this.nbHints > 1) {
                 this.gamePageService.handleHintRequest(section);
                 this.nbHints--;
@@ -219,7 +219,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     askForHint(): void {
         if (!this.secondPlayerName) {
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.diffPlayArea, this.tempDiffPlayArea);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
             this.socketHandler.send('game', 'onHintRequest');
         }
     }
@@ -229,8 +229,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
      */
     removeHintShape(): void {
         const shapeCanvas = this.hintShapeCanvas.nativeElement as HTMLCanvasElement;
-        const shapeCtx = shapeCanvas.getContext('2d') as CanvasRenderingContext2D;
-        shapeCtx.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
+        const shapeContext = shapeCanvas.getContext('2d') as CanvasRenderingContext2D;
+        shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
         this.showThirdHint = false;
     }
 
