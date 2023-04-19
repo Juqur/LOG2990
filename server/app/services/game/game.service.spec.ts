@@ -461,7 +461,7 @@ describe('GameService', () => {
     });
 
     describe('startCheatMode', () => {
-        it('should return all the differences as a single array', () => {
+        it('should return all the differences as a single array', async () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
@@ -473,10 +473,10 @@ describe('GameService', () => {
                 hintsUsed: 0,
             });
             const spy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            spy.mockImplementation().mockReturnValue(Promise.resolve([[1], [2], [3]]));
-            const result = service.startCheatMode('socket1');
+            spy.mockReturnValue(Promise.resolve([[1], [2], [3]]));
+            const result = await service.startCheatMode('socket1');
             expect(spy).toHaveBeenCalledTimes(1);
-            expect(result).toStrictEqual(Promise.resolve([1, 2, 3]));
+            expect(result).toStrictEqual([1, 2, 3]);
         });
     });
 
