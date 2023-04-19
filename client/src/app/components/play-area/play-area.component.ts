@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
@@ -18,37 +18,25 @@ import { Constants } from '@common/constants';
 export class PlayAreaComponent implements AfterViewInit, OnChanges {
     @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
-    @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
-    currentImage: HTMLImageElement;
+    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
-    buttonPressed = '';
+    private currentImage: HTMLImageElement;
     private tempCanvas: HTMLCanvasElement;
-    private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
+
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
     /**
      * Getter for the canvas width
      */
     get width(): number {
-        return this.canvasSize.x;
+        return Constants.DEFAULT_WIDTH;
     }
 
     /**
      * Getter for the canvas height
      */
     get height(): number {
-        return this.canvasSize.y;
-    }
-
-    /**
-     * This method listens for key presses and updates the buttonPressed attribute in
-     * consequences.
-     *
-     * @param event the keyboardEvent to process.
-     */
-    @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent): void {
-        this.buttonPressed = event.key;
+        return Constants.DEFAULT_HEIGHT;
     }
 
     /**

@@ -27,7 +27,7 @@ export class GamePageService {
     private diffImageSrc: string = '';
     private originalPlayArea: PlayAreaComponent;
     private differencePlayArea: PlayAreaComponent;
-    private tempDiffPlayArea: PlayAreaComponent;
+    private tempDifferencePlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData;
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
@@ -59,12 +59,12 @@ export class GamePageService {
      *
      * @param originalPlayArea The reference to the original play area.
      * @param differencePlayArea The reference to the diff play area.
-     * @param tempDiffPlayArea The reference to the temp diff play area.
+     * @param tempDifferencePlayArea The reference to the temp diff play area.
      */
-    setPlayArea(originalPlayArea: PlayAreaComponent, differencePlayArea: PlayAreaComponent, tempDiffPlayArea: PlayAreaComponent): void {
+    setPlayArea(originalPlayArea: PlayAreaComponent, differencePlayArea: PlayAreaComponent, tempDifferencePlayArea: PlayAreaComponent): void {
         this.originalPlayArea = originalPlayArea;
         this.differencePlayArea = differencePlayArea;
-        this.tempDiffPlayArea = tempDiffPlayArea;
+        this.tempDifferencePlayArea = tempDifferencePlayArea;
     }
 
     /**
@@ -341,7 +341,9 @@ export class GamePageService {
     private copyArea(area: number[]): void {
         let x = 0;
         let y = 0;
-        const context = this.tempDiffPlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const context = this.tempDifferencePlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         if (context === null) return;
         area.forEach((pixelData) => {
             x = (pixelData / Constants.PIXEL_SIZE) % this.originalPlayArea.width;
@@ -363,7 +365,7 @@ export class GamePageService {
         this.differencePlayArea
             .timeout(delay)
             .then(() => {
-                this.tempDiffPlayArea.drawPlayArea(this.diffImageSrc);
+                this.tempDifferencePlayArea.drawPlayArea(this.diffImageSrc);
                 this.originalPlayArea.drawPlayArea(this.originalImageSrc);
             })
             .then(() => {
@@ -386,7 +388,7 @@ export class GamePageService {
      * This method will copy/paste the context of the temp canvas to the difference canvas.
      */
     private copyDiffPlayAreaContext(): void {
-        const contextTemp = this.tempDiffPlayArea
+        const contextTemp = this.tempDifferencePlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const context = this.differencePlayArea.getCanvas().nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
@@ -443,6 +445,7 @@ export class GamePageService {
         this.differencePlayArea.flashArea(result);
         this.resetCanvas();
     }
+
     /**
      * Performs a failed sound and prompts an error in the original canvas.
      */
