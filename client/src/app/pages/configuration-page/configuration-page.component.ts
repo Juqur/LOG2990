@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Dialogs } from '@app/interfaces/dialogs';
 import { LevelService } from '@app/services/level/level.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 
 /**
  * This component represents the page where the user can modify, delete or create new games. It is accessible from
@@ -15,7 +17,7 @@ import { LevelService } from '@app/services/level/level.service';
     styleUrls: ['./configuration-page.component.scss'],
 })
 export class ConfigurationPageComponent {
-    constructor(public levelService: LevelService, public router: Router) {}
+    constructor(public levelService: LevelService, public popUpService: PopUpService, public router: Router) {}
 
     /**
      * Event listener for the delete button.
@@ -24,7 +26,12 @@ export class ConfigurationPageComponent {
      * @param levelId the id of the level to delete.
      */
     onDeleteLevel(levelId: number): void {
-        this.levelService.deleteLevel(levelId);
+        this.popUpService.openDialog(Dialogs.confirmDeleteLevel);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                this.levelService.deleteLevel(levelId);
+            }
+        });
     }
 
     /**
@@ -32,6 +39,11 @@ export class ConfigurationPageComponent {
      * It will call the deleteAllLevels function from the levelService.
      */
     onDeleteAllLevels(): void {
-        this.levelService.deleteAllLevels();
+        this.popUpService.openDialog(Dialogs.confirmDeleteAllLevels);
+        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
+            if (confirmation) {
+                this.levelService.deleteAllLevels();
+            }
+        });
     }
 }
