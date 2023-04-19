@@ -63,6 +63,7 @@ export class CreationPageComponent implements AfterViewInit, OnDestroy {
         this.creationService.resetDefaultBackground();
         this.creationService.resetDiffBackground();
         this.setPaintBrushMode();
+        this.creationService.colorPickerMode();
     }
 
     /**

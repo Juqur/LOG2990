@@ -402,10 +402,16 @@ describe('CreationPageService', () => {
     });
 
     it('colorPickerMode should call the correct draw functions', () => {
-        const event = { target: { value: '#000000' } } as unknown as Event;
+        const event = { target: { value: '#ffffff' } } as unknown as Event;
         service.colorPickerMode(event);
-        expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledTimes(1);
-        expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledTimes(1);
+        expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledWith('#ffffff');
+        expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledWith('#ffffff');
+    });
+
+    it('colorPickerMode should set to default value if no event is provided', () => {
+        service.colorPickerMode();
+        expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledWith('#000000');
+        expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledWith('#000000');
     });
 
     it('getEmptyBmpFile should return a new File with the correct src', fakeAsync(async () => {

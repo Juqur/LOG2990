@@ -318,8 +318,8 @@ export class CreationPageService {
      * When the user press on the color picker button, this method is called.
      * It sets the color of the paint brush and the Rectangle brush to the color.
      */
-    colorPickerMode(event: Event): void {
-        const color = (event.target as HTMLInputElement).value;
+    colorPickerMode(event?: Event): void {
+        const color = event ? (event.target as HTMLInputElement).value : '#000000';
         this.mouseServiceDefault.mouseDrawColor = color;
         this.mouseServiceDifference.mouseDrawColor = color;
         this.drawServiceDefault.setPaintColor(color);
