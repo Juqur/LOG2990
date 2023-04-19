@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { Constants } from '@common/constants';
@@ -18,37 +18,25 @@ import { Constants } from '@common/constants';
 export class PlayAreaComponent implements AfterViewInit, OnChanges {
     @Input() isDifferenceCanvas: boolean;
     @Input() image: string = '';
-    @ViewChild('gridCanvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
-    currentImage: HTMLImageElement;
+    @ViewChild('gridCanvas', { static: false }) private canvas!: ElementRef<HTMLCanvasElement>;
 
-    buttonPressed = '';
+    private currentImage: HTMLImageElement;
     private tempCanvas: HTMLCanvasElement;
-    private canvasSize = { x: Constants.DEFAULT_WIDTH, y: Constants.DEFAULT_HEIGHT };
+
     constructor(private readonly drawService: DrawService, private canvasSharing: CanvasSharingService) {}
 
     /**
      * Getter for the canvas width
      */
     get width(): number {
-        return this.canvasSize.x;
+        return Constants.DEFAULT_WIDTH;
     }
 
     /**
      * Getter for the canvas height
      */
     get height(): number {
-        return this.canvasSize.y;
-    }
-
-    /**
-     * This method listens for key presses and updates the buttonPressed attribute in
-     * consequences.
-     *
-     * @param event the keyboardEvent to process.
-     */
-    @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent): void {
-        this.buttonPressed = event.key;
+        return Constants.DEFAULT_HEIGHT;
     }
 
     /**
@@ -82,7 +70,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
      */
     drawPlayArea(image: string): void {
         if (this.canvas) {
-            this.canvas.nativeElement.id = this.isDifferenceCanvas ? 'diffCanvas' : 'defaultCanvas';
+            this.canvas.nativeElement.id = this.isDifferenceCanvas ? 'differenceCanvas' : 'defaultCanvas';
             const context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             if (!this.isDifferenceCanvas) {
                 // Default canvas (left canvas)
@@ -90,13 +78,13 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             } else {
                 // Diff canvas (right canvas)
-                this.canvasSharing.diffCanvas = this.canvas.nativeElement;
+                this.canvasSharing.differenceCanvas = this.canvas.nativeElement;
                 this.drawService.context = this.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             }
             this.currentImage = new Image();
             this.currentImage.crossOrigin = 'anonymous';
             this.currentImage.src = image;
-            this.currentImage.onload = () => {
+            this.currentImage.onload = async () => {
                 context.drawImage(this.currentImage, 0, 0, this.width, this.height);
             };
             this.canvas.nativeElement.style.backgroundColor = 'white';
