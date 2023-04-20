@@ -26,8 +26,8 @@ export class MessageBoxComponent implements OnInit {
      * This method is called when the user presses a key in the message box.
      * It checks if the enter button was pressed and sends the message.
      *
-     * @param event The event that triggered the method.
-     * @param messageInput The HTML input containing the message.
+     * @param event the event that triggered the method.
+     * @param messageInput the HTML input containing the message.
      */
     onKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
         if (event.key === 'Enter' && !event.shiftKey) {
@@ -40,12 +40,11 @@ export class MessageBoxComponent implements OnInit {
      * This method sends a message to the server
      * and clears the message box.
      *
-     * @param messageInput The HTML input containing the message.
+     * @param messageInput the HTML input containing the message.
      */
     sendMessage(messageInput: HTMLTextAreaElement): void {
         if (messageInput.value !== '') {
-            const chatMessage = this.createMessage(messageInput.value);
-            this.socketHandler.send('game', 'onMessageReception', chatMessage);
+            this.socketHandler.send('game', 'onMessageReception', this.createMessage(messageInput.value));
         }
         messageInput.value = '';
     }
@@ -60,11 +59,11 @@ export class MessageBoxComponent implements OnInit {
     }
 
     /**
-     * Method that returns a Message object with the given message and the display name.
-     * Since the sender is the player, the senderId is always SenderType.Player.
+     * returns a Message object with the given message and the display name.
+     * since the sender is the player, the senderId is always SenderType.Player.
      *
-     * @param message The message to send.
-     * @returns message The message format to send.
+     * @param message the message to send.
+     * @returns message formated in a ChatMessage interface.
      */
     private createMessage(message: string): ChatMessage {
         return {

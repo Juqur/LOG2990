@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
@@ -19,7 +19,7 @@ describe('PlayAreaComponent', () => {
 
         TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
-            imports: [HttpClientModule],
+            imports: [HttpClientTestingModule],
             providers: [
                 { provide: DrawService, useValue: drawServiceSpy },
                 { provide: CanvasSharingService, useValue: canvasSharingServiceSpy },
@@ -54,7 +54,7 @@ describe('PlayAreaComponent', () => {
         expect(drawImageSpy).toHaveBeenCalledTimes(1);
     }));
 
-    it('drawPlayArea should call the diff canvas when isDifferenceCanvas is true', fakeAsync(() => {
+    it('drawPlayArea should call the difference canvas when isDifferenceCanvas is true', fakeAsync(() => {
         const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
         component.isDifferenceCanvas = true;
         component.drawPlayArea('');
@@ -110,5 +110,29 @@ describe('PlayAreaComponent', () => {
         const spy = spyOn(component, 'drawPlayArea');
         component.ngOnChanges();
         expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('getFlashingCopy should call drawImage', () => {
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        component.getFlashingCopy();
+        expect(drawImageSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('setContext should clearRect and drawImage', () => {
+        const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        component.setContext(context);
+        expect(clearRectSpy).toHaveBeenCalledTimes(1);
+        expect(drawImageSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('getCanvasRenderingContext2D should return the context of the canvas', () => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        component['canvas'].nativeElement = canvas;
+        const context2 = component.getCanvasRenderingContext2D();
+        expect(context).toEqual(context2);
     });
 });

@@ -112,6 +112,15 @@ export namespace Constants {
     export const MAX_GAME_TIME_LENGTH = 120;
     export const MAX_TIME_PENALTY_HINT = 10;
     export const MAX_TIME_GAINED_DIFFERENCE = 10;
+
+    // Video Page
+    export const NORMAL_SPEED = 1;
+    export const FAST_SPEED = 2;
+    export const VERY_FAST_SPEED = 4;
+
+    //Video Timer Service
+    export const TIMER_START = 0;
+    export const TIMER_INTERVAL = 40; // 40 ms = 25 fps
 }
 
 export enum MouseButton {

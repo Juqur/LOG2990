@@ -1,0 +1,60 @@
+<app-scale-container>
+    <div class="container">
+        <section id="top-area">
+            <button mat-button routerLink="/home" (click)="returnHome()">Retour au Menu</button>
+            <button (click)="startStopVideo()">{{this.isStart ? "Jouer" : "Pause"}}</button>
+            <button (click)="videoSpeedTime1()">x1</button>
+            <button (click)="videoSpeedTime2()">x2</button>
+            <button (click)="videoSpeedTime4()">x4</button>
+            <button (click)="replayVideo()">Rejouer la vidéo</button>
+            <div id="diff-counter">
+                <div *ngIf="playerName" class="player-counter">
+                    <span class="diff-self">{{ getFirstPlayerName() + ': ' }}</span>
+                    <span> {{ playerDifferencesCount }} </span>
+                    <span class="diff-self">différences trouvées</span>
+                </div>
+                <div *ngIf="secondPlayerName" class="player-counter">
+                    <span class="diff-friend">{{ getSecondPlayerName() }} :</span>
+                    <span> {{ secondPlayerDifferencesCount }} </span>
+                    <span class="diff-friend">différences trouvées</span>
+                </div>
+            </div>
+        </section>
+        <section id="top-area">
+            <app-video-timer #videoTimer></app-video-timer>
+        </section>
+        <section id="play-area-container">
+            <app-play-area [image]="originalImageSrc" #originalPlayArea></app-play-area>
+            <div *ngIf="!secondPlayerName" id="between-images">
+                <button mat-button>
+                    <span> <mat-icon>image_search</mat-icon></span>
+                </button>
+                <p>{{ nbHints }}</p>
+                <span id="nb-hints">indices restants</span>
+            </div>
+            <app-play-area [image]="diffImageSrc" #differencePlayArea></app-play-area>
+        </section>
+        <section id="bottom-area">
+            <app-video-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"
+                #videoChat></app-video-chat>
+            <div id="info-game" *ngIf="currentLevel">
+                <div>
+                    <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Difficulté : </span><span class="info-answer">{{ currentLevel.isEasy ?
+                        'Facile' : 'Difficile' }}</span>
+                </div>
+                <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
+                <div>
+                    <span class="info-question">Différences totale: </span><span class="info-answer">{{
+                        currentLevel.nbDifferences }}</span>
+                </div>
+                <div>
+                    <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + '
+                        secondes' }}</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</app-scale-container>

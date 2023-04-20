@@ -15,15 +15,18 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { ChatMessageComponent } from './components/chat-message/chat-message.component';
 import { GameChatComponent } from './components/game-chat/game-chat.component';
+import { GameHistoryComponent } from './components/game-history/game-history.component';
 import { GameTimerComponent } from './components/game-timer/game-timer.component';
 import { MessageBoxComponent } from './components/message-box/message-box.component';
 import { PaintAreaComponent } from './components/paint-area/paint-area.component';
 import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.component';
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
+import { VideoChatComponent } from './components/video-chat/video-chat.component';
+import { VideoTimerComponent } from './components/video-timer/video-timer.component';
 import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
 import { CreationPageComponent } from './pages/creation-page/creation-page.component';
 import { GameHistoriesPageComponent } from './pages/game-histories-page/game-histories-page.component';
-import { GameHistoryComponent } from './components/game-history/game-history.component';
+import { VideoPageComponent } from './pages/video-page/video-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -49,6 +52,9 @@ import { GameHistoryComponent } from './components/game-history/game-history.com
         CreationPageComponent,
         ScaleContainerComponent,
         PopUpDialogComponent,
+        VideoPageComponent,
+        VideoChatComponent,
+        VideoTimerComponent,
         GameHistoriesPageComponent,
         GameHistoryComponent,
     ],

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LevelFormData } from '@app/interfaces/level-form-data';
+import { LevelFormData } from '@app/classes/level-form-data';
 import { GameConstants } from '@common/game-constants';
 import { GameHistory } from '@common/game-history';
 import { HttpMessage } from '@common/interfaces/http-message';

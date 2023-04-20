@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { ChatMessage } from '@common/interfaces/chat-messages';
 
@@ -59,6 +60,7 @@ export class GameChatComponent implements OnInit, OnDestroy {
      */
     private receiveMessage(message: ChatMessage): void {
         this.messages.push(message);
+        VideoService.addMessageToStack(message);
         setTimeout(() => {
             this.scrollToBottom();
         }, Constants.scrollDelay);

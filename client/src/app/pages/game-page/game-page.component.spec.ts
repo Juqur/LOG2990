@@ -14,10 +14,10 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { VideoService } from '@app/services/video/video.service';
 import { GameData } from '@common/interfaces/game-data';
 import { Level } from '@common/interfaces/level';
 import { of } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import SpyObj = jasmine.SpyObj;
 
 describe('GamePageComponent', () => {
@@ -50,7 +50,13 @@ describe('GamePageComponent', () => {
             'playSuccessSound',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
-        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
+        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', [
+            'getCanvas',
+            'drawPlayArea',
+            'flashArea',
+            'timeout',
+            'getCanvasRenderingContext2D',
+        ]);
         activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
         activatedRoute.snapshot.params = { id: 1 };
         activatedRoute.snapshot.queryParams = { playerName: 'Alice', opponent: 'Bob' };
@@ -118,6 +124,14 @@ describe('GamePageComponent', () => {
         it('should call handleSocket', () => {
             component.ngOnInit();
             expect(handleSocketSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('ngAfterViewInit', () => {
+        it('should call addToVideoStack', () => {
+            const addToVideoStackSpy = spyOn(VideoService, 'addToVideoStack');
+            component.ngAfterViewInit();
+            expect(addToVideoStackSpy).toHaveBeenCalled();
         });
     });
 
@@ -481,8 +495,8 @@ describe('GamePageComponent', () => {
         it('should set the url properly for both images', () => {
             component['levelId'] = 1;
             component['settingGameImage']();
-            expect(component['originalImageSrc']).toBe(environment.serverUrl + 'original/1.bmp');
-            expect(component['diffImageSrc']).toBe(environment.serverUrl + 'modified/1.bmp');
+            expect(component['originalImageSrc']).toBe('http://localhost:3000/original/1.bmp');
+            expect(component['diffImageSrc']).toBe('http://localhost:3000/modified/1.bmp');
         });
     });
 

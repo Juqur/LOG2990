@@ -1,12 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { Socket } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
 import { SocketHandler } from './socket-handler.service';
 
 describe('SocketClientService', () => {
     let service: SocketHandler;
     let socketTest: Socket;
-
     const socketGateway1 = 'socket1';
     const socketGateway2 = 'socket2';
     const mockedSocket = {
@@ -27,7 +25,6 @@ describe('SocketClientService', () => {
         service['sockets'].set(socketGateway1, mockedSocket as unknown as Socket);
         service['sockets'].set(socketGateway2, mockedSocket as unknown as Socket);
         socketTest = service['sockets'].get(socketGateway1) as Socket;
-        environment.serverUrl = window.location.origin + '/';
     });
 
     it('should be created', () => {

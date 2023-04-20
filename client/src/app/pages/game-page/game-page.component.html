@@ -8,8 +8,9 @@
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">
                     <span class="diff-self">{{
-                        !isClassic && secondPlayerName ? playerName + ' et ' + secondPlayerName + ': ' : playerName + ': ' 
-                    }}</span>
+                        !isClassic && secondPlayerName ? playerName + ' et ' + secondPlayerName + ': ' : playerName + ':
+                        '
+                        }}</span>
                     <span> {{ playerDifferencesCount }} </span>
                     <span class="diff-self">différences trouvées</span>
                 </div>
@@ -29,8 +30,8 @@
                 </button>
                 <p>{{ nbHints }}</p>
                 <span id="nb-hints">indices restants</span>
-                <p class="hint-text" [ngClass]="{'visible': showThirdHint}">Forme de l'indice:</p>
-                <canvas [ngClass]="{'use-canvas': showThirdHint}" #hintShapeCanvas></canvas>
+                <p class="hint-text" [ngClass]="{ visible: showThirdHint }">Forme de l'indice:</p>
+                <canvas [ngClass]="{ 'use-canvas': showThirdHint }" #hintShapeCanvas></canvas>
             </div>
             <app-play-area [isDifferenceCanvas]="true" [image]="diffImageSrc" (click)="clickedOnDiff($event)"
                 #differencePlayArea></app-play-area>

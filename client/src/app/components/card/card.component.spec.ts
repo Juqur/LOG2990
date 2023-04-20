@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CarouselComponent } from '@app/components/carousel/carousel.component';
@@ -53,6 +53,12 @@ describe('CardComponent', () => {
     });
 
     it('PlaySolo should ask for playerName', () => {
+        popUpService.openDialog.and.returnValue({
+            afterClosed: () =>
+                of({
+                    hasAccepted: true,
+                }),
+        });
         popUpService.result = 'nom';
         component.level.id = 1;
         component.playSolo();
@@ -67,6 +73,12 @@ describe('CardComponent', () => {
 
     it('deleteLevel should emit deleteLevelEvent', () => {
         const spy = spyOn(component.deleteLevelEvent, 'emit');
+        popUpService.openDialog.and.returnValue({
+            afterClosed: () =>
+                of({
+                    hasAccepted: true,
+                }),
+        });
         component.level.id = 1;
         component.deleteLevel(1);
         expect(spy).toHaveBeenCalledTimes(1);

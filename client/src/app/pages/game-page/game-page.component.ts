@@ -1,10 +1,12 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { TimerService } from '@app/services/timer/timer.service';
+import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
 import { Level } from '@common/interfaces/level';
@@ -20,9 +22,11 @@ import { environment } from 'src/environments/environment';
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
-    providers: [DrawService, CommunicationService],
+    providers: [DrawService, CommunicationService, TimerService],
 })
-export class GamePageComponent implements OnInit, OnDestroy {
+export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('tempVideoOriginal') tempVideoOriginal!: PlayAreaComponent;
+    @ViewChild('tempVideoDiff') tempVideoDiff!: PlayAreaComponent;
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
     @ViewChild('differencePlayArea', { static: false }) private differencePlayArea!: PlayAreaComponent;
     @ViewChild('tempDifferencePlayArea', { static: false }) private tempDifferencePlayArea!: PlayAreaComponent;
@@ -41,6 +45,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     diffImageSrc: string = '';
     currentLevel: Level | undefined;
     isInCheatMode: boolean = false;
+    isReplayMode: boolean = false;
     isClassic: boolean = true;
     showThirdHint: boolean = false;
 
@@ -96,8 +101,20 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gamePageService.setMouseCanClick(true);
         this.settingGameParameters();
         this.handleSocket();
+        TimerService.startTimer();
+        VideoService.resetStack();
     }
 
+    ngAfterViewInit(): void {
+        VideoService.addToVideoStack(
+            TimerService.timerValue,
+            this.playerDifferencesCount,
+            this.secondPlayerDifferencesCount,
+            this.originalPlayArea.getCanvasRenderingContext2D(),
+            this.differencePlayArea.getCanvasRenderingContext2D(),
+            false,
+        );
+    }
     /**
      * This method is called when the component is destroyed.
      * It removes the listeners from the socket.
@@ -113,13 +130,15 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.socketHandler.removeListener('game', 'changeLevelTimedMode');
         this.socketHandler.removeListener('game', 'hintRequest');
         this.gamePageService.stopCheatMode();
+        TimerService.stopTimer();
+        TimerService.resetTimer();
     }
 
     /**
      * This method handles the socket connection.
      * It connects to the game socket and sends the level id to the server.
      * It also handles the response from the server.
-     * It checks if the difference is in the original image or in the diff image, and if the game is finished.
+     * It checks if the difference is in the original image or in the difference image, and if the game is finished.
      * It checks if we have entered the cheat mode.
      */
     handleSocket(): void {
@@ -133,7 +152,13 @@ export class GamePageComponent implements OnInit, OnDestroy {
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
                 this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
-                const isFound = this.gamePageService.handleResponse(this.isInCheatMode, gameData, this.clickedOriginalImage);
+                const isFound = this.gamePageService.handleResponse(
+                    this.isInCheatMode,
+                    gameData,
+                    this.clickedOriginalImage,
+                    this.playerDifferencesCount,
+                    this.secondPlayerDifferencesCount,
+                );
                 if (isFound && this.showThirdHint) {
                     this.removeHintShape();
                 }
@@ -143,7 +168,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             }
         });
         this.socketHandler.on('game', 'victory', (highscorePosition: number) => {
-            this.gamePageService.handleVictory(highscorePosition);
+            this.gamePageService.handleVictory(highscorePosition, this.levelId, this.playerName, this.secondPlayerName);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
             if (this.isClassic) {
@@ -153,14 +178,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
             }
         });
         this.socketHandler.on('game', 'defeat', () => {
-            this.gamePageService.handleDefeat();
+            this.gamePageService.handleDefeat(this.levelId, this.playerName, this.secondPlayerName);
         });
         this.socketHandler.on('game', 'timedModeFinished', (finishedWithLastLevel: boolean) => {
             if (finishedWithLastLevel) this.playerDifferencesCount++;
             this.gamePageService.handleTimedModeFinished(finishedWithLastLevel);
         });
         this.socketHandler.on('game', 'startCheatMode', (differences: number[]) => {
-            this.gamePageService.startCheatMode(differences);
+            this.gamePageService.startCheatMode(differences, this.playerDifferencesCount, this.secondPlayerDifferencesCount);
         });
         this.socketHandler.on('game', 'hintRequest', (data) => {
             const section = data as number[];
@@ -238,6 +263,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
      * This method emits a socket event if the player decides to abandon the game.
      */
     abandonGame(): void {
+        TimerService.stopTimer();
         this.socketHandler.send('game', 'onAbandonGame');
     }
 

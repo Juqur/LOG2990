@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialog.component';
 import { DialogData } from '@app/interfaces/dialogs';
 
+@Injectable({
+    providedIn: 'root',
+})
 /**
  * This service is used to interact with a pop-up-dialog component to generate a custom pop up on the screen.
  * It is only used to start the pop-up-dialog and retrieve the information that may or may not have been given
@@ -12,9 +15,6 @@ import { DialogData } from '@app/interfaces/dialogs';
  * @author Charles Degrandpré
  * @class PopUpService
  */
-@Injectable({
-    providedIn: 'root',
-})
 export class PopUpService {
     dialogRef: MatDialogRef<PopUpDialogComponent>;
 
@@ -26,8 +26,8 @@ export class PopUpService {
      * a boolean indicating if it needs an input field, the label of said input field
      * and the route to send the user once the pop-up is closed.
      *
-     * @param dataToSend A DialogData instance which has three attributes.
-     * @param routToGo The route to send the user to once the pop-up is closed.
+     * @param dataToSend a DialogData instance which has three attributes.
+     * @param routToGo the route to send the user to once the pop-up is closed.
      */
     openDialog(dataToSend: DialogData, routeToGo?: string): void {
         if (dataToSend.mustProcess) {

@@ -209,6 +209,8 @@ describe('ChatService', () => {
 
     describe('getSystemChatMessage', () => {
         it('should send the correct message form', () => {
+            const date = new Date();
+            jest.useFakeTimers().setSystemTime(date);
             const expectedMessage = 'This should be the message';
             const result = service['getSystemChatMessage'](expectedMessage);
             expect(result).toStrictEqual({

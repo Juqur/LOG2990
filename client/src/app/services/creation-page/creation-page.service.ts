@@ -2,18 +2,18 @@
 /* The documentation makes this file exceeds the max lines. */
 import { Injectable } from '@angular/core';
 import { MatSlider } from '@angular/material/slider';
+import { LevelDifferences } from '@app/classes/difference';
+import { LevelFormData } from '@app/classes/level-form-data';
 import { CreationSpecs } from '@app/interfaces/creation-specs';
 import { Dialogs } from '@app/interfaces/dialogs';
-import { LevelDifferences } from '@app/interfaces/level-differences';
-import { LevelFormData } from '@app/interfaces/level-form-data';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DifferenceDetectorService } from '@app/services/difference-detector/difference-detector.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
-import { Constants } from '@common/constants';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { Constants } from '@common/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -186,7 +186,7 @@ export class CreationPageService {
     }
 
     /**
-     * Sets the brush size to the value given by the slider.
+     * Changes the value of the brush size depending on a value given as parameter.
      *
      * @param event The mat slider.
      * @param defaultContext The default canvas context.
@@ -404,7 +404,7 @@ export class CreationPageService {
      * Verifies if an image file is of the good format, that is the file is in PNG and of type image/bmp.
      * The image must also have only 24 bits per pixels.
      *
-     * @param imageFile The image file we want to check if the format is valid.
+     * @param imageFile the image file we want to check if the format is valid.
      * @returns A Promise<boolean> which when resolved gives if the image was of the correct format.
      */
     private async verifyImageFormat(imageFile: File): Promise<boolean> {
@@ -438,7 +438,7 @@ export class CreationPageService {
     /**
      * This method is used to display an dialog with an error message.
      *
-     * @param message The error message we want to display.
+     * @param message the error message we want to display.
      */
     private errorDialog(message = 'Une erreur est survenue'): void {
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();

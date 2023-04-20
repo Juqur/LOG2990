@@ -85,6 +85,7 @@ describe('ChatMessageComponent', () => {
             senderId: SenderType.Opponent,
             sender: 'angryOpponent23',
             text: 'Hell yeah i am gonna win',
+            timestamp: new Date(),
         };
         component.ngOnInit();
 

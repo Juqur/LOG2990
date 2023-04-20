@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -8,6 +9,8 @@ import { AudioService } from '@app/services/audio/audio.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { MouseService } from '@app/services/mouse/mouse.service';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
+import { TimerService } from '@app/services/timer/timer.service';
+import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
 import { environment } from 'src/environments/environment';
@@ -35,7 +38,6 @@ export class GamePageService {
     private hintSection: number[] = [];
     private resetCanvasDelayInProgress: boolean = false;
 
-    // eslint-disable-next-line max-params
     constructor(
         private router: Router,
         private mouseService: MouseService,
@@ -44,6 +46,14 @@ export class GamePageService {
         private drawServiceDifference: DrawService,
         private drawServiceOriginal: DrawService,
     ) {}
+
+    get getImageData(): number[] {
+        return this.imagesData;
+    }
+
+    get getAreaNotFound(): number[] {
+        return this.areaNotFound;
+    }
 
     /**
      * Ensures the difference array is valid and not empty.
@@ -122,18 +132,24 @@ export class GamePageService {
      *
      * @returns Boolean that represents if the player clicked on a difference pixel or not.
      */
-    handleResponse(isInCheatMode: boolean, gameData: GameData, clickedOriginalImage: boolean): boolean {
+    handleResponse(
+        isInCheatMode: boolean,
+        gameData: GameData,
+        clickedOriginalImage: boolean,
+        playerDifferencesCount: number,
+        secondPlayerDifferencesCount: number,
+    ): boolean {
         const response = this.validateResponse(gameData.differencePixels);
         if (response) {
             if (!clickedOriginalImage) {
-                this.handleAreaFoundInDiff(gameData.differencePixels, isInCheatMode);
+                this.handleAreaFoundInDifference(gameData.differencePixels, isInCheatMode, playerDifferencesCount, secondPlayerDifferencesCount);
             } else {
-                this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode);
+                this.handleAreaFoundInOriginal(gameData.differencePixels, isInCheatMode, playerDifferencesCount, secondPlayerDifferencesCount);
             }
             return true;
         } else {
             if (!clickedOriginalImage) {
-                this.handleAreaNotFoundInDiff();
+                this.handleAreaNotFoundInDifference();
             } else {
                 this.handleAreaNotFoundInOriginal();
             }
@@ -145,17 +161,27 @@ export class GamePageService {
      * This method is called when the player wins.
      * It will open a dialog and play a victory sound.
      */
-    handleVictory(highscorePosition: number | null): void {
+    handleVictory(highscorePosition: number | null, levelId: number, firstPlayerName: string, secondPlayerName: string): void {
         let highscoreMessage = '';
         if (highscorePosition) {
             highscoreMessage = ' Vous avez obtenu la ' + highscorePosition + (highscorePosition === 1 ? 'ère' : 'e') + ' position du classement.';
         }
+
         this.winGameDialogData = {
-            textToSend: 'Vous avez gagné!' + highscoreMessage,
+            textToSend: 'Vous avez gagné. ' + highscoreMessage + ' Voulez-vous voir la reprise vidéo de la partie?',
             closeButtonMessage: 'Retour au menu principal',
+            isConfirmation: true,
             mustProcess: false,
         };
+
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
+        this.popUpService.dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.router.navigate(['/video/' + levelId], {});
+                VideoService.setVariables(firstPlayerName, secondPlayerName, true);
+            }
+        });
+
         this.audioService.create('./assets/audio/Bing_Chilling_vine_boom.mp3');
         this.audioService.play();
     }
@@ -198,13 +224,20 @@ export class GamePageService {
      * This method is called when the player loses.
      * It will open a dialog and play a losing sound.
      */
-    handleDefeat(): void {
+    handleDefeat(levelId: number, firstPlayerName: string, secondPlayerName: string): void {
         const loseDialogData: DialogData = {
-            textToSend: 'Vous avez perdu!',
-            closeButtonMessage: 'Retour au menu principal',
+            textToSend: 'Vous avez perdu. Voulez-vous voir la reprise vidéo de la partie?',
+            closeButtonMessage: 'Non',
+            isConfirmation: true,
             mustProcess: false,
         };
         this.popUpService.openDialog(loseDialogData, this.closePath);
+        this.popUpService.dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.router.navigate(['/video/' + levelId], {});
+                VideoService.setVariables(firstPlayerName, secondPlayerName, false);
+            }
+        });
         AudioService.quickPlay('./assets/audio/LossSound.mp3');
     }
 
@@ -213,19 +246,25 @@ export class GamePageService {
      *
      * @param differences The differences to have flash
      */
-    startCheatMode(differences: number[]): void {
+    startCheatMode(differences: number[], playerDifferencesCount: number, secondPlayerDifferencesCount: number): void {
         this.resetCanvas(false);
+        this.addToVideoStack();
         let isVisible = false;
         this.areaNotFound = differences.filter((item) => {
             return !this.imagesData.includes(item);
         });
         this.flashInterval = setInterval(() => {
             if (isVisible) {
+                this.addToVideoStack();
                 this.differencePlayArea.deleteTempCanvas();
                 this.originalPlayArea.deleteTempCanvas();
             } else {
                 this.differencePlayArea.flashArea(this.areaNotFound);
+                this.differencePlayArea.flashArea(this.areaNotFound);
                 this.originalPlayArea.flashArea(this.areaNotFound);
+                const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+                const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+                this.addToVideoStack(false, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
             }
             isVisible = !isVisible;
         }, Constants.CHEAT_FLASHING_DELAY);
@@ -322,6 +361,36 @@ export class GamePageService {
     }
 
     /**
+     * This method add the frame to the video stack.
+     * The frame is added when the player clicks on the canvas.
+     *
+     * @param found Boolean that represents if the player found the difference.
+     * @param playerDifferencesCount The number of differences found by the first player.
+     * @param secondPlayerDifferencesCount The number of differences found by the second player.
+     * @param original The original canvas context.
+     * @param difference The difference canvas context.
+     */
+    private addToVideoStack(
+        found: boolean = false,
+        playerDifferencesCount: number = 0,
+        secondPlayerDifferencesCount: number = 0,
+        original?: CanvasRenderingContext2D | null,
+        difference?: CanvasRenderingContext2D | null,
+    ): void {
+        if (original && difference)
+            VideoService.addToVideoStack(TimerService.timerValue, playerDifferencesCount, secondPlayerDifferencesCount, original, difference, found);
+        else
+            VideoService.addToVideoStack(
+                TimerService.timerValue,
+                playerDifferencesCount,
+                secondPlayerDifferencesCount,
+                this.originalPlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D,
+                this.differencePlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D,
+                found,
+            );
+    }
+
+    /**
      * The equivalent of eyedropper tool.
      * This method finds the rgba value of a pixel on the original image.
      *
@@ -393,7 +462,8 @@ export class GamePageService {
                     this.originalPlayArea.deleteTempCanvas();
                     this.copyDiffPlayAreaContext();
                     this.handleHintRequest(this.hintSection);
-                }, 0);
+                    this.addToVideoStack();
+                });
             });
     }
 
@@ -410,11 +480,30 @@ export class GamePageService {
     }
 
     /**
+     * Flash the area red in both canvas.
+     *
+     * @param area The area to flash.
+     * @returns
+     */
+    private async flashBothCanvas(area: number[]): Promise<void> {
+        return new Promise<void>((resolve) => {
+            this.differencePlayArea.flashArea(area);
+            this.originalPlayArea.flashArea(area);
+            resolve();
+        });
+    }
+
+    /**
      * Performs a success sound and flashes the area of the difference in the difference canvas.
      *
      * @param result The array of pixels that represents the area found as a difference.
      */
-    private handleAreaFoundInDiff(result: number[], isInCheatMode: boolean): void {
+    private handleAreaFoundInDifference(
+        result: number[],
+        isInCheatMode: boolean,
+        playerDifferencesCount: number,
+        secondPlayerDifferencesCount: number,
+    ): void {
         this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
@@ -423,20 +512,24 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.differencePlayArea.flashArea(result);
-        this.originalPlayArea.flashArea(result);
-        this.resetCanvas(false);
+        this.flashBothCanvas(result).then(() => {
+            const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+            const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+            this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
+            this.resetCanvas(false);
+        });
     }
 
     /**
      * Performs a failed sound and prompts an error in the difference canvas.
      */
-    private handleAreaNotFoundInDiff(): void {
+    private handleAreaNotFoundInDifference(): void {
         AudioService.quickPlay('./assets/audio/failed.mp3');
         this.drawServiceDifference.context = this.differencePlayArea
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceDifference.drawError(this.mouseService);
+        this.addToVideoStack();
         this.resetCanvas(true);
     }
 
@@ -445,7 +538,12 @@ export class GamePageService {
      *
      * @param result The array of pixels that represents the area found as a difference.
      */
-    private handleAreaFoundInOriginal(result: number[], isInCheatMode: boolean): void {
+    private handleAreaFoundInOriginal(
+        result: number[],
+        isInCheatMode: boolean,
+        playerDifferencesCount: number,
+        secondPlayerDifferencesCount: number,
+    ): void {
         this.hintSection = [];
         if (isInCheatMode) {
             this.areaNotFound = this.areaNotFound.filter((item) => {
@@ -454,9 +552,12 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.originalPlayArea.flashArea(result);
-        this.differencePlayArea.flashArea(result);
-        this.resetCanvas(false);
+        this.flashBothCanvas(result).then(() => {
+            const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+            const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+            this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
+            this.resetCanvas(false);
+        });
     }
 
     /**
@@ -468,6 +569,7 @@ export class GamePageService {
             .getCanvas()
             .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.drawServiceOriginal.drawError({ x: this.mouseService.x, y: this.mouseService.y } as Vec2);
+        this.addToVideoStack();
         this.resetCanvas(true);
     }
 }
