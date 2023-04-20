@@ -14,6 +14,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
+import { VideoService } from '@app/services/video/video.service';
 import { GameData } from '@common/interfaces/game-data';
 import { Level } from '@common/interfaces/level';
 import { of } from 'rxjs';
@@ -49,7 +50,7 @@ describe('GamePageComponent', () => {
             'playSuccessSound',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
-        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
+        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout','getCanvasRenderingContext2D']);
         activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
         activatedRoute.snapshot.params = { id: 1 };
         activatedRoute.snapshot.queryParams = { playerName: 'Alice', opponent: 'Bob' };
@@ -118,6 +119,14 @@ describe('GamePageComponent', () => {
             component.ngOnInit();
             expect(handleSocketSpy).toHaveBeenCalledTimes(1);
         });
+    });
+
+    describe('ngAfterViewInit', () => {
+       it('should call addToVideoStack', () => {
+           const addToVideoStackSpy = spyOn(VideoService, 'addToVideoStack');
+           component.ngAfterViewInit();
+           expect(addToVideoStackSpy).toHaveBeenCalled();
+       }); 
     });
 
     describe('ngOnDestroy', () => {

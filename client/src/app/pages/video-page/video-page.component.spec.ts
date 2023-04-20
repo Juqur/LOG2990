@@ -41,7 +41,7 @@ describe('VideoPageComponent', () => {
             'getSecondPlayerName',
         ]);
         videoTimerComponentSpy = jasmine.createSpyObj('VideoTimerComponent', ['startTimer', 'stopTimer']);
-        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
+        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout', 'setContext']);
         settingGameParametersSpy = spyOn(VideoPageComponent.prototype, 'settingGameParameters' as never);
         setFirstFrameSpy = spyOn(VideoPageComponent.prototype, 'setFirstFrame' as never);
         settingGameImageSpy = spyOn(VideoPageComponent.prototype, 'settingGameImage' as never);
@@ -115,6 +115,11 @@ describe('VideoPageComponent', () => {
     describe('applyChanges', () => {
         const inputCanvases = { defaultCanvas: {} as unknown as HTMLCanvasElement, diffCanvas: {} as unknown as HTMLCanvasElement };
 
+        it('should not call drawImage if input is undefined', () => {
+        component.applyChanges(undefined);
+        expect(drawImageSpy).not.toHaveBeenCalled();
+        
+        });
         it('should call drawImage', () => {
             component['originalPlayArea'] = playAreaComponentSpy;
             component['differencePlayArea'] = playAreaComponentSpy;
@@ -122,6 +127,7 @@ describe('VideoPageComponent', () => {
             component.applyChanges(inputCanvases);
             expect(drawImageSpy).toHaveBeenCalledTimes(2);
         });
+
     });
 
     describe('startStopVideo', () => {
@@ -380,18 +386,32 @@ describe('VideoPageComponent', () => {
     });
 
     it('settingGameParameters', () => {
-        VideoService.firstPlayerName = 'first name';
-        VideoService.secondPlayerName = 'second name';
+        settingGameParametersSpy.and.callThrough();
+        spyOn(VideoService, 'getFirstPlayerName').and.returnValue('first name');
+        spyOn(VideoService, 'getSecondPlayerName').and.returnValue('second name');
         component['settingGameParameters']();
-        expect(VideoService.firstPlayerName).toEqual('first name');
-        expect(VideoService.secondPlayerName).toEqual('second name');
+        expect(component.playerName).toEqual('first name');
+        expect(component.secondPlayerName).toEqual('second name');
     });
 
     it('settingGameImage', () => {
+        settingGameImageSpy.and.callThrough();
+        spyOn(VideoService, 'getStackElement').and.returnValue({
+            time: 1,
+            found: true,
+            playerDifferencesCount: 2,
+            secondPlayerDifferencesCount: 1,
+            defaultCanvas: document.createElement('canvas'),
+            diffCanvas: document.createElement('canvas'),
+        });
+        const setContextSpy = spyOn(PlayAreaComponent.prototype, 'setContext' as never);
         component['settingGameImage']();
+
+        expect(setContextSpy).toHaveBeenCalledTimes(2);
     });
 
     it('setFirstFrame', () => {
+        setFirstFrameSpy.and.callThrough();
         VideoService['videoStack'] = [
             {
                 time: 1,

@@ -660,7 +660,12 @@ describe('GamePageService', () => {
     });
 
     it('copyDiffPlayAreaContext should copy tempDifferencePlayArea context to differencePlayArea context', () => {
+        const getImgDataSpy = spyOn(CanvasRenderingContext2D.prototype, 'getImageData');
+        const putImgDataSpy = spyOn(CanvasRenderingContext2D.prototype, 'putImageData');
         service['copyDiffPlayAreaContext']();
+        expect(playAreaComponentSpy.getCanvas).toHaveBeenCalledTimes(2);
+        expect(putImgDataSpy).toHaveBeenCalledTimes(1);
+        expect(getImgDataSpy).toHaveBeenCalledTimes(1);
     });
 
     it('flashBothCanvas should call flashArea on both playAreaComponent', fakeAsync(() => {

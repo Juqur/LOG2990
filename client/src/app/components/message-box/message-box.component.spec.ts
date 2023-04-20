@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIcon } from '@angular/material/icon';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
@@ -14,6 +14,7 @@ describe('MessageBoxComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [MessageBoxComponent, MatIcon],
             providers: [AppMaterialModule],
+            imports:[MatIconModule]
         }).compileComponents();
 
         fixture = TestBed.createComponent(MessageBoxComponent);
