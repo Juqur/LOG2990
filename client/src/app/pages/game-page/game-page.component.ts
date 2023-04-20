@@ -168,7 +168,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             }
         });
         this.socketHandler.on('game', 'victory', (highscorePosition: number) => {
-            this.gamePageService.handleVictory(highscorePosition);
+            this.gamePageService.handleVictory(highscorePosition, this.levelId, this.playerName, this.secondPlayerName);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
             if (this.isClassic) {

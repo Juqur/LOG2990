@@ -31,12 +31,7 @@ export class GamePageService {
     private originalPlayArea: PlayAreaComponent;
     private differencePlayArea: PlayAreaComponent;
     private tempDifferencePlayArea: PlayAreaComponent;
-    private winGameDialogData: DialogData = {
-        textToSend: 'Vous avez gagnez. Voulez-vous voir la reprise vidéo de la partie?',
-        closeButtonMessage: 'Non',
-        isConfirmation: true,
-        mustProcess: false,
-    };
+    private winGameDialogData: DialogData;
     private flashInterval: ReturnType<typeof setInterval>;
     private areaNotFound: number[];
     private closePath: string = '/home';
@@ -172,11 +167,14 @@ export class GamePageService {
         if (highscorePosition) {
             highscoreMessage = ' Vous avez obtenu la ' + highscorePosition + (highscorePosition === 1 ? 'ère' : 'e') + ' position du classement.';
         }
+
         this.winGameDialogData = {
-            textToSend: 'Vous avez gagné!' + highscoreMessage,
+            textToSend: 'Vous avez gagné. ' + highscoreMessage + ' Voulez-vous voir la reprise vidéo de la partie?',
             closeButtonMessage: 'Retour au menu principal',
+            isConfirmation: true,
             mustProcess: false,
         };
+
         this.popUpService.openDialog(this.winGameDialogData, this.closePath);
         this.popUpService.dialogRef.afterClosed().subscribe((result) => {
             if (result) {
@@ -518,15 +516,12 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.differencePlayArea.flashArea(result);
-        this.originalPlayArea.flashArea(result);
-        this.resetCanvas(false);
-        // this.flashBothCanvas(result).then(() => {
-        //     const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
-        //     const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
-        //     this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
-        //     this.resetCanvas();
-        // });
+        this.flashBothCanvas(result).then(() => {
+            const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+            const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+            this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
+            this.resetCanvas(false);
+        });
     }
 
     /**
@@ -561,15 +556,12 @@ export class GamePageService {
         }
         AudioService.quickPlay('./assets/audio/success.mp3');
         this.imagesData.push(...result);
-        this.originalPlayArea.flashArea(result);
-        this.differencePlayArea.flashArea(result);
-        this.resetCanvas(false);
-        // this.flashBothCanvas(result).then(() => {
-        //     const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
-        //     const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
-        //     this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
-        //     this.resetCanvas();
-        // });
+        this.flashBothCanvas(result).then(() => {
+            const originalFlashingCopy = this.originalPlayArea.getFlashingCopy().getContext('2d');
+            const differenceFlashingCopy = this.differencePlayArea.getFlashingCopy().getContext('2d');
+            this.addToVideoStack(true, playerDifferencesCount, secondPlayerDifferencesCount, originalFlashingCopy, differenceFlashingCopy);
+            this.resetCanvas(false);
+        });
     }
 
     /**
