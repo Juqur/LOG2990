@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
@@ -16,20 +17,25 @@ describe('VideoPageComponent', () => {
     let fixture: ComponentFixture<VideoPageComponent>;
     let videoServiceSpy: jasmine.SpyObj<VideoService>;
     let playAreaComponentSpy: jasmine.SpyObj<PlayAreaComponent>;
+    let settingGameParametersSpy: jasmine.Spy;
+    let setFirstFrameSpy: jasmine.Spy;
+    let settingGameImageSpy: jasmine.Spy;
 
     beforeEach(async () => {
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
         videoServiceSpy = jasmine.createSpyObj('VideoService', ['addToVideoStack', 'getStackElement', 'getStackLength']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
+        settingGameParametersSpy = spyOn(VideoPageComponent.prototype, 'settingGameParameters' as never);
+        setFirstFrameSpy = spyOn(VideoPageComponent.prototype, 'setFirstFrame' as never);
+        settingGameImageSpy = spyOn(VideoPageComponent.prototype, 'settingGameImage' as never);
     });
 
     beforeEach(async () => {
         // videoServiceSpy = jasmine.createSpyObj('VideoService', ['addToVideoStack', 'getStackElement', 'getStackLength']);
         await TestBed.configureTestingModule({
             declarations: [PlayAreaComponent, ScaleContainerComponent, MessageBoxComponent, VideoChatComponent, VideoTimerComponent],
-            imports: [AppMaterialModule],
+            imports: [MatDialogModule, AppMaterialModule],
             providers: [
-                AppMaterialModule,
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: VideoService, useValue: videoServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
@@ -46,13 +52,15 @@ describe('VideoPageComponent', () => {
     });
 
     it('ngOnInit should call settingGameParameters', () => {
-        const settingGameParametersSpy = spyOn(component, 'settingGameParameters' as never);
+        settingGameParametersSpy.calls.reset();
+        setFirstFrameSpy.calls.reset();
         component.ngOnInit();
         expect(settingGameParametersSpy).toHaveBeenCalledTimes(1);
+        expect(setFirstFrameSpy).toHaveBeenCalledTimes(1);
     });
 
     it('ngAfterViewInit should call settingGameImage', () => {
-        const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+        settingGameImageSpy.calls.reset();
         component.ngAfterViewInit();
         expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
     });

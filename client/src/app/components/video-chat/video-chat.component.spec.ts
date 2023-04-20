@@ -1,4 +1,5 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 
 import { VideoChatComponent } from './video-chat.component';
 
@@ -8,7 +9,7 @@ describe('VideoChatComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [VideoChatComponent],
+            declarations: [VideoChatComponent, MessageBoxComponent],
         }).compileComponents();
 
         fixture = TestBed.createComponent(VideoChatComponent);

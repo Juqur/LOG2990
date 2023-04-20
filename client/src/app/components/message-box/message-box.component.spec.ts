@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { ChatMessage, SenderType } from '@common/interfaces/chat-messages';
 
 import { MessageBoxComponent } from './message-box.component';
@@ -12,6 +13,7 @@ describe('MessageBoxComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [MessageBoxComponent, MatIcon],
+            providers: [AppMaterialModule],
         }).compileComponents();
 
         fixture = TestBed.createComponent(MessageBoxComponent);
@@ -34,7 +36,7 @@ describe('MessageBoxComponent', () => {
     });
 
     it('createMessage should return a valid message', () => {
-        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText'};
+        const message: ChatMessage = { sender: component.playerName, senderId: SenderType.Player, text: 'someText' };
         const returnedMessage: ChatMessage = component['createMessage']('someText');
         expect(returnedMessage).toEqual(message);
     });

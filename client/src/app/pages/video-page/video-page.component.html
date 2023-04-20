@@ -2,8 +2,7 @@
     <div class="container">
         <section id="top-area">
             <button mat-button routerLink="/home" (click)="returnHome()">Retour au Menu</button>
-            <button (click)="startStopVideo()" *ngIf="isStart">Start</button>
-            <button (click)="startStopVideo()" *ngIf="!isStart">Pause</button>
+            <button (click)="startStopVideo()">{{this.isStart ? "Start" : "Pause"}}</button>
             <button (click)="videoSpeedTime1()">x1</button>
             <button (click)="videoSpeedTime2()">x2</button>
             <button (click)="videoSpeedTime4()">x4</button>
