@@ -42,7 +42,7 @@ describe('VideoService', () => {
         const pushSpy = spyOn(VideoService['videoStack'], 'push');
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        VideoService.addToVideoStack(0, undefined, 0, 0, context, context);
+        VideoService.addToVideoStack(0, 0, 0, context, context);
         expect(pushSpy).toHaveBeenCalledTimes(1);
     });
 

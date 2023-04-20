@@ -1,6 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
-
+import { AppMaterialModule } from '@app/modules/material.module';
 import { VideoChatComponent } from './video-chat.component';
 
 describe('VideoChatComponent', () => {
@@ -10,6 +11,8 @@ describe('VideoChatComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [VideoChatComponent, MessageBoxComponent],
+            providers: [AppMaterialModule],
+            imports: [MatIconModule],
         }).compileComponents();
 
         fixture = TestBed.createComponent(VideoChatComponent);

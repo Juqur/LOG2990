@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import { TimerService } from '@app/services/timer/timer.service';
 import { ChatMessage } from '@common/interfaces/chat-messages';
@@ -29,11 +27,11 @@ export class VideoService {
     // eslint-disable-next-line max-params
     static addToVideoStack(
         time: number,
-        found: boolean = false,
         playerDifferencesCount: number,
         secondPlayerDifferencesCount: number,
         defaultCanvas: CanvasRenderingContext2D,
         diffCanvas: CanvasRenderingContext2D,
+        found: boolean = false,
     ) {
         const tempDefaultCanvas = document.createElement('canvas');
         tempDefaultCanvas.width = defaultCanvas.canvas.width;

@@ -382,15 +382,15 @@ export class GamePageService {
         difference?: CanvasRenderingContext2D | null,
     ): void {
         if (original && difference)
-            VideoService.addToVideoStack(TimerService.timerValue, found, playerDifferencesCount, secondPlayerDifferencesCount, original, difference);
+            VideoService.addToVideoStack(TimerService.timerValue, playerDifferencesCount, secondPlayerDifferencesCount, original, difference, found);
         else
             VideoService.addToVideoStack(
                 TimerService.timerValue,
-                found,
                 playerDifferencesCount,
                 secondPlayerDifferencesCount,
                 this.originalPlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D,
                 this.differencePlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D,
+                found,
             );
     }
 

@@ -108,11 +108,11 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
     ngAfterViewInit(): void {
         VideoService.addToVideoStack(
             TimerService.timerValue,
-            false,
             this.playerDifferencesCount,
             this.secondPlayerDifferencesCount,
             this.originalPlayArea.getCanvasRenderingContext2D(),
             this.differencePlayArea.getCanvasRenderingContext2D(),
+            false,
         );
     }
     /**
