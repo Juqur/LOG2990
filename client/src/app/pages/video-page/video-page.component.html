@@ -2,11 +2,11 @@
     <div class="container">
         <section id="top-area">
             <button mat-button routerLink="/home" (click)="returnHome()">Retour au Menu</button>
-            <button (click)="startStopVideo()">{{this.isStart ? "Start" : "Pause"}}</button>
+            <button (click)="startStopVideo()">{{this.isStart ? "Jouer" : "Pause"}}</button>
             <button (click)="videoSpeedTime1()">x1</button>
             <button (click)="videoSpeedTime2()">x2</button>
             <button (click)="videoSpeedTime4()">x4</button>
-            <button (click)="replayVideo()">Replay Video</button>
+            <button (click)="replayVideo()">Rejouer la vidéo</button>
             <div id="diff-counter">
                 <div *ngIf="playerName" class="player-counter">
                     <span class="diff-self">{{ getFirstPlayerName() + ': ' }}</span>
@@ -35,21 +35,24 @@
             <app-play-area [image]="diffImageSrc" #differencePlayArea></app-play-area>
         </section>
         <section id="bottom-area">
-            <app-video-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName" #videoChat></app-video-chat>
+            <app-video-chat [isMultiplayer]="secondPlayerName !== undefined" [playerName]="playerName"
+                #videoChat></app-video-chat>
             <div id="info-game" *ngIf="currentLevel">
                 <div>
                     <span class="info-question">Jeu : </span><span class="info-answer">{{ currentLevel.name }}</span>
                 </div>
                 <div>
-                    <span class="info-question">Difficulté : </span
-                    ><span class="info-answer">{{ currentLevel.isEasy ? 'Facile' : 'Difficile' }}</span>
+                    <span class="info-question">Difficulté : </span><span class="info-answer">{{ currentLevel.isEasy ?
+                        'Facile' : 'Difficile' }}</span>
                 </div>
                 <div><span class="info-question">Mode de jeu : </span><span class="info-answer">Classique</span></div>
                 <div>
-                    <span class="info-question">Différences totale: </span><span class="info-answer">{{ currentLevel.nbDifferences }}</span>
+                    <span class="info-question">Différences totale: </span><span class="info-answer">{{
+                        currentLevel.nbDifferences }}</span>
                 </div>
                 <div>
-                    <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + ' secondes' }}</span>
+                    <span class="info-question">Pénalité indice : </span><span class="info-answer">{{ hintPenalty + '
+                        secondes' }}</span>
                 </div>
             </div>
         </section>

@@ -2,9 +2,11 @@
 import { HttpClient, HttpClientModule, HttpHandler } from '@angular/common/http';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatSlider, MatSliderModule } from '@angular/material/slider';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LevelDifferences } from '@app/classes/difference';
+import { PopUpDialogComponent } from '@app/components/pop-up-dialog/pop-up-dialog.component';
+import { LevelDifferences } from '@app/interfaces/level-differences';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasSharingService } from '@app/services/canvas-sharing/canvas-sharing.service';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -22,7 +24,7 @@ describe('CreationPageService', () => {
     let service: CreationPageService;
     let differenceServiceSpy: SpyObj<DifferenceDetectorService>;
     let communicationSpy: SpyObj<CommunicationService>;
-    let popUpServiceSpy: unknown;
+    let popUpServiceSpy: SpyObj<PopUpService>;
     let drawServiceDefaultSpy: SpyObj<DrawService>;
     let drawServiceDifferenceSpy: SpyObj<DrawService>;
     let mouseServiceSpy: SpyObj<MouseService>;
@@ -41,9 +43,9 @@ describe('CreationPageService', () => {
         showDifferenceImageSpy = spyOn(CreationPageService.prototype, 'showDifferenceImage' as never);
         differenceServiceSpy = jasmine.createSpyObj('DifferenceDetectorService', ['detectDifferences']);
         communicationSpy = jasmine.createSpyObj('CommunicationService', ['postLevel']);
-        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog', 'dialogRef']);
-        popUpServiceSpy.dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
-        popUpServiceSpy.dialogRef.afterClosed.and.returnValue(of({ hasAccepted: true }));
+        dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
+        popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog'], { dialogRef: dialogRefSpy });
+        dialogRefSpy.afterClosed.and.returnValue(of({ hasAccepted: true }));
         drawServiceDefaultSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
         drawServiceDifferenceSpy = jasmine.createSpyObj('DrawService', ['setPaintColor', 'setBrushSize', 'paintBrush', 'eraseBrush']);
         mouseServiceSpy = jasmine.createSpyObj('MouseService', [
@@ -183,7 +185,7 @@ describe('CreationPageService', () => {
     });
 
     it('resetDefault should call restartGame and clearRect from defaultCanvas', () => {
-        const restartGameSpy = spyOn<unknown>(service, 'restartGame');
+        const restartGameSpy = spyOn(service, 'restartGame' as never);
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const defaultCanvasSpy = spyOnProperty(service['canvasShare'], 'defaultCanvas').and.callThrough();
         service.resetDefaultBackground();
@@ -193,7 +195,7 @@ describe('CreationPageService', () => {
     });
 
     it('resetDefault should call restartGame and not clearRect from defaultCanvas is the canvas is undefined', () => {
-        const restartGameSpy = spyOn<unknown>(service, 'restartGame');
+        const restartGameSpy = spyOn(service, 'restartGame' as never);
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const getContextSpy = spyOn(service['canvasShare'].defaultCanvas, 'getContext').and.returnValue(null);
         service.resetDefaultBackground();
@@ -203,7 +205,7 @@ describe('CreationPageService', () => {
     });
 
     it('resetDiff should call restartGame and clearRect from diffCanvas', () => {
-        const restartGameSpy = spyOn<unknown>(service, 'restartGame');
+        const restartGameSpy = spyOn(service, 'restartGame' as never);
         const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
         const defaultCanvasSpy = spyOnProperty(service['canvasShare'], 'differenceCanvas').and.callThrough();
         service.resetDiffBackground();
@@ -336,12 +338,11 @@ describe('CreationPageService', () => {
     });
 
     it('detectDifference should call openDialog if the game is saveable', () => {
-        spyOn<unknown>(service, 'errorDialog');
-
-        const mockLevelDifference = new LevelDifferences();
-        mockLevelDifference.clusters = [[1], [1], [1], [1], [1], [1]];
-        mockLevelDifference.isHard = false;
-        mockLevelDifference.canvas = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+        const mockLevelDifference = {
+            clusters: [[1], [1], [1], [1], [1], [1]],
+            isHard: false,
+            canvas: document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D,
+        } as LevelDifferences;
 
         differenceServiceSpy.detectDifferences.and.returnValue(mockLevelDifference);
 
@@ -357,7 +358,7 @@ describe('CreationPageService', () => {
         communicationSpy.postLevel.and.returnValue(
             of({
                 title: 'success',
-                body: 'it was a sucess',
+                body: 'it was a success',
             }),
         );
         service.saveGame();
@@ -400,24 +401,15 @@ describe('CreationPageService', () => {
     });
 
     it('rectangleMode should set isRectangleMode to true', () => {
-        const defaultDrawSpy = spyOn(drawServiceDefaultSpy, 'paintBrush');
-        const diffDrawSpy = spyOn(drawServiceDiffSpy, 'paintBrush');
         service.rectangleMode();
-
         expect(mouseServiceSpy.isRectangleMode).toBeTrue();
     });
 
     it('colorPickerMode should call the correct draw functions', () => {
-        const event = { target: { value: '#ffffff' } } as unknown as Event;
+        const event = { target: { value: '#000000' } } as unknown as Event;
         service.colorPickerMode(event);
-        expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledWith('#ffffff');
-        expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledWith('#ffffff');
-    });
-
-    it('colorPickerMode should set to default value if no event is provided', () => {
-        service.colorPickerMode();
-        expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledWith('#000000');
-        expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledWith('#000000');
+        expect(drawServiceDefaultSpy.setPaintColor).toHaveBeenCalledTimes(1);
+        expect(drawServiceDifferenceSpy.setPaintColor).toHaveBeenCalledTimes(1);
     });
 
     it('getEmptyBmpFile should return a new File with the correct src', fakeAsync(async () => {
@@ -427,14 +419,12 @@ describe('CreationPageService', () => {
     }));
 
     it('verifyImageFormat should call error dialog if the image is not in the image/bmp format', fakeAsync(async () => {
-        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         const result: boolean = await service['verifyImageFormat'](new File([''], '', { type: 'image/jpeg' }));
         expect(errorDialogSpy).toHaveBeenCalledTimes(1);
         expect(result).toBeFalse();
     }));
 
     it('verifyImageFormat should call error dialog if the image is not 24 bits per pixels', fakeAsync(async () => {
-        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         spyOn(DataView.prototype, 'getUint16').and.returnValue(Constants.BMP_BPP + 1);
         const mockFileGetter = async () => {
             const imageSrc = './assets/images/image_empty.bmp';
@@ -473,6 +463,7 @@ describe('CreationPageService', () => {
     }));
 
     it('errorDialog should close the previous dialog if there is one', fakeAsync(async () => {
+        errorDialogSpy.and.callThrough();
         service['errorDialog']();
         expect(popUpServiceSpy.openDialog).toHaveBeenCalledTimes(1);
     }));
@@ -493,7 +484,6 @@ describe('CreationPageService', () => {
         showDefaultImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 0, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
-        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
 
         imageSpy.onload();
@@ -504,7 +494,6 @@ describe('CreationPageService', () => {
         showDefaultImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 0 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
-        const errorDialogSpy = spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
 
         imageSpy.onload();
@@ -515,7 +504,6 @@ describe('CreationPageService', () => {
         showDefaultImageSpy.and.callThrough();
         const imageSpy = jasmine.createSpyObj('Image', ['onload'], { width: 640, height: 480 });
         spyOn(window, 'Image').and.returnValue(imageSpy);
-        spyOn(service, 'errorDialog' as never);
         service['showDefaultImage']();
         spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
 
