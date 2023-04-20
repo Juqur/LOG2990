@@ -260,8 +260,6 @@ export class GamePageService {
         if (section.length < 1 || section.length > 2) {
             return;
         }
-        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-        this.differencePlayArea.drawPlayArea(this.diffImageSrc);
         setTimeout(() => {
             this.hintSection = section;
             this.drawServiceOriginal.context = this.originalPlayArea
@@ -313,8 +311,7 @@ export class GamePageService {
         canvas.width = Constants.DEFAULT_WIDTH_SHAPE_CANVAS;
         canvas.height = Constants.DEFAULT_HEIGHT_SHAPE_CANVAS;
         shapeContext.drawImage(differenceCanvasContext.canvas, xOffset, yOffset, scaledWidth, scaledHeight);
-        this.originalPlayArea.drawPlayArea(this.originalImageSrc);
-        this.differencePlayArea.drawPlayArea(this.diffImageSrc);
+        this.resetCanvas(false);
     }
 
     /**
