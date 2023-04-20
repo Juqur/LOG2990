@@ -1,8 +1,8 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { VideoService } from '@app/services/video/video.service';
-import { ChatMessage } from '@common/interfaces/chat-messages';
 import { Constants } from '@common/constants';
+import { ChatMessage } from '@common/interfaces/chat-messages';
 
 /**
  * Is the "container" of all messages sent in the game be they player sent or system sent.
@@ -16,9 +16,9 @@ import { Constants } from '@common/constants';
     styleUrls: ['./game-chat.component.scss'],
 })
 export class GameChatComponent implements OnInit, OnDestroy {
-    @ViewChild('messagesContainer') messagesContainer: ElementRef<HTMLElement>;
     @Input() isMultiplayer: boolean = true;
     @Input() playerName: string = '';
+    @ViewChild('messagesContainer') private messagesContainer: ElementRef<HTMLElement>;
     private messages: ChatMessage[] = [];
 
     constructor(private socketHandler: SocketHandler) {}

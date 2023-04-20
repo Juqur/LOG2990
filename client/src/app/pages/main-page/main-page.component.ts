@@ -35,6 +35,10 @@ export class MainPageComponent implements OnInit, OnDestroy {
         return this.canShowCredits;
     }
 
+    get amountOfLevels(): number {
+        return this.mainPageService.amountOfLevels;
+    }
+
     /**
      * Initializes the audio playing on the main page. It sets it on loop and muted as
      * a default parameter.
@@ -45,6 +49,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.audioServiceSoundtrack.mute();
         this.audioServiceSoundtrack.play();
         this.mainPageService.connectToSocket();
+        this.mainPageService.setAmountOfLevels();
     }
 
     /**

@@ -9,13 +9,13 @@ import { GameTimerComponent } from '@app/components/game-timer/game-timer.compon
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
-import { Level } from '@app/levels';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { GameData } from '@common/interfaces/game-data';
+import { Level } from '@common/interfaces/level';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 
@@ -46,6 +46,7 @@ describe('GamePageComponent', () => {
             'handleTimedModeFinished',
             'handleHintRequest',
             'handleHintShapeRequest',
+            'playSuccessSound',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
@@ -139,6 +140,31 @@ describe('GamePageComponent', () => {
             component.ngOnDestroy();
             expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'defeat');
         });
+
+        it('should remove the startCheatMode listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'startCheatMode');
+        });
+
+        it('should remove the timedModeFinished listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'timedModeFinished');
+        });
+
+        it('should remove the opponentAbandoned listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'opponentAbandoned');
+        });
+
+        it('should remove the changeLevelTimedMode listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'changeLevelTimedMode');
+        });
+
+        it('should remove the hintRequest listener', () => {
+            component.ngOnDestroy();
+            expect(socketHandlerSpy.removeListener).toHaveBeenCalledWith('game', 'hintRequest');
+        });
     });
 
     describe('handleSocket', () => {
@@ -190,19 +216,33 @@ describe('GamePageComponent', () => {
             expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
         });
 
-        it('should set the amount of difference found by the player', () => {
-            const expectedDifferences = 5;
-            const data = { amountOfDifferencesFound: expectedDifferences } as unknown as GameData;
+        it('should call removeHintShape if response is true and showThirdHint is true', () => {
+            const data = { amountOfDifferencesFound: 5 } as unknown as GameData;
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component['showThirdHint'] = true;
+            gamePageServiceSpy.handleResponse.and.returnValue(true);
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'processedClick') {
                     callback(data as never);
                 }
             });
             component.handleSocket();
-            expect(component['playerDifferencesCount']).toEqual(expectedDifferences);
+            expect(removeHintShapeSpy).toHaveBeenCalled();
         });
 
-        it('should handle abandon if server sends opponent abandoned request', () => {
+        it('should play success sound if the response is correct in timed game mode', () => {
+            component['isClassic'] = false;
+            const data = { differencePixels: [1] } as unknown as GameData;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'processedClick') {
+                    callback(data as never);
+                }
+            });
+            component.handleSocket();
+            expect(gamePageServiceSpy.playSuccessSound).toHaveBeenCalled();
+        });
+
+        it('should handle abandon if server sends opponent abandoned request if the game mode is classic', () => {
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'opponentAbandoned') {
                     callback({} as never);
@@ -210,6 +250,17 @@ describe('GamePageComponent', () => {
             });
             component.handleSocket();
             expect(gamePageServiceSpy.handleOpponentAbandon).toHaveBeenCalledTimes(1);
+        });
+
+        it('should remove other player if other players leaves in a timed game', () => {
+            component['isClassic'] = false;
+            socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'opponentAbandoned') {
+                    callback({} as never);
+                }
+            });
+            component.handleSocket();
+            expect(component['secondPlayerName']).toEqual('');
         });
 
         it('should handle defeat if server sends defeat request', () => {
@@ -296,7 +347,7 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.handleTimedModeFinished).toHaveBeenCalledWith(true);
         });
 
-        it('should handle changing the pictures if server sends changeLevelTimedMode request', () => {
+        it('should handle changing the pictures if server sends changeLevelTimedMode request, and call removeHintShape if is showThirdHint', () => {
             const level = { id: 1 } as unknown as Level;
             socketHandlerSpy.on.and.callFake((event, eventName, callback) => {
                 if (eventName === 'changeLevelTimedMode') {
@@ -304,12 +355,16 @@ describe('GamePageComponent', () => {
                 }
             });
             const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
+            component['showThirdHint'] = true;
             component.handleSocket();
             expect(component['levelId']).toEqual(1);
             expect(component['currentLevel']).toEqual(level);
             expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
+            expect(gamePageServiceSpy.resetImagesData).toHaveBeenCalledTimes(1);
             expect(gamePageServiceSpy.setMouseCanClick).toHaveBeenCalledWith(true);
             expect(gamePageServiceSpy.setImages).toHaveBeenCalledTimes(1);
+            expect(removeHintShapeSpy).toHaveBeenCalledTimes(1);
         });
 
         describe('abandonGame', () => {
@@ -317,6 +372,12 @@ describe('GamePageComponent', () => {
                 component.abandonGame();
                 expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
             });
+        });
+    });
+    describe('abandonGame', () => {
+        it('should emit a socket event when abandoning the game', () => {
+            component.abandonGame();
+            expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onAbandonGame');
         });
     });
 
@@ -339,16 +400,6 @@ describe('GamePageComponent', () => {
             expect(gamePageServiceSpy.verifyClick).toHaveBeenCalledWith(event);
             expect(socketHandlerSpy.send).not.toHaveBeenCalled();
         });
-
-        it('should call removeHintShape if showThirdHint is true', () => {
-            const event: MouseEvent = new MouseEvent('click');
-            const mousePositionReturnValue = 1;
-            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-            component['showThirdHint'] = true;
-            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-            component.clickedOnOriginal(event);
-            expect(removeHintShapeSpy).toHaveBeenCalled();
-        });
     });
 
     describe('clickedOnDiff', () => {
@@ -370,22 +421,17 @@ describe('GamePageComponent', () => {
             expect(socketHandlerSpy.send).toHaveBeenCalledWith('game', 'onClick', mousePositionReturnValue);
             expect(component['clickedOriginalImage']).toBe(false);
         });
-
-        it('should call removeHintShape if showThirdHint is true', () => {
-            const event: MouseEvent = new MouseEvent('click');
-            const mousePositionReturnValue = 1;
-            gamePageServiceSpy.verifyClick.and.returnValue(mousePositionReturnValue);
-            component['showThirdHint'] = true;
-            const removeHintShapeSpy = spyOn(component, 'removeHintShape');
-            component.clickedOnDiff(event);
-            expect(removeHintShapeSpy).toHaveBeenCalled();
-        });
     });
 
     describe('settingGameParameters', () => {
+        let settingGameLevelSpy = jasmine.createSpy();
+        let settingGameImageSpy = jasmine.createSpy();
+        beforeEach(() => {
+            settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
+            settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
+        });
+
         it('should set levelId, playerName and secondPlayerName from route', () => {
-            spyOn(component, 'settingGameLevel' as never);
-            spyOn(component, 'settingGameImage' as never);
             component['settingGameParameters']();
             expect(component['levelId']).toBe(1);
             expect(component.playerName).toBe('Alice');
@@ -393,8 +439,6 @@ describe('GamePageComponent', () => {
         });
 
         it('should call settingGameImage and settingGameLevel when getting the game level', () => {
-            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
-            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
             component['settingGameParameters']();
             expect(settingGameLevelSpy).toHaveBeenCalledTimes(1);
             expect(settingGameImageSpy).toHaveBeenCalledTimes(1);
@@ -402,12 +446,15 @@ describe('GamePageComponent', () => {
 
         it('should not set level and image if levelId is 0', () => {
             activatedRoute.snapshot.params = { id: '0' };
-            const settingGameLevelSpy = spyOn(component, 'settingGameLevel' as never);
-            const settingGameImageSpy = spyOn(component, 'settingGameImage' as never);
             component['settingGameParameters']();
-            expect(component['isClassic']).toEqual(false);
             expect(settingGameLevelSpy).not.toHaveBeenCalledTimes(1);
             expect(settingGameImageSpy).not.toHaveBeenCalledTimes(1);
+        });
+
+        it('should set the game mode to timed if the level is timed', () => {
+            activatedRoute.snapshot.queryParams = { gameMode: 'timed' };
+            component['settingGameParameters']();
+            expect(component['isClassic']).toBeFalsy();
         });
     });
 

@@ -215,7 +215,7 @@ describe('PaintAreaComponent', () => {
         });
 
         it('should set the background canvas to diffImgCanvas', () => {
-            const setSpy = spyOnProperty(component['canvasSharing'], 'diffCanvas', 'set');
+            const setSpy = spyOnProperty(component['canvasSharing'], 'differenceCanvas', 'set');
             const expected = 'diffImgCanvas';
             component.isDifferenceCanvas = true;
             component.loadBackground('');

@@ -109,11 +109,11 @@ describe('GameGateway', () => {
     });
 
     describe('onJoinSoloClassicGame', () => {
-        it('should call timer service and game service when player joins a solo game', () => {
+        it('should call timer service and game service when player joins a solo game', async () => {
             const timerSpy = jest.spyOn(timerService, 'startTimer');
             const gameSpy = jest.spyOn(gameService, 'createGameState');
             const data = { levelId: 1, playerName: 'test' };
-            gateway.onJoinSoloClassicGame(socket, data);
+            await gateway.onJoinSoloClassicGame(socket, data);
             expect(gameSpy).toHaveBeenCalled();
             expect(timerSpy).toHaveBeenCalled();
         });
@@ -127,6 +127,7 @@ describe('GameGateway', () => {
         beforeEach(() => {
             timerSpy = jest.spyOn(timerService, 'stopTimer');
             gameSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            jest.spyOn(mongodbService, 'updateHighscore').mockReturnValue(Promise.resolve(2));
             jest.spyOn(gameService, 'getImageInfoOnClick').mockReturnValue(Promise.resolve(gameData));
             jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(false);
@@ -163,7 +164,8 @@ describe('GameGateway', () => {
             jest.spyOn(gameService, 'verifyWinCondition').mockReturnValue(true);
             await gateway.onClick(socket, 1);
             expect(emitSpy).toBeCalledWith('processedClick', gameData);
-            expect(emitSpy).toBeCalledWith('victory');
+
+            expect(emitSpy).toBeCalledWith('victory', 2);
             expect(timerSpy).toBeCalledTimes(1);
             expect(gameSpy).toBeCalledTimes(1);
         });
@@ -209,46 +211,47 @@ describe('GameGateway', () => {
             jest.spyOn(gateway['server'].sockets.sockets, 'get').mockReturnValue(otherSocket);
         });
 
-        it('should should call createGameState when player selects a game', () => {
-            gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
+        it('should should call createGameState when player selects a game', async () => {
+            await gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
             expect(createGameStateSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should should call findAvailableGame when player selects a game', () => {
-            gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
+        it('should should call findAvailableGame when player selects a game', async () => {
+            await gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
             expect(findAvailableGameSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should emit back to the player if the name is invalid', () => {
-            gateway.onGameSelection(socket, { playerName: '', levelId: 1 });
+        it('should emit back to the player if the name is invalid', async () => {
+            await gateway.onGameSelection(socket, { playerName: '', levelId: 1 });
             expect(emitSpy).toBeCalledWith('invalidName');
         });
 
-        it('should bindPlayers if a match is found', () => {
+        it('should bindPlayers if a match is found', async () => {
             gameState.otherSocketId = 'otherId';
             jest.spyOn(gameService, 'findAvailableGame').mockReturnValue('1');
-            gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
+            await gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
             expect(bindPlayersSpy).toBeCalledTimes(1);
         });
 
-        it('should emit back to the player if a match is found', () => {
+        it('should emit back to the player if a match is found', async () => {
             gameState.otherSocketId = 'Barbara';
             jest.spyOn(gameService, 'findAvailableGame').mockReturnValue('1');
-            gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
+            await gateway.onGameSelection(socket, { playerName: 'Alice', levelId: 1 });
             expect(emitSpy).toBeCalledWith('toBeAccepted');
         });
 
-        it('should emit to the opponent if the player finds a match', () => {
+        it('should emit to the opponent if the player finds a match', async () => {
             gameState.otherSocketId = 'Barbara';
             const name = 'Alice';
             jest.spyOn(gameService, 'findAvailableGame').mockReturnValue('1');
-            gateway.onGameSelection(socket, { playerName: name, levelId: 1 });
+            await gateway.onGameSelection(socket, { playerName: name, levelId: 1 });
             expect(emitOtherSpy).toBeCalledWith('playerSelection', name);
         });
 
-        it('should update the selection page if player does not find a match', () => {
+        it('should update the selection page if player does not find a match', async () => {
+            gameState.otherSocketId = '';
             const levelId = 1;
-            gateway.onGameSelection(socket, { playerName: 'Alice', levelId });
+            await gateway.onGameSelection(socket, { playerName: 'Alice', levelId });
             expect(emitServerSpy).toBeCalledWith('updateSelection', { levelId, canJoin: true });
         });
     });
@@ -331,10 +334,10 @@ describe('GameGateway', () => {
             expect(emitServerSpy).toBeCalledWith('updateSelection', { levelId: gameState.levelId, canJoin: true });
         });
 
-        it('should delete the user and the opponent from the game map', () => {
+        it('should delete the user from the game map', () => {
             const deleteUserFromGameSpy = jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
             gateway.onGameRejected(socket);
-            expect(deleteUserFromGameSpy).toBeCalledWith(otherSocket);
+            expect(deleteUserFromGameSpy).toBeCalledWith(socket);
         });
 
         it('should call cancelGame function', () => {
@@ -368,6 +371,15 @@ describe('GameGateway', () => {
         });
     });
 
+    describe('onDeleteAllLevels', () => {
+        it('should call getAllLevelsSpy', () => {
+            jest.spyOn(gateway, 'onDeleteLevel').mockImplementation();
+            const getAllLevelsSpy = jest.spyOn(mongodbService, 'getAllLevels').mockResolvedValue([{} as Level] as Level[]);
+            gateway.onDeleteAllLevels(socket);
+            expect(getAllLevelsSpy).toBeCalledTimes(1);
+        });
+    });
+
     describe('onMessageReception', () => {
         let getGameStateSpy: jest.SpyInstance;
         let sendToBothPlayersSpy: jest.SpyInstance;
@@ -386,7 +398,7 @@ describe('GameGateway', () => {
         it('should call sendToBothPlayers', () => {
             const message = {} as unknown as ChatMessage;
             gateway.onMessageReception(socket, message);
-            expect(sendToBothPlayersSpy).toBeCalledWith(socket, message, gameState);
+            expect(sendToBothPlayersSpy).toBeCalledWith({ socket, server }, message, gameState);
         });
     });
 
@@ -415,16 +427,61 @@ describe('GameGateway', () => {
     });
 
     describe('onHintRequest', () => {
-        it('should call chatService, timerService and askHint', async () => {
-            jest.spyOn(timerService, 'getCurrentTime').mockReturnValue(1);
-            const addTimeSpy = jest.spyOn(timerService, 'addTime');
-            const sendMessageSpy = jest.spyOn(chatService, 'sendMessageToPlayer');
-            const askHintSpy = jest.spyOn(gameService, 'askHint').mockReturnValue(Promise.resolve([1, 2]));
+        let getCurrentTimeSpy: jest.SpyInstance;
+        let getGameStateSpy: jest.SpyInstance;
+        let askHintSpy: jest.SpyInstance;
+        let sendMessageSpy: jest.SpyInstance;
+        let addTimeSpy: jest.SpyInstance;
+
+        beforeEach(() => {
+            gameState.timedLevelList = [{} as Level];
+            getCurrentTimeSpy = jest.spyOn(timerService, 'getCurrentTime').mockReturnValue(1);
+            askHintSpy = jest.spyOn(gameService, 'askHint').mockReturnValue(Promise.resolve([1, 2]));
+            getGameStateSpy = jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
+            sendMessageSpy = jest.spyOn(chatService, 'sendMessageToPlayer');
+            addTimeSpy = jest.spyOn(timerService, 'addTime');
+        });
+
+        it('should call getCurrentTime', async () => {
             await gateway.onHintRequest(socket);
-            expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]); // check the emitted event
-            expect(addTimeSpy).toBeCalledTimes(1);
+            expect(getCurrentTimeSpy).toBeCalledTimes(1);
+        });
+
+        it('should call askHint', async () => {
+            await gateway.onHintRequest(socket);
+            expect(askHintSpy).toBeCalledTimes(1);
+        });
+
+        it('should add time to the timer ', async () => {
+            gameState.timedLevelList = undefined;
+            const expectedTime = 5;
+            gameState.penaltyTime = expectedTime;
+            await gateway.onHintRequest(socket);
+            expect(addTimeSpy).toHaveBeenCalledWith(gateway['server'], socket.id, expectedTime);
+        });
+
+        it('should subtract time to the timer ', async () => {
+            const expectedTime = 1;
+            gameState.penaltyTime = expectedTime;
+            getGameStateSpy.mockReturnValue(gameState);
+            getCurrentTimeSpy.mockReturnValue(1);
+            await gateway.onHintRequest(socket);
+            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, -expectedTime);
+        });
+
+        it('should call sendMessageToPlayer', async () => {
+            await gateway.onHintRequest(socket);
             expect(sendMessageSpy).toBeCalledWith(socket, 'Indice utilisé');
-            expect(askHintSpy).toBeCalledWith(socket.id);
+        });
+
+        it('should call getGameState', async () => {
+            await gateway.onHintRequest(socket);
+            expect(getGameStateSpy).toBeCalledTimes(1);
+        });
+
+        it('should call emit', async () => {
+            await gateway.onHintRequest(socket);
+            expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]);
         });
     });
 
@@ -486,7 +543,7 @@ describe('GameGateway', () => {
         it('should call abandonMessage if the other socket id is defined', async () => {
             gameState.otherSocketId = '1';
             await gateway['handlePlayerLeavingGame'](socket);
-            expect(abandonMessageSpy).toBeCalledWith(socket, gameState);
+            expect(abandonMessageSpy).toBeCalledWith(server, gameState);
         });
 
         it('should emit an abandon event', async () => {
@@ -526,31 +583,89 @@ describe('GameGateway', () => {
     });
 
     describe('cancelGame', () => {
+        beforeEach(() => {
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ otherSocketId: 'test' } as unknown as GameState);
+            jest.spyOn(gameService, 'deleteUserFromGame').mockImplementation();
+        });
+        it('should set the isInGame property to false', () => {
+            const setIsGameFoundSpy = jest.spyOn(gameService, 'setIsGameFound');
+            gateway['cancelGame'](socket);
+            expect(setIsGameFoundSpy).toBeCalledWith(socket.id, false);
+        });
         it('should emit to the opponent that the game has been cancelled', () => {
             const secondPlayerEmit = jest.spyOn(otherSocket, 'emit');
             gateway['cancelGame'](socket);
             expect(secondPlayerEmit).toBeCalledWith('rejectedGame');
         });
+        it('should delete the second player from the game', () => {
+            const deletePlayerSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            gateway['cancelGame'](socket);
+            expect(deletePlayerSpy).toBeCalledWith(otherSocket);
+        });
     });
 
     describe('onCreateTimedGame', () => {
-        it('should start the timer', async () => {
-            const level = { id: 1 } as LevelDataObject;
+        const level = { id: 1 } as Level;
+        let getRandomLevelForTimedGameSpy: jest.SpyInstance;
+        let setLevelIdSpy: jest.SpyInstance;
+        let startTimerSpy: jest.SpyInstance;
+        beforeEach(() => {
             jest.spyOn(gameService, 'createGameState').mockImplementation();
-            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue(level);
-            jest.spyOn(gameService, 'setLevelId').mockImplementation();
-            const timerSpy = jest.spyOn(timerService, 'startTimer');
-            await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: '' });
-            expect(timerSpy).toBeCalled();
+            jest.spyOn(gameService, 'connectRooms').mockImplementation();
+            jest.spyOn(gameService, 'findAvailableGame').mockReturnValue('otherSocketId');
+            getRandomLevelForTimedGameSpy = jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue(level);
+            setLevelIdSpy = jest.spyOn(gameService, 'setLevelId').mockImplementation();
+            startTimerSpy = jest.spyOn(timerService, 'startTimer').mockImplementation();
+        });
+        it('should start the timer in a solo match', async () => {
+            await gateway.onCreateTimedGame(socket, { multiplayer: false, playerName: '' });
+            expect(startTimerSpy).toBeCalled();
         });
 
         it('should emit a random level to the user', async () => {
-            const level = { id: 1 } as LevelDataObject;
             jest.spyOn(gameService, 'createGameState').mockImplementation();
             jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue(level);
             jest.spyOn(gameService, 'setLevelId').mockImplementation();
             await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: '' });
-            expect(emitSpy).toBeCalledWith('changeLevelTimedMode', level);
+            expect(emitSpy).toBeCalledWith('startTimedGameMultiplayer', { levelId: 1, otherPlayerName: 'Alice' });
+        });
+
+        it('should not do anything if the game is multiplayer but no opponent is found', async () => {
+            jest.spyOn(gameService, 'findAvailableGame').mockReturnValue('');
+            await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: '' });
+            expect(setLevelIdSpy).not.toBeCalled();
+            expect(startTimerSpy).not.toBeCalled();
+            expect(emitSpy).not.toBeCalled();
+            expect(getRandomLevelForTimedGameSpy).not.toBeCalled();
+        });
+
+        it('should emit to the player the level id and the name of the other player', async () => {
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ playerName: 'Bob' } as unknown as GameState);
+            await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: 'test' });
+            expect(emitSpy).toBeCalledWith('startTimedGameMultiplayer', { levelId: 1, otherPlayerName: 'Bob' });
+        });
+
+        it('should emit to the other player the level id and the name of the  player', async () => {
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ playerName: 'Bob' } as unknown as GameState);
+            await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: 'test' });
+            expect(emitOtherSpy).toBeCalledWith('startTimedGameMultiplayer', { levelId: 1, otherPlayerName: 'test' });
+        });
+
+        it('should set the level for both players', async () => {
+            await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: 'test' });
+            expect(setLevelIdSpy).toBeCalledWith(socket.id, 1);
+            expect(setLevelIdSpy).toBeCalledWith('otherSocketId', 1);
+        });
+
+        it('should connect the rooms of both players', async () => {
+            const connectRoomsSpy = jest.spyOn(gameService, 'connectRooms');
+            await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: 'test' });
+            expect(connectRoomsSpy).toBeCalledWith(socket, otherSocket);
+        });
+
+        it('should start the timer in a multiplayer match', async () => {
+            await gateway.onCreateTimedGame(socket, { multiplayer: true, playerName: 'test' });
+            expect(startTimerSpy).toBeCalled();
         });
     });
 
@@ -608,6 +723,46 @@ describe('GameGateway', () => {
             gameState.otherSocketId = 'socket2';
             gateway['handleTimedGame'](socket, gameState);
             expect(addGameHistorySpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should set level for other socket', () => {
+            gameState.otherSocketId = 'otherSocket';
+            gameState.timedLevelList = [{} as LevelDataObject];
+            jest.spyOn(gameService, 'getRandomLevelForTimedGame').mockReturnValue({ id: 1 } as LevelDataObject);
+            const setLevelSpy = jest.spyOn(gameService, 'setLevelId').mockImplementation();
+            gateway['handleTimedGame'](socket, gameState);
+            expect(setLevelSpy).toBeCalledWith('otherSocket', 1);
+        });
+    });
+
+    describe('onResetLevelHighScore', () => {
+        it('should call resetLevelHighScore', () => {
+            const spy = jest.spyOn(mongodbService, 'resetLevelHighScore').mockImplementation();
+            gateway['onResetLevelHighScore'](socket, 1);
+            expect(spy).toBeCalledWith(1);
+        });
+
+        it('should emit RefreshLevels', () => {
+            jest.spyOn(mongodbService, 'resetLevelHighScore').mockImplementation();
+            gateway['onResetLevelHighScore'](socket, 1);
+            expect(server.emit).toBeCalledWith('refreshLevels', 1);
+        });
+    });
+
+    describe('onTimedGameCancelled', () => {
+        it('should delete the user from the game', () => {
+            jest.spyOn(gameService, 'getGameState').mockReturnValue({ isInGame: false } as unknown as GameState);
+            const deletePlayerSpy = jest.spyOn(gameService, 'deleteUserFromGame');
+            gateway['onTimedGameCancelled'](socket);
+            expect(deletePlayerSpy).toBeCalledWith(socket);
+        });
+    });
+
+    describe('onRefreshLevels', () => {
+        it('should emit an event to all the players', () => {
+            const serverEmitSpy = jest.spyOn(server, 'emit').mockImplementation();
+            gateway['onRefreshLevels']();
+            expect(serverEmitSpy).toBeCalledWith('refreshLevels');
         });
     });
 });

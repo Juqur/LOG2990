@@ -22,9 +22,6 @@ import { PopUpDialogComponent } from './components/pop-up-dialog/pop-up-dialog.c
 import { ScaleContainerComponent } from './components/scale-container/scale-container.component';
 import { ConfigurationPageComponent } from './pages/configuration-page/configuration-page.component';
 import { CreationPageComponent } from './pages/creation-page/creation-page.component';
-import { VideoPageComponent } from './pages/video-page/video-page.component';
-import { VideoChatComponent } from './components/video-chat/video-chat.component';
-import { VideoTimerComponent } from './components/video-timer/video-timer.component';
 
 /**
  * Main module that is used in main.ts.
@@ -53,6 +50,8 @@ import { VideoTimerComponent } from './components/video-timer/video-timer.compon
         VideoPageComponent,
         VideoChatComponent,
         VideoTimerComponent,
+        GameHistoriesPageComponent,
+        GameHistoryComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, MatSliderModule, FormsModule, HttpClientModule],
     providers: [],

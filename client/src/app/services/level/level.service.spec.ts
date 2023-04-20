@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -118,12 +119,14 @@ describe('LevelService', () => {
             'deleteLevel',
             'getGameConstants',
             'setNewGameConstants',
+            'resetGameConstants',
         ]);
-        socketHandlerMock = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send']);
+        socketHandlerMock = jasmine.createSpyObj('SocketHandler', ['isSocketAlive', 'connect', 'send', 'on', 'removeListener']);
         communicationServiceMock.getLevels.and.returnValue(of(levelExpectedArray));
         communicationServiceMock.deleteLevel.and.returnValue(of(true));
         communicationServiceMock.getGameConstants.and.returnValue(of(gameConstants));
         communicationServiceMock.setNewGameConstants.and.returnValue(of(undefined));
+        communicationServiceMock.resetGameConstants.and.returnValue(of(undefined));
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
@@ -144,6 +147,31 @@ describe('LevelService', () => {
             expect(service['levels']).toEqual(levelExpectedArray);
             expect(service['currentShownPage']).toEqual(0);
             expect(service['shownLevels']).toEqual(levelExpectedArray.slice(0, Constants.levelsPerPage));
+        });
+    });
+
+    describe('setupSocket', () => {
+        it('should connect to socket if not connected', () => {
+            socketHandlerMock.isSocketAlive.and.returnValue(false);
+            service.setupSocket();
+            expect(socketHandlerMock.connect).toHaveBeenCalled();
+        });
+        it('should refresh the levels if event is received', () => {
+            socketHandlerMock.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'refreshLevels') {
+                    callback({} as never);
+                }
+            });
+            const refreshSpy = spyOn(service, 'refreshLevels');
+            service.setupSocket();
+            expect(refreshSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('destroySocket', () => {
+        it('should remove socket event listener', () => {
+            service.destroySocket();
+            expect(socketHandlerMock.removeListener).toHaveBeenCalled();
         });
     });
 
@@ -195,6 +223,7 @@ describe('LevelService', () => {
     describe('setNewGameConstants', () => {
         let inputElement: HTMLInputElement;
         let mockEvent: Event;
+
         beforeEach(() => {
             inputElement = document.createElement('input');
             inputElement.id = 'initial-time-input';
@@ -208,6 +237,7 @@ describe('LevelService', () => {
                 timePenaltyHint: Constants.HINT_PENALTY,
                 timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
             } as GameConstants;
+            spyOn(window, 'alert');
         });
 
         it('should not call communicationService.setNewGameConstants if gameConstants is not defined', () => {
@@ -257,6 +287,22 @@ describe('LevelService', () => {
         });
     });
 
+    describe('resetGameConstants', () => {
+        it('should set the gameConstants to its default values', () => {
+            service.resetGameConstants();
+            expect(service['gameConstants']).toEqual({
+                initialTime: Constants.INIT_COUNTDOWN_TIME,
+                timePenaltyHint: Constants.HINT_PENALTY,
+                timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+            });
+        });
+
+        it('should call communicationService.resetGameConstants', () => {
+            service.resetGameConstants();
+            expect(communicationServiceMock.resetGameConstants).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('nextPage', () => {
         it('should increment page count and call updatePageLevels', () => {
             const spy = spyOn(service, 'updatePageLevels' as never);
@@ -294,33 +340,123 @@ describe('LevelService', () => {
     });
 
     describe('deleteLevel', () => {
-        it('deleteLevel should call removeCard', () => {
-            const levelId = 1;
-            const spy = spyOn(service, 'removeCard' as never);
-            service.deleteLevel(levelId);
-            expect(spy).toHaveBeenCalledTimes(1);
+        const levelId = 1;
+        let removeCardSpy: jasmine.Spy;
+        let checkForSocketConnectionSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            removeCardSpy = spyOn(service, 'removeCard');
+            checkForSocketConnectionSpy = spyOn(service, 'checkForSocketConnection' as never);
         });
 
-        it('should call connect if the socket is not alive', () => {
-            const levelId = 1;
-            socketHandlerMock.isSocketAlive.and.returnValue(false);
+        it('should call checkForSocketConnection', () => {
             service.deleteLevel(levelId);
-            expect(socketHandlerMock.connect).toHaveBeenCalledTimes(1);
+            expect(checkForSocketConnectionSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call removeCard', () => {
+            service.deleteLevel(levelId);
+            expect(removeCardSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should call send', () => {
-            const levelId = 1;
             service.deleteLevel(levelId);
             expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onDeleteLevel', levelId);
         });
     });
 
+    describe('deleteAllLevels', () => {
+        let removeAllCardsSpy: jasmine.Spy;
+        let checkForSocketConnectionSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            removeAllCardsSpy = spyOn(service, 'removeAllCards');
+            checkForSocketConnectionSpy = spyOn(service, 'checkForSocketConnection' as never);
+        });
+
+        it('should call checkForSocketConnection', () => {
+            service.deleteAllLevels();
+            expect(checkForSocketConnectionSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call removeAllCards', () => {
+            service.deleteAllLevels();
+            expect(removeAllCardsSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call send', () => {
+            service.deleteAllLevels();
+            expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onDeleteAllLevels');
+        });
+
+        it('should not call any method if there are no levels', () => {
+            service['levels'] = [];
+            service.deleteAllLevels();
+            expect(removeAllCardsSpy).not.toHaveBeenCalled();
+            expect(socketHandlerMock.send).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('resetLevelHighScore', () => {
+        const levelId = 1;
+        let resetCardSpy: jasmine.Spy;
+        let checkForSocketConnectionSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            resetCardSpy = spyOn(service, 'resetCard');
+            checkForSocketConnectionSpy = spyOn(service, 'checkForSocketConnection' as never);
+        });
+
+        it('should call checkForSocketConnection', () => {
+            service.resetLevelHighScore(levelId);
+            expect(checkForSocketConnectionSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call resetCard', () => {
+            service.resetLevelHighScore(levelId);
+            expect(resetCardSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call send', () => {
+            service.resetLevelHighScore(levelId);
+            expect(socketHandlerMock.send).toHaveBeenCalledWith('game', 'onResetLevelHighScore', levelId);
+        });
+    });
+
     describe('removeCard', () => {
-        it('removeCard should correctly remove the card', () => {
+        it('should correctly remove the card', () => {
             const levelId = 1;
             service['levels'] = [{ id: 1 } as Level, { id: 2 } as Level, { id: 3 } as Level];
             service['removeCard'](levelId);
             expect(service['levels']).toEqual([{ id: 2 } as Level, { id: 3 } as Level]);
+        });
+    });
+
+    describe('removeAllCards', () => {
+        it('should correctly remove all cards', () => {
+            service['levels'] = [{ id: 1 } as Level, { id: 2 } as Level, { id: 3 } as Level];
+            service['removeAllCards']();
+            expect(service['levels']).toEqual([]);
+        });
+    });
+
+    describe('resetCard', () => {
+        it('should correctly reset the card', () => {
+            const levelId = 1;
+            const level = { id: 1 } as Level;
+            service['levels'] = [level, { id: 2 } as Level, { id: 3 } as Level];
+            service['resetCard'](levelId);
+            expect(service['levels']).toEqual([
+                {
+                    id: 1,
+                    playerSolo: Constants.defaultPlayerSolo,
+                    timeSolo: Constants.defaultTimeSolo,
+                    playerMulti: Constants.defaultPlayerMulti,
+                    timeMulti: Constants.defaultTimeMulti,
+                } as Level,
+                { id: 2 } as Level,
+                { id: 3 } as Level,
+            ]);
         });
     });
 
@@ -329,6 +465,27 @@ describe('LevelService', () => {
             service['currentShownPage'] = 1;
             service['updatePageLevels']();
             expect(service['shownLevels']).toEqual(levelExpectedArray.slice(Constants.levelsPerPage, levelExpectedArray.length));
+        });
+    });
+
+    describe('checkForSocketConnection', () => {
+        it('should call connect if the socket is not alive', () => {
+            socketHandlerMock.isSocketAlive.and.returnValue(false);
+            service['checkForSocketConnection']();
+            expect(socketHandlerMock.connect).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('setupSocket', () => {
+        it('should call refreshLevels on socket event', () => {
+            const spy = spyOn(service, 'refreshLevels');
+            socketHandlerMock.on.and.callFake((event, eventName, callback) => {
+                if (eventName === 'refreshLevels') {
+                    callback({} as never);
+                }
+            });
+            service['setupSocket']();
+            expect(spy).toHaveBeenCalled();
         });
     });
 });

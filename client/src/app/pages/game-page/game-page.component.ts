@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { Level } from '@app/levels';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { DrawService } from '@app/services/draw/draw.service';
 import { GamePageService } from '@app/services/game-page/game-page.service';
@@ -10,6 +9,7 @@ import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';
 import { GameData } from '@common/interfaces/game-data';
+import { Level } from '@common/interfaces/level';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -24,19 +24,19 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./game-page.component.scss'],
     providers: [DrawService, CommunicationService, TimerService],
 })
-export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
-    @ViewChild('originalPlayArea', { static: false }) originalPlayArea!: PlayAreaComponent;
-    @ViewChild('differencePlayArea', { static: false }) differencePlayArea!: PlayAreaComponent;
-    @ViewChild('tempDiffPlayArea', { static: false }) tempDiffPlayArea!: PlayAreaComponent;
+export class GamePageComponent implements OnInit, OnDestroy {
+    @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
+    @ViewChild('differencePlayArea', { static: false }) private differencePlayArea!: PlayAreaComponent;
+    @ViewChild('tempDifferencePlayArea', { static: false }) private tempDifferencePlayArea!: PlayAreaComponent;
     @ViewChild('tempVideoOriginal') tempVideoOriginal!: PlayAreaComponent;
     @ViewChild('tempVideoDiff') tempVideoDiff!: PlayAreaComponent;
-    @ViewChild('hintShapeCanvas', { static: false }) hintShapeCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('hintShapeCanvas', { static: false }) private hintShapeCanvas!: ElementRef<HTMLCanvasElement>;
 
     nbDiff: number = Constants.INIT_DIFF_NB;
     hintPenalty: number = Constants.HINT_PENALTY;
     nbHints: number = Constants.INIT_HINTS_NB;
     closePath: string = '/selection';
-    diffCanvasCtx: CanvasRenderingContext2D | null = null;
+    differenceCanvasContext: CanvasRenderingContext2D | null = null;
     playerName: string;
     playerDifferencesCount: number = 0;
     secondPlayerName: string;
@@ -72,7 +72,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         if ((event.key === 't' || event.key === 'T') && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
             if (!this.isInCheatMode) {
                 this.socketHandler.send('game', 'onStartCheatMode');
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
                 this.gamePageService.setImages(this.levelId);
                 this.isInCheatMode = !this.isInCheatMode;
                 return;
@@ -144,28 +144,38 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
     handleSocket(): void {
         this.socketHandler.on('game', 'processedClick', (data) => {
             const gameData = data as GameData;
-            if (gameData.amountOfDifferencesFoundSecondPlayer !== undefined) {
+            if (gameData.amountOfDifferencesFoundSecondPlayer) {
                 this.secondPlayerDifferencesCount = gameData.amountOfDifferencesFoundSecondPlayer;
             } else {
                 this.playerDifferencesCount = gameData.amountOfDifferencesFound;
             }
             if (this.isClassic || gameData.differencePixels.length === 0) {
                 this.gamePageService.setImages(this.levelId);
-                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
-                this.gamePageService.handleResponse(
+                this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
+                const isFound = this.gamePageService.handleResponse(
                     this.isInCheatMode,
                     gameData,
                     this.clickedOriginalImage,
                     this.playerDifferencesCount,
                     this.secondPlayerDifferencesCount,
                 );
+                if (isFound && this.showThirdHint) {
+                    this.removeHintShape();
+                }
+            }
+            if (!this.isClassic && gameData.differencePixels.length > 0) {
+                this.gamePageService.playSuccessSound();
             }
         });
-        this.socketHandler.on('game', 'victory', () => {
-            this.gamePageService.handleVictory(this.levelId, this.playerName, this.secondPlayerName);
+        this.socketHandler.on('game', 'victory', (highscorePosition: number) => {
+            this.gamePageService.handleVictory(highscorePosition);
         });
         this.socketHandler.on('game', 'opponentAbandoned', () => {
-            this.gamePageService.handleOpponentAbandon();
+            if (this.isClassic) {
+                this.gamePageService.handleOpponentAbandon();
+            } else {
+                this.secondPlayerName = '';
+            }
         });
         this.socketHandler.on('game', 'defeat', () => {
             this.gamePageService.handleDefeat(this.levelId, this.playerName, this.secondPlayerName);
@@ -179,6 +189,8 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         });
         this.socketHandler.on('game', 'hintRequest', (data) => {
             const section = data as number[];
+            this.gamePageService.setImages(this.levelId);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
             if (section.length < 3 && this.nbHints > 1) {
                 this.gamePageService.handleHintRequest(section);
                 this.nbHints--;
@@ -192,8 +204,10 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.levelId = level.id;
             this.currentLevel = level;
             this.settingGameImage();
+            this.gamePageService.resetImagesData();
             this.gamePageService.setMouseCanClick(true);
             this.gamePageService.setImages(this.levelId);
+            if (this.showThirdHint) this.removeHintShape();
         });
     }
 
@@ -209,9 +223,6 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = true;
         }
-        if (this.showThirdHint) {
-            this.removeHintShape();
-        }
     }
 
     /**
@@ -226,9 +237,6 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.socketHandler.send('game', 'onClick', mousePosition);
             this.clickedOriginalImage = false;
         }
-        if (this.showThirdHint) {
-            this.removeHintShape();
-        }
     }
 
     /**
@@ -236,7 +244,7 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     askForHint(): void {
         if (!this.secondPlayerName) {
-            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDiffPlayArea);
+            this.gamePageService.setPlayArea(this.originalPlayArea, this.differencePlayArea, this.tempDifferencePlayArea);
             this.socketHandler.send('game', 'onHintRequest');
         }
     }
@@ -246,8 +254,8 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     removeHintShape(): void {
         const shapeCanvas = this.hintShapeCanvas.nativeElement as HTMLCanvasElement;
-        const shapeCtx = shapeCanvas.getContext('2d') as CanvasRenderingContext2D;
-        shapeCtx.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
+        const shapeContext = shapeCanvas.getContext('2d') as CanvasRenderingContext2D;
+        shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
         this.showThirdHint = false;
     }
 
@@ -267,11 +275,12 @@ export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.levelId = this.route.snapshot.params.id;
         this.playerName = this.route.snapshot.queryParams.playerName;
         this.secondPlayerName = this.route.snapshot.queryParams.opponent;
-        if (this.route.snapshot.params.id === '0') {
+        if (this.route.snapshot.queryParams.gameMode === 'timed') {
             this.isClassic = false;
+        }
+        if (this.route.snapshot.params.id === '0') {
             return;
         }
-
         this.settingGameLevel();
         this.settingGameImage();
     }

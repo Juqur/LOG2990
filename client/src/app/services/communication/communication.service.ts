@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LevelFormData } from '@app/classes/level-form-data';
 import { GameConstants } from '@common/game-constants';
+import { GameHistory } from '@common/game-history';
 import { HttpMessage } from '@common/interfaces/http-message';
 import { Level } from '@common/interfaces/level';
 import { Observable, of } from 'rxjs';
@@ -136,6 +137,26 @@ export class CommunicationService {
         return this.http
             .patch<void>(`${this.baseUrl}api` + '/database/constants', { gameConstants })
             .pipe(catchError(this.handleError<void>('getGameConstants')));
+    }
+
+    /**
+     * This methods is used to obtain all the game histories from the database.
+     *
+     * @returns An array containing all the game histories.
+     */
+    getGameHistories(): Observable<GameHistory[]> {
+        return this.http
+            .get<GameHistory[]>(`${this.baseUrl}api` + '/database/gameHistories')
+            .pipe(catchError(this.handleError<GameHistory[]>('getGameHistories')));
+    }
+
+    /**
+     * This method makes a call to the server to delete all game histories.
+     */
+    deleteGameHistories(): Observable<void> {
+        return this.http
+            .delete<void>(`${this.baseUrl}api` + '/database/gameHistories')
+            .pipe(catchError(this.handleError<void>('deleteGameHistories')));
     }
 
     /**

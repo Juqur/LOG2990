@@ -1,5 +1,7 @@
 /* eslint-disable max-lines */
 import { ImageService } from '@app/services/image/image.service';
+import { MongodbService } from '@app/services/mongodb/mongodb.service';
+import { GameConstants } from '@common/game-constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Level } from 'assets/data/level';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
@@ -9,12 +11,14 @@ import { GameService, GameState } from './game.service';
 describe('GameService', () => {
     let service: GameService;
     let imageService: SinonStubbedInstance<ImageService>;
+    let mongodbService: SinonStubbedInstance<MongodbService>;
 
     beforeEach(async () => {
         imageService = createStubInstance(ImageService);
+        mongodbService = createStubInstance(MongodbService);
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [GameService, { provide: ImageService, useValue: imageService }],
+            providers: [GameService, { provide: ImageService, useValue: imageService }, { provide: MongodbService, useValue: mongodbService }],
         }).compile();
 
         service = module.get<GameService>(GameService);
@@ -121,6 +125,22 @@ describe('GameService', () => {
             expect(result).toEqual({ differencePixels: [1], totalDifferences: 7, amountOfDifferencesFound: 1 });
         });
 
+        it('should equalize the found differences if the game mode is timed', async () => {
+            const gameState: GameState = {
+                levelId: 1,
+                foundDifferences: 1,
+                amountOfDifferencesFound: 1,
+                timedLevelList: [1],
+                otherSocketId: '2',
+            } as unknown as GameState;
+            service['playerGameMap'].set('1', gameState);
+            gameState.amountOfDifferencesFound = 0;
+            service['playerGameMap'].set('2', gameState);
+            jest.spyOn(imageService, 'findDifference').mockReturnValue(Promise.resolve({ differencePixels: [1], totalDifferences: 1 }));
+            await service.getImageInfoOnClick('1', 1);
+            expect(service['playerGameMap'].get('1').amountOfDifferencesFound).toEqual(service['playerGameMap'].get('2').amountOfDifferencesFound);
+        });
+
         it('should share found differences with other player', async () => {
             service['playerGameMap'] = new Map<string, GameState>([
                 [
@@ -213,8 +233,16 @@ describe('GameService', () => {
     });
 
     describe('createGameState', () => {
-        it('should return the correct data for single player', () => {
-            service.createGameState('socket', { levelId: 1, playerName: 'player' }, false);
+        beforeEach(() => {
+            const gameConstants = {
+                initialTime: 1,
+                timePenaltyHint: 1,
+                timeGainedDifference: 1,
+            } as GameConstants;
+            jest.spyOn(mongodbService, 'getGameConstants').mockReturnValue(Promise.resolve(gameConstants));
+        });
+        it('should return the correct data for single player', async () => {
+            await service.createGameState('socket', { levelId: 1, playerName: 'player' }, false);
             expect(service['playerGameMap'].get('socket')).toStrictEqual({
                 levelId: 1,
                 foundDifferences: [],
@@ -223,12 +251,15 @@ describe('GameService', () => {
                 isInGame: true,
                 isGameFound: true,
                 isInCheatMode: false,
+                bonusTime: 1,
+                penaltyTime: 1,
+                timedGameLength: 1,
                 hintsUsed: 0,
             });
         });
 
-        it('should return the correct data for multiplayer', () => {
-            service.createGameState('socket', { levelId: 1, playerName: 'player' }, true);
+        it('should return the correct data for multiplayer', async () => {
+            await service.createGameState('socket', { levelId: 1, playerName: 'player' }, true);
             expect(service['playerGameMap'].get('socket')).toStrictEqual({
                 levelId: 1,
                 foundDifferences: [],
@@ -237,6 +268,9 @@ describe('GameService', () => {
                 isInGame: false,
                 isGameFound: false,
                 isInCheatMode: false,
+                bonusTime: 1,
+                penaltyTime: 1,
+                timedGameLength: 1,
                 hintsUsed: 0,
             });
         });
@@ -461,7 +495,7 @@ describe('GameService', () => {
     });
 
     describe('startCheatMode', () => {
-        it('should return all the differences as a single array', () => {
+        it('should return all the differences as a single array', async () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
@@ -473,10 +507,10 @@ describe('GameService', () => {
                 hintsUsed: 0,
             });
             const spy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            spy.mockImplementation().mockReturnValue(Promise.resolve([[1], [2], [3]]));
-            const result = service.startCheatMode('socket1');
+            spy.mockReturnValue(Promise.resolve([[1], [2], [3]]));
+            const result = await service.startCheatMode('socket1');
             expect(spy).toHaveBeenCalledTimes(1);
-            expect(result).toStrictEqual(Promise.resolve([1, 2, 3]));
+            expect(result).toStrictEqual([1, 2, 3]);
         });
     });
 
@@ -517,16 +551,11 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 0,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[4]]));
+            const mockedDifference = 4;
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[mockedDifference]]));
             const result = await service.askHint('socket1');
             expect(differencesSpy).toHaveBeenCalledTimes(1);
             expect(result).toHaveLength(1);
@@ -536,16 +565,11 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 1,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[1000000]]));
+            const mockedDifference = 1000000;
+            differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[mockedDifference]]));
             const result = await service.askHint('socket1');
             expect(differencesSpy).toHaveBeenCalledTimes(1);
             expect(result).toHaveLength(2);
@@ -555,13 +579,8 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 1,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[3500]]));
@@ -573,13 +592,8 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 3,
-            });
+            } as unknown as GameState);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
             differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[1]]));
             const result = service.askHint('socket1') as Promise<number[]>;
@@ -590,21 +604,14 @@ describe('GameService', () => {
             jest.spyOn(service, 'getGameState').mockReturnValue({
                 levelId: 0,
                 foundDifferences: [],
-                amountOfDifferencesFound: 0,
-                playerName: 'player1',
-                isInGame: false,
-                isGameFound: false,
-                isInCheatMode: false,
                 hintsUsed: 2,
-            });
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            const askShapeSpy = jest.spyOn(service, 'askShape').mockImplementation().mockReturnValue([7]);
-            // const spy = sinon.spy(service, 'askShape');
+            } as unknown as GameState);
+            const mockedShape = 7;
+            const askShapeSpy = jest.spyOn(service, 'askShape').mockImplementation().mockReturnValue([mockedShape]);
             const differencesSpy = jest.spyOn(service['imageService'], 'getAllDifferences');
             differencesSpy.mockImplementation().mockReturnValue(Promise.resolve([[2]]));
             const result = await service.askHint('socket1');
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            expect(result).toEqual([7]);
+            expect(result).toEqual([mockedShape]);
             expect(askShapeSpy).toHaveBeenCalled();
         });
     });
@@ -664,6 +671,33 @@ describe('GameService', () => {
             const gameState: GameState = { timedLevelList: [level, { id: 2 } as Level] } as GameState;
             service['playerGameMap'].set('1', gameState);
             expect(service.getRandomLevelForTimedGame('1')).toEqual(level);
+        });
+
+        it('should copy the timed level list into other players game state', () => {
+            jest.spyOn(Math, 'random').mockReturnValue(0);
+            const level: Level = { id: 1 } as Level;
+            const gameState: GameState = { timedLevelList: [level, { id: 2 } as Level], otherSocketId: '2' } as GameState;
+            service['playerGameMap'].set('1', gameState);
+            gameState.timedLevelList = [];
+            service['playerGameMap'].set('2', gameState);
+            service.getRandomLevelForTimedGame('1');
+            expect(service['playerGameMap'].get('2').timedLevelList).toEqual(service['playerGameMap'].get('1').timedLevelList);
+        });
+    });
+
+    describe('setOtherPlayerAbandoned', () => {
+        it('should set the player to abandoned', () => {
+            const gameState: GameState = { otherPlayerAbandoned: false, otherSocketId: 'Bob' } as GameState;
+            service['playerGameMap'].set('1', gameState);
+            service.setOtherPlayerAbandoned('1');
+            expect(gameState.otherPlayerAbandoned).toBeTruthy();
+        });
+
+        it('should set the other player to undefined', () => {
+            const gameState: GameState = { otherPlayerAbandoned: false, otherSocketId: 'Bob' } as GameState;
+            service['playerGameMap'].set('1', gameState);
+            service.setOtherPlayerAbandoned('1');
+            expect(gameState.otherSocketId).toBeUndefined();
         });
     });
 });

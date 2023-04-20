@@ -5,6 +5,7 @@ import { Message } from '@app/model/schema/message.schema';
 import { GameState } from '@app/services/game/game.service';
 import { Constants } from '@common/constants';
 import { GameConstants as GameConstantsDto } from '@common/game-constants';
+import { GameHistory as GameHistoryDataObject } from '@common/game-history';
 import { Level as LevelDataObject } from '@common/interfaces/level';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -48,8 +49,8 @@ export class MongodbService {
         await this.levelModel.create({
             id: level.id,
             name: level.name,
-            playerSolo: level.playerMulti,
-            timeSolo: level.timeMulti,
+            playerSolo: level.playerSolo,
+            timeSolo: level.timeSolo,
             playerMulti: level.playerMulti,
             timeMulti: level.timeMulti,
             isEasy: level.isEasy,
@@ -155,10 +156,26 @@ export class MongodbService {
         });
     }
 
-    /*
+    /**
+     * This method query's the server for all game histories stored from inside the database.
+     *
+     * @returns An array containing all game histories.
+     */
+    async getGameHistories(): Promise<GameHistoryDataObject[]> {
+        return (await this.gameHistoryModel.find({}).exec()) as GameHistoryDataObject[] | null;
+    }
+
+    /**
+     * This method removes all games histories from the database.
+     */
+    async deleteAllGameHistories(): Promise<void> {
+        await this.gameHistoryModel.deleteMany({}).exec();
+    }
+
+    /**
      * This method returns the multiplayer highscores names of the specified level.
      *
-     * @param id The id of the level.
+     * @param levelId The id of the level.
      * @returns The multiplayer highscores names of the specified level.
      */
     async getPlayerMultiArray(levelId: number): Promise<string[] | null> {
@@ -172,6 +189,7 @@ export class MongodbService {
      *
      * @param endTime The duration of the game in seconds.
      * @param gameState The game state associated with the game that just finished.
+     * @returns The position of the new highscore.
      */
     async updateHighscore(endTime: number, gameState: GameState): Promise<number> {
         if (await this.getLevelById(gameState.levelId)) {
@@ -203,9 +221,29 @@ export class MongodbService {
                 } else {
                     await this.levelModel.findOneAndUpdate({ id: gameState.levelId }, { playerSolo: names, timeSolo: times }).exec();
                 }
-                return names.indexOf(gameState.playerName);
+                return names.indexOf(gameState.playerName) + 1;
             }
         }
+        return null;
+    }
+
+    /**
+     * This method resets the high score of a level.
+     *
+     * @param levelId The id of the level.
+     */
+    async resetLevelHighScore(levelId: number): Promise<void> {
+        await this.levelModel
+            .findOneAndUpdate(
+                { id: levelId },
+                {
+                    playerSolo: Constants.defaultPlayerSolo,
+                    timeSolo: Constants.defaultTimeSolo,
+                    playerMulti: Constants.defaultPlayerMulti,
+                    timeMulti: Constants.defaultTimeMulti,
+                },
+            )
+            .exec();
     }
 
     /**

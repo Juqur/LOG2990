@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-/* Documentation adds extra lines, otherwise we are bellow the lint max line. */
 import { ChatService } from '@app/services/chat/chat.service';
 import { GameService, GameState } from '@app/services/game/game.service';
 import { MongodbService } from '@app/services/mongodb/mongodb.service';
@@ -39,8 +38,8 @@ export class GameGateway {
      * @param data The data of the player, including the levelId and the playerName.
      */
     @SubscribeMessage(GameEvents.OnJoinNewGame)
-    onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): void {
-        this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, false);
+    async onJoinSoloClassicGame(socket: Socket, data: { levelId: number; playerName: string }): Promise<void> {
+        await this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, false);
         this.timerService.startTimer({ socket }, this.server, true);
     }
 
@@ -50,15 +49,35 @@ export class GameGateway {
      * It also creates a new game state and starts the timer.
      *
      * @param socket The socket of the player.
-     * @param data The data of the player, including whether the game is multiplayer and the playerName.
+     * @param gameInformation The data of the game, including whether the game is multiplayer and the playerName.
      */
     @SubscribeMessage(GameEvents.OnCreateTimedGame)
-    async onCreateTimedGame(socket: Socket, data: { multiplayer: boolean; playerName: string }): Promise<void> {
-        await this.gameService.createGameState(socket.id, { playerName: data.playerName, levelId: 0 }, data.multiplayer);
-        const level = this.gameService.getRandomLevelForTimedGame(socket.id);
-        this.gameService.setLevelId(socket.id, level.id);
-        socket.emit(GameEvents.ChangeLevelTimedMode, level);
-        this.timerService.startTimer({ socket }, this.server, false);
+    async onCreateTimedGame(socket: Socket, gameInformation: { multiplayer: boolean; playerName: string }): Promise<void> {
+        await this.gameService.createGameState(socket.id, { playerName: gameInformation.playerName, levelId: 0 }, gameInformation.multiplayer);
+        if (gameInformation.multiplayer) {
+            const otherSocketId = this.gameService.findAvailableGame(socket.id, 0);
+            if (otherSocketId) {
+                const level = this.gameService.getRandomLevelForTimedGame(socket.id);
+                const otherSocket = this.server.sockets.sockets.get(otherSocketId);
+                socket.emit(GameEvents.StartTimedGameMultiplayer, {
+                    levelId: level.id,
+                    otherPlayerName: this.gameService.getGameState(otherSocketId).playerName,
+                });
+                otherSocket.emit(GameEvents.StartTimedGameMultiplayer, {
+                    levelId: level.id,
+                    otherPlayerName: gameInformation.playerName,
+                });
+                this.gameService.setLevelId(socket.id, level.id);
+                this.gameService.setLevelId(otherSocketId, level.id);
+                this.gameService.connectRooms(socket, otherSocket);
+                this.timerService.startTimer({ socket, otherSocketId }, this.server, false);
+            }
+        } else {
+            const level = this.gameService.getRandomLevelForTimedGame(socket.id);
+            this.gameService.setLevelId(socket.id, level.id);
+            socket.emit(GameEvents.ChangeLevelTimedMode, level);
+            this.timerService.startTimer({ socket }, this.server, false);
+        }
     }
 
     /**
@@ -80,13 +99,14 @@ export class GameGateway {
             if (this.handleTimedGame(socket, gameState)) return;
         }
         socket.emit(GameEvents.ProcessedClick, dataToSend);
+        this.chatService.sendSystemMessage({ socket, server: this.server }, dataToSend, gameState);
         const otherSocketId = gameState.otherSocketId;
-        this.chatService.sendSystemMessage(socket, dataToSend, gameState);
-
         if (otherSocketId) {
-            dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
+            if (!gameState.timedLevelList) {
+                dataToSend.amountOfDifferencesFoundSecondPlayer = dataToSend.amountOfDifferencesFound;
+            }
             if (dataToSend.differencePixels.length > 0) {
-                socket.broadcast.to(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
+                this.server.sockets.sockets.get(otherSocketId).emit(GameEvents.ProcessedClick, dataToSend);
             }
         }
 
@@ -95,7 +115,6 @@ export class GameGateway {
         const startDate = new Date(this.timerService.getStartDate(socket.id));
         const lengthGame = this.timerService.getTime(socket.id);
         if (this.gameService.verifyWinCondition(socket, this.server, dataToSend.totalDifferences)) {
-            socket.emit(GameEvents.Victory);
             await this.mongodbService.addGameHistory({
                 startDate,
                 lengthGame,
@@ -104,7 +123,13 @@ export class GameGateway {
                 secondPlayerName,
                 hasPlayerAbandoned: false,
             });
-            this.mongodbService.updateHighscore(this.timerService.getTime(socket.id), gameState);
+            // The timer counts one more second when the game ends, even though the player finished the game.
+            const playerPosition: number = await this.mongodbService.updateHighscore(this.timerService.getTime(socket.id) - 1, gameState);
+            if (playerPosition) {
+                await this.chatService.sendSystemGlobalHighscoreMessage(this.server, gameState, playerPosition);
+                this.server.emit(GameEvents.RefreshLevels);
+            }
+            socket.emit(GameEvents.Victory, playerPosition);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
 
@@ -127,13 +152,12 @@ export class GameGateway {
      * @param data The data of the player, including the levelId and the playerName.
      */
     @SubscribeMessage(GameEvents.OnGameSelection)
-    onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): void {
+    async onGameSelection(socket: Socket, data: { levelId: number; playerName: string }): Promise<void> {
         if (data.playerName.length <= 1) {
             socket.emit(GameEvents.InvalidName);
             return;
         }
-
-        this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, true);
+        await this.gameService.createGameState(socket.id, { levelId: data.levelId, playerName: data.playerName }, true);
         const otherPlayerId = this.gameService.findAvailableGame(socket.id, data.levelId);
         if (otherPlayerId) {
             this.gameService.bindPlayers(socket.id, otherPlayerId);
@@ -194,6 +218,7 @@ export class GameGateway {
     onGameRejected(socket: Socket): void {
         this.server.emit(GameEvents.UpdateSelection, { levelId: this.gameService.getGameState(socket.id).levelId, canJoin: true });
         this.cancelGame(socket);
+        this.gameService.deleteUserFromGame(socket);
     }
 
     /**
@@ -209,21 +234,55 @@ export class GameGateway {
     }
 
     /**
+     * This method is called cancels a timed game while waiting for a second player.
+     *
+     * @param socket The socket of the player.
+     */
+    @SubscribeMessage(GameEvents.OnTimedGameCancelled)
+    onTimedGameCancelled(socket: Socket): void {
+        if (this.gameService.getGameState(socket.id) && !this.gameService.getGameState(socket.id).isInGame) {
+            this.gameService.deleteUserFromGame(socket);
+        }
+    }
+
+    /**
      * This method is called when a player tries to delete a level.
      * It checks if the level is being played and if it is, it adds it to the deletion queue.
      * It also emits a event to all players to shut down anyone trying to play the level.
      * It also removes the level from the list of levels that players can join.
      *
-     * @param socket The socket of the player.
      * @param levelId The id of the level to be deleted.
      */
     @SubscribeMessage(GameEvents.OnDeleteLevel)
-    onDeleteLevel(socket: Socket, levelId: number): void {
+    async onDeleteLevel(socket: Socket, levelId: number): Promise<void> {
         this.server.emit(GameEvents.DeleteLevel, levelId);
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(levelId, true);
+        await this.gameService.removeLevel(levelId, true);
+        this.server.emit(GameEvents.RefreshLevels);
+    }
+
+    /**
+     * This method is called when a player tries to delete all the levels.
+     * It checks if the level is being played and if it is, it adds it to the deletion queue.
+     * It also emits a event to all players to shut down anyone trying to play the level.
+     * It also removes the level from the list of levels that players can join.
+     */
+    @SubscribeMessage(GameEvents.OnDeleteAllLevels)
+    onDeleteAllLevels(socket: Socket): void {
+        this.mongodbService.getAllLevels().then(async (levels) => {
+            for (const level of levels) {
+                await this.onDeleteLevel(socket, level.id);
+            }
+            this.server.emit(GameEvents.RefreshLevels);
+        });
+    }
+
+    @SubscribeMessage(GameEvents.OnResetLevelHighScore)
+    onResetLevelHighScore(socket: Socket, levelId: number): void {
+        this.mongodbService.resetLevelHighScore(levelId);
+        this.server.emit(GameEvents.RefreshLevels, levelId);
     }
 
     /**
@@ -235,7 +294,7 @@ export class GameGateway {
     @SubscribeMessage(GameEvents.OnMessageReception)
     onMessageReception(socket: Socket, message: ChatMessage): void {
         const gameState = this.gameService.getGameState(socket.id);
-        this.chatService.sendToBothPlayers(socket, message, gameState);
+        this.chatService.sendToBothPlayers({ socket, server: this.server }, message, gameState);
     }
 
     /**
@@ -278,14 +337,22 @@ export class GameGateway {
     async onHintRequest(socket: Socket): Promise<void> {
         if (this.timerService.getCurrentTime(socket.id) > 0) {
             const data = await this.gameService.askHint(socket.id);
-            if (data !== undefined) {
-                this.timerService.addTime(this.server, socket.id, Constants.HINT_PENALTY);
+            if (data) {
                 this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
+                const gameState = this.gameService.getGameState(socket.id);
+                const hintPenalty = gameState.timedLevelList ? -gameState.penaltyTime : gameState.penaltyTime;
+                this.timerService.addTime(this.server, socket.id, hintPenalty);
                 socket.emit(GameEvents.HintRequest, data);
             }
         }
     }
-
+    /**
+     * This method is called to refresh the list of levels.
+     */
+    @SubscribeMessage(GameEvents.OnRefreshLevels)
+    async onRefreshLevels(): Promise<void> {
+        this.server.emit(GameEvents.RefreshLevels);
+    }
     /**
      * This method is called when a player disconnects.
      * Handles unexpected disconnections such as page refreshes.
@@ -307,27 +374,31 @@ export class GameGateway {
     private async handlePlayerLeavingGame(socket: Socket): Promise<void> {
         const gameState = this.gameService.getGameState(socket.id);
         if (gameState) {
-            const endDate = new Date();
-            const gameHistory = {
-                startDate: this.timerService.getStartDate(socket.id),
-                lengthGame: !gameState.timedLevelList
-                    ? this.timerService.getTime(socket.id)
-                    : Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
-                isClassic: !gameState.timedLevelList ? true : false,
-                firstPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : gameState.playerName,
-                secondPlayerName: gameState.otherSocketId ? gameState.playerName : undefined,
-                hasPlayerAbandoned: true,
-            } as GameHistory;
-            await this.mongodbService.addGameHistory(gameHistory);
             if (gameState.otherSocketId) {
                 const otherSocket = this.server.sockets.sockets.get(gameState.otherSocketId);
-                this.chatService.abandonMessage(socket, gameState);
+                this.chatService.abandonMessage(this.server, gameState);
                 otherSocket.emit(GameEvents.OpponentAbandoned);
-                this.gameService.deleteUserFromGame(otherSocket);
+                this.gameService.setOtherPlayerAbandoned(otherSocket.id);
             }
-            this.gameService.deleteUserFromGame(socket);
+            if (!gameState.timedLevelList || !gameState.otherSocketId) {
+                const endDate = new Date();
+                const gameHistory = {
+                    startDate: this.timerService.getStartDate(socket.id),
+                    lengthGame: !gameState.timedLevelList
+                        ? this.timerService.getTime(socket.id)
+                        : Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
+                    isClassic: !gameState.timedLevelList ? true : false,
+                    firstPlayerName: gameState.otherSocketId
+                        ? this.gameService.getGameState(gameState.otherSocketId).playerName
+                        : gameState.playerName,
+                    secondPlayerName: gameState.otherSocketId ? gameState.playerName : undefined,
+                    hasPlayerAbandoned: true,
+                } as GameHistory;
+                await this.mongodbService.addGameHistory(gameHistory);
+                this.gameService.deleteUserFromGame(socket);
+                this.timerService.stopTimer(socket.id);
+            }
             this.gameService.removeLevel(gameState.levelId, false);
-            this.timerService.stopTimer(socket.id);
         }
     }
 
@@ -340,9 +411,11 @@ export class GameGateway {
     private cancelGame(socket: Socket): void {
         this.gameService.setIsGameFound(socket.id, false);
         const secondPlayerId = this.gameService.getGameState(socket.id).otherSocketId;
-        const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
-        this.gameService.deleteUserFromGame(secondPlayerSocket);
-        secondPlayerSocket.emit(GameEvents.RejectedGame);
+        if (secondPlayerId) {
+            const secondPlayerSocket = this.server.sockets.sockets.get(secondPlayerId);
+            this.gameService.deleteUserFromGame(secondPlayerSocket);
+            secondPlayerSocket.emit(GameEvents.RejectedGame);
+        }
     }
 
     /**
@@ -356,7 +429,8 @@ export class GameGateway {
      * @returns True if the player has finished the timed game, false otherwise.
      */
     private handleTimedGame(socket: Socket, gameState: GameState): boolean {
-        this.timerService.addTime(this.server, socket.id, Constants.FOUND_DIFFERENCE_BONUS);
+        this.timerService.addTime(this.server, socket.id, gameState.bonusTime);
+        const otherSocketId = gameState.otherSocketId;
         if (gameState.timedLevelList.length === 0) {
             const endDate = new Date();
             const gameHistory = {
@@ -364,17 +438,18 @@ export class GameGateway {
                 lengthGame: Math.ceil((endDate.getTime() - this.timerService.getStartDate(socket.id).getTime()) / Constants.millisecondsInOneSecond),
                 isClassic: false,
                 firstPlayerName: gameState.playerName,
-                secondPlayerName: gameState.otherSocketId ? this.gameService.getGameState(gameState.otherSocketId).playerName : undefined,
+                secondPlayerName: otherSocketId ? this.gameService.getGameState(otherSocketId).playerName : undefined,
                 hasPlayerAbandoned: false,
             } as GameHistory;
             this.mongodbService.addGameHistory(gameHistory);
-            socket.emit(GameEvents.TimedModeFinished, true);
+            this.server.to(socket.id).emit(GameEvents.TimedModeFinished, true);
             this.timerService.stopTimer(socket.id);
             this.gameService.deleteUserFromGame(socket);
             return true;
         }
         const level = this.gameService.getRandomLevelForTimedGame(socket.id);
         this.gameService.setLevelId(socket.id, level.id);
+        if (otherSocketId) this.gameService.setLevelId(otherSocketId, level.id);
         this.server.to(socket.id).emit(GameEvents.ChangeLevelTimedMode, level);
         return false;
     }

@@ -32,8 +32,7 @@ export class SocketHandler {
      * @returns a boolean indicating if a socket is alive at a given gateway.
      */
     isSocketAlive(gateway: string): boolean {
-        const socket = this.getSocket(gateway);
-        return socket !== undefined && socket.connected;
+        return !!this.getSocket(gateway)?.connected;
     }
 
     /**
@@ -102,7 +101,7 @@ export class SocketHandler {
      * @param data The data provided with the event. This parameter is options and may not be provided.
      */
     send<T>(gateway: string, event: string, data?: T): void {
-        if (data !== undefined) {
+        if (data) {
             this.getSocket(gateway)?.emit(event, data);
         } else {
             this.getSocket(gateway)?.emit(event);

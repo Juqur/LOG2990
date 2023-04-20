@@ -12,6 +12,7 @@
     display: flex;
     justify-content: space-evenly;
     flex-wrap: nowrap;
+    height: 600px;
 }
 
 .bottom-container {
@@ -27,11 +28,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px 14px;
+    padding: 10px 25px;
     border-radius: 60px;
-    border: none;
-    color: #fff;
-    background: #3b7ff6;
+    color: #eaac8b;
+    background: transparent;
+    border: 1px solid #eaac8b;
 }
 
 .mat-orange {
@@ -49,4 +50,29 @@
     flex-direction: column;
     justify-content: space-between;
     background-color: #355070;
+}
+
+.side-button {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-color: transparent;
+    background-color: #eaac8b;
+    padding: 5px;
+    border-radius: 50%;
+    color: white;
+    z-index: 11;
+    cursor: pointer;
+}
+
+.side-button:hover {
+    transition: 0.1s;
+    border-color: white;
+}
+
+.side-button:disabled {
+    color: black;
+    background-color: rgba(0, 0, 0, 0.26);
+    border-color: transparent !important;
+    cursor: default;
 }

@@ -1,6 +1,7 @@
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { DialogData } from '@app/interfaces/dialogs';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 
 @Component({
     selector: 'app-pop-up-dialog',
