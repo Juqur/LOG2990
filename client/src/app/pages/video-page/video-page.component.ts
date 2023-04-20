@@ -39,9 +39,16 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     currentLevel: Level | undefined;
     videoSpeed: number = Constants.NORMAL_SPEED;
     timeFrame: number = 0;
-    lastTimeFrame: number = VideoService.getStackElement(VideoService.getStackLength() - 1).time;
     messageCount: number = 0;
     isStart: boolean = true;
+    lastTimeFrame: {
+        time: number;
+        found: boolean;
+        playerDifferencesCount: number;
+        secondPlayerDifferencesCount: number;
+        defaultCanvas: HTMLCanvasElement;
+        diffCanvas: HTMLCanvasElement;
+    };
     videoFrame: {
         time: number;
         found: boolean;
@@ -49,8 +56,8 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
         secondPlayerDifferencesCount: number;
         defaultCanvas: HTMLCanvasElement;
         diffCanvas: HTMLCanvasElement;
-    } = VideoService.getStackElement(VideoService.pointer);
-    messageFrame: { chatMessage: ChatMessage; time: number } = VideoService.getMessagesStackElement(this.messageCount);
+    };
+    messageFrame: { chatMessage: ChatMessage; time: number };
 
     // private popUpService: PopUpService;
     private showVideo: ReturnType<typeof setInterval>;
@@ -65,6 +72,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit(): void {
         this.settingGameParameters();
+        this.setFirstFrame();
     }
 
     ngAfterViewInit(): void {
@@ -110,11 +118,11 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     startStopVideo(): void {
         if (this.isStart) {
             this.videoTimer.startTimer();
-            if (this.timeFrame < this.lastTimeFrame) {
+            if (this.timeFrame < this.lastTimeFrame.time) {
                 this.playVideo();
             }
         } else {
-            if (this.timeFrame < this.lastTimeFrame) {
+            if (this.timeFrame < this.lastTimeFrame.time) {
                 this.pauseVideo();
                 this.videoTimer.stopTimer();
             }
@@ -214,7 +222,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private handleSpeed(): void {
         this.pauseVideo();
-        if (this.timeFrame < this.lastTimeFrame) {
+        if (this.timeFrame < this.lastTimeFrame.time) {
             this.playVideo();
         }
     }
@@ -238,7 +246,7 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      * This method will handle the last frame of the video.
      */
     private handleLastFrame(): void {
-        if (this.timeFrame >= this.lastTimeFrame) {
+        if (this.timeFrame >= this.lastTimeFrame.time) {
             this.pauseVideo();
             if (VideoService.isWinning) {
                 const videoDialogData: DialogData = {
@@ -303,5 +311,14 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
     private settingGameImage(): void {
         this.originalPlayArea.setContext(VideoService.getStackElement(0).defaultCanvas.getContext('2d') as CanvasRenderingContext2D);
         this.differencePlayArea.setContext(VideoService.getStackElement(0).diffCanvas.getContext('2d') as CanvasRenderingContext2D);
+    }
+
+    /**
+     * This method will set the first frame of the video.
+     */
+    private setFirstFrame(): void {
+        this.lastTimeFrame = VideoService.getStackElement(VideoService.getStackLength() - 1);
+        this.videoFrame = VideoService.getStackElement(VideoService.pointer);
+        this.messageFrame = VideoService.getMessagesStackElement(this.messageCount);
     }
 }
