@@ -14,7 +14,7 @@ describe('MessageBoxComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [MessageBoxComponent, MatIcon],
             providers: [AppMaterialModule],
-            imports:[MatIconModule]
+            imports: [MatIconModule],
         }).compileComponents();
 
         fixture = TestBed.createComponent(MessageBoxComponent);

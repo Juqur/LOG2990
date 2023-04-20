@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -24,12 +24,12 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./game-page.component.scss'],
     providers: [DrawService, CommunicationService, TimerService],
 })
-export class GamePageComponent implements OnInit, OnDestroy {
+export class GamePageComponent implements OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('tempVideoOriginal') tempVideoOriginal!: PlayAreaComponent;
+    @ViewChild('tempVideoDiff') tempVideoDiff!: PlayAreaComponent;
     @ViewChild('originalPlayArea', { static: false }) private originalPlayArea!: PlayAreaComponent;
     @ViewChild('differencePlayArea', { static: false }) private differencePlayArea!: PlayAreaComponent;
     @ViewChild('tempDifferencePlayArea', { static: false }) private tempDifferencePlayArea!: PlayAreaComponent;
-    @ViewChild('tempVideoOriginal') tempVideoOriginal!: PlayAreaComponent;
-    @ViewChild('tempVideoDiff') tempVideoDiff!: PlayAreaComponent;
     @ViewChild('hintShapeCanvas', { static: false }) private hintShapeCanvas!: ElementRef<HTMLCanvasElement>;
 
     nbDiff: number = Constants.INIT_DIFF_NB;

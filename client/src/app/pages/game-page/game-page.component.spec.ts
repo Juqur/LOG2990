@@ -50,7 +50,13 @@ describe('GamePageComponent', () => {
             'playSuccessSound',
         ]);
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['on', 'isSocketAlive', 'send', 'connect', 'removeListener']);
-        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout','getCanvasRenderingContext2D']);
+        playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', [
+            'getCanvas',
+            'drawPlayArea',
+            'flashArea',
+            'timeout',
+            'getCanvasRenderingContext2D',
+        ]);
         activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
         activatedRoute.snapshot.params = { id: 1 };
         activatedRoute.snapshot.queryParams = { playerName: 'Alice', opponent: 'Bob' };
@@ -122,11 +128,11 @@ describe('GamePageComponent', () => {
     });
 
     describe('ngAfterViewInit', () => {
-       it('should call addToVideoStack', () => {
-           const addToVideoStackSpy = spyOn(VideoService, 'addToVideoStack');
-           component.ngAfterViewInit();
-           expect(addToVideoStackSpy).toHaveBeenCalled();
-       }); 
+        it('should call addToVideoStack', () => {
+            const addToVideoStackSpy = spyOn(VideoService, 'addToVideoStack');
+            component.ngAfterViewInit();
+            expect(addToVideoStackSpy).toHaveBeenCalled();
+        });
     });
 
     describe('ngOnDestroy', () => {

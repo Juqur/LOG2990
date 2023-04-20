@@ -116,9 +116,8 @@ describe('VideoPageComponent', () => {
         const inputCanvases = { defaultCanvas: {} as unknown as HTMLCanvasElement, diffCanvas: {} as unknown as HTMLCanvasElement };
 
         it('should not call drawImage if input is undefined', () => {
-        component.applyChanges(undefined);
-        expect(drawImageSpy).not.toHaveBeenCalled();
-        
+            component.applyChanges(undefined);
+            expect(drawImageSpy).not.toHaveBeenCalled();
         });
         it('should call drawImage', () => {
             component['originalPlayArea'] = playAreaComponentSpy;
@@ -127,7 +126,6 @@ describe('VideoPageComponent', () => {
             component.applyChanges(inputCanvases);
             expect(drawImageSpy).toHaveBeenCalledTimes(2);
         });
-
     });
 
     describe('startStopVideo', () => {
