@@ -32,7 +32,14 @@ describe('VideoPageComponent', () => {
 
     beforeEach(async () => {
         popUpServiceSpy = jasmine.createSpyObj('PopUpService', ['openDialog']);
-        videoServiceSpy = jasmine.createSpyObj('VideoService', ['addToVideoStack', 'getStackElement', 'getStackLength', 'resetStack']);
+        videoServiceSpy = jasmine.createSpyObj('VideoService', [
+            'addToVideoStack',
+            'getStackElement',
+            'getStackLength',
+            'resetStack',
+            'getFirstPlayerName',
+            'getSecondPlayerName',
+        ]);
         videoTimerComponentSpy = jasmine.createSpyObj('VideoTimerComponent', ['startTimer', 'stopTimer']);
         playAreaComponentSpy = jasmine.createSpyObj('PlayAreaComponent', ['getCanvas', 'drawPlayArea', 'flashArea', 'timeout']);
         settingGameParametersSpy = spyOn(VideoPageComponent.prototype, 'settingGameParameters' as never);
@@ -375,28 +382,16 @@ describe('VideoPageComponent', () => {
     it('settingGameParameters', () => {
         VideoService.firstPlayerName = 'first name';
         VideoService.secondPlayerName = 'second name';
-        spyOn(VideoService, 'getFirstPlayerName').and.returnValue('first name');
-        spyOn(VideoService, 'getSecondPlayerName').and.returnValue('second name');
         component['settingGameParameters']();
         expect(VideoService.firstPlayerName).toEqual('first name');
         expect(VideoService.secondPlayerName).toEqual('second name');
     });
 
     it('settingGameImage', () => {
-        // const spy = spyOn(component['videoTimer'], 'settingGameImage' as never);
         component['settingGameImage']();
-        // expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('setFirstFrame', () => {
-        // spyOn(VideoService, 'getStackElement').and.returnValue({
-        //     time: 1,
-        //     found: true,
-        //     playerDifferencesCount: 2,
-        //     secondPlayerDifferencesCount: 1,
-        //     defaultCanvas: document.createElement('canvas'),
-        //     diffCanvas: document.createElement('canvas'),
-        // });
         VideoService['videoStack'] = [
             {
                 time: 1,

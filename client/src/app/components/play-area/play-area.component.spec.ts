@@ -111,4 +111,28 @@ describe('PlayAreaComponent', () => {
         component.ngOnChanges();
         expect(spy).toHaveBeenCalledTimes(1);
     });
+
+    it('getFlashingCopy should call drawImage', () => {
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        component.getFlashingCopy();
+        expect(drawImageSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('setContext should clearRect and drawImage', () => {
+        const clearRectSpy = spyOn(CanvasRenderingContext2D.prototype, 'clearRect');
+        const drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        component.setContext(context);
+        expect(clearRectSpy).toHaveBeenCalledTimes(1);
+        expect(drawImageSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('getCanvasRenderingContext2D should return the context of the canvas', () => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        component['canvas'].nativeElement = canvas;
+        const context2 = component.getCanvasRenderingContext2D();
+        expect(context).toEqual(context2);
+    });
 });
