@@ -453,26 +453,25 @@ describe('GameGateway', () => {
         });
 
         it('should add time to the timer ', async () => {
+            gameState.timedLevelList = undefined;
             const expectedTime = 5;
+            gameState.penaltyTime = expectedTime;
             await gateway.onHintRequest(socket);
             expect(addTimeSpy).toHaveBeenCalledWith(gateway['server'], socket.id, expectedTime);
         });
 
         it('should subtract time to the timer ', async () => {
-            gameState.timedLevelList = undefined;
-            gameState.penaltyTime = 1;
-            jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
-            jest.spyOn(timerService, 'getCurrentTime').mockReturnValue(1);
+            const expectedTime = 1;
+            gameState.penaltyTime = expectedTime;
+            getGameStateSpy.mockReturnValue(gameState);
+            getCurrentTimeSpy.mockReturnValue(1);
             await gateway.onHintRequest(socket);
-            expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]); // check the emitted event
-            expect(sendMessageSpy).toBeCalledWith(socket, 'Indice utilisé');
-            expect(askHintSpy).toBeCalledWith(socket.id);
-            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, expect.any(Number));
+            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, -expectedTime);
         });
 
         it('should call sendMessageToPlayer', async () => {
             await gateway.onHintRequest(socket);
-            expect(sendMessageSpy).toBeCalledTimes(1);
+            expect(sendMessageSpy).toBeCalledWith(socket, 'Indice utilisé');
         });
 
         it('should call getGameState', async () => {
@@ -482,8 +481,7 @@ describe('GameGateway', () => {
 
         it('should call emit', async () => {
             await gateway.onHintRequest(socket);
-            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, expect.any(Number));
-            expect(emitSpy).toBeCalledTimes(1);
+            expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]);
         });
     });
 
