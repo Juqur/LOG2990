@@ -41,7 +41,7 @@ describe('GamePageService', () => {
 
     beforeEach(() => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        spyOn(Audio.prototype, 'play').and.callFake(() => {});
+        spyOn(Audio.prototype, 'play');
 
         socketHandlerSpy = jasmine.createSpyObj('SocketHandler', ['send']);
         mouseServiceSpy = jasmine.createSpyObj('MouseService', ['getMousePosition', 'getX', 'getY']);
