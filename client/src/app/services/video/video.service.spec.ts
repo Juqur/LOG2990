@@ -69,4 +69,31 @@ describe('VideoService', () => {
         VideoService.getMessagesStackElement(1);
         expect(VideoService.getMessagesStackElement(1)).toEqual({ chatMessage: chatMessage2, time });
     });
+
+    it('getStackElement should return the element of the video stack', () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 150;
+        canvas.height = 150;
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        VideoService.addToVideoStack(0, true, 0, 0, context, context);
+        VideoService.getStackElement(0);
+        expect(VideoService.getStackElement(0)).toEqual({
+            time: 0,
+            found: true,
+            playerDifferencesCount: 0,
+            secondPlayerDifferencesCount: 0,
+            defaultCanvas: canvas,
+            diffCanvas: canvas,
+        });
+    });
+
+    it('getStackLength should return the length of the video stack', () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 150;
+        canvas.height = 150;
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        VideoService.addToVideoStack(0, true, 0, 0, context, context);
+        VideoService.getStackLength();
+        expect(VideoService.getStackLength()).toEqual(1);
+    });
 });
