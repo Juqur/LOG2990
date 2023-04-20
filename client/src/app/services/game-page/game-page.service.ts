@@ -30,7 +30,7 @@ export class GamePageService {
     private diffImageSrc: string = '';
     private originalPlayArea: PlayAreaComponent;
     private differencePlayArea: PlayAreaComponent;
-    private tempDiffPlayArea: PlayAreaComponent;
+    private tempDifferencePlayArea: PlayAreaComponent;
     private winGameDialogData: DialogData = {
         textToSend: 'Vous avez gagnez. Voulez-vous voir la reprise vidéo de la partie?',
         closeButtonMessage: 'Non',
@@ -144,7 +144,7 @@ export class GamePageService {
         clickedOriginalImage: boolean,
         playerDifferencesCount: number,
         secondPlayerDifferencesCount: number,
-    ): void {
+    ): boolean {
         const response = this.validateResponse(gameData.differencePixels);
         if (response) {
             if (!clickedOriginalImage) {

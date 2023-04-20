@@ -438,9 +438,9 @@ export class CreationPageService {
     /**
      * This method is used to display an dialog with an error message.
      *
-     * @param msg the error message we want to display.
+     * @param message the error message we want to display.
      */
-    private errorDialog(msg = 'Une erreur est survenue'): void {
+    private errorDialog(message = 'Une erreur est survenue'): void {
         if (this.popUpService.dialogRef) this.popUpService.dialogRef.close();
         this.popUpService.openDialog(Dialogs.errorDialog(message));
     }

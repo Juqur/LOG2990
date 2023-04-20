@@ -346,7 +346,7 @@ describe('GamePageService', () => {
             spyOn(service, 'copyDiffPlayAreaContext' as never);
             spyOn(service, 'addToVideoStack' as never);
             const delay = 1000;
-            service['resetCanvas']();
+            service['resetCanvas'](false);
             tick(delay);
             expect(playAreaComponentSpy.drawPlayArea).toHaveBeenCalledTimes(2);
         }));
@@ -684,7 +684,7 @@ describe('GamePageService', () => {
         });
     });
 
-    it('copyDiffPlayAreaContext should copy tempDiffPlayArea context to differencePlayArea context', () => {
+    it('copyDiffPlayAreaContext should copy tempDifferencePlayArea context to differencePlayArea context', () => {
         service['copyDiffPlayAreaContext']();
     });
 

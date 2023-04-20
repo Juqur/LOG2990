@@ -2,9 +2,10 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { VideoChatComponent } from '@app/components/video-chat/video-chat.component';
 import { VideoTimerComponent } from '@app/components/video-timer/video-timer.component';
+import { DialogData } from '@app/interfaces/dialogs';
 import { Level } from '@app/levels';
 import { AudioService } from '@app/services/audio/audio.service';
-import { DialogData, PopUpService } from '@app/services/pop-up/pop-up.service';
+import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { VideoService } from '@app/services/video/video.service';
 import { Constants } from '@common/constants';

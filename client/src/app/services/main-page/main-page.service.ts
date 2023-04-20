@@ -5,6 +5,11 @@ import { CommunicationService } from '@app/services/communication/communication.
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 
+export interface TimedGameData {
+    levelId: number;
+    otherPlayerName: string;
+}
+
 /**
  * Service that handles the main page.
  *

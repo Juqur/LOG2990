@@ -16,8 +16,8 @@ import { DialogData } from '@app/interfaces/dialogs';
  * @class PopUpService
  */
 export class PopUpService {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dialogRef: MatDialogRef<PopUpDialogComponent, any>;
+    dialogRef: MatDialogRef<PopUpDialogComponent>;
+
     constructor(public dialog: MatDialog, private router: Router) {}
 
     /**
