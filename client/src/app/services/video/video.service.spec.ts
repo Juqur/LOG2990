@@ -48,14 +48,14 @@ describe('VideoService', () => {
 
     it('getFirstPlayerName should return the first player name', () => {
         VideoService.firstPlayerName = 'player1';
-        VideoService.getFirstPlayerName();
-        expect(VideoService.getFirstPlayerName()).toEqual('player1');
+        const result = VideoService.getFirstPlayerName();
+        expect(result).toEqual('player1');
     });
 
     it('getSecondPlayerName should return the second player name', () => {
         VideoService.secondPlayerName = 'player2';
-        VideoService.getSecondPlayerName();
-        expect(VideoService.getSecondPlayerName()).toEqual('player2');
+        const result = VideoService.getSecondPlayerName();
+        expect(result).toEqual('player2');
     });
 
     it('getMessagesStackElement should return the element of the message stack', () => {
@@ -66,18 +66,27 @@ describe('VideoService', () => {
             { chatMessage: chatMessage1, time },
             { chatMessage: chatMessage2, time },
         ];
-        VideoService.getMessagesStackElement(1);
-        expect(VideoService.getMessagesStackElement(1)).toEqual({ chatMessage: chatMessage2, time });
+        const result = VideoService.getMessagesStackElement(1);
+        expect(result).toEqual({ chatMessage: chatMessage2, time });
     });
 
     it('getStackElement should return the element of the video stack', () => {
         const canvas = document.createElement('canvas');
         canvas.width = 150;
         canvas.height = 150;
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        VideoService.addToVideoStack(0, true, 0, 0, context, context);
-        VideoService.getStackElement(0);
-        expect(VideoService.getStackElement(0)).toEqual({
+        VideoService['videoStack'] = [
+            {
+                time: 0,
+                found: true,
+                playerDifferencesCount: 0,
+                secondPlayerDifferencesCount: 0,
+                defaultCanvas: canvas,
+                diffCanvas: canvas,
+            },
+        ];
+
+        const result = VideoService.getStackElement(0);
+        expect(result).toEqual({
             time: 0,
             found: true,
             playerDifferencesCount: 0,
@@ -91,9 +100,17 @@ describe('VideoService', () => {
         const canvas = document.createElement('canvas');
         canvas.width = 150;
         canvas.height = 150;
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        VideoService.addToVideoStack(0, true, 0, 0, context, context);
-        VideoService.getStackLength();
-        expect(VideoService.getStackLength()).toEqual(1);
+        VideoService['videoStack'] = [
+            {
+                time: 0,
+                found: true,
+                playerDifferencesCount: 0,
+                secondPlayerDifferencesCount: 0,
+                defaultCanvas: canvas,
+                diffCanvas: canvas,
+            },
+        ];
+        const result = VideoService.getStackLength();
+        expect(result).toEqual(1);
     });
 });

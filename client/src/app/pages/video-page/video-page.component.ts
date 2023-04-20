@@ -94,7 +94,6 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
         const frame = VideoService.getStackElement(VideoService.pointer++);
-        // console.log(frame);
         this.applyChanges(frame);
     }
 
@@ -105,8 +104,12 @@ export class VideoPageComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     applyChanges(canvas: { defaultCanvas: HTMLCanvasElement; diffCanvas: HTMLCanvasElement } | undefined): void {
         if (!canvas) return;
-        const defaultContext = this.originalPlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        const diffContext = this.differencePlayArea.canvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const defaultContext = this.originalPlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        const diffContext = this.differencePlayArea
+            .getCanvas()
+            .nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
         defaultContext.drawImage(canvas.defaultCanvas, 0, 0);
         diffContext.drawImage(canvas.diffCanvas, 0, 0);

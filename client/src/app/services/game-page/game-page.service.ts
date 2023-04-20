@@ -347,8 +347,8 @@ export class GamePageService {
                 found,
                 playerDifferencesCount,
                 secondPlayerDifferencesCount,
-                this.originalPlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
-                this.differencePlayArea.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D,
+                this.originalPlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D,
+                this.differencePlayArea.getCanvas().nativeElement.getContext('2d') as CanvasRenderingContext2D,
             );
     }
 
