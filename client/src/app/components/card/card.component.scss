@@ -71,9 +71,9 @@
     border: 0.15em solid #f63b3b;
 }
 
-.action-button.reinitiate-button{
-    color: #FFFF00;
-    border: 0.15em solid #FFFF00;
+.action-button.reinitiate-button {
+    color: #eaac8b;
+    border: 0.15em solid #eaac8b;
 }
 
 .action-button:hover {
@@ -89,7 +89,7 @@
 }
 
 .action-button.reinitiate-button:hover {
-    background-color: #FFFF00;
+    background-color: #ffff00;
     color: black;
 }
 
@@ -112,7 +112,7 @@
     z-index: 1;
 }
 
-.difficulty-icon {
+.difficulty-info {
     position: relative;
     right: 80px;
     top: 5px;
@@ -126,6 +126,7 @@ img.difficulty-icon {
 
 .title-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     flex: 1 1 auto;

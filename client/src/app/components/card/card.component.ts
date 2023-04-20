@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { DialogData, Dialogs } from '@app/interfaces/dialogs';
+import { Dialogs } from '@app/interfaces/dialogs';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { SocketHandler } from '@app/services/socket-handler/socket-handler.service';
 import { Constants } from '@common/constants';
@@ -23,15 +23,9 @@ export class CardComponent {
     @Input() isSelectionPage: boolean = true;
     @Output() startGameDialogEvent = new EventEmitter();
     @Output() deleteLevelEvent = new EventEmitter<number>();
+    @Output() resetLevelHighScoreEvent = new EventEmitter<number>();
 
     readonly imagePath: string = environment.serverUrl + 'original/';
-
-    private deleteDialogData: DialogData = {
-        textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
-        isConfirmation: true,
-        closeButtonMessage: '',
-        mustProcess: true,
-    };
 
     constructor(private router: Router, public popUpService: PopUpService, private socketHandler: SocketHandler) {}
 
@@ -72,11 +66,10 @@ export class CardComponent {
      * A popup is opened to ask for confirmation.
      */
     deleteLevel(levelId: number): void {
-        this.popUpService.openDialog(this.deleteDialogData);
-        this.popUpService.dialogRef.afterClosed().subscribe((confirmation) => {
-            if (confirmation) {
-                this.deleteLevelEvent.emit(levelId);
-            }
-        });
+        this.deleteLevelEvent.emit(levelId);
+    }
+
+    resetLevelHighScore(levelId: number): void {
+        this.resetLevelHighScoreEvent.emit(levelId);
     }
 }

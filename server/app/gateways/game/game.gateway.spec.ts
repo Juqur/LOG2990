@@ -371,6 +371,15 @@ describe('GameGateway', () => {
         });
     });
 
+    describe('onDeleteAllLevels', () => {
+        it('should call getAllLevelsSpy', () => {
+            jest.spyOn(gateway, 'onDeleteLevel').mockImplementation();
+            const getAllLevelsSpy = jest.spyOn(mongodbService, 'getAllLevels').mockResolvedValue([{} as Level] as Level[]);
+            gateway.onDeleteAllLevels(socket);
+            expect(getAllLevelsSpy).toBeCalledTimes(1);
+        });
+    });
+
     describe('onMessageReception', () => {
         let getGameStateSpy: jest.SpyInstance;
         let sendToBothPlayersSpy: jest.SpyInstance;
@@ -444,26 +453,25 @@ describe('GameGateway', () => {
         });
 
         it('should add time to the timer ', async () => {
+            gameState.timedLevelList = undefined;
             const expectedTime = 5;
+            gameState.penaltyTime = expectedTime;
             await gateway.onHintRequest(socket);
             expect(addTimeSpy).toHaveBeenCalledWith(gateway['server'], socket.id, expectedTime);
         });
 
         it('should subtract time to the timer ', async () => {
-            gameState.timedLevelList = undefined;
-            gameState.penaltyTime = 1;
-            jest.spyOn(gameService, 'getGameState').mockReturnValue(gameState);
-            jest.spyOn(timerService, 'getCurrentTime').mockReturnValue(1);
+            const expectedTime = 1;
+            gameState.penaltyTime = expectedTime;
+            getGameStateSpy.mockReturnValue(gameState);
+            getCurrentTimeSpy.mockReturnValue(1);
             await gateway.onHintRequest(socket);
-            expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]); // check the emitted event
-            expect(sendMessageSpy).toBeCalledWith(socket, 'Indice utilisé');
-            expect(askHintSpy).toBeCalledWith(socket.id);
-            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, expect.any(Number));
+            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, -expectedTime);
         });
 
         it('should call sendMessageToPlayer', async () => {
             await gateway.onHintRequest(socket);
-            expect(sendMessageSpy).toBeCalledTimes(1);
+            expect(sendMessageSpy).toBeCalledWith(socket, 'Indice utilisé');
         });
 
         it('should call getGameState', async () => {
@@ -473,8 +481,7 @@ describe('GameGateway', () => {
 
         it('should call emit', async () => {
             await gateway.onHintRequest(socket);
-            expect(addTimeSpy).toBeCalledWith(gateway['server'], socket.id, expect.any(Number));
-            expect(emitSpy).toBeCalledTimes(1);
+            expect(emitSpy).toHaveBeenCalledWith('hintRequest', [1, 2]);
         });
     });
 
@@ -725,6 +732,20 @@ describe('GameGateway', () => {
             const setLevelSpy = jest.spyOn(gameService, 'setLevelId').mockImplementation();
             gateway['handleTimedGame'](socket, gameState);
             expect(setLevelSpy).toBeCalledWith('otherSocket', 1);
+        });
+    });
+
+    describe('onResetLevelHighScore', () => {
+        it('should call resetLevelHighScore', () => {
+            const spy = jest.spyOn(mongodbService, 'resetLevelHighScore').mockImplementation();
+            gateway['onResetLevelHighScore'](socket, 1);
+            expect(spy).toBeCalledWith(1);
+        });
+
+        it('should emit RefreshLevels', () => {
+            jest.spyOn(mongodbService, 'resetLevelHighScore').mockImplementation();
+            gateway['onResetLevelHighScore'](socket, 1);
+            expect(server.emit).toBeCalledWith('refreshLevels', 1);
         });
     });
 

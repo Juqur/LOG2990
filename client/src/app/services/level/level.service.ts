@@ -24,10 +24,6 @@ export class LevelService {
 
     constructor(private communicationService: CommunicationService, private socketHandler: SocketHandler) {
         this.refreshLevels();
-        this.socketHandler.on('game', 'refreshLevels', () => {
-            this.refreshLevels();
-        });
-
         this.communicationService
             .getGameConstants()
             .pipe(
@@ -87,7 +83,31 @@ export class LevelService {
         return Math.ceil(this.levels.length / Constants.levelsPerPage - 1);
     }
 
-    setNewGameConstants(event: Event) {
+    /**
+     * This method refreshes the levels when a event is emitted from the server.
+     */
+    setupSocket(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
+        this.socketHandler.on('game', 'refreshLevels', () => {
+            this.refreshLevels();
+        });
+    }
+
+    /**
+     * This method removes the listener for the refreshLevels event.
+     */
+    destroySocket(): void {
+        this.socketHandler.removeListener('game', 'refreshLevels');
+    }
+
+    /**
+     * Sets new game constants for all games.
+     *
+     * @param event The event that triggered the function.
+     */
+    setNewGameConstants(event: Event): void {
         if (this.gameConstants) {
             const input = event.target as HTMLInputElement;
             let valueChanged = false;
@@ -121,8 +141,21 @@ export class LevelService {
             }
             if (valueChanged) {
                 this.communicationService.setNewGameConstants(this.gameConstants).subscribe();
+                alert('La valeur a été modifiée avec succès.');
             }
         }
+    }
+
+    /**
+     * Resets the game constants to their default values.
+     */
+    resetGameConstants(): void {
+        this.gameConstants = {
+            initialTime: Constants.INIT_COUNTDOWN_TIME,
+            timePenaltyHint: Constants.HINT_PENALTY,
+            timeGainedDifference: Constants.COUNTDOWN_TIME_WIN,
+        };
+        this.communicationService.resetGameConstants().subscribe();
     }
 
     /**
@@ -176,11 +209,32 @@ export class LevelService {
      * @param levelId The id of the level to delete.
      */
     deleteLevel(levelId: number): void {
-        if (!this.socketHandler.isSocketAlive('game')) {
-            this.socketHandler.connect('game');
-        }
+        this.checkForSocketConnection();
         this.socketHandler.send('game', 'onDeleteLevel', levelId);
         this.removeCard(levelId);
+    }
+
+    /**
+     * This method emits a socket event to the server to delete all levels.
+     */
+    deleteAllLevels(): void {
+        if (this.levels.length < 1) {
+            return;
+        }
+        this.checkForSocketConnection();
+        this.socketHandler.send('game', 'onDeleteAllLevels');
+        this.removeAllCards();
+    }
+
+    /**
+     * This method emits a socket event to the server to reset the level's high score.
+     *
+     * @param levelId The id of the level's high score to reset.
+     */
+    resetLevelHighScore(levelId: number): void {
+        this.checkForSocketConnection();
+        this.socketHandler.send('game', 'onResetLevelHighScore', levelId);
+        this.resetCard(levelId);
     }
 
     /**
@@ -194,6 +248,29 @@ export class LevelService {
     }
 
     /**
+     * This method removes all levels from the levels array.
+     */
+    removeAllCards(): void {
+        this.levels = [];
+        this.updatePageLevels();
+    }
+
+    /**
+     * This method resets the high score of a level.
+     */
+    resetCard(levelId: number): void {
+        this.levels.forEach((level) => {
+            if (level.id === levelId) {
+                level.playerSolo = Constants.defaultPlayerSolo;
+                level.timeSolo = Constants.defaultTimeSolo;
+                level.playerMulti = Constants.defaultPlayerMulti;
+                level.timeMulti = Constants.defaultTimeMulti;
+            }
+        });
+        this.updatePageLevels();
+    }
+
+    /**
      * Updates the levels to show depending on the first shown level attribute.
      */
     private updatePageLevels(): void {
@@ -201,5 +278,14 @@ export class LevelService {
             this.currentPage * Constants.levelsPerPage,
             this.currentPage * Constants.levelsPerPage + Constants.levelsPerPage,
         );
+    }
+
+    /**
+     * Internal method that ensures the socket is connected.
+     */
+    private checkForSocketConnection(): void {
+        if (!this.socketHandler.isSocketAlive('game')) {
+            this.socketHandler.connect('game');
+        }
     }
 }

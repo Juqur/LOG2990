@@ -299,7 +299,7 @@ export class GameService {
      * @param levelId The id of the level.
      * @param isRequestedByUser A boolean flag indicating if it was a request from the user or from the game.
      */
-    removeLevel(levelId: number, isRequestedByUser: boolean): void {
+    async removeLevel(levelId: number, isRequestedByUser: boolean): Promise<void> {
         const index = this.levelDeletionQueue.indexOf(levelId);
         const isLevelBeingPlayed = this.isLevelBeingPlayed(levelId);
 
@@ -308,7 +308,7 @@ export class GameService {
             if (isLevelBeingPlayed) {
                 this.addLevelToDeletionQueue(levelId);
             } else {
-                this.imageService.deleteLevelData(levelId);
+                await this.imageService.deleteLevelData(levelId);
             }
         }
 

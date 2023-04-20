@@ -60,6 +60,34 @@ export namespace Dialogs {
         };
     };
 
+    export const confirmDeleteLevel: DialogData = {
+        textToSend: 'Voulez-vous vraiment supprimer ce niveau?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+        mustProcess: true,
+    };
+
+    export const confirmDeleteAllLevels: DialogData = {
+        textToSend: 'Voulez-vous vraiment supprimer TOUS les niveaux? Ceci sera irréversible.',
+        isConfirmation: true,
+        closeButtonMessage: '',
+        mustProcess: true,
+    };
+
+    export const confirmResetGameConstants: DialogData = {
+        textToSend: 'Voulez-vous vraiment réinitialiser les paramètres de jeu?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+        mustProcess: true,
+    };
+
+    export const confirmResetLevelHighScore: DialogData = {
+        textToSend: 'Voulez-vous vraiment réinitialiser les meilleurs temps de ce niveau?',
+        isConfirmation: true,
+        closeButtonMessage: '',
+        mustProcess: true,
+    };
+
     export const confirmation = (message: string) => {
         return {
             textToSend: message,

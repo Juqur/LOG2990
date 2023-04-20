@@ -69,7 +69,13 @@ describe('CardComponent', () => {
         const spy = spyOn(component.deleteLevelEvent, 'emit');
         component.level.id = 1;
         component.deleteLevel(1);
-        expect(popUpService.openDialog).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('resetLevelHighScore should call resetLevelHighScoreEvent', () => {
+        const spy = spyOn(component.resetLevelHighScoreEvent, 'emit');
+        component.level.id = 1;
+        component.resetLevelHighScore(1);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 });

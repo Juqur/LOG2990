@@ -1,4 +1,4 @@
-.cornerButton {
+.corner-button {
     position: absolute;
     top: 0;
     left: 0;
@@ -12,30 +12,18 @@
 .top-bar-container {
     display: flex;
     justify-content: right;
-    align-items: center;
+    align-items: flex-start;
     padding-right: 20px;
     padding-top: 20px;
     margin-bottom: 40px;
     margin-left: 20px;
 }
 
-.button-settings {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6px 14px;
-    margin-left: 2em;
-    border-radius: 60px;
-    border: none;
-    color: #fff;
-    background: #f63b3b;
-    cursor: pointer;
-}
-
 .selection-card-container {
     display: flex;
     justify-content: space-evenly;
     flex-wrap: nowrap;
+    height: 700px;
 }
 
 .bottom-container {
@@ -51,21 +39,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px 14px;
+    padding: 10px 25px;
     border-radius: 60px;
-    border: none;
-    color: #fff;
-    background: #3b7ff6;
-}
-
-.mat-orange {
-    background-color: orange;
-    color: #fff;
-}
-
-.mat-darkblue {
-    background-color: rgb(21, 21, 132);
-    color: #fff;
+    color: #eaac8b;
+    background: transparent;
+    border: 1px solid #eaac8b;
 }
 
 .container {
@@ -76,15 +54,82 @@
 }
 
 .global-variable-container {
-    background-color: #f63b3b;
-    color: #fff;
-    padding: 10px;
+    border: 2px solid #eaac8b;
+    color: #eaac8b;
+    padding: 20px;
     border-radius: 10px;
 }
 
 mat-form-field {
     width: 400px;
-    margin-left: 10px;
-    margin-right: 10px;
+    padding-inline: 20px;
     font-size: large;
+}
+
+mat-form-field input {
+    color: white;
+}
+
+.side-button {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-color: transparent;
+    background-color: #eaac8b;
+    padding: 5px;
+    border-radius: 50%;
+    color: white;
+    z-index: 11;
+    cursor: pointer;
+}
+
+.side-button:hover {
+    transition: 0.1s;
+    border-color: white;
+}
+
+.side-button:disabled {
+    color: black;
+    background-color: rgba(0, 0, 0, 0.26);
+    border-color: transparent !important;
+    cursor: default;
+}
+
+.menu-button {
+    background-color: #eaac8b00;
+    text-align: center;
+    border: 2px solid #eaac8b;
+    transition: 0.2s;
+    color: #eaac8b;
+    font-size: 100%;
+}
+
+.menu-button span {
+    padding-right: 10px;
+}
+
+.menu-button:hover {
+    transition: 0.2s;
+    background-color: #eaac8b;
+    transform: translate(0px, 5px) scale(1.1);
+    color: #355070;
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.sub-menu-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+mat-hint {
+    color: #eaac8b !important;
 }

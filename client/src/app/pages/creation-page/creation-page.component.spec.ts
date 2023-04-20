@@ -37,6 +37,7 @@ describe('CreationPageComponent', () => {
             'setBrushSize',
             'resetDefaultBackground',
             'resetDiffBackground',
+            'colorPickerMode',
         ]);
     });
 

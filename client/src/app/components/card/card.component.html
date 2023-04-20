@@ -1,15 +1,14 @@
 <div *ngIf="level" class="card">
     <div class="title-container">
         <h2 class="level-name">{{ level.name }}</h2>
+        <p>{{ this.level.isEasy ? 'Facile' : 'Difficile' }}</p>
     </div>
     <div class="image-container">
         <img src="{{ this.imagePath + level.id }}.bmp" class="thumbnail" alt="{{ level.name }}" />
-        <img src="{{ displayDifficultyIcon() }}" class="difficulty-icon"
-            alt="{{ this.level.isEasy ? 'facile' : 'difficile' }}" />
     </div>
     <div class="card-content">
         <div class="carousel-container">
-            <p class="leaderboard-title">LeaderBoard - Top 3</p>
+            <p class="leaderboard-title">Classement - Top 3</p>
             <app-carousel [level]="this.level"></app-carousel>
         </div>
         <div class="card-action">
@@ -19,7 +18,8 @@
                     : 'Créer' }}</button>
             </div>
             <div class="action-button-container" *ngIf="!isSelectionPage">
-                <button mat-raised-button class="action-button reinitiate-button">Réinitialiser</button>
+                <button (click)="resetLevelHighScore(level.id)" mat-raised-button
+                    class="action-button reinitiate-button">Réinitialiser</button>
                 <button (click)="deleteLevel(level.id)" mat-raised-button
                     class="action-button delete-button">Effacer</button>
             </div>

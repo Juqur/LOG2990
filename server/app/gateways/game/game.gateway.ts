@@ -251,16 +251,38 @@ export class GameGateway {
      * It also emits a event to all players to shut down anyone trying to play the level.
      * It also removes the level from the list of levels that players can join.
      *
-     * @param socket The socket of the player.
      * @param levelId The id of the level to be deleted.
      */
     @SubscribeMessage(GameEvents.OnDeleteLevel)
-    onDeleteLevel(socket: Socket, levelId: number): void {
+    async onDeleteLevel(socket: Socket, levelId: number): Promise<void> {
         this.server.emit(GameEvents.DeleteLevel, levelId);
         for (const socketIds of this.gameService.getPlayersWaitingForGame(levelId)) {
             this.server.sockets.sockets.get(socketIds).emit(GameEvents.ShutDownGame);
         }
-        this.gameService.removeLevel(levelId, true);
+        await this.gameService.removeLevel(levelId, true);
+        this.server.emit(GameEvents.RefreshLevels);
+    }
+
+    /**
+     * This method is called when a player tries to delete all the levels.
+     * It checks if the level is being played and if it is, it adds it to the deletion queue.
+     * It also emits a event to all players to shut down anyone trying to play the level.
+     * It also removes the level from the list of levels that players can join.
+     */
+    @SubscribeMessage(GameEvents.OnDeleteAllLevels)
+    onDeleteAllLevels(socket: Socket): void {
+        this.mongodbService.getAllLevels().then(async (levels) => {
+            for (const level of levels) {
+                await this.onDeleteLevel(socket, level.id);
+            }
+            this.server.emit(GameEvents.RefreshLevels);
+        });
+    }
+
+    @SubscribeMessage(GameEvents.OnResetLevelHighScore)
+    onResetLevelHighScore(socket: Socket, levelId: number): void {
+        this.mongodbService.resetLevelHighScore(levelId);
+        this.server.emit(GameEvents.RefreshLevels, levelId);
     }
 
     /**
@@ -316,7 +338,6 @@ export class GameGateway {
         if (this.timerService.getCurrentTime(socket.id) > 0) {
             const data = await this.gameService.askHint(socket.id);
             if (data) {
-                this.timerService.addTime(this.server, socket.id, Constants.HINT_PENALTY);
                 this.chatService.sendMessageToPlayer(socket, 'Indice utilisé');
                 const gameState = this.gameService.getGameState(socket.id);
                 const hintPenalty = gameState.timedLevelList ? -gameState.penaltyTime : gameState.penaltyTime;

@@ -45,6 +45,7 @@ export class MainPageService {
             this.amountOfLevels = levels.length;
         });
     }
+
     /**
      * This method redirects the user to a specific route.
      *

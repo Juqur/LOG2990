@@ -1,66 +1,70 @@
 <app-scale-container>
     <div class="container">
         <header class="top-bar-container">
-            <span class="cornerButton">
-                <button mat-fab color="darkblue" routerLink="/home">
+            <span class="corner-button">
+                <button class="side-button" routerLink="/home">
                     <mat-icon>home</mat-icon>
                 </button>
             </span>
             <div class="global-variable-container prevent-select" id="credits">
-                <h2 class="team-name">Variables Globales</h2>
-                <mat-form-field>
-                    <input
-                        matInput
-                        id="initial-time-input"
-                        placeholder="temps initial du compte à rebours (secondes)"
-                        (blur)="this.levelService.setNewGameConstants($event)"
-                        [value]="this.levelService.initialTime"
-                    />
+                <h1 class="team-name">Variables Globales</h1>
+                <mat-form-field [color]="'warn'">
+                    <p>Temps initial du compte à rebours</p>
+                    <input matInput id="initial-time-input" (blur)="this.levelService.setNewGameConstants($event)"
+                        [value]="this.levelService.initialTime" />
+                    <mat-hint>Entre 1 et 120 secondes</mat-hint>
                 </mat-form-field>
-                <mat-form-field>
-                    <input
-                        matInput
-                        id="time-penalty-hint-input"
-                        placeholder="temps de pénalité pour l’utilisation d’un indice (secondes)"
-                        (blur)="this.levelService.setNewGameConstants($event)"
-                        [value]="this.levelService.timePenaltyHint"
-                    />
+                <mat-form-field [color]="'warn'">
+                    <p>Temps de pénalité pour l'utilisation d'un indice</p>
+                    <input matInput id="time-penalty-hint-input" (blur)="this.levelService.setNewGameConstants($event)"
+                        [value]="this.levelService.timePenaltyHint" />
+                    <mat-hint>Entre 0 et 10 secondes</mat-hint>
                 </mat-form-field>
-                <mat-form-field>
-                    <input
-                        matInput
-                        id="time-gained-difference-input"
-                        placeholder="temps gagné avec la découverte d’une différence (secondes)"
+                <mat-form-field [color]="'warn'">
+                    <p>Temps gagné avec la découverte d'une différence</p>
+                    <input matInput id="time-gained-difference-input"
                         (blur)="this.levelService.setNewGameConstants($event)"
-                        [value]="this.levelService.timeGainedDifference"
-                    />
+                        [value]="this.levelService.timeGainedDifference" />
+                    <mat-hint>Entre 0 et 10 secondes</mat-hint>
                 </mat-form-field>
             </div>
-            <button class="button-settings" color="orange" (click)="this.router.navigate(['/game-histories'])">
-                Historique
-                <mat-icon>clear_all</mat-icon>
-            </button>
-            <button class="button-settings" color="orange" routerLink="/creation">
-                Nouveau Jeu
-                <mat-icon>add</mat-icon>
-            </button>
+            <div class="menu-container">
+                <div class="sub-menu-container">
+                    <button mat-button class="menu-button" routerLink="/game-histories">
+                        <span>Historique</span>
+                        <mat-icon>clear_all</mat-icon>
+                    </button>
+                    <button mat-button class="menu-button" routerLink="/creation">
+                        <span>Nouveau Jeu</span>
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+                <button mat-button class="menu-button" (click)="onDeleteAllLevels()">
+                    <span>Supprimer tous les niveaux</span>
+                    <mat-icon>delete_outline</mat-icon>
+                </button>
+                <button mat-button class="menu-button" (click)="onResetGameConstants()">
+                    <span>Réinitialiser les constantes de jeu</span>
+                    <mat-icon>loop</mat-icon>
+                </button>
+            </div>
         </header>
 
         <body class="selection-card-container">
-            <app-card
-                *ngFor="let level of levelService.levelsToShow"
-                [level]="level"
-                [isSelectionPage]="false"
+            <app-card *ngFor="let level of levelService.levelsToShow" [level]="level" [isSelectionPage]="false"
                 (deleteLevelEvent)="onDeleteLevel($event)"
-            ></app-card>
+                (resetLevelHighScoreEvent)="onResetLevelHighScore($event)"></app-card>
         </body>
 
         <footer class="bottom-container">
-            <button mat-fab id="arrow_back" color="orange" [disabled]="levelService.isBeginningOfList()" (click)="levelService.previousPage()">
+            <button id="arrow_back" class="side-button" [disabled]="levelService.isBeginningOfList()"
+                (click)="levelService.previousPage()">
                 <mat-icon>arrow_back</mat-icon>
             </button>
-            <p class="page-display">Page {{ levelService.currentPage + 1 }}/{{ levelService.lastPage + 1 }}</p>
-            <button mat-fab id="arrow_forward" color="orange" [disabled]="levelService.isEndOfList()" (click)="levelService.nextPage()">
+            <p class="page-display" *ngIf="levelService.lastPage + 1 > 0">Page {{ levelService.currentPage + 1 }}/{{
+                levelService.lastPage + 1 }}</p>
+            <button id="arrow_forward" class="side-button" [disabled]="levelService.isEndOfList()"
+                (click)="levelService.nextPage()">
                 <mat-icon>arrow_forward</mat-icon>
             </button>
         </footer>
