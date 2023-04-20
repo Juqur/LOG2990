@@ -38,7 +38,6 @@ export class GamePageService {
     private hintSection: number[] = [];
     private resetCanvasDelayInProgress: boolean = false;
 
-    // eslint-disable-next-line max-params
     constructor(
         private router: Router,
         private mouseService: MouseService,
