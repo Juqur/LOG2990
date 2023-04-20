@@ -1,15 +1,15 @@
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@app/components/message-box/message-box.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { ScaleContainerComponent } from '@app/components/scale-container/scale-container.component';
 import { VideoChatComponent } from '@app/components/video-chat/video-chat.component';
 import { VideoTimerComponent } from '@app/components/video-timer/video-timer.component';
-import { AppMaterialModule } from '@app/modules/material.module';
 import { PopUpService } from '@app/services/pop-up/pop-up.service';
 import { VideoService } from '@app/services/video/video.service';
 
+import { AppModule } from '@app/app.module';
+import { TimerService } from '@app/services/timer/timer.service';
 import { VideoPageComponent } from './video-page.component';
 
 describe('VideoPageComponent', () => {
@@ -23,6 +23,7 @@ describe('VideoPageComponent', () => {
     let setFirstFrameSpy: jasmine.Spy;
     let settingGameImageSpy: jasmine.Spy;
     let drawImageSpy: jasmine.Spy;
+    let timerServiceSpy: jasmine.SpyObj<TimerService>;
     const canvas = document.createElement('canvas');
     const nativeElementMock = { nativeElement: canvas };
 
@@ -35,19 +36,22 @@ describe('VideoPageComponent', () => {
         setFirstFrameSpy = spyOn(VideoPageComponent.prototype, 'setFirstFrame' as never);
         settingGameImageSpy = spyOn(VideoPageComponent.prototype, 'settingGameImage' as never);
         drawImageSpy = spyOn(CanvasRenderingContext2D.prototype, 'drawImage');
+        timerServiceSpy = jasmine.createSpyObj('TimerService', ['startTimer', 'stopTimer']);
     });
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [PlayAreaComponent, ScaleContainerComponent, MessageBoxComponent, VideoChatComponent, VideoTimerComponent],
-            imports: [MatDialogModule, AppMaterialModule],
+            imports: [AppModule],
             providers: [
                 { provide: PopUpService, useValue: popUpServiceSpy },
                 { provide: VideoService, useValue: videoServiceSpy },
                 { provide: PlayAreaComponent, useValue: playAreaComponentSpy },
                 { provide: VideoTimerComponent, useValue: videoTimerComponentSpy },
             ],
-        }).compileComponents();
+        })
+            .overrideProvider(TimerService, { useValue: timerServiceSpy })
+            .compileComponents();
 
         playAreaComponentSpy.getCanvas.and.returnValue(nativeElementMock as ElementRef<HTMLCanvasElement>);
 
